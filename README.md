@@ -9,7 +9,10 @@
 npm install
 
 # serve with hot reload at localhost:8080
-npm run dev
+npm run start:dev
+
+# serve for production
+npm run start
 
 # build for production with minification
 npm run build
@@ -20,8 +23,11 @@ npm run unit
 # run e2e tests
 npm run e2e
 
-# run all tests
-npm test
+# run all client tests (unit and e2e)
+npm test:client
+
+# run server unit tests
+npm test:server
 ```
 
-For detailed explanation on how things work, checkout the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+For detailed explanation on how things work, checkout the [guide](https://gbruins.gitbooks.io/vupi-docs/content/).
