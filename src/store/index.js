@@ -10,12 +10,22 @@ Vue.use(Vuex)
 export function createStore () {
     return new Vuex.Store({
         state: {
-            count: 0,
+            app: {
+                device: {
+                    isMobile: false,
+                    isTablet: false
+                },
+                sidebar: {
+                    opened: false,
+                    hidden: false
+                }
+            },
+            appInfo: null,
             jwtKey: null
         },
-        actions,
-        mutations,
         getters,
+        mutations,
+        actions,
         plugins: [createPersistedState()]
     })
 }

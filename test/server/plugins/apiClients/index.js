@@ -1,7 +1,7 @@
 const Code = require('code');
 const Lab = require('lab');
-const ApiClients = require('../../../../server/plugins/apiClients');
-// const CrumbCsrf = require('../../../../server/plugins/crumbCsrf');
+const ApiClients = require('../../../server/plugins/apiClients');
+// const CrumbCsrf = require('../../../server/plugins/crumbCsrf');
 const testHelpers = require('../../testHelpers');
 const serverSetup = require('./_serverSetup');
 

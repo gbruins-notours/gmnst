@@ -16,6 +16,18 @@ internals.after = function (server, next) {
     }));
 
 
+    server.decorate('reply', 'apiSuccess', function (responseData, paginationObj) {
+        let response = {};
+        response.data = responseData;
+
+        if(_.isObject(paginationObj)) {
+            response.pagination = paginationObj;
+        }
+
+        return this.response(response);
+    });
+    
+
     // Hande 404 errors
     server.ext('onPreResponse', function (request, reply) {
         if (request.response.isBoom) {

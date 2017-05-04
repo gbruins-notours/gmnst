@@ -8,6 +8,30 @@ function destroyKnexAndStopServer(server, done) {
 }
 
 
+function getFakeBillingAddress() {
+    let fakeShipping = getFakeShippingAddress();
+    delete fakeShipping.email;
+    fakeShipping.phone = '123-456-7890';
+
+    return fakeShipping;
+}
+
+
+function getFakeShippingAddress() {
+    return {
+        firstName: 'wayne',
+        lastName: 'gretzky',
+        company: 'Edmonton Oilers',
+        streetAddress: '123 abc st',
+        city: 'Edmonton',
+        state: 'Alberta',
+        postalCode: '12345',
+        countryCodeAlpha2: 'CA',
+        email: 'greg@greg.com'
+    }
+}
+
+
 function getJwtHeaders(server, callback) {
     const request = {
         method: 'POST',
@@ -70,6 +94,11 @@ function getBasicManifest() {
             },
             {
                 plugin: {
+                    register: './plugins/bookshelf-orm'
+                }
+            },
+            {
+                plugin: {
                     register: './plugins/core'
                 }
             },
@@ -112,6 +141,8 @@ function startServerAndGetHeaders(manifest, composeOptions) {
         
 
 module.exports.destroyKnexAndStopServer = destroyKnexAndStopServer;
+module.exports.getFakeBillingAddress = getFakeBillingAddress;
+module.exports.getFakeShippingAddress = getFakeShippingAddress;
 module.exports.getInfo = getInfo;
 module.exports.getJwtHeaders = getJwtHeaders;
 module.exports.getBasicManifest = getBasicManifest;

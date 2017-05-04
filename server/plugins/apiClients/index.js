@@ -64,55 +64,81 @@ internals.comparePassword = (password, userPassword) => {
  * @param cb
  */
 internals.validateJwt = (decoded, request, cb) => {
-    // Your additional validation goes here!
-
     // for now no other validation is needed
     cb(null, true);
+
+    // let ApiUsers = request.bookshelf.model('ApiUsers');
+    // ApiUsers
+    //     .forge({
+    //         'client_id': decoded.clientId
+    //     })
+    //     .fetch()
+    //     .then(
+    //         (ApiUserModel) => {
+    //             if (ApiUserModel && ApiUserModel.get('is_active')) {
+    //                 return cb(null, true);
+    //             }
+    //
+    //             return cb(null, false);
+    //         }
+    //     )
+    //     .catch(
+    //         (err) => {
+    //             cb(null, false);
+    //         }
+    //     );
 };
 
 
-/**
- * Searches for an API user
- *
- * NOTE: you probably want to update this method to get an API user
- * from a database or something.  For example purposes though, just returning a fake user
- * 
- * @returns {Promise}
- */
-internals.getApiUser = (request) => {
-    return new Promise((resolve, reject) => {
-        return resolve({
-            clientId: 'test@test.com',
-            clientSecret: 'create-a-strong-password-create-a-strong-password'
-        });
-    });
-};
+
+
 
 
 internals.after = function (server, next) {
 
+    /**
+     * Searches for an API user
+     *
+     * @returns {Promise}
+     */
+    internals.getApiUser = (clientId) => {
+        let ApiUsers = server.plugins.BookshelfOrm.bookshelf.model('ApiUsers');
+
+        return ApiUsers.forge({
+            client_id: clientId
+        }).fetch();
+    };
+
+
     internals.validateApiUser = (request) => {
         return new Promise((resolve, reject) => {
             internals
-                .getApiUser(request)
-                .then((user) => {
-                    internals
-                        // .comparePassword(request.payload.clientSecret, user.clientSecret)
-                        .comparePassword(user.clientSecret, request.payload.clientSecret)
-                        .then(
-                            (isPasswordMatch) => {
+                .getApiUser(request.payload.clientId)
+                .then((ApiUserModel) => {
+                    if (ApiUserModel) {
+                        if (!ApiUserModel.get('is_active')) {
+                            throw new Error('Invalid API user');
+                        }
+
+                        internals
+                            .comparePassword(request.payload.clientSecret, ApiUserModel.get('client_secret'))
+                            .then((isPasswordMatch) => {
                                 if (isPasswordMatch) {
-                                    return resolve(user);
+                                    return resolve(ApiUserModel);
                                 }
 
                                 throw new Error('Invalid API user');
-                            }
-                        )
-                        .catch(
-                            (err) => {
+                            })
+                            .catch((err) => {
                                 reject('Invalid API user');
-                            }
-                        );
+                            });
+                    }
+                    else {
+                        throw new Error('Invalid API user');
+                    }
+                })
+                .catch((err) => {
+                    reject('Invalid API user');
                 });
         });
     };
@@ -206,6 +232,16 @@ internals.after = function (server, next) {
             }
         ]);
     }
+
+
+    // LOADING BOOKSHELF MODEL:
+    let bookshelf = server.plugins.BookshelfOrm.bookshelf;
+    let baseModel = bookshelf.Model.extend({});
+
+    bookshelf['model'](
+        'ApiUsers',
+        require('./models/ApiClients')(baseModel, bookshelf, server)
+    );
     
     // return next();
 };
@@ -214,6 +250,7 @@ internals.after = function (server, next) {
 
 exports.register = (server, options, next) => {
     internals.after(server, next);
+    // server.dependency('Core', internals.after);
     return next();
 };
 

@@ -40,6 +40,16 @@ internals.manifest = {
         // },
         {
             plugin: {
+                register: './plugins/bookshelf-orm',
+                options: {
+                    knex: {
+                        debug: Config.get('/db/debug')
+                    }
+                }
+            }
+        },
+        {
+            plugin: {
                 register: './plugins/apiClients'
             },
             options: {
@@ -51,13 +61,56 @@ internals.manifest = {
         },
         {
             plugin: {
-                register: './plugins/apiDemo'
+                register: './plugins/customer'
+            }
+        },
+        {
+            plugin: {
+                register: './plugins/info'
             },
             options: {
                 select: ['api'],
                 routes: {
                     prefix: '/api/v1'
                 }
+            }
+        },
+        {
+            plugin: {
+                register: './plugins/products'
+            },
+            options: {
+                select: ['api'],
+                routes: {
+                    prefix: '/api/v1'
+                }
+            }
+        },
+        {
+            plugin: {
+                register: './plugins/shopping-cart'
+            },
+            options: {
+                select: ['api'],
+                routes: {
+                    prefix: '/api/v1'
+                }
+            }
+        },
+        {
+            plugin: {
+                register: './plugins/payments',
+                options: {
+                    isSandbox: process.env.NODE_ENV !== 'production',
+                    merchantId: process.env.BRAINTREE_MERCHANT_ID,
+                    publicKey: process.env.BRAINTREE_PUBLIC_KEY,
+                    privateKey: process.env.BRAINTREE_PRIVATE_KEY
+                }
+            }
+        },
+        {
+            plugin: {
+                register: './plugins/email'
             }
         },
         {

@@ -85,5 +85,5 @@ internals.manifest = {
 };
 
 internals.composeOptions = {
-    relativeTo: Path.resolve(__dirname, '../../server')
+    relativeTo: Path.resolve(__dirname, '../server')
 };
