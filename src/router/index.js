@@ -9,6 +9,7 @@ const ProductList = () => System.import('../views/product/ProductList.vue')
 const ProductDetail = () => System.import('../views/product/ProductDetail.vue')
 const Error404 = () => System.import('../views/Error404.vue')
 
+
 export function createRouter () {
     return new Router({
         mode: 'history',
