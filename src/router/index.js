@@ -4,9 +4,9 @@ import Router from 'vue-router'
 Vue.use(Router)
 
 // route-level code splitting
-const HomeView = () => System.import('../views/HomeView.vue')
-const CounterView = () => System.import('../views/CounterView.vue')
-const ApiDemo = () => System.import('../views/ApiDemo.vue')
+const Home = () => System.import('../pages/Home.vue')
+const Counter = () => System.import('../pages/Counter.vue')
+const ApiDemo = () => System.import('../pages/ApiDemo.vue')
 
 
 export function createRouter () {
@@ -14,8 +14,8 @@ export function createRouter () {
         mode: 'history',
         scrollBehavior: () => ({ y: 0 }),
         routes: [
-            { path: '/', component: HomeView },
-            { path: '/counter', component: CounterView },
+            { path: '/', component: Home },
+            { path: '/counter', component: Counter },
             { path: '/apidemo', component: ApiDemo }
         ]
     })
