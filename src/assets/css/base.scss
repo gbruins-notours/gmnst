@@ -1,0 +1,18 @@
+@charset "UTF-8";
+
+// Mixins
+@import "components/prefixer";
+@import "components/variables";
+@import "components/objects";
+
+@import '~animate.css';
+.animated {
+    animation-duration: .377s;
+}
+
+
+@import '~bulma';
+
+$fa-font-path: '~font-awesome/fonts/';
+@import '~font-awesome/scss/font-awesome';
+

@@ -151,8 +151,6 @@
 </script>
 
 <style lang="scss">
-    @import '~bulma/sass/utilities/variables';
-
     .Header {
         display: -webkit-box;
         display: -ms-flexbox;

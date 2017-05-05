@@ -60,15 +60,5 @@ export default {
 </script>
 
 <style lang="scss">
-    @import '~animate.css';
-
-    .animated {
-        animation-duration: .377s;
-    }
-
-    @import '~bulma';
-
-    $fa-font-path: '~font-awesome/fonts/';
-    @import '~font-awesome/scss/font-awesome';
-
+    @import "assets/css/base";
 </style>
