@@ -1,6 +1,3 @@
-'use strict';
-
-
 function getSizeTypes() {
     return {
         'youth_xs': {'id': 1, 'label': 'YXS', 'display_order': 1},

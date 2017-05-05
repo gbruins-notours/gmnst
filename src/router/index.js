@@ -4,10 +4,10 @@ import Router from 'vue-router'
 Vue.use(Router)
 
 // route-level code splitting
-const HomeView = () => System.import('../views/Home.vue')
-const ProductList = () => System.import('../views/product/ProductList.vue')
-const ProductDetail = () => System.import('../views/product/ProductDetail.vue')
-const Error404 = () => System.import('../views/Error404.vue')
+const Home = () => System.import('../pages/Home.vue')
+const ProductList = () => System.import('../pages/product/ProductList.vue')
+const ProductDetail = () => System.import('../pages/product/ProductDetail.vue')
+const Error404 = () => System.import('../pages/Error404.vue')
 
 
 export function createRouter () {
@@ -15,7 +15,7 @@ export function createRouter () {
         mode: 'history',
         scrollBehavior: () => ({ y: 0 }),
         routes: [
-            { path: '/', component: HomeView },
+            { path: '/', component: Home },
             { path: '/type/:id', component: ProductList },
             { path: '/item/:id', component: ProductDetail },
             { path: '*', component: Error404 }

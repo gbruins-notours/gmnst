@@ -3,6 +3,7 @@ const path = require('path');
 const fs = require('fs');
 const webpackConfig = require('../../../build/webpack.dev.conf');
 const icoPath = path.resolve(webpackConfig.output.path, 'static/favicon.ico');
+const isObject = require('lodash.isobject');
 
 let internals= {};
 
@@ -20,7 +21,7 @@ internals.after = function (server, next) {
         let response = {};
         response.data = responseData;
 
-        if(_.isObject(paginationObj)) {
+        if(isObject(paginationObj)) {
             response.pagination = paginationObj;
         }
 

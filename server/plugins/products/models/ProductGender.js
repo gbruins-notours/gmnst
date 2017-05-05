@@ -1,5 +1,3 @@
-'use strict';
-
 const InfoService = require('../../info/info.service');
 
 

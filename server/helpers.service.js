@@ -1,5 +1,9 @@
 const Boom = require('boom');
-const _ = require('lodash');
+const isArray = require('lodash.isarray');
+const isString = require('lodash.isstring');
+const isObject = require('lodash.isobject');
+const forEach = require('lodash.foreach');
+
 
 
 function queryHelper(query) {
@@ -27,7 +31,7 @@ function queryHelper(query) {
     }
 
     // query.where format: ['propName', '=', 'value']
-    if(_.isString(query.where) && query.where.length) {
+    if(isString(query.where) && query.where.length) {
         try {
             query.where = JSON.parse(query.where);
         }
@@ -35,7 +39,7 @@ function queryHelper(query) {
             // just dropping it
         }
     }
-    if(_.isArray(query.where) && query.where.length === 3) {
+    if(isArray(query.where) && query.where.length === 3) {
         response.where = query.where;
     }
 
@@ -44,9 +48,9 @@ function queryHelper(query) {
         andWhere = [];
 
         (function(parsed) {
-            if(_.isArray(parsed)) {
-                _.forEach(parsed, function(arr) {
-                    if(_.isArray(arr) && arr.length === 3) {
+            if(isArray(parsed)) {
+                forEach(parsed, function(arr) {
+                    if(isArray(arr) && arr.length === 3) {
                         andWhere.push(arr);
                     }
                 });
@@ -63,7 +67,7 @@ function queryHelper(query) {
 
 
 function getBoomError(err, defaultError) {
-    if(_.isObject(err) && err.isBoom) {
+    if(isObject(err) && err.isBoom) {
         return err;
     }
     if(defaultError) {

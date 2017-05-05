@@ -1,7 +1,7 @@
-const _ = require('lodash');
 const Joi = require('joi');
 const Boom = require('boom');
 const HelperService = require('../../helpers.service');
+const forEach = require('lodash.foreach');
 
 
 let internals = {};
@@ -173,7 +173,7 @@ internals.after = function (server, next) {
                             }
 
                             if(queryData.andWhere) {
-                                _.forEach(queryData.andWhere, function(arr) {
+                                forEach(queryData.andWhere, function(arr) {
                                     qb.andWhere(arr[0], arr[1], arr[2]);
                                 });
                             }

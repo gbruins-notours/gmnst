@@ -1,10 +1,8 @@
-'use strict';
-
 const Promise = require('bluebird');
 const EmailTemplate = require('email-templates').EmailTemplate;
 const path = require('path');
 const Handlebars = require('handlebars');
-const _ = require('lodash');
+const forEach = require('lodash.foreach');
 const Config = require('../../config');
 const mailgun = require('mailgun-js')({apiKey: Config.get('/mailgun/apiKey'), domain: Config.get('/mailgun/domain')});
 const mailcomposer = require('mailcomposer');
@@ -77,7 +75,7 @@ function emailPurchaseReceiptToBuyer(ShoppingCart) {
                 cart_items: []
             };
 
-            _.forEach(cartData, (obj) => {
+            forEach(cartData, (obj) => {
                 templateData.cart_items.push({
                     qty: obj.qty,
                     title: obj.product.title,

@@ -1,6 +1,6 @@
 <template>
     <div id="app">
-        <navbar></navbar>
+        <navbar :show="true"></navbar>
         <default-layout></default-layout>
         <footer-bar></footer-bar>
     </div>
@@ -20,52 +20,55 @@ export default {
         FooterBar
     },
 
-    methods: {
-        ...mapActions([
-            'JWT_KEY'
-        ])
+    beforeMount () {
+        const { body } = document
+        const WIDTH = 768
+        const RATIO = 3
+
+        const handler = () => {
+            if (!document.hidden) {
+                let rect = body.getBoundingClientRect()
+                let isMobile = rect.width - RATIO < WIDTH
+                this.TOGGLE_DEVICE(isMobile ? 'mobile' : 'other')
+            }
+        }
+
+        document.addEventListener('visibilitychange', handler)
+        window.addEventListener('DOMContentLoaded', handler)
+        window.addEventListener('resize', handler)
+
+        api.getToken().then((response) => {
+            this.JWT_KEY(response.headers['x-authorization'])
+
+            api.getInfo().then((data) => {
+                this.APP_INFO(data);
+            });
+        })
+        .catch((error) => {
+            console.log('GET JWT Error', error);
+        });
     },
 
-    created () {
-//        api.hashValue('create-a-strong-password-create-a-strong-password')
-//            .then((response) => {
-//                console.log('HASH', response.data.hash);
-//            });
-
-        api.getToken()
-            .then((response) => {
-                this.JWT_KEY(response.headers['x-authorization'])
-            })
-            .catch((error) => {
-                console.log('GET JWT Error', error);
-            });
+    methods: {
+        ...mapActions([
+            'APP_INFO',
+            'JWT_KEY',
+            'TOGGLE_DEVICE'
+        ])
     }
 }
 </script>
 
-<style>
-html {
-  height: 100%;
-}
+<style lang="scss">
+    @import '~animate.css';
 
-body {
-  display: flex;
-  justify-content: center;
-  margin: 0;
-  height: 100%;
-}
+    .animated {
+        animation-duration: .377s;
+    }
 
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  width: 100%;
-}
+    @import '~bulma';
 
-a {
-  color: #42b983;
-  text-decoration: none;
-}
+    $fa-font-path: '~font-awesome/fonts/';
+    @import '~font-awesome/scss/font-awesome';
+
 </style>

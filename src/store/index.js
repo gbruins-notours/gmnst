@@ -20,7 +20,7 @@ export function createStore () {
                     hidden: false
                 }
             },
-            appInfo: null,
+            appInfo: {},
             jwtKey: null
         },
         getters,

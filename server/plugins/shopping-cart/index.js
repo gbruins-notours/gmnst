@@ -1,10 +1,13 @@
-'use strict';
-
-const _ = require('lodash');
 const Joi = require('joi');
 const Boom = require('boom');
 const winston = require('winston');
 const HelperService = require('../../helpers.service');
+const isArray = require('lodash.isarray');
+const forEach = require('lodash.foreach');
+const isObject = require('lodash.isobject');
+const isEqual = require('lodash.isequal');
+const isString = require('lodash.isstring');
+const isFinite = require('lodash.isfinite');
 
 
 let internals = {};
@@ -59,11 +62,11 @@ internals.after = function (server, next) {
     internals.cartItemExists = (cart_data, product) => {
         let existingItemKey = null;
 
-        if(_.isArray(cart_data) && product) {
-            _.forEach(cart_data, (cartItem, key) => {
-                if(_.isObject(cartItem.product)
+        if(isArray(cart_data) && product) {
+            forEach(cart_data, (cartItem, key) => {
+                if(isObject(cartItem.product)
                     && cartItem.product.id === product.id
-                    && _.isEqual(cartItem.product.__selectedOptions, product.__selectedOptions)) {
+                    && isEqual(cartItem.product.__selectedOptions, product.__selectedOptions)) {
                     existingItemKey = key;
                     return false;  // breaks out of forEach loop
                 }
@@ -142,7 +145,7 @@ internals.after = function (server, next) {
     internals.getNumItemsInCart = (cartData) => {
         let num = 0;
 
-        if(_.isString(cartData)) {
+        if(isString(cartData)) {
             try {
                 cartData = JSON.parse(cartData);
             }
@@ -158,12 +161,12 @@ internals.after = function (server, next) {
         ).required();
 
         if(!Joi.validate(cartData, cartDataSchema).error) {
-            _.forEach(cartData, (cartItem) => {
+            forEach(cartData, (cartItem) => {
                 // NOTE:
                 // It's best to use _.isFinite() here rather than _.isNumber() in case cartItem.qty is NaN
                 // Technically, I guess NaN is a number:
                 // https://github.com/jashkenas/underscore/issues/406
-                if(_.isFinite(cartItem.qty)) {
+                if(isFinite(cartItem.qty)) {
                     num += cartItem.qty;
                 }
             });
@@ -239,7 +242,7 @@ internals.after = function (server, next) {
     internals.getCartSubTotal = (cartData) => {
         let subtotal = 0;
 
-        if(_.isString(cartData)) {
+        if(isString(cartData)) {
             try {
                 cartData = JSON.parse(cartData);
             }
@@ -256,7 +259,7 @@ internals.after = function (server, next) {
         ).required();
 
         if(!Joi.validate(cartData, cartDataSchema).error) {
-            _.forEach(cartData, (cartItem) => {
+            forEach(cartData, (cartItem) => {
                 subtotal += internals.getCartItemTotalPrice(cartItem);
             });
         }
@@ -299,7 +302,7 @@ internals.after = function (server, next) {
                         let cart_data = ShoppingCart.get('cart_data');
                         let existingCartItemKey = internals.cartItemExists(cart_data, decoratedProduct.product);
 
-                        if(!_.isArray(cart_data)) {
+                        if(!isArray(cart_data)) {
                             cart_data = [];
                         }
 
@@ -345,7 +348,7 @@ internals.after = function (server, next) {
     internals.getModelAsJson = (ShoppingCartModel) => {
         let cartJson = ShoppingCartModel.toJSON();
 
-        if(_.isString(cartJson.cart_data)) {
+        if(isString(cartJson.cart_data)) {
             cartJson.cart_data = JSON.parse(cartJson.cart_data);
         }
 
@@ -461,7 +464,7 @@ internals.after = function (server, next) {
                                 let cart_data = ShoppingCart.get('cart_data');
                                 let deletedItem = null;
 
-                                _.forEach(cart_data, (obj, key) => {
+                                forEach(cart_data, (obj, key) => {
                                     if(obj.itemId == request.params.id) {
                                         deletedItem = obj.itemId;
                                         cart_data.splice(key, 1);
@@ -523,14 +526,14 @@ internals.after = function (server, next) {
                                 let cart_data = ShoppingCart.get('cart_data');
                                 let canUpdate = false;
 
-                                if(_.isString(cart_data)) {
+                                if(isString(cart_data)) {
                                     cart_data = JSON.parse(cart_data);
                                 }
 
-                                _.forEach(cart_data, (obj) => {
+                                forEach(cart_data, (obj) => {
                                     if(obj.hasOwnProperty('itemId')
                                         && obj.hasOwnProperty('product')
-                                        && _.isObject(obj.product)
+                                        && isObject(obj.product)
                                         && obj.product.hasOwnProperty('qty')
                                         && request.payload.data.hasOwnProperty(obj.itemId)) {
 

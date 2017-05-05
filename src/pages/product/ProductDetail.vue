@@ -73,11 +73,12 @@
 </template>
 
 <script>
-import _ from 'lodash';
+import isObject from 'lodash.isobject'
+import isArray from 'lodash.isarray'
 import Vue from 'vue'
 import Notification from 'vue-bulma-notification'
-import shopApi from '../../../api/shopApi';
-import ProductPrice from '../../product/ProductPrice.vue'
+import api from '../../util/api';
+import ProductPrice from '../../components/product/ProductPrice.vue'
 
 // function importAll(r) {
 //    return r.keys().map(r);
@@ -121,7 +122,7 @@ export default {
 
     computed: {
         productCategory: function() {
-            if (_.isObject(this.product.type) && this.product.type.hasOwnProperty('label')) {
+            if (isObject(this.product.type) && this.product.type.hasOwnProperty('label')) {
                 return this.product.type.label;
             }
             return;
@@ -130,7 +131,7 @@ export default {
 
     methods: {
         addToCart() {
-            if (_.isObject(this.product) && !this.product.hasOwnProperty('__selectedOptions')) {
+            if (isObject(this.product) && !this.product.hasOwnProperty('__selectedOptions')) {
                 this.product.__selectedOptions = {};
             }
 
@@ -158,7 +159,7 @@ export default {
         },
 
         fetchProduct(id) {
-            shopApi.getProduct(id).then((product) => {
+            api.getProduct(id).then((product) => {
                 console.log('PRODUCT', product);
                 this.product = product;
 
@@ -172,11 +173,11 @@ export default {
         buildSizeOptions(product) {
             let sizeOpts = [];
 
-            // if (_.isObject(product) && !product.hasOwnProperty('__selectedOptions')) {
+            // if (isObject(product) && !product.hasOwnProperty('__selectedOptions')) {
             //    product.__selectedOptions = {};
             // }
 
-            if (_.isArray(product.sizes)) {
+            if (isArray(product.sizes)) {
                 product.sizes.forEach((obj) => {
                     if (obj.is_visible && obj.in_stock) {
                         sizeOpts.push(
@@ -189,7 +190,6 @@ export default {
                 });
 
                 this.sizeOptions = sizeOpts;
-                console.log('PROD', this.product);
             }
         },
 

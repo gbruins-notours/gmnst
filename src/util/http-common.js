@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import isObject from 'lodash.isobject';
 import axios from 'axios';
 
 let internals = {};
@@ -7,7 +7,7 @@ internals.getHeaders = () => {
     let data = JSON.parse(window.localStorage.getItem('vuex'));
     let headers = {};
 
-    if (_.isObject(data) && data.hasOwnProperty('jwtKey')) {
+    if (isObject(data) && data.hasOwnProperty('jwtKey')) {
         headers['Authorization'] = `Bearer ${data.jwtKey}`;
     }
 

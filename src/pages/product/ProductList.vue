@@ -20,10 +20,10 @@
 </template>
 
 <script>
-import _ from 'lodash';
+import forEach from 'lodash.foreach';
 import { mapGetters } from 'vuex';
-import ProductCard from '../../product/ProductCard.vue';
-import shopApi from '../../../api/shopApi';
+import ProductCard from '../../components/product/ProductCard.vue';
+import api from '../../util/api';
 
 export default {
     props: ['id'],
@@ -47,7 +47,7 @@ export default {
             let info = this.appInfo();
             let id = 0;
 
-            _.each(info.product.type, (obj, key) => {
+            forEach(info.product.type, (obj, key) => {
                 if (key === type) {
                     id = obj.id
                 }
@@ -70,7 +70,7 @@ export default {
 
             console.log('PARAMS', params);
 
-            shopApi.getProducts(params).then((products) => {
+            api.getProducts(params).then((products) => {
                 console.log('PRODUCTS', products);
                 this.products = products;
             });

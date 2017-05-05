@@ -1,6 +1,3 @@
-'use strict';
-
-
 function getGenderTypes() {
     return {
         'male': {'id': 1, 'label': 'Male'},

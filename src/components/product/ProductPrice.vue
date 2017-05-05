@@ -3,7 +3,7 @@
 </template>
 
 <script>
-    import _ from 'lodash'
+    import isObject from 'lodash.isobject'
 
     export default {
         props: {
@@ -21,7 +21,7 @@
 
         methods: {
             getPrice(product) {
-                if (_.isObject(product)) {
+                if (isObject(product)) {
                     if (product.is_on_sale && product.sale_price) {
                         return parseFloat(product.sale_price);
                     }

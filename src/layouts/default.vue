@@ -10,7 +10,4 @@
 </script>
 
 <style>
-    .container {
-        padding: 40px;
-    }
 </style>

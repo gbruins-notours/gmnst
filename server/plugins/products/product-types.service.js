@@ -1,6 +1,3 @@
-'use strict';
-
-
 function getTypes() {
     return {
         'top': {'id': 1, 'label':'Tops'},

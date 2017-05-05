@@ -1,11 +1,10 @@
-'use strict';
-
 const Joi = require('joi');
 const Hoek = require('hoek');
 const Boom = require('boom');
-const _ = require('lodash');
 const braintree = require('braintree');
 const Promise = require('bluebird');
+const isObject = require('lodash.isobject');
+const forEach = require('lodash.foreach');
 
 
 let internals = {};
@@ -126,7 +125,7 @@ internals.after = function (server, next) {
     internals.savePayment = (request, cart_id, transactionJson) => {
         let p = new Promise( (resolve, reject) => {
 
-            if(!_.isObject(transactionJson) || !_.isObject(transactionJson.transaction)) {
+            if(!isObject(transactionJson) || !isObject(transactionJson.transaction)) {
                 reject('An error occurred while processing the transaction.');
                 return;
             }
@@ -248,7 +247,7 @@ internals.after = function (server, next) {
                     (transactionJson) => {
                         let genericErrorMsg = 'An error occurred when creating the transaction.';
 
-                        if (!_.isObject(transactionJson)) {
+                        if (!isObject(transactionJson)) {
                             request.server.log(['error', 'braintree'], genericErrorMsg);
                             reject(
                                 Boom.badData(genericErrorMsg)
@@ -302,12 +301,12 @@ internals.after = function (server, next) {
                 .finally(
                     () => {
                         // shipping
-                        _.forEach(request.payload.shipping, (val, key) => {
+                        forEach(request.payload.shipping, (val, key) => {
                             cartUpdateData['shipping_' + key] = val;
                         });
 
                         // billing
-                        _.forEach(request.payload.billing, (val, key) => {
+                        forEach(request.payload.billing, (val, key) => {
                             cartUpdateData['billing_' + key] = val;
                         });
 
