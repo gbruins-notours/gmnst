@@ -29,55 +29,48 @@ internals.after = function (server, next) {
     });
 
 
+    internals.withRelated = [
+        'artist',
+        'type',
+        {
+            category: (query) => {
+                query.where('is_visible', '=', true);
+            },
+
+            sizes: (query) => {
+                query.where('is_visible', '=', true);
+                query.orderBy('sort_order', 'ASC');
+            },
+
+            genders: (query) => {
+                query.where('is_visible', '=', true);
+            },
+
+            pics: (query) => {
+                query.where('is_visible', '=', true);
+                query.orderBy('sort_order', 'ASC');
+            }
+        }
+    ];
+
+
     /**
-     * Gets a product by ID
+     * Gets a product by a given attribute
      *
-     * @param id
-     * @param request
+     * @param attrName
+     * @param attrValue
      * @returns {Promise}
      */
-    internals.getProduct = (id, request) => {
+    internals.getProductByAttribute = (attrName, attrValue) => {
         let Product = server.plugins.BookshelfOrm.bookshelf.model('Product');
 
-        // Joi validation:
-        let numValidation = Joi.validate(
-            id,
-            Joi.number().integer().min(0)
-        );
-
-        if(numValidation.error) {
-            // reject(numValidation.error); //TODO: reject not defined!
-            return;
-        }
+        let forgeOpts = {};
+        forgeOpts[attrName] = attrValue;
 
         return Product
-            .forge({
-                id: id
-            })
+            .forge(forgeOpts)
             .fetch({
-                withRelated: [
-                    // 'artist',
-                    'type',
-                    {
-                        category: (query) => {
-                            query.where('is_visible', '=', true);
-                        },
-
-                        sizes: (query) => {
-                            query.where('is_visible', '=', true);
-                            query.orderBy('sort_order', 'ASC');
-                        },
-
-                        genders: (query) => {
-                            query.where('is_visible', '=', true);
-                        },
-
-                        pics: (query) => {
-                            query.where('is_visible', '=', true);
-                            query.orderBy('sort_order', 'ASC');
-                        }
-                    }
-                ]
+                withRelated: internals.withRelated
             });
     };
 
@@ -106,7 +99,7 @@ internals.after = function (server, next) {
             }
 
             internals
-                .getProduct(prod.id, request)
+                .getProductByAttribute('id', prod.id)
                 .then(
                     (p) => {
                         let productJson = p.toJSON();
@@ -129,17 +122,44 @@ internals.after = function (server, next) {
     server.route([
         {
             method: 'GET',
-            path: '/product/{id}',
+            path: '/product',
             config: {
                 description: 'Finds a product by ID',
                 validate: {
-                    params: {
+                    query: {
                         id: Joi.number().min(1)
                     }
                 },
                 handler: (request, reply) => {
                     internals
-                        .getProduct(request.params.id, request)
+                        .getProductByAttribute('id', request.query.id)
+                        .then(
+                            (products) => {
+                                reply.apiSuccess(products);
+                            }
+                        )
+                        .catch(
+                            (err) => {
+                                request.server.log(['error'], err);
+                                reply(Boom.badRequest(err));
+                            }
+                        );
+                }
+            }
+        },
+        {
+            method: 'GET',
+            path: '/product/seo',
+            config: {
+                description: 'Finds a product by it\'s seo uri',
+                validate: {
+                    query: {
+                        id: Joi.string().max(100)
+                    }
+                },
+                handler: (request, reply) => {
+                    internals
+                        .getProductByAttribute('seo_uri', request.query.id)
                         .then(
                             (products) => {
                                 reply.apiSuccess(products);
@@ -161,10 +181,10 @@ internals.after = function (server, next) {
                 description: 'Gets a list of products',
                 handler: (request, reply) => {
                     let Product = server.plugins.BookshelfOrm.bookshelf.model('Product');
-                    let queryData = HelperService.queryHelper(request.query);
+                    let queryData = HelperService.queryHelper(request);
 
                     Product
-                        .query( (qb) => {
+                        .query((qb) => {
                             // qb.innerJoin('manufacturers', 'cars.manufacturer_id', 'manufacturers.id');
                             // qb.groupBy('cars.id');
 
@@ -182,25 +202,7 @@ internals.after = function (server, next) {
                         .fetchPage({
                             pageSize: queryData.pageSize || 100,
                             page: queryData.page || 1,
-                            withRelated: [
-                                'artist', 'type',
-                                {
-                                    category: (query) => {
-                                        query.where('is_visible', '=', true);
-                                    },
-                                    sizes: (query) => {
-                                        query.where('is_visible', '=', true);
-                                        query.orderBy('sort_order', 'ASC');
-                                    },
-                                    genders: (query) => {
-                                        query.where('is_visible', '=', true);
-                                    },
-                                    pics: (query) => {
-                                        query.where('is_visible', '=', true);
-                                        query.orderBy('sort_order', 'ASC');
-                                    }
-                                }
-                            ]
+                            withRelated: internals.withRelated
                         })
                         .then(
                             (products) => {

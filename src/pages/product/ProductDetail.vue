@@ -16,8 +16,8 @@
             <div class="container">
                 <div class="columns">
                     <div class="column is-6">
-                        <div class="image is-2by2">
-                            <img v-bind:src="'./' + product.featured_pic">
+                        <div class="image is-2by2 picShadow">
+                            <img v-bind:src="productPic">
                         </div>
                     </div>
                     <div class="column is-5 is-offset-1">
@@ -80,12 +80,6 @@ import Notification from 'vue-bulma-notification'
 import api from '../../util/api';
 import ProductPrice from '../../components/product/ProductPrice.vue'
 
-// function importAll(r) {
-//    return r.keys().map(r);
-// }
-
-// importAll(require.context('../../assets/images/product/', false, /\.(png|jpe?g|svg)$/));
-// console.log('images', images);
 
 const NotificationComponent = Vue.extend(Notification)
 
@@ -126,6 +120,12 @@ export default {
                 return this.product.type.label;
             }
             return;
+        },
+        productPic: function() {
+            if (this.product.featured_pic) {
+                return '/static/images/product/' + this.product.featured_pic;
+            }
+            return;
         }
     },
 
@@ -159,7 +159,7 @@ export default {
         },
 
         fetchProduct(id) {
-            api.getProduct(id).then((product) => {
+            api.getProductBySeoUri(id).then((product) => {
                 console.log('PRODUCT', product);
                 this.product = product;
 
@@ -218,25 +218,12 @@ export default {
 </script>
 
 <style>
+.picShadow {
+    box-shadow: 0 0 3px #333;
+}
 .has-text-muted {
   color: #95A5A6;
 }
-.fa {
-  font-size:10px;
-  padding-top:3px;
-  color: #95A5A6;
-}
-.panel-block-item {
-  display: inline-block;
-  color: #95A5A6;
-  font-weight: bold;
-  padding: 0 10px;
-}
-.cart-icon {
-  padding-top:10px;
-}
-.product-header {
-  background-color:#fafafa;
-}
+
 </style>
 

@@ -2,7 +2,7 @@
     <div>
         <header role="banner" class="Header">
             <div class="Header-brand">
-                <a href="/"><img class="Header-logo" src="http://bulma.io/images/bulma-logo.png" alt="UX London 2017"></a>
+                <a href="/"><img class="Header-logo" src="/static/images/logo_header.png" alt="gmnst"></a>
             </div>
 
             <a class="Header-cart" @click="openModal">

@@ -1,8 +1,8 @@
 <template>
-    <div class="card" style="width:100%">
+    <div class="card widthAll">
         <div class="card-image">
             <figure class="image is-4by3">
-                <img src="http://bulma.io/images/placeholders/1280x960.png" alt="Image">
+                <img v-bind:src="productPic" alt="Image">
             </figure>
         </div>
         <div class="card-content">
@@ -19,7 +19,7 @@
         </div>
         <footer class="card-footer">
             <!--<a class="card-footer-item">Save</a>-->
-            <a class="card-footer-item" v-bind:href="getCardUrl(product.id, product.seo_uri)">View</a>
+            <a class="card-footer-item" v-bind:href="cardUrl">View</a>
             <!--<a class="card-footer-item">Delete</a>-->
         </footer>
     </div>
@@ -28,15 +28,19 @@
 <script>
     export default {
         props: ['product'],
-        methods: {
-            getCardUrl(productId, seoUri) {
-                let path = '#/item/' + productId;
 
-                if (seoUri) {
-                    path += '-' + seoUri;
+        computed: {
+            productPic: function() {
+                if (this.product.featured_pic) {
+                    return '/static/images/product/' + this.product.featured_pic;
                 }
-
-                return path;
+                return;
+            },
+            cardUrl: function() {
+                if (this.product.seo_uri) {
+                    return '/item/' + this.product.seo_uri;
+                }
+                return null;
             }
         }
     }

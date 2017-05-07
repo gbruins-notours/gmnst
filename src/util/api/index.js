@@ -1,4 +1,5 @@
 import { HTTP } from '../http-common';
+import queryString from 'query-string'
 
 export default {
 
@@ -15,15 +16,31 @@ export default {
         });
     },
 
-    getProduct(id) {
-        return HTTP.get(`/api/v1/product/${id}`).then((response) => {
+    getProductById(id) {
+        return HTTP.get(`/api/v1/product`, {
+            params: {
+                id
+            }
+        }).then((response) => {
+            return response.data.data;
+        });
+    },
+
+    getProductBySeoUri(str) {
+        return HTTP.get(`/api/v1/product/seo`, {
+            params: {
+                id: str
+            }
+        }).then((response) => {
             return response.data.data;
         });
     },
 
     getProducts(params) {
+        let paramString = queryString.stringify(params, {arrayFormat: 'bracket'});
+
         return HTTP
-            .get(`/api/v1/products`, { params })
+            .get(`/api/v1/products?${paramString}`) // TODO: is there a XSS issue here?
             .then((response) => {
                 return response.data.data;
             });

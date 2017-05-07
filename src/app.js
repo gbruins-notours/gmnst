@@ -18,6 +18,7 @@ Object.keys(filters).forEach(key => {
 })
 
 Vue.use(VueI18n)
+Vue.config.productionTip = false
 
 
 // Expose a factory function that creates a fresh set of store, router,

@@ -20,10 +20,10 @@
 </template>
 
 <script>
-import forEach from 'lodash.foreach';
-import { mapGetters } from 'vuex';
-import ProductCard from '../../components/product/ProductCard.vue';
-import api from '../../util/api';
+import forEach from 'lodash.foreach'
+import { mapGetters } from 'vuex'
+import ProductCard from '../../components/product/ProductCard.vue'
+import api from '../../util/api'
 
 export default {
     props: ['id'],
@@ -58,17 +58,15 @@ export default {
 
         fetchProducts(productTypeId) {
             let typeId = this.getIdByProductType(productTypeId);
-
-            let params = {};
-            params.where = ['is_available', '=', false];
-            params.andWhere = [
-                ['product_type_id', '=', parseInt(typeId)],
-                ['inventory_count', '>', 0]
-            ];
-            params.orderBy = 'updated_at';
-            params.orderDir = 'DESC';
-
-            console.log('PARAMS', params);
+            let params = {
+                where: ['is_available', '=', false],
+                andWhere: [
+                    ['product_type_id', '=', parseInt(typeId)],
+                    ['inventory_count', '>', 0]
+                ],
+                orderBy: 'updated_at',
+                orderDir: 'DESC'
+            };
 
             api.getProducts(params).then((products) => {
                 console.log('PRODUCTS', products);
@@ -90,51 +88,5 @@ export default {
 </script>
 
 <style>
-.has-text-muted {
-  color: #95A5A6;
-}
-.panel-block-item  {
-  display: inline-block;
-  color: #95A5A6;
-  font-weight: bold;
-  padding-right: 10px;
-}
-
-.panel-block-item .tag,.panel-block-item .button  {
-  color: #95A5A6;
-  font-weight: bold;
-}
-
-.panel-block-item.is-right {
-  display: inline-block;
-  color: #95A5A6;
-  font-weight: bold;
-  float: right;
-}
-
-.panel-block-item .likes {
-  padding-right: 25px;
-}
-
-.panel-block-item .likes .fa,
-.panel-block-item .comments .fa
- {
-  font-size: 15px;
-  margin-top: -2px;
-}
-
-.avatar {
-  border-radius: 42px;
-  margin-right: 10px;
-  height: 42px;
-  width: 42px;
-  padding: 2px;
-  border: 1px solid #dbdbdb;
-}
-
-.timestamp {
-  color: #95A5A6;
-  font-weight: bold;
-}
 </style>
 

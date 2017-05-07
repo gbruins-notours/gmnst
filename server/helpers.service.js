@@ -3,11 +3,10 @@ const isArray = require('lodash.isarray');
 const isString = require('lodash.isstring');
 const isObject = require('lodash.isobject');
 const forEach = require('lodash.foreach');
+const queryString = require('query-string');
 
 
-
-function queryHelper(query) {
-    let andWhere = null;
+function queryHelper(request) {
     let response = {
         pageSize: null,
         page: null,
@@ -17,48 +16,45 @@ function queryHelper(query) {
         andWhere: null
     };
 
-    if(query.pageSize) {
-        response.pageSize = parseInt(query.pageSize, 10) || null;
-    }
-    if(query.page) {
-        response.page = parseInt(query.page, 10) || null;
-    }
-    if(query.orderDir == 'DESC' || query.orderDir == 'ASC') {
-        response.orderDir = query.orderDir;
-    }
-    if(query.orderBy) {
-        response.orderBy = query.orderBy;
-    }
+    let parsed = queryString.parse(request.url.search, {arrayFormat: 'bracket'});
 
-    // query.where format: ['propName', '=', 'value']
-    if(isString(query.where) && query.where.length) {
-        try {
-            query.where = JSON.parse(query.where);
-        }
-        catch(error) {
-            // just dropping it
-        }
+    if(parsed.pageSize) {
+        response.pageSize = parseInt(parsed.pageSize, 10) || null;
     }
-    if(isArray(query.where) && query.where.length === 3) {
-        response.where = query.where;
+    if(parsed.page) {
+        response.page = parseInt(parsed.page, 10) || null;
     }
+    if(parsed.orderDir == 'DESC' || parsed.orderDir == 'ASC') {
+        response.orderDir = parsed.orderDir;
+    }
+    if(parsed.orderBy) {
+        response.orderBy = parsed.orderBy;
+    }
+    if(parsed.where) {
+        response.where = parsed.where;
 
-    // query.andWhere format: [ ['propName1', '=', 'value1'], ['propName2', '=', 'value2'] ]
-    if(query.andWhere) {
-        andWhere = [];
+        // and where:
+        // andWhere: [ 'product_type_id,=,3', 'inventory_count,>,0' ]
+        if(parsed.andWhere) {
+            let andWhere = [];
 
-        (function(parsed) {
-            if(isArray(parsed)) {
-                forEach(parsed, function(arr) {
-                    if(isArray(arr) && arr.length === 3) {
-                        andWhere.push(arr);
+            if(isArray(parsed.andWhere)) {
+                forEach(parsed.andWhere, (val) => {
+                    if(isString(val)) {
+                        val = val.split(',').map((item) => {
+                            return item.trim()
+                        });
+                    }
+
+                    if(isArray(val) && val.length === 3) {
+                        andWhere.push(val);
                     }
                 });
-            }
-        }(JSON.parse(query.andWhere)));
 
-        if(andWhere.length) {
-            response.andWhere = andWhere;
+                if(andWhere.length) {
+                    response.andWhere = andWhere;
+                }
+            }
         }
     }
 
