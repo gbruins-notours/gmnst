@@ -15,6 +15,10 @@ before_script:
 
 before_install:
   - npm install knex
+
+install:
   - export NODE_ENV=development
+  - npm install
   - knex migrate:latest
   - knex seed:run
+
