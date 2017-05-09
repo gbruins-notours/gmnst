@@ -2,7 +2,6 @@ const Joi = require('joi');
 const Boom = require('boom');
 const winston = require('winston');
 const HelperService = require('../../helpers.service');
-const isArray = require('lodash.isarray');
 const forEach = require('lodash.foreach');
 const isObject = require('lodash.isobject');
 const isEqual = require('lodash.isequal');
@@ -62,7 +61,7 @@ internals.after = function (server, next) {
     internals.cartItemExists = (cart_data, product) => {
         let existingItemKey = null;
 
-        if(isArray(cart_data) && product) {
+        if(Array.isArray(cart_data) && product) {
             forEach(cart_data, (cartItem, key) => {
                 if(isObject(cartItem.product)
                     && cartItem.product.id === product.id
@@ -302,7 +301,7 @@ internals.after = function (server, next) {
                         let cart_data = ShoppingCart.get('cart_data');
                         let existingCartItemKey = internals.cartItemExists(cart_data, decoratedProduct.product);
 
-                        if(!isArray(cart_data)) {
+                        if(!Array.isArray(cart_data)) {
                             cart_data = [];
                         }
 

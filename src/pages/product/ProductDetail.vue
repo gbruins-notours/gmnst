@@ -74,7 +74,6 @@
 
 <script>
 import isObject from 'lodash.isobject'
-import isArray from 'lodash.isarray'
 import Vue from 'vue'
 import Notification from 'vue-bulma-notification'
 import api from '../../util/api';
@@ -177,7 +176,7 @@ export default {
             //    product.__selectedOptions = {};
             // }
 
-            if (isArray(product.sizes)) {
+            if (Array.isArray(product.sizes)) {
                 product.sizes.forEach((obj) => {
                     if (obj.is_visible && obj.in_stock) {
                         sizeOpts.push(

@@ -1,5 +1,4 @@
 const Boom = require('boom');
-const isArray = require('lodash.isarray');
 const isString = require('lodash.isstring');
 const isObject = require('lodash.isobject');
 const forEach = require('lodash.foreach');
@@ -38,7 +37,7 @@ function queryHelper(request) {
         if(parsed.andWhere) {
             let andWhere = [];
 
-            if(isArray(parsed.andWhere)) {
+            if(Array.isArray(parsed.andWhere)) {
                 forEach(parsed.andWhere, (val) => {
                     if(isString(val)) {
                         val = val.split(',').map((item) => {
@@ -46,7 +45,7 @@ function queryHelper(request) {
                         });
                     }
 
-                    if(isArray(val) && val.length === 3) {
+                    if(Array.isArray(val) && val.length === 3) {
                         andWhere.push(val);
                     }
                 });
