@@ -3,12 +3,15 @@ node_js:
   - "6"
 
 services:
-  - psql
+  - postgresql
 
 #packages:
 
 env:
   - NODE_ENV="development"
+
+before_script:
+  - psql -c 'create database travis_ci_test;' -U postgres
 
 before_install:
   - psql -p 5434 -c 'create database gmnst_test'
