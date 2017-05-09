@@ -14,7 +14,7 @@ before_script:
   - psql -c 'create database gmnst_test;' -U postgres
 
 before_install:
-  - npm install knex -g
+  - npm install knex
   - export NODE_ENV=development
-  - knex migrate:latest --env development
+  - knex migrate:latest
   - knex seed:run
