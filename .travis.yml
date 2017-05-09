@@ -11,10 +11,9 @@ env:
   - NODE_ENV="development"
 
 before_script:
-  - psql -c 'create database travis_ci_test;' -U postgres
+  - psql -c 'create database gmnst_test;' -U postgres
 
 before_install:
-  - psql -p 5434 -c 'create database gmnst_test'
   - npm install knex -g
   - export NODE_ENV=development
   - knex migrate:latest --env development
