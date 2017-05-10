@@ -4,7 +4,9 @@ module.exports = {
     development: {
         client: 'pg',
         connection: {
-            connection: process.env.DATABASE_URL
+            database: process.env.PG_DB_NAME,
+            user:     process.env.PG_USER,
+            password: process.env.PG_PASSWORD
         },
         pool: {
             min: 2,
@@ -22,7 +24,9 @@ module.exports = {
     test: {
         client: 'pg',
         connection: {
-            connection: process.env.DATABASE_URL
+            database: process.env.PG_DB_NAME,
+            user:     process.env.PG_USER,
+            password: process.env.PG_PASSWORD
         },
         pool: {
             min: 2,

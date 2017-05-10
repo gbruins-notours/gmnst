@@ -1,7 +1,7 @@
 const Promise = require('bluebird');
 const bcrypt = require('bcrypt');
 const InfoService = require('../../server/plugins/info/info.service');
-const ApiClientsService = require('../../server/plugins/apiClients/api-clients.service');
+const ApiClientsService = require('../../server/plugins/apiClients/apiClients.service');
 
 
 exports.seed = (knex) => {

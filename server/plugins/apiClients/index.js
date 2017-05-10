@@ -3,57 +3,13 @@ const jwt = require('jsonwebtoken');
 const Joi = require('joi');
 const Boom = require('boom');
 const Promise = require('bluebird');
-const bcrypt = require('bcrypt');
 const HelperService = require('../../helpers.service');
 const uuidV4 = require('uuid/v4');
+const ApiClientsService = require('./apiClients.service');
 
 
 let internals = {};
 
-
-/**
- * Creates a hash from a given password
- *
- * @param password
- * @returns {Promise}
- */
-internals.cryptPassword = (password) => {
-    return new Promise( (resolve, reject) => {
-        bcrypt.genSalt(10, (err, salt) => {
-            if (err) {
-                return reject(err);
-            }
-
-            bcrypt.hash(password, salt, (err, hash) => {
-                if (err) {
-                    return reject(err);
-                }
-
-                return resolve(hash);
-            });
-        });
-    });
-};
-
-
-/**
- * Compares a clear text password against the hashed password for a match
- *
- * @param password
- * @param userPassword
- * @returns {Promise}
- */
-internals.comparePassword = (password, userPassword) => {
-    return new Promise( (resolve, reject) => {
-        bcrypt.compare(password, userPassword, (err, isPasswordMatch) => {
-            if (err) {
-                return reject(err);
-            }
-
-            return resolve(isPasswordMatch);
-        });
-    });
-};
 
 
 /**
@@ -90,10 +46,6 @@ internals.validateJwt = (decoded, request, cb) => {
 };
 
 
-
-
-
-
 internals.after = function (server, next) {
 
     /**
@@ -120,7 +72,7 @@ internals.after = function (server, next) {
                             throw new Error('Invalid API user');
                         }
 
-                        internals
+                        ApiClientsService
                             .comparePassword(request.payload.clientSecret, ApiUserModel.get('client_secret'))
                             .then((isPasswordMatch) => {
                                 if (isPasswordMatch) {
@@ -215,7 +167,7 @@ internals.after = function (server, next) {
                         })
                     },
                     handler: (request, reply) => {
-                        internals
+                        ApiClientsService
                             .cryptPassword(request.payload.value)
                             .then((hashed) => {
                                 return reply({
