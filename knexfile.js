@@ -1,16 +1,10 @@
-'use strict';
-
-const Config = require('./server/config');
 
 module.exports = {
 
     development: {
-        client: 'postgresql',
+        client: 'pg',
         connection: {
-            database: 'gmnst',
-            user:     process.env.PG_USER,
-            password: process.env.PG_PASSWORD,
-            port: 5432
+            connection: process.env.DATABASE_URL
         },
         pool: {
             min: 2,
@@ -26,12 +20,9 @@ module.exports = {
     },
 
     test: {
-        client: 'postgresql',
+        client: 'pg',
         connection: {
-            database: 'gmnst',
-            user:     process.env.PG_USER,
-            password: process.env.PG_PASSWORD,
-            port: 5432
+            connection: process.env.DATABASE_URL
         },
         pool: {
             min: 2,
@@ -49,7 +40,7 @@ module.exports = {
     // https://devcenter.heroku.com/articles/heroku-postgresql#connecting-in-node-js
     // http://knexjs.org/#Installation-client
     production: {
-        client: 'postgresql',
+        client: 'pg',
         connection: process.env.DATABASE_URL,
         pool: {
             min: 2,
@@ -61,7 +52,7 @@ module.exports = {
     },
 
     staging: {
-        client: 'postgresql',
+        client: 'pg',
         connection: process.env.DATABASE_URL,
         pool: {
             min: 2,

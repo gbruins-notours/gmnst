@@ -16,10 +16,7 @@ const config = {
             debug: false
         },
         $default: {
-            debug: true,
-            name: process.env.DB_NAME,
-            port: process.env.PG_PORT,
-            connectionUrl: `postgresql://${process.env.PG_USER}:${process.env.PG_PASSWORD}@${process.env.PG_HOST}:${process.env.PG_PORT}/${process.env.DB_NAME}`
+            debug: true
         }
     },
     mailgun: {

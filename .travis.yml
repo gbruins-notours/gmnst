@@ -12,7 +12,7 @@ env:
   - NODE_ENV="development"
 
 before_script:
-  - psql -c 'create database gmnst_test;' -U postgres
+  - psql -c 'create database travis_ci_test;' -U postgres
 
 before_install:
   - npm install knex
@@ -29,6 +29,7 @@ env:
 
 # https://github.com/travis-ci/travis-ci/issues/4771
 addons:
+  postgresql: "9.4"
   apt:
     sources:
     - ubuntu-toolchain-r-test
