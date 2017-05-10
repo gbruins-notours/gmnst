@@ -1,0 +1,42 @@
+language: node_js
+
+sudo: true
+
+node_js:
+  - "6"
+
+services:
+  - postgresql
+
+before_script:
+  - psql -c 'create database travis_ci_test;' -U postgres
+
+#before_install:
+#  - npm install -g knex
+
+install:
+  - export NODE_ENV=development
+  - npm install
+
+after_success:
+  - npm run knex-migrate
+  - npm run knex-seed
+
+# https://github.com/travis-ci/travis-ci/issues/4771
+env:
+  - CXX=g++-4.8
+  global:
+    - NODE_ENV="development"
+
+# https://github.com/travis-ci/travis-ci/issues/4771
+addons:
+  postgresql: "9.4"
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+    - gcc-4.8
+    - g++-4.8
+
+notifications:
+  email: false

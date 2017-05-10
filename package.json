@@ -14,7 +14,10 @@
     "e2e": "node test/client/e2e/runner.js",
     "test:client": "npm run unit && npm run e2e",
     "test:server": "lab -a code -t 100 -v",
-    "lint": "eslint --ext .js,.vue src test/client/unit/specs test/client/e2e/specs"
+    "test2": "npm run test:client && npm run test:server",
+    "lint": "eslint --ext .js,.vue src test/client/unit/specs test/client/e2e/specs",
+    "knex-migrate": "node --require dotenv/config node_modules/knex/bin/cli.js migrate:latest",
+    "knex-seed": "node --require dotenv/config node_modules/knex/bin/cli.js seed:run"
   },
   "dependencies": {
     "animate.css": "3.5.2",
@@ -40,7 +43,6 @@
     "jsonwebtoken": "7.4.0",
     "knex": "0.12.6",
     "lodash.foreach": "4.5.0",
-    "lodash.isarray": "4.0.0",
     "lodash.isequal": "4.5.0",
     "lodash.isfinite": "3.3.2",
     "lodash.isobject": "3.0.2",
