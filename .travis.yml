@@ -25,7 +25,8 @@ after_success:
 # https://github.com/travis-ci/travis-ci/issues/4771
 env:
   - CXX=g++-4.8
-  - NODE_ENV="development"
+  global:
+    - NODE_ENV="development"
 
 # https://github.com/travis-ci/travis-ci/issues/4771
 addons:

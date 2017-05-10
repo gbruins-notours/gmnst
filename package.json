@@ -14,7 +14,7 @@
     "e2e": "node test/client/e2e/runner.js",
     "test:client": "npm run unit && npm run e2e",
     "test:server": "lab -a code -t 100 -v",
-    "test": "npm run test:client && npm run test:server",
+    "test2": "npm run test:client && npm run test:server",
     "lint": "eslint --ext .js,.vue src test/client/unit/specs test/client/e2e/specs",
     "knex-migrate": "node --require dotenv/config node_modules/knex/bin/cli.js migrate:latest",
     "knex-seed": "node --require dotenv/config node_modules/knex/bin/cli.js seed:run"
