@@ -12,11 +12,10 @@ env:
   - NODE_ENV="development"
 
 before_script:
-  - psql -c "CREATE USER skateparks WITH PASSWORD 'skateparks';" -U postgres
-  - psql -c 'create database travis_ci_test;' -U skateparks
+  - psql -c 'create database travis_ci_test;' -U postgres
 
 before_install:
-  - npm install knex
+  - npm install -g knex
 
 install:
   - export NODE_ENV=development
