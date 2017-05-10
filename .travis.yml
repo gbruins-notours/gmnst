@@ -8,9 +8,6 @@ node_js:
 services:
   - postgresql
 
-env:
-  - NODE_ENV="development"
-
 before_script:
   - psql -c 'create database travis_ci_test;' -U postgres
 
@@ -20,12 +17,15 @@ before_script:
 install:
   - export NODE_ENV=development
   - npm install
+
+after_success:
   - npm run knex-migrate
   - npm run knex-seed
 
 # https://github.com/travis-ci/travis-ci/issues/4771
 env:
   - CXX=g++-4.8
+  - NODE_ENV="development"
 
 # https://github.com/travis-ci/travis-ci/issues/4771
 addons:
