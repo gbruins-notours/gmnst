@@ -31,3 +31,5 @@ npm test:server
 ```
 
 For detailed explanation on how things work, checkout the [guide](https://gbruins.gitbooks.io/vupi-docs/content/).
+
+[![Build Status](https://travis-ci.org/notoursllc/gmnst.svg?branch=master)](https://travis-ci.org/notoursllc/gmnst)
