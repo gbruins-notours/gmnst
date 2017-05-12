@@ -16,8 +16,8 @@ internals.schema = Joi.object().keys({
 internals.defaults = {
     knex: {
         client: 'pg',
-        connection: process.env.DATABASE_URL,
-        // connection: `postgresql://${process.env.PG_USER}:${process.env.PG_PASSWORD}@${process.env.PG_HOST}:${process.env.PG_PORT}/${process.env.PG_DB_NAME}`,
+        // connection: process.env.DATABASE_URL,
+        connection: `postgresql://${process.env.PG_USER}:${process.env.PG_PASSWORD}@${process.env.PG_HOST}:${process.env.PG_PORT}/${process.env.PG_DB_NAME}`,
         // connection: {
         //     database: process.env.PG_DB_NAME,
         //     user:     process.env.PG_USER,

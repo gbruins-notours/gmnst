@@ -11,7 +11,6 @@ const ApiClientsService = require('./apiClients.service');
 let internals = {};
 
 
-
 /**
  * Performs additional validation on the decoded JWT token
  *
@@ -67,6 +66,7 @@ internals.after = function (server, next) {
             internals
                 .getApiUser(request.payload.clientId)
                 .then((ApiUserModel) => {
+
                     if (ApiUserModel) {
                         if (!ApiUserModel.get('is_active')) {
                             throw new Error('Invalid API user');
@@ -76,7 +76,7 @@ internals.after = function (server, next) {
                             .comparePassword(request.payload.clientSecret, ApiUserModel.get('client_secret'))
                             .then((isPasswordMatch) => {
                                 if (isPasswordMatch) {
-                                    return resolve(ApiUserModel);
+                                    return resolve(ApiUserModel.toJSON());
                                 }
 
                                 throw new Error('Invalid API user');
@@ -130,15 +130,17 @@ internals.after = function (server, next) {
                         .validateApiUser(request)
                         .then(
                             (ApiUser) => {
+                                console.log("VALID API USER", ApiUser);
+
                                 let token = jwt.sign(
                                     {
                                         jti: uuidV4(),
-                                        clientId: ApiUser.clientId
+                                        clientId: ApiUser.client_id
                                     },
                                     process.env.JWT_SERVER_SECRET
                                 );
 
-                                return reply().header("X-Authorization", token);
+                                return reply().header('X-Authorization', token);
                             }
                         )
                         .catch(

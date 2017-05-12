@@ -15,7 +15,6 @@ internals.after = function (server, next) {
         method: 'GET',
         path: '/info',
         config: {
-            auth: 'jwt',
             description: 'Gets app related info',
             handler: function (request, reply) {
                 getBraintreeToken()
@@ -35,7 +34,7 @@ internals.after = function (server, next) {
                     )
                     .catch(
                         (err) => {
-                            reply(Boom.unauthorized(err));
+                            reply(Boom.badData(err));
                         }
                     );
             }

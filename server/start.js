@@ -11,11 +11,11 @@ internals.manifest = {
     connections: [
         {
             host: 'localhost',
-            port: 8000,
+            port: Config.get('/port/web'),
             labels: ['web']
         },
         {
-            port: Config.get('/port/web'),
+            port: Config.get('/port/api'),
             labels: ['api'],
             routes: {
                 cors: false,
@@ -68,7 +68,7 @@ internals.manifest = {
             plugin: {
                 register: './plugins/info'
             },
-            options: {
+            options: {               
                 select: ['api'],
                 routes: {
                     prefix: '/api/v1'

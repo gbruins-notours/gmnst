@@ -6,9 +6,14 @@
   "bugs": {
     "url": "https://github.com/notoursllc/gmnst/issues"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/notoursllc/gmnst"
+  },
   "scripts": {
     "start:dev": "NODE_ENV=development node --require dotenv/config server/start.js",
-    "start": "NODE_ENV=production node --require dotenv/config server/start.js",
+    "start": "NODE_ENV=staging node --require dotenv/config server/start.js",
+    "startOLD": "NODE_ENV=production node --require server/start.js",
     "build": "node build/build.js",
     "unit": "cross-env BABEL_ENV=test karma start test/client/unit/karma.conf.js --single-run",
     "e2e": "node test/client/e2e/runner.js",
@@ -130,12 +135,14 @@
     "webpack-merge": "2.6.1"
   },
   "engines": {
-    "node": ">= 6.0.0",
-    "npm": ">= 3.0.0"
+    "node": "7.2.1",
+    "npm": "3.10.10"
   },
+  "main": "server/start.js",
   "browserslist": [
     "> 1%",
     "last 2 versions",
     "not ie <= 8"
-  ]
+  ],
+  "license": "MIT"
 }
