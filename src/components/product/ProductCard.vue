@@ -1,7 +1,7 @@
 <template>
     <div class="card widthAll">
         <div class="card-image">
-            <figure class="image is-4by3">
+            <figure class="image is-square">
                 <img v-bind:src="productPic" alt="Image">
             </figure>
         </div>
