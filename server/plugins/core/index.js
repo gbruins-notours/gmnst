@@ -1,8 +1,6 @@
 const winston = require('winston');
 const path = require('path');
 const fs = require('fs');
-const webpackConfig = require('../../../build/webpack.dev.conf');
-const icoPath = path.resolve(webpackConfig.output.path, 'static/favicon.ico');
 const isObject = require('lodash.isobject');
 
 let internals= {};
@@ -72,7 +70,7 @@ internals.after = function (server, next) {
                 // if (!options.path) {
                 //     return reply().code(204).type('image/x-icon');
                 // }
-                reply(null, fs.createReadStream(icoPath)).code(200).type('image/x-icon');
+                reply(null, fs.createReadStream(path.resolve(__dirname, '../../../dist/static/favicon.ico'))).code(200).type('image/x-icon');
             }
         },
         {

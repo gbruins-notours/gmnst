@@ -2,7 +2,7 @@ const Hoek = require('hoek');
 const path = require('path');
 const Config = require('./config');
 const Server = require('./index');
-const webpackConfig = require('../build/webpack.dev.conf');
+
 
 const internals = {};
 
@@ -132,6 +132,7 @@ internals.manifest = {
 
 if (process.env.NODE_ENV === 'development') {
     const Webpack = require('webpack');
+    const webpackConfig = require('../build/webpack.dev.conf');
     const compiler = new Webpack(webpackConfig);
 
     internals.manifest.registrations.push(
