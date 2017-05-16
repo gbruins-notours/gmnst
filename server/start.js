@@ -40,6 +40,11 @@ internals.manifest = {
         // },
         {
             plugin: {
+                register: './plugins/good'
+            }
+        },
+        {
+            plugin: {
                 register: './plugins/bookshelf-orm',
                 options: {
                     knex: {

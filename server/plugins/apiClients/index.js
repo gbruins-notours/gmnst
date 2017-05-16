@@ -130,8 +130,6 @@ internals.after = function (server, next) {
                         .validateApiUser(request)
                         .then(
                             (ApiUser) => {
-                                console.log("VALID API USER", ApiUser);
-
                                 let token = jwt.sign(
                                     {
                                         jti: uuidV4(),
