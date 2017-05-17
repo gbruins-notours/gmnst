@@ -6,7 +6,10 @@ const InfoService = require('../../server/plugins/info/info.service');
 exports.seed = (knex) => {
     return knex(InfoService.DB_TABLES.products)
         .del()
-        .then( () => {
+        .then(() => {
+            return knex.raw(`ALTER SEQUENCE ${InfoService.DB_TABLES.products}_id_seq RESTART WITH 1`);
+        })
+        .then(() => {
             let promises = [];
             let artistId = 0;
             let d = new Date();

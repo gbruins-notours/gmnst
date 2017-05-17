@@ -5,6 +5,9 @@ const InfoService = require('../../server/plugins/info/info.service');
 exports.seed = (knex) => {
     return knex(InfoService.DB_TABLES.payments)
         .del()
+        .then(() => {
+            return knex.raw(`ALTER SEQUENCE ${InfoService.DB_TABLES.payments}_id_seq RESTART WITH 1`);
+        })
         .then(
             () => {
                 let promises = [];
