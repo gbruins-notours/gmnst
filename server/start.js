@@ -166,6 +166,9 @@ internals.composeOptions = {
 
 
 Server.init(internals.manifest, internals.composeOptions, (err, server) => {
+    if (err) {
+        server.log('error', err)
+    }
     Hoek.assert(!err, err);
 
     const api = server.select('api');
