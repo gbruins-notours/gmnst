@@ -9,11 +9,11 @@ const internals = {};
 
 internals.manifest = {
     connections: [
-        {
-            host: 'localhost',
-            port: Config.get('/port/web'),
-            labels: ['web']
-        },
+        // {
+        //     host: 'localhost',
+        //     port: Config.get('/port/web'),
+        //     labels: ['web']
+        // },
         {
             port: Config.get('/port/api'),
             labels: ['api'],
