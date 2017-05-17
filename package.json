@@ -12,8 +12,8 @@
   },
   "scripts": {
     "start:dev": "NODE_ENV=development node --require dotenv/config server/start.js",
-    "start": "NODE_ENV=staging node --require dotenv/config server/start.js",
-    "startOLD": "NODE_ENV=production node --require server/start.js",
+    "start:stage": "NODE_ENV=staging node --require dotenv/config server/start.js",
+    "start": "NODE_ENV=production node server/start.js",
     "build": "node build/build.js",
     "unit": "cross-env BABEL_ENV=test karma start test/client/unit/karma.conf.js --single-run",
     "e2e": "node test/client/e2e/runner.js",
