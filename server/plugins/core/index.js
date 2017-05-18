@@ -9,7 +9,7 @@ let internals= {};
 internals.after = function (server, next) {
 
     winston.handleExceptions(new winston.transports.File({
-        filename: path.resolve(__dirname, '../../../build/logs/exceptions.log'),
+        filename: path.resolve(__dirname, '../../logs/exceptions.log'),
         handleExceptions: true,
         humanReadableUnhandledException: true
     }));
@@ -27,12 +27,13 @@ internals.after = function (server, next) {
     });
     
 
-    // Hande 404 errors
+    // Handle Boom errors
     server.ext('onPreResponse', function (request, reply) {
         if (request.response.isBoom) {
-            if(request.response.output.statusCode === 404) {
-                winston.error(request.response);
-            }
+            server.log('error', request.response);
+            // if(request.response.output.statusCode === 404) {
+            //     server.log('error', request.response);
+            // }
         }
         return reply.continue();
     });
