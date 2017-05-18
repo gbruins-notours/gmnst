@@ -34,7 +34,6 @@ internals.after = function (server, next) {
                     )
                     .catch(
                         (err) => {
-                            server.log('error', err);
                             reply(Boom.badData(err));
                         }
                     );

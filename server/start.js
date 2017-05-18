@@ -106,7 +106,7 @@ internals.manifest = {
             plugin: {
                 register: './plugins/payments',
                 options: {
-                    isSandbox: process.env.NODE_ENV !== 'production',
+                    isSandbox: process.env.BRAINTREE_ENVIRONMENT === 'Environment.SANDBOX',
                     merchantId: process.env.BRAINTREE_MERCHANT_ID,
                     publicKey: process.env.BRAINTREE_PUBLIC_KEY,
                     privateKey: process.env.BRAINTREE_PRIVATE_KEY
