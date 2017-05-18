@@ -1,6 +1,5 @@
 node_modules/
 dist/
-npm-debug.log
 test/client/unit/coverage
 test/client/e2e/reports
 *.env
@@ -10,6 +9,5 @@ test/client/e2e/reports
 .editorconfig
 
 # Logs:
-build/logs
 *.log
 npm-debug.log*
