@@ -20,7 +20,6 @@
 </template>
 
 <script>
-import forEach from 'lodash.foreach'
 import { mapGetters } from 'vuex'
 import ProductCard from '../../components/product/ProductCard.vue'
 import api from '../../util/api'
@@ -47,9 +46,9 @@ export default {
             let info = this.appInfo();
             let id = 0;
 
-            forEach(info.product.type, (obj, key) => {
-                if (key === type) {
-                    id = obj.id
+            Object.keys(info.seoUri).forEach((key) => {
+                if (info.seoUri[key] === type && info.product.subTypes.hasOwnProperty(key)) {
+                    id = info.product.subTypes[key]
                 }
             });
 
@@ -59,9 +58,9 @@ export default {
         fetchProducts(productTypeId) {
             let typeId = this.getIdByProductType(productTypeId);
             let params = {
-                where: ['is_available', '=', false],
+                where: ['is_available', '=', true],
+                whereRaw: ['sub_type & ? > 0', [typeId]],
                 andWhere: [
-                    ['product_type_id', '=', parseInt(typeId)],
                     ['inventory_count', '>', 0]
                 ],
                 orderBy: 'updated_at',
@@ -69,21 +68,20 @@ export default {
             };
 
             api.getProducts(params).then((products) => {
-                console.log('PRODUCTS', products);
                 this.products = products;
             });
         }
     },
 
-    created () {
+    beforeMount () {
         this.fetchProducts(this.$route.params.id)
-    },
-
-    watch: {
-        '$route' (to, from) {
-            this.fetchProducts(to.params.id);
-        }
     }
+
+//    watch: {
+//        '$route' (to, from) {
+//            this.fetchProducts(to.params.id);
+//        }
+//    }
 }
 </script>
 

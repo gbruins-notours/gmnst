@@ -4,10 +4,7 @@ const DB_TABLES = {
     customers: 'customers',
     payments: 'payments',
     product_artists: 'product_artists',
-    product_categories: 'product_categories',
-    product_genders: 'product_genders',
     product_sizes: 'product_sizes',
-    product_types: 'product_types',
     product_pics: 'product_pics',
     products: 'products'
 };

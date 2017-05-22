@@ -13,11 +13,12 @@ module.exports = {
   rules: {
     'arrow-parens': OFF,
     'brace-style': [ERROR, 'stroustrup'],
-    'indent': [ERROR, 4],
+    'indent': [ERROR, 4, { 'SwitchCase': 1 }],
     'no-debugger': process.env.NODE_ENV === 'production' ? ERROR : OFF,
     'no-multiple-empty-lines': OFF,
     'semi': OFF,
     // Turned off spaces before pern because of broken Beautify formating for JS inside script tag
-    'space-before-function-paren': OFF
+    'space-before-function-paren': OFF,
+    'spaced-comment': OFF
   }
 };

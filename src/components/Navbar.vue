@@ -12,8 +12,8 @@
 
             <nav class="Header-middle Navigation">
                 <ul class="Navigation-list">
-                    <li class="Navigation-item" v-for="(obj, type) in appInfo.product.type">
-                        <a class="Navigation-link" :href="typeUrl(type)">{{ $t(obj.label) }}</a>
+                    <li class="Navigation-item" v-for="(val, key) in appInfo.product.subTypes">
+                        <a class="Navigation-link" :href="'/type/' + appInfo.seoUri[key]">{{ $tc(key, 2) }}</a>
                     </li>
                 </ul>
             </nav>
@@ -96,13 +96,7 @@
         computed: {
             ...mapGetters({
                 appInfo: 'appInfo'
-            }),
-
-            numItems() {
-                let num = this.$store.getters.numCartItems || 0;
-                let items = this.$tc('item', num);
-                return `${num} ${items}`;
-            }
+            })
         },
 
         methods: {
@@ -137,10 +131,6 @@
 
             changed(val) {
                 console.log('changed', val)
-            },
-
-            typeUrl(type) {
-                return `/type/${type}`;
             }
         },
 

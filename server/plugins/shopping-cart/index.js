@@ -1,5 +1,6 @@
 const Joi = require('joi');
 const Boom = require('boom');
+const Promise = require('bluebird');
 const winston = require('winston');
 const HelperService = require('../../helpers.service');
 const forEach = require('lodash.foreach');

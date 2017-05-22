@@ -16,7 +16,6 @@ exports.seed = (knex) => {
                 promises.push(
                     knex(InfoService.DB_TABLES.product_pics)
                         .insert({
-                            // id: i,
                             file_name: 'sample_pic_' + i + '.png',
                             sort_order: i,
                             is_visible: true,

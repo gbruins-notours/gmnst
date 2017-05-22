@@ -17,7 +17,6 @@ exports.seed = (knex) => {
                 for(let i=1; i<6; i++) {
                     promises.push(
                         knex(InfoService.DB_TABLES.product_artists).insert({
-                            // id: i,
                             description_short: 'Product artist ' + i + ' - ' + faker.lorem.sentence(),
                             description_long: 'Product artist ' + i + ' - ' + faker.lorem.paragraph(),
                             icon: 'sample_artist_icon.jpg',

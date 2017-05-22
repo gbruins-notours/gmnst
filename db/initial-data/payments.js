@@ -17,7 +17,6 @@ exports.seed = (knex) => {
                     promises.push(
                         knex(InfoService.DB_TABLES.payments)
                             .insert({
-                                // id: i,
                                 transaction_id: '111111-' + i,
                                 processor_response_code: 1000,
                                 amount: (100 + i).toFixed(2),

@@ -1,6 +1,36 @@
 const Promise = require('bluebird');
 const faker = require('faker');
 const InfoService = require('../../server/plugins/info/info.service');
+const ProductService = require('../../server/plugins/products/products.service');
+
+const productTypes = ProductService.getProductTypes();
+const productSubTypes = ProductService.getProductSubTypes();
+const fakeGenderOptions = buildSampleGenderOptions();
+
+
+function buildSampleGenderOptions() {
+    let types = ProductService.getGenderTypes();
+    let opts = [];
+
+    // adding one option for each gender
+    Object.keys(types).forEach((key) => {
+       opts.push(types[key]);
+    });
+
+    // adding a few multi-gender options
+    opts.push( types.GENDER_TYPE_MENS | types.GENDER_TYPE_WOMENS );  // mens and womens
+    opts.push( types.GENDER_TYPE_MENS | types.GENDER_TYPE_BOYS );  // mens and boys
+    opts.push( types.GENDER_TYPE_WOMENS | types.GENDER_TYPE_GIRLS );  // womens and girls
+    opts.push( types.GENDER_TYPE_BOYS | types.GENDER_TYPE_GIRLS );  // boys and girls
+
+    return opts;
+}
+
+
+function getRandomGenderOption() {
+    return fakeGenderOptions[Math.floor( Math.random() * fakeGenderOptions.length)];
+}
+
 
 
 exports.seed = (knex) => {
@@ -25,7 +55,6 @@ exports.seed = (knex) => {
                 promises.push(
                     knex(InfoService.DB_TABLES.products)
                         .insert({
-                            // id: i,
                             title: 'Product Title ' + i,
                             description_short: 'Short description ' + i + ' - ' + faker.lorem.sentence(),
                             description_long: 'Long description ' + i + ' - ' + faker.lorem.paragraph(),
@@ -39,13 +68,14 @@ exports.seed = (knex) => {
                             tax_code: 20010,
                             featured_pic: 'sample-300-x-400.png',
                             video_url: 'https://www.youtube.com/watch?v=JUaY0AOLopU',
+                            gender: getRandomGenderOption(),
+                            type: productTypes.PRODUCT_TYPE_APPAREL,
+                            sub_type: i % 2 ? productSubTypes.PRODUCT_SUBTYPE_TOP : productSubTypes.PRODUCT_SUBTYPE_HAT,
                             inventory_count: (100 + i),
                             hide_if_out_of_stock: true,
                             created_at: d,
                             updated_at: d,
-                            product_artist_id: ++artistId,
-                            product_category_id: 1,
-                            product_type_id: i % 2 ? 1 : 2
+                            product_artist_id: ++artistId
                         })
                 )
             }

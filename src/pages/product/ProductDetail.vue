@@ -39,7 +39,7 @@
                                     <span class="select">
                                         <select name="selectedSize" v-model="selectedSize">
                                             <option value=""></option>
-                                            <option v-for="size in sizeOptions" :value="size.value">{{ $t("size-labels['" + size.label + "']") }}</option>
+                                            <option v-for="size in sizeOptions" :value="size">{{ $t(size) }}</option>
                                         </select>
                                     </span>
                                 </div>
@@ -61,7 +61,7 @@
                             <div class="displayTableRow">
                                 <div class="displayTableCell prm pbl"></div>
                                 <div class="displayTableCell pbl title is-3 has-text-muted">
-                                    <a class="button is-primary" @click="addToCart()">{{ $t("Add to cart") }}</a>
+                                    <a class="button is-primary" @click="addToCart()">{{ $t('Add to cart') }}</a>
                                 </div>
                             </div>
                         </div>
@@ -178,13 +178,8 @@ export default {
 
             if (Array.isArray(product.sizes)) {
                 product.sizes.forEach((obj) => {
-                    if (obj.is_visible && obj.in_stock) {
-                        sizeOpts.push(
-                            {
-                                'label': obj.label,
-                                'value': obj.size_id
-                            }
-                        );
+                    if (obj.is_visible && obj.stock_qty) {
+                        sizeOpts.push(obj.size);
                     }
                 });
 

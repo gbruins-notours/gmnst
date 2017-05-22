@@ -6,13 +6,9 @@ module.exports.up = (knex) => {
         InfoService.DB_TABLES.product_sizes,
         (t) => {
             t.increments('id');
-            t.integer('size_id').notNull();
-            t.string('label').nullable();
-            t.integer('sort_order');
-            t.boolean('in_stock');
+            t.string('size').nullable();
+            t.integer('stock_qty').notNull();
             t.boolean('is_visible');
-            t.dateTime('created_at').notNullable().defaultTo(knex.raw('now()'));
-            t.dateTime('updated_at').nullable();
 
             // Foreign Keys:
             t.integer('product_id')

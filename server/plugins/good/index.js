@@ -20,23 +20,23 @@ exports.register = (server, options, next) =>  {
                 },
                 'stdout'
             ],
-            opsReporter: [
-                {
-                    module: 'good-squeeze',
-                    name: 'Squeeze',
-                    args: [{ ops: '*'}]
-                },
-                {
-                    module: 'good-squeeze',
-                    name: 'SafeJson'
-                },
-                {
-                    module: 'good-file',
-                    args: [
-                        Path.join(__dirname, '../../logs/ops.log')
-                    ]
-                }
-            ],
+            // opsReporter: [
+            //     {
+            //         module: 'good-squeeze',
+            //         name: 'Squeeze',
+            //         args: [{ ops: '*'}]
+            //     },
+            //     {
+            //         module: 'good-squeeze',
+            //         name: 'SafeJson'
+            //     },
+            //     {
+            //         module: 'good-file',
+            //         args: [
+            //             Path.join(__dirname, '../../logs/ops.log')
+            //         ]
+            //     }
+            // ],
             errorReporter: [
                 {
                     module: 'good-squeeze',

@@ -31,18 +31,8 @@ internals.after = function (server, next) {
 
     internals.withRelated = [
         'artist',
-        'type',
         {
-            category: (query) => {
-                query.where('is_visible', '=', true);
-            },
-
             sizes: (query) => {
-                query.where('is_visible', '=', true);
-                query.orderBy('sort_order', 'ASC');
-            },
-
-            genders: (query) => {
                 query.where('is_visible', '=', true);
             },
 
@@ -54,6 +44,24 @@ internals.after = function (server, next) {
     ];
 
 
+
+    /**
+     * Fetches data from a given product model
+     *
+     * @param attrName
+     * @param attrValue
+     * @returns {Promise}
+     */
+    internals.modelFetch = (modelName, forgeOptions, fetchOptions) => {
+        let Model = server.plugins.BookshelfOrm.bookshelf.model(modelName);
+
+        return Model
+            .forge(forgeOptions)
+            .fetch(fetchOptions);
+    };
+
+
+
     /**
      * Gets a product by a given attribute
      *
@@ -62,17 +70,20 @@ internals.after = function (server, next) {
      * @returns {Promise}
      */
     internals.getProductByAttribute = (attrName, attrValue) => {
-        let Product = server.plugins.BookshelfOrm.bookshelf.model('Product');
+        let forgeOpts = null;
 
-        let forgeOpts = {};
-        forgeOpts[attrName] = attrValue;
+        if(attrName) {
+            forgeOpts = {};
+            forgeOpts[attrName] = attrValue;
+        }
 
-        return Product
-            .forge(forgeOpts)
-            .fetch({
-                withRelated: internals.withRelated
-            });
+        let fetchOpts = {
+            withRelated: internals.withRelated
+        };
+
+        return internals.modelFetch('Product', forgeOpts, fetchOpts)
     };
+
 
 
     /**
@@ -192,6 +203,15 @@ internals.after = function (server, next) {
                                 qb.where(queryData.where[0], queryData.where[1], queryData.where[2]);
                             }
 
+                            if(queryData.whereRaw) {
+                                if(queryData.whereRaw.length === 1) {
+                                    qb.whereRaw(queryData.whereRaw);
+                                }
+                                else {
+                                    qb.whereRaw(queryData.whereRaw.shift(), queryData.whereRaw);
+                                }
+                            }
+
                             if(queryData.andWhere) {
                                 forEach(queryData.andWhere, function(arr) {
                                     qb.andWhere(arr[0], arr[1], arr[2]);
@@ -234,16 +254,7 @@ internals.after = function (server, next) {
         'ProductArtist',
         require('./models/ProductArtist')(baseModel, bookshelf, server)
     );
-
-    bookshelf['model'](
-        'ProductCategory',
-        require('./models/ProductCategory')(baseModel, bookshelf, server)
-    );
-
-    bookshelf['model'](
-        'ProductGender',
-        require('./models/ProductGender')(baseModel, bookshelf, server)
-    );
+    
 
     bookshelf['model'](
         'ProductPic',
@@ -253,11 +264,6 @@ internals.after = function (server, next) {
     bookshelf['model'](
         'ProductSize',
         require('./models/ProductSize')(baseModel, bookshelf, server)
-    );
-
-    bookshelf['model'](
-        'ProductType',
-        require('./models/ProductType')(baseModel, bookshelf, server)
     );
 
 

@@ -12,6 +12,7 @@ function queryHelper(request) {
         orderBy: null,
         orderDir: 'DESC',
         where: null,
+        whereRaw: null,
         andWhere: null
     };
 
@@ -28,6 +29,9 @@ function queryHelper(request) {
     }
     if(parsed.orderBy) {
         response.orderBy = parsed.orderBy;
+    }
+    if(parsed.whereRaw) {
+        response.whereRaw = parsed.whereRaw;
     }
     if(parsed.where) {
         response.where = parsed.where;

@@ -20,7 +20,7 @@ export default {
         FooterBar
     },
 
-    beforeMount () {
+    beforeCreate () {
         const { body } = document
         const WIDTH = 768
         const RATIO = 3
