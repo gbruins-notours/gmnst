@@ -24,7 +24,7 @@ exports.seed = (knex) => {
                                 knex(InfoService.DB_TABLES.product_sizes)
                                     .insert({
                                         size: size,
-                                        stock_qty: faker.random.number(25),
+                                        inventory_count: faker.random.number(25),
                                         is_visible: true,
                                         product_id: prodId
                                     })

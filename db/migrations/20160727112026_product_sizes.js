@@ -7,7 +7,7 @@ module.exports.up = (knex) => {
         (t) => {
             t.increments('id');
             t.string('size').nullable();
-            t.integer('stock_qty').notNull();
+            t.integer('inventory_count').notNull();
             t.boolean('is_visible');
 
             // Foreign Keys:
