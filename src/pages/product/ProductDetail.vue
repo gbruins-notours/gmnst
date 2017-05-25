@@ -25,17 +25,17 @@
 
                         <div class="pbl">{{ product.description_long }}</div>
 
-                        <div class="title is-3 has-text-muted">
+                        <div class="title is-3">
                             <product-price :product="product"></product-price>
                         </div>
 
                         <hr>
 
-                        <div class="ptm">
+                        <div class="prod-attributes-table">
                             <!-- Size -->
-                            <div class="displayTableRow">
-                                <div class="displayTableCell prm pbm fwb">{{ $t('Size') }}:</div>
-                                <div class="displayTableCell pbm">
+                            <div class="row">
+                                <div class="label">{{ $t('Size') }}:</div>
+                                <div class="value">
                                     <span class="select">
                                         <select name="selectedSize" v-model="selectedSize">
                                             <option value=""></option>
@@ -46,9 +46,9 @@
                             </div>
 
                             <!-- Quantity -->
-                            <div class="displayTableRow">
-                                <div class="displayTableCell prm pbl fwb">{{ $t('Quantity') }}:</div>
-                                <div class="displayTableCell pbl">
+                            <div class="row">
+                                <div class="label">{{ $t('Quantity') }}:</div>
+                                <div class="value">
                                     <span class="select">
                                         <select name="selectedQty" v-model="selectedQty">
                                             <option value=""></option>
@@ -58,9 +58,9 @@
                                 </div>
                             </div>
 
-                            <div class="displayTableRow">
-                                <div class="displayTableCell prm pbl"></div>
-                                <div class="displayTableCell pbl title is-3 has-text-muted">
+                            <div class="row">
+                                <div class="label"></div>
+                                <div class="value title is-3 has-text-muted">
                                     <a class="button is-primary" @click="addToCart()">{{ $t('Add to cart') }}</a>
                                 </div>
                             </div>
@@ -211,12 +211,29 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
 .picShadow {
     box-shadow: 0 0 3px #333;
 }
-.has-text-muted {
-  color: #95A5A6;
+
+.prod-attributes-table {
+    padding-top: 10px;
+
+    .row {
+        display: table-row;
+    }
+
+    .label {
+        display: table-cell;
+        padding: 0 10px 10px;
+        font-weight: bold;
+    }
+
+    .value {
+        display: table-cell;
+        padding-bottom: 10px;
+    }
+
 }
 
 </style>

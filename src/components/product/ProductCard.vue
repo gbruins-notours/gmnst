@@ -1,5 +1,5 @@
 <template>
-    <div class="card widthAll">
+    <div class="card widthAll cursorPointer" @click="goToDetails()">
         <div class="card-image">
             <figure class="image is-square">
                 <img v-bind:src="productPic" alt="Image">
@@ -17,11 +17,6 @@
                 {{ product.description_short }}
             </div>
         </div>
-        <footer class="card-footer">
-            <!--<a class="card-footer-item">Save</a>-->
-            <a class="card-footer-item" v-bind:href="cardUrl">View</a>
-            <!--<a class="card-footer-item">Delete</a>-->
-        </footer>
     </div>
 </template>
 
@@ -35,12 +30,14 @@
                     return '/static/images/product/' + this.product.featured_pic;
                 }
                 return;
-            },
-            cardUrl: function() {
+            }
+        },
+
+        methods: {
+            goToDetails() {
                 if (this.product.seo_uri) {
-                    return '/item/' + this.product.seo_uri;
+                    this.$router.push(`/item/${this.product.seo_uri}`);
                 }
-                return null;
             }
         }
     }
