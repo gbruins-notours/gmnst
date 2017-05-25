@@ -73,6 +73,7 @@
 </template>
 
 <script>
+import Promise from 'bluebird';
 import isObject from 'lodash.isobject'
 import Vue from 'vue'
 import Notification from 'vue-bulma-notification'
@@ -157,56 +158,55 @@ export default {
             console.log('add to cart');
         },
 
-        fetchProduct(id) {
-            api.getProductBySeoUri(id).then((product) => {
-                console.log('PRODUCT', product);
-                this.product = product;
+        buildSizeOptions(product) {
+            return new Promise((resolve, reject) => {
+                let sizeOpts = [];
+                let maxInventoryCount = 0;
 
-                this.buildSizeOptions(product);
+                if (Array.isArray(product.sizes)) {
+                    product.sizes.forEach((obj) => {
+                        if (obj.is_visible && obj.inventory_count) {
+                            sizeOpts.push(obj.size);
 
-                // Change Page title
-                document.title = this.product.title;
+                            if (obj.inventory_count > maxInventoryCount) {
+                                maxInventoryCount = obj.inventory_count;
+                            }
+                        }
+                    });
+                }
+
+                resolve({
+                    sizeOpts,
+                    maxInventoryCount
+                });
             });
         },
 
-        buildSizeOptions(product) {
-            let sizeOpts = [];
-
-            // if (isObject(product) && !product.hasOwnProperty('__selectedOptions')) {
-            //    product.__selectedOptions = {};
-            // }
-
-            if (Array.isArray(product.sizes)) {
-                product.sizes.forEach((obj) => {
-                    if (obj.is_visible && obj.stock_qty) {
-                        sizeOpts.push(obj.size);
-                    }
-                });
-
-                this.sizeOptions = sizeOpts;
-            }
-        },
-
-        buildQtyOptions() {
+        buildQtyOptions(maxInventoryCount) {
             let opts = [];
+            let max = (maxInventoryCount < 100) ? maxInventoryCount : 100;
 
-            for (var i = 1; i <= 100; i++) {
+            for (var i = 1; i <= max; i++) {
                 opts.push(i);
             }
 
-            this.quantityOptions = opts;
-        }
-    },
-
-    watch: {
-        id: function(val) {
-            this.fetchMovie(val);
+            return opts.length ? opts : null;
         }
     },
 
     created() {
-        this.fetchProduct(this.$route.params.id);
-        this.buildQtyOptions();
+        api.getProductBySeoUri(this.$route.params.id)
+            .then((product) => {
+                this.product = product;
+                console.log('PRODUCT', this.product);
+
+                document.title = product.title;
+                return this.buildSizeOptions(product);
+            })
+            .then((result) => {
+                this.sizeOptions = result.sizeOpts;
+                this.quantityOptions = this.buildQtyOptions(result.maxInventoryCount);
+            });
     }
 }
 </script>
@@ -233,7 +233,6 @@ export default {
         display: table-cell;
         padding-bottom: 10px;
     }
-
 }
 
 </style>
