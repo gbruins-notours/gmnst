@@ -131,23 +131,23 @@ internals.manifest = {
 
 
 if (process.env.NODE_ENV === 'development') {
-    const Webpack = require('webpack');
     const webpackConfig = require('../build/webpack.dev.conf');
-    const compiler = new Webpack(webpackConfig);
 
     internals.manifest.registrations.push(
         {
             plugin: {
                 register: './plugins/hapi-webpack-plugin',
                 options: {
-                    'compiler': compiler,
+                    'config': webpackConfig,
 
                     // See https://github.com/webpack/webpack-dev-middleware
                     'webpack-dev-middleware': {
+                        host: 'localhost',
+                        port: Config.get('/port/api'),
+                        historyApiFallback: true,
                         publicPath: webpackConfig.output.publicPath,
-                        stats: {
-                            colors: true
-                        }
+                        noInfo: true,
+                        lazy: false
                     },
 
                     // See https://github.com/glenjamin/webpack-hot-middleware

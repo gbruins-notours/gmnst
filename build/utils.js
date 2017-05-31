@@ -1,71 +1,58 @@
-var path = require('path')
-var config = require('../config')
-var ExtractTextPlugin = require('extract-text-webpack-plugin')
+let ExtractTextPlugin = require('extract-text-webpack-plugin')
 
-exports.assetsPath = function (_path) {
-    var assetsSubDirectory = process.env.NODE_ENV === 'production'
-        ? config.build.assetsSubDirectory
-        : config.dev.assetsSubDirectory
-    return path.posix.join(assetsSubDirectory, _path)
-}
 
-exports.cssLoaders = function (options) {
-    options = options || {}
+function getLoaderConfig(loader, loaderOptions) {
+    let isProd = process.env.NODE_ENV === 'production';
 
-    var cssLoader = {
+    var loaders = [{
         loader: 'css-loader',
         options: {
-            minimize: process.env.NODE_ENV === 'production',
-            sourceMap: options.sourceMap
+            minimize: isProd,
+            sourceMap: isProd
         }
-    }
+    }];
 
-    // generate loader string to be used with extract text plugin
-    function generateLoaders(loader, loaderOptions) {
-        var loaders = [cssLoader]
-        if (loader) {
-            loaders.push({
-                loader: loader + '-loader',
-                options: Object.assign({}, loaderOptions, {
-                    sourceMap: options.sourceMap
-                })
+    if (loader) {
+        loaders.push({
+            loader: `${loader}-loader`,
+            options: Object.assign({}, loaderOptions, {
+                sourceMap: isProd
             })
-        }
-
-        // Extract CSS when that option is specified
-        // (which is the case during production build)
-        if (options.extract) {
-            return ExtractTextPlugin.extract({
-                use: loaders,
-                fallback: 'vue-style-loader'
-            })
-        } else {
-            return ['vue-style-loader'].concat(loaders)
-        }
-    }
-
-    // http://vuejs.github.io/vue-loader/en/configurations/extract-css.html
-    return {
-        css: generateLoaders(),
-        postcss: generateLoaders(),
-        less: generateLoaders('less'),
-        sass: generateLoaders('sass', {indentedSyntax: false}),
-        scss: generateLoaders('sass'),
-        stylus: generateLoaders('stylus'),
-        styl: generateLoaders('stylus')
-    }
-}
-
-// Generate loaders for standalone style files (outside of .vue)
-exports.styleLoaders = function (options) {
-    var output = []
-    var loaders = exports.cssLoaders(options)
-    for (var extension in loaders) {
-        var loader = loaders[extension]
-        output.push({
-            test: new RegExp('\\.' + extension + '$'),
-            use: loader
         })
     }
-    return output
+
+    // Extract CSS to separate file for production builds
+    if (isProd) {
+        return ExtractTextPlugin.extract({
+            use: loaders,
+            fallback: 'vue-style-loader'
+        })
+    }
+
+    return ['vue-style-loader'].concat(loaders)
 }
+
+
+exports.getCssLoaders = () => {
+    return {
+        css: getLoaderConfig(),
+        postcss: getLoaderConfig(),
+        sass: getLoaderConfig('sass', {indentedSyntax: false}),
+        scss: getLoaderConfig('sass')
+    }
+};
+
+
+exports.getStyleLoaders = () => {
+    let output = [];
+    let loaders = exports.getCssLoaders();
+
+    Object.keys(loaders).forEach((key) => {
+        output.push({
+            test: new RegExp(`\\.${key}$`),
+            use: loaders[key]
+        })
+    });
+
+    return output;
+};

@@ -1,17 +1,14 @@
-require('./check-versions')();
-
 process.env.NODE_ENV = 'production';
 
-const rm = require('rimraf');
+const rimraf = require('rimraf');
 const path = require('path');
 const webpack = require('webpack');
-const config = require('../config');
 const webpackConfig = require('./webpack.prod.conf');
 
 
 console.log('Building for production');
 
-rm(path.join(config.build.assetsRoot, config.build.assetsSubDirectory), err => {
+rimraf(path.join(__dirname, '../dist/*'), err => {
     if (err) {
         throw err
     }

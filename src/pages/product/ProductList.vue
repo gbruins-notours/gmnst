@@ -2,7 +2,7 @@
     <section>
         <div class="columns section">
             <div class="column is-8">
-                <div class="title">Gallery</div>
+                <div class="title">Gallery2</div>
             </div>
 
             <div class="column is-4 has-text-right">

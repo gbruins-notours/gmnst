@@ -8,7 +8,7 @@ import cloneDeep from 'lodash.clonedeep';
 function decorateAppInfo(data) {
     let appInfo = cloneDeep(data);
 
-    if (appInfo.hasOwnProperty('product')) {
+    if (appInfo && appInfo.hasOwnProperty('product')) {
         let seoUri = {};
 
         if (appInfo.product.subTypes) {
