@@ -1,17 +1,18 @@
 <template>
     <div id="app">
-        <navbar :show="true"></navbar>
+        <navbar :show="false"></navbar>
         <default-layout></default-layout>
         <footer-bar></footer-bar>
     </div>
 </template>
 
 <script>
+import Promise from 'bluebird';
 import Navbar from '@/components/Navbar'
 import DefaultLayout from '@/layouts/default'
 import FooterBar from '@/components/FooterBar'
 import api from './util/api'
-import { mapActions } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 
 export default {
     components: {
@@ -20,7 +21,7 @@ export default {
         FooterBar
     },
 
-    beforeCreate () {
+    created () {
         const { body } = document
         const WIDTH = 768
         const RATIO = 3
@@ -37,16 +38,7 @@ export default {
         window.addEventListener('DOMContentLoaded', handler)
         window.addEventListener('resize', handler)
 
-        api.getToken().then((response) => {
-            this.JWT_KEY(response.headers['x-authorization'])
-
-            api.getInfo().then((data) => {
-                this.APP_INFO(data);
-            });
-        })
-        .catch((error) => {
-            console.log('GET JWT Error', error);
-        });
+        this.getJwtToken().then(this.getAppInfo);
     },
 
     methods: {
@@ -54,7 +46,46 @@ export default {
             'APP_INFO',
             'JWT_KEY',
             'TOGGLE_DEVICE'
-        ])
+        ]),
+
+        ...mapGetters([
+            'jwtKey',
+            'appInfo'
+        ]),
+
+        getJwtToken() {
+            return new Promise((resolve, reject) => {
+                if (!this.jwtKey()) {
+                    api.getToken().then((response) => {
+                        console.log("GOT TOKEN", response.headers['x-authorization']);
+
+                        this.JWT_KEY(response.headers['x-authorization']);
+                        resolve();
+                    })
+                    .catch((error) => {
+                        console.log('GET JWT Error', error);
+                        resolve();
+                    });
+                }
+                else {
+                    console.log("JWT KEY ALREADY EXISTS")
+                    resolve();
+                }
+            });
+        },
+
+        getAppInfo() {
+            return new Promise((resolve, reject) => {
+                api.getInfo().then((response) => {
+                    this.APP_INFO(response);
+                    return resolve();
+                })
+                .catch((error) => {
+                    console.log('GET INFO Error', error);
+                    return resolve();
+                });
+            });
+        }
     }
 }
 </script>

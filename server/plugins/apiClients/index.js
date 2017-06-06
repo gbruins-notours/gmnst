@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const Joi = require('joi');
 const Boom = require('boom');
 const Promise = require('bluebird');
+const isObject = require('lodash.isobject');
 const HelperService = require('../../helpers.service');
 const uuidV4 = require('uuid/v4');
 const ApiClientsService = require('./apiClients.service');
@@ -126,26 +127,34 @@ internals.after = function (server, next) {
                     })
                 },
                 handler: (request, reply) => {
-                    internals
-                        .validateApiUser(request)
-                        .then(
-                            (ApiUser) => {
-                                let token = jwt.sign(
-                                    {
-                                        jti: uuidV4(),
-                                        clientId: ApiUser.client_id
-                                    },
-                                    process.env.JWT_SERVER_SECRET
-                                );
+                    let uuid = uuidV4();
 
-                                return reply().header('X-Authorization', token);
+                    // - Validate the API user
+                    // - Create a shopping cart token
+                    Promise
+                        .all([
+                            internals.validateApiUser(request),
+                            ApiClientsService.cryptPassword(process.env.CART_TOKEN_SECRET + uuid)
+                        ])
+                        .then((results) => {
+                            if(!isObject(results[0]) || !results[0].client_id || !results[1]) {
+                                throw new Error('Invalid API user');
                             }
-                        )
-                        .catch(
-                            (err) => {
-                                reply(Boom.unauthorized(err));
-                            }
-                        );
+
+                            let token = jwt.sign(
+                                {
+                                    jti: uuid,
+                                    clientId: results[0].client_id,
+                                    ct: results[1]  // cart token
+                                },
+                                process.env.JWT_SERVER_SECRET
+                            );
+
+                            return reply().header('X-Authorization', token);
+                        })
+                        .catch((err) => {
+                            reply(Boom.unauthorized(err));
+                        });
                 }
             }
         }

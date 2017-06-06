@@ -23,10 +23,10 @@
             getPrice(product) {
                 if (isObject(product)) {
                     if (product.is_on_sale && product.sale_price) {
-                        return parseFloat(product.sale_price);
+                        return product.sale_price;
                     }
                     else if (product.base_price) {
-                        return parseFloat(product.base_price);
+                        return product.base_price;
                     }
                 }
 

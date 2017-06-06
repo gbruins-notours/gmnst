@@ -20,7 +20,12 @@ export function createStore () {
                     hidden: false
                 }
             },
-            appInfo: {},
+            appInfo: {
+                product: {
+                    subTypes: []
+                }
+            },
+            cart: null,
             jwtKey: null
         },
         getters,

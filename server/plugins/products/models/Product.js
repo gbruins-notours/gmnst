@@ -18,8 +18,13 @@ module.exports = function (baseModel, bookshelf) {
         },
 
         pics: function() {
-            // product_id is the foreign key in ProductGender
+            // product_id is the foreign key in ProductPic
             return this.hasMany('ProductPic', 'product_id');
+        },
+
+        cart_items: function() {
+            // product_id is the foreign key in ShoppingCartItem
+            return this.hasMany('ShoppingCartItem', 'product_id');
         }
     });
 };

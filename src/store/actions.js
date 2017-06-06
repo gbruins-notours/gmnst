@@ -5,7 +5,6 @@ export default {
         commit('JWT_KEY', key)
     },
 
-
     APP_INFO: ({ commit }, data) => {
         commit('APP_INFO', data);
     },
@@ -24,7 +23,9 @@ export default {
         commit('TOGGLE_DEVICE', device)
     },
 
-    ADD_TO_CART: ({ commit }, data) => {
-        commit('ADD_TO_CART', data);
+    ADD_ITEM_TO_CART: ({ commit }, data) => {
+        api.shoppingCart.addItem(data).then((cartData) => {
+            commit('ADD_ITEM_TO_CART', cartData);
+        })
     }
 }

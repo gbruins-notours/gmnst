@@ -77,8 +77,9 @@ import Promise from 'bluebird';
 import isObject from 'lodash.isobject'
 import Vue from 'vue'
 import Notification from 'vue-bulma-notification'
-import api from '../../util/api';
+import api from '../../util/api'
 import ProductPrice from '../../components/product/ProductPrice.vue'
+import { mapActions } from 'vuex'
 
 
 const NotificationComponent = Vue.extend(Notification)
@@ -130,6 +131,10 @@ export default {
     },
 
     methods: {
+        ...mapActions([
+            'ADD_ITEM_TO_CART'
+        ]),
+
         addToCart() {
             if (isObject(this.product) && !this.product.hasOwnProperty('__selectedOptions')) {
                 this.product.__selectedOptions = {};
@@ -149,13 +154,20 @@ export default {
                 })
             }
             else {
+                console.log('add to cart');
+                this.ADD_ITEM_TO_CART({
+                    id: this.product.id,
+                    options: {
+                        size: this.selectedSize,
+                        qty: this.selectedQty
+                    }
+                });
+
                 openNotification({
                     title: 'Cart updated',
                     type: 'success'
                 })
             }
-
-            console.log('add to cart');
         },
 
         buildSizeOptions(product) {

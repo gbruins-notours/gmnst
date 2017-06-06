@@ -6,8 +6,8 @@ module.exports.up = (knex) => {
         InfoService.DB_TABLES.carts,
         (t) => {
             t.increments('id');
-            t.string('sid').nullable();
-            t.json('cart_data').nullable();
+            t.string('token').nullable();
+            // t.json('cart_data').nullable();
             t.string('billing_firstName').nullable();
             t.string('billing_lastName').nullable();
             t.string('billing_company').nullable();
@@ -31,7 +31,7 @@ module.exports.up = (knex) => {
             t.string('status').nullable();
             t.dateTime('created_at').notNullable().defaultTo(knex.raw('now()'));
             t.dateTime('updated_at').nullable();
-            t.dateTime('deleted_at').nullable();
+            t.dateTime('closed_at').nullable();
 
             // Foreign Keys:
             t.integer('customer_id')

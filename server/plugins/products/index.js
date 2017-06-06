@@ -53,9 +53,7 @@ internals.after = function (server, next) {
      * @returns {Promise}
      */
     internals.modelFetch = (modelName, forgeOptions, fetchOptions) => {
-        let Model = server.plugins.BookshelfOrm.bookshelf.model(modelName);
-
-        return Model
+        return server.plugins.BookshelfOrm.bookshelf.model(modelName)
             .forge(forgeOptions)
             .fetch(fetchOptions);
     };
@@ -191,10 +189,9 @@ internals.after = function (server, next) {
             config: {
                 description: 'Gets a list of products',
                 handler: (request, reply) => {
-                    let Product = server.plugins.BookshelfOrm.bookshelf.model('Product');
                     let queryData = HelperService.queryHelper(request);
 
-                    Product
+                    server.plugins.BookshelfOrm.bookshelf.model('Product')
                         .query((qb) => {
                             // qb.innerJoin('manufacturers', 'cars.manufacturer_id', 'manufacturers.id');
                             // qb.groupBy('cars.id');
@@ -267,7 +264,8 @@ internals.after = function (server, next) {
     );
 
 
-    server.expose('getProductJsonFromRequest', internals.getProductJsonFromRequest);
+    // server.expose('getProductJsonFromRequest', internals.getProductJsonFromRequest);
+    server.expose('getProductByAttribute', internals.getProductByAttribute);
 
     return next();
 };

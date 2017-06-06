@@ -17,7 +17,7 @@ exports.seed = (knex) => {
                     (function(num) {
                         return knex(InfoService.DB_TABLES.carts)
                             .insert({
-                                sid: 'fake_sid_' + num,
+                                token: 'fake_token_' + num,
                                 billing_firstName: 'fake_billing_firstName_' + num,
                                 billing_lastName: 'fake_billing_lastName_' + num,
                                 billing_company: 'fake_billing_company_' + num,

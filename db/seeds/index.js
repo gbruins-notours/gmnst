@@ -5,7 +5,7 @@ let product_artists = require('../initial-data/product_artists');
 let product_pics = require('../initial-data/product_pics');
 let product_sizes = require('../initial-data/product_sizes');
 let products = require('../initial-data/products');
-let shopping_carts = require('../initial-data/shopping_carts');
+let carts = require('../initial-data/carts');
 
 /**
  * Knex.js's seed functionality does not provide any order of execution guarantees,
@@ -18,16 +18,20 @@ let shopping_carts = require('../initial-data/shopping_carts');
 exports.seed = (knex, Promise) => {
     
     return customers.seed(knex, Promise)
-        
+
+        /*
+         * No point to fake cart or payment data.  Commenting out for now
+         * 
         // Shopping Carts
         .then(() => {
-            return shopping_carts.seed(knex, Promise);
+            return carts.seed(knex, Promise);
         })
         
         // Payments
         .then(() => {
             return payments.seed(knex, Promise);
         })
+        */
 
         // Product Artists
         .then(() => {
@@ -47,5 +51,4 @@ exports.seed = (knex, Promise) => {
                 product_sizes.seed(knex, Promise)
             ])
         });
-    
 };

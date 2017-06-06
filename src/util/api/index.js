@@ -11,29 +11,35 @@ export default {
     },
 
     getInfo() {
-        return HTTP.get(`/api/v1/info`).then((response) => {
-            return response.data.data;
-        });
+        return HTTP
+            .get(`/api/v1/info`)
+            .then((response) => {
+                return response.data.data;
+            });
     },
 
     getProductById(id) {
-        return HTTP.get(`/api/v1/product`, {
-            params: {
-                id
-            }
-        }).then((response) => {
-            return response.data.data;
-        });
+        return HTTP
+            .get(`/api/v1/product`, {
+                params: {
+                    id
+                }
+            })
+            .then((response) => {
+                return response.data.data;
+            });
     },
 
     getProductBySeoUri(str) {
-        return HTTP.get(`/api/v1/product/seo`, {
-            params: {
-                id: str
-            }
-        }).then((response) => {
-            return response.data.data;
-        });
+        return HTTP
+            .get(`/api/v1/product/seo`, {
+                params: {
+                    id: str
+                }
+            })
+            .then((response) => {
+                return response.data.data;
+            });
     },
 
     getProducts(params) {
@@ -46,12 +52,26 @@ export default {
             });
     },
 
-    buyProducts(products, cb, errorCb) {
-        setTimeout(() => {
-            // simulate random checkout failure.
-            (Math.random() > 0.5 || navigator.userAgent.indexOf('PhantomJS') > -1)
-                ? cb()
-                : errorCb()
-        }, 100)
+
+    shoppingCart: {
+
+        // TODO:
+        // getCart(params) {
+        //     return HTTP
+        //         .get(`/api/v1/products?${paramString}`)
+        //         .then((response) => {
+        //             return response.data.data;
+        //         });
+        // },
+
+        addItem(params) {
+            return HTTP
+                .post(`/api/v1/cart/item/add`, params)
+                .then((response) => {
+                    return response.data.data;
+                });
+        }
+
     }
+
 };

@@ -42,18 +42,18 @@ export default {
         state.allProducts = products
     },
 
-    ADD_TO_CART: (state, { id, qty }) => {
-        state.lastCheckout = null;
-        const record = state.added.find(p => p.id === id);
-        if (!record) {
-            state.added.push({
-                id,
-                quantity: qty || 1
-            })
-        }
-        else {
-            record.quantity++
-        }
+    ADD_ITEM_TO_CART: (state, cartData) => {
+        // state.lastCheckout = null;
+        // const record = state.added.find(p => p.id === id);
+        // if (!record) {
+        //     state.added.push({
+        //         id,
+        //         quantity: qty || 1
+        //     })
+        // }
+        // else {
+        //     record.quantity++
+        // }
     },
 
     TOGGLE_SIDEBAR: (state, opened) => {
