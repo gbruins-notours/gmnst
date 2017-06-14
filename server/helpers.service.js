@@ -81,7 +81,15 @@ function isDev() {
 }
 
 
+// https://stackoverflow.com/questions/4187146/display-two-decimal-places-no-rounding#4187164
+function twoPointDecimal(value) {
+    return value.toString().match(/^-?\d+(?:\.\d{0,2})?/)[0];   // '4.27' => '4.27'
+    //return (Math.floor(value * 100) / 100).toFixed(2)         // '4.27' => '4.26'  <== toFixed rounds values!
+}
+
+
 
 module.exports.queryHelper = queryHelper;
 module.exports.getBoomError = getBoomError;
 module.exports.isDev = isDev;
+module.exports.twoPointDecimal = twoPointDecimal;

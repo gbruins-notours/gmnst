@@ -17,7 +17,7 @@ module.exports.up = (knex) => {
             t.dateTime('updated_at').nullable();
 
             // Foreign Keys:
-            t.integer('cart_id')
+            t.uuid('cart_id')
                 .notNullable()
                 .references('id')
                 .inTable(InfoService.DB_TABLES.carts)

@@ -8,45 +8,44 @@ const HelperService = require('../../helpers.service');
 const uuidV4 = require('uuid/v4');
 const ApiClientsService = require('./apiClients.service');
 
-
 let internals = {};
 
 
-/**
- * Performs additional validation on the decoded JWT token
- *
- * @param decoded
- * @param request
- * @param cb
- */
-internals.validateJwt = (decoded, request, cb) => {
-    // for now no other validation is needed
-    cb(null, true);
+exports.register = (server, options, next) => {
 
-    // let ApiUsers = request.bookshelf.model('ApiUsers');
-    // ApiUsers
-    //     .forge({
-    //         'client_id': decoded.clientId
-    //     })
-    //     .fetch()
-    //     .then(
-    //         (ApiUserModel) => {
-    //             if (ApiUserModel && ApiUserModel.get('is_active')) {
-    //                 return cb(null, true);
-    //             }
-    //
-    //             return cb(null, false);
-    //         }
-    //     )
-    //     .catch(
-    //         (err) => {
-    //             cb(null, false);
-    //         }
-    //     );
-};
+    /**
+     * Performs additional validation on the decoded JWT token
+     *
+     * @param decoded
+     * @param request
+     * @param cb
+     */
+    internals.validateJwt = (decoded, request, cb) => {
+        // for now no other validation is needed
+        cb(null, true);
 
+        // let ApiUsers = request.bookshelf.model('ApiUsers');
+        // ApiUsers
+        //     .forge({
+        //         'client_id': decoded.clientId
+        //     })
+        //     .fetch()
+        //     .then(
+        //         (ApiUserModel) => {
+        //             if (ApiUserModel && ApiUserModel.get('is_active')) {
+        //                 return cb(null, true);
+        //             }
+        //
+        //             return cb(null, false);
+        //         }
+        //     )
+        //     .catch(
+        //         (err) => {
+        //             cb(null, false);
+        //         }
+        //     );
+    };
 
-internals.after = function (server, next) {
 
     /**
      * Searches for an API user
@@ -95,8 +94,8 @@ internals.after = function (server, next) {
                 });
         });
     };
-    
-    
+
+
     server.register(hapiJwt);
 
 
@@ -203,15 +202,7 @@ internals.after = function (server, next) {
         'ApiUsers',
         require('./models/ApiClients')(baseModel, bookshelf, server)
     );
-    
-    // return next();
-};
 
-
-
-exports.register = (server, options, next) => {
-    internals.after(server, next);
-    // server.dependency('Core', internals.after);
     return next();
 };
 

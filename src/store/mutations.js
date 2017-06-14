@@ -42,7 +42,7 @@ export default {
         state.allProducts = products
     },
 
-    ADD_ITEM_TO_CART: (state, cartData) => {
+    // ADD_ITEM_TO_CART: (state, cartData) => {
         // state.lastCheckout = null;
         // const record = state.added.find(p => p.id === id);
         // if (!record) {
@@ -54,6 +54,10 @@ export default {
         // else {
         //     record.quantity++
         // }
+    // },
+
+    CART_SET: (state, cartData) => {
+        state.cart = cartData;
     },
 
     TOGGLE_SIDEBAR: (state, opened) => {

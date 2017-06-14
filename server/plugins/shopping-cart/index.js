@@ -5,9 +5,7 @@ const winston = require('winston');
 const HelperService = require('../../helpers.service');
 const forEach = require('lodash.foreach');
 const isObject = require('lodash.isobject');
-const isEqual = require('lodash.isequal');
 const isString = require('lodash.isstring');
-const isFinite = require('lodash.isfinite');
 const jwt = require('jsonwebtoken');
 
 
@@ -23,7 +21,6 @@ let internals = {};
  */
 internals.schema = Joi.object().keys({
     token: Joi.string().trim().max(100).required(),
-    cart_data: Joi.string().required(),
 
     billing: Joi.object().keys({
         firstName: Joi.string().trim().max(255),
@@ -60,6 +57,8 @@ internals.after = function (server, next) {
     internals.STATUS_PAYMENT_SUCCESS = 'payment_success';
     internals.STATUS_PAYMENT_FAILED = 'payment_failed';
 
+    internals.ShoppingCartModel = server.plugins.BookshelfOrm.bookshelf.model('ShoppingCart');
+
 
     // internals.withRelated = [
     //     {
@@ -70,405 +69,19 @@ internals.after = function (server, next) {
     // ];
 
 
-    /**
-     * Checks to see if the product is in the cart
-     *
-     * @param request
-     * @param ShoppingCart  Bookshelf model
-     * @returns number || false
-     */
-    internals.cartItemExists = (request, ShoppingCart) => {
-        let cart_data = ShoppingCart.get('cart_data');
-        let existingItemKey = null;
-
-        if(Array.isArray(cart_data) && Product) {
-            forEach(cart_data, (cartItem, key) => {
-                if(isObject(cartItem.product)
-                        && cartItem.product.id === request.payload.id
-                        && isEqual(cartItem.product.__selectedOptions, request.payload.options)) {
-                    existingItemKey = key;
-                    return false;  // breaks out of forEach loop
-                }
-            });
-        }
-
-        return existingItemKey;
-    };
-
-
-    /**
-     * Decodes the JWT token from the request and returns the cart token
-     *
-     * @param request
-     * @returns {*}
-     */
-    internals.getCartToken = (request) => {
-        if(request.auth.token) {
-            let decoded = jwt.verify(request.auth.token, process.env.JWT_SERVER_SECRET);
-            return decoded.ct;
-        }
-        return null;
-    };
-
-
-    /**
-     * Finds the cart using the cart token from JWT
-     *
-     * @param request
-     * @returns {Promise}
-     */
-    internals.findCart = (request) => {
-        return new Promise((resolve, reject) => {
-            server.plugins.BookshelfOrm.bookshelf.model('ShoppingCart')
-                .query((qb) => {
-                    qb.where('token', '=', internals.getCartToken(request));
-                    qb.whereNull('closed_at');
-                    qb.whereNull('status');
-                })
-                .orderBy('created_at', 'DESC')
-                .fetchPage({
-                    pageSize: 1,
-                    withRelated: [{
-                        cart_items: (query) => {
-                            query.orderBy('created_at', 'DESC');
-                        }
-                    }]
-                })
-                .then((collection) => {
-                    // console.log("SHOPPING CARTS from findCart", collection.pagination, collection.models);
-
-                    // models[0] will either be undefined (the cart does not exist) or the ShoppingCart model
-                    resolve(collection.models[0]);
-                })
-                .catch((err) => {
-                    reject(err);
-                });
-            }
-        );
-    };
-
-
-    /**
-     * Creates a new Shopping Cart in the DB
-     *
-     * @param request
-     * @returns {Promise}
-     */
-    internals.createCart = (request) => {
-        return new Promise( (resolve, reject) => {
-            server.plugins.BookshelfOrm.bookshelf.model('ShoppingCart')
-                .forge()
-                .save('token', internals.getCartToken(request))
-                .then((model) => {
-                    resolve(model);
-                })
-                .catch((err) => {
-                    reject(err);
-                });
-        });
-    };
-
-
-    /**
-     * Creates a new Shopping Cart Item in the DB
-     *
-     * @param request
-     * @returns {Promise}
-     */
-    internals.createCartItem = (saveConfig) => {
-        server.plugins.BookshelfOrm.bookshelf.model('ShoppingCartItem')
-            .forge()
-            .save(
-                saveConfig,
-                { method: 'insert'}
-            );
-    };
-
-
-    /**
-     * A simple helper function to find by json property in the 'variant' column
-     * Only searches the top level attributes of the variant json, so you'll need
-     * to write your own code to search by any nested attributes.
-     *
-     * This is helpful:
-     * https://gist.github.com/gerzhan/61a9d228caeb458d17e380aed8910531
-     *
-     * @param request
-     * @returns {Promise}
-     */
-    internals.findCartItemByProductVariant = (cart_id, product_id, variantName, variantValue) => {
-        return new Promise((resolve, reject) => {
-            server.plugins.BookshelfOrm.bookshelf.model('ShoppingCartItem')
-                .query((qb) => {
-                    qb.where('cart_id', '=', cart_id);
-                    qb.andWhere('product_id', '=', product_id);
-                    qb.andWhere('variants', '@>', `{"${variantName}": "${variantValue}"}`);  //https://stackoverflow.com/questions/27780117/bookshelf-js-where-with-json-column-postgresql#36876753
-                })
-                .fetchPage({
-                    pageSize: 1
-                })
-                .then((collection) => {
-                    // models[0] will either be undefined (the cart item does not exist) or the ShoppingCartItem model
-                    resolve(collection.models[0]);
-                })
-                .catch((err) => {
-                    reject(err);
-                });
-        });
-    };
-
-
-    /**
-     * Finds the cart using the cart token from JWT,
-     * or creates one if it doesn't exist
-     *
-     * @param request
-     * @returns {Promise}
-     */
     internals.findOrCreateCart = (request) => {
-        return new Promise((resolve, reject) => {
-            internals
-                .findCart(request)
-                .then((ShoppingCart) => {
-                    if(ShoppingCart) {
-                        resolve(ShoppingCart);
-                    }
-                    else {
-                        internals
-                            .createCart(request)
-                            .then((ShoppingCart) => {
-                                resolve(ShoppingCart);
-                            })
-                            .catch((err) => {
-                                reject(err);
-                            });
-                    }
-                })
-                .catch((err) => {
-                    reject(err);
-                });
-            }
-        );
+        return server.plugins.BookshelfOrm.bookshelf.model('ShoppingCart').findOrCreateCart(request);
     };
 
 
-    //TODO: this needs to be updated
-    /**
-     * Returns the total number of items in the cart
-     *
-     * @param cartData
-     * @returns {number}
-     */
-    internals.getNumItemsInCart = (cartData) => {
-        let num = 0;
-
-        if(isString(cartData)) {
-            try {
-                cartData = JSON.parse(cartData);
-            }
-            catch(err) {
-                cartData = null;
-            }
-        }
-
-        var cartDataSchema = Joi.array().items(
-            Joi.object({
-                qty: Joi.number()
-            }).unknown().required()
-        ).required();
-
-        if(!Joi.validate(cartData, cartDataSchema).error) {
-            forEach(cartData, (cartItem) => {
-                // NOTE:
-                // It's best to use _.isFinite() here rather than _.isNumber() in case cartItem.qty is NaN
-                // Technically, I guess NaN is a number:
-                // https://github.com/jashkenas/underscore/issues/406
-                if(isFinite(cartItem.qty)) {
-                    num += cartItem.qty;
-                }
-            });
-        }
-
-        return num;
-    };
-
-
-    internals.getCartItemPrice = (cartItem) => {
-        let price = 0;
-
-        let cartItemSchema = Joi.object({
-            product: Joi.object({
-                is_on_sale: Joi.boolean(),
-                sale_price: Joi.number().precision(2),
-                base_price: Joi.number().precision(2)
-            }).unknown().required()
-        }).unknown();
-
-        if(!Joi.validate(cartItem, cartItemSchema).error) {
-            if(cartItem.product.is_on_sale && cartItem.product.sale_price) {
-                price = cartItem.product.sale_price;
-            }
-            else if(cartItem.product.base_price) {
-                price = cartItem.product.base_price;
-            }
-        }
-
-        return parseFloat(price);
-    };
-
-
-    /**
-     * Gets the cart item's total price for it's individual price x quantity
-     *
-     * @param cartItem
-     * @returns {number}
-     */
-    internals.getCartItemTotalPrice = (cartItem) => {
-        let price = internals.getCartItemPrice(cartItem);
-
-        let cartItemSchema = Joi.object({
-            qty: Joi.number().required()
-        }).unknown();
-
-        if(!Joi.validate(cartItem, cartItemSchema).error) {
-            price = price * parseInt(cartItem.qty, 10);
-        }
-
-        return parseFloat( price.toFixed(2) );
-    };
-
-
-    internals.getCartSalesTax = (cartData) => {
-        let subTotal = internals.getCartSubTotal(cartData);
-
-        if(subTotal) {
-            return parseFloat((subTotal * internals.SALES_TAX_RATE).toFixed(2));
-        }
-
-        return 0;
-    };
-
-
-    //TODO: this needs to be updated
-    /**
-     * Returns the sub-total for all items in the cart
-     * (shipping and sales tax cost not included)
-     *
-     * @param cartData
-     * @returns {number}
-     */
-    internals.getCartSubTotal = (cartData) => {
-        let subtotal = 0;
-
-        if(isString(cartData)) {
-            try {
-                cartData = JSON.parse(cartData);
-            }
-            catch(err) {
-                cartData = null;
-            }
-        }
-
-        let cartDataSchema = Joi.array().items(
-            Joi.object({
-                qty: Joi.number(),
-                product: Joi.object().unknown()
-            }).unknown().required()
-        ).required();
-
-        if(!Joi.validate(cartData, cartDataSchema).error) {
-            forEach(cartData, (cartItem) => {
-                subtotal += internals.getCartItemTotalPrice(cartItem);
-            });
-        }
-
-        return parseFloat( subtotal.toFixed(2) );
-    };
-
-
-    internals.getCartGrandTotal = (cartData) => {
-        let subTotal = internals.getCartSubTotal(cartData);
-        let salesTax = internals.getCartSalesTax(cartData);
-
-        if(subTotal) {
-            return (subTotal + salesTax);
-        }
-
-        return 0;
-    };
-
+    internals.shoppingCartItem = {};
 
     /**
      * Adds a product to the shopping cart using the HTTP request data
      *
      * @returns {Promise}
      */
-    // internals.addProductToCartORIG = (request) => {
-    //     var p = new Promise( (resolve, reject) => {
-    //
-    //         Promise
-    //             .all([
-    //                 server.plugins.Products.getProductJsonFromRequest(request),
-    //                 internals.findOrCreateCart(request)
-    //             ])
-    //             .then(
-    //                 (results) => {
-    //                     let decoratedProduct = results[0];
-    //                     let ShoppingCart = results[1];
-    //                     let qty = request.payload.qty || 1;
-    //
-    //                     let cart_data = ShoppingCart.get('cart_data');
-    //                     let existingCartItemKey = internals.cartItemExists(cart_data, decoratedProduct.product);
-    //
-    //                     if(!Array.isArray(cart_data)) {
-    //                         cart_data = [];
-    //                     }
-    //
-    //                     // If this item is already in the cart then just update the qty:
-    //                     if(existingCartItemKey !== null) {
-    //                         if(cart_data[existingCartItemKey] && cart_data[existingCartItemKey].qty) {
-    //                             cart_data[existingCartItemKey].qty += qty;
-    //                         }
-    //                     }
-    //                     else {
-    //                         // Item not in the cart yet, so add it
-    //                         decoratedProduct.qty = qty;
-    //                         cart_data.push({
-    //                             itemId: new Date().valueOf(),
-    //                             product: decoratedProduct
-    //                         });
-    //                     }
-    //
-    //                     return ShoppingCart.save(
-    //                         // knex.js requires use of JSON.stringify() for json values;
-    //                         // http://knexjs.org/#Schema-json
-    //                         { cart_data: JSON.stringify(cart_data) },
-    //                         { method: 'update', patch: true }
-    //                     );
-    //                 }
-    //             )
-    //             .then(
-    //                 (ShoppingCart) => {
-    //                     resolve(ShoppingCart);
-    //                 }
-    //             )
-    //             .catch(
-    //                 (err) => {
-    //                     reject(err);
-    //                 }
-    //             );
-    //     });
-    //
-    //     return p;
-    // };
-
-
-    /**
-     * Adds a product to the shopping cart using the HTTP request data
-     *
-     * @returns {Promise}
-     */
-    internals.addProductToCart = (request) => {
+    internals.shoppingCartItem.add = (request) => {
         return new Promise( (resolve, reject) => {
             Promise
                 .all([
@@ -491,8 +104,8 @@ internals.after = function (server, next) {
                     // Determine if we simply need to update the qty of an existing item
                     // or add a new one
                     else {
-                        return internals
-                            .findCartItemByProductVariant(shoppingCartId, productId, 'size', request.payload.options.size)
+                        return server.plugins.BookshelfOrm.bookshelf.model('ShoppingCartItem')
+                            .findByVariant(shoppingCartId, productId, 'size', request.payload.options.size)
                             .then((ShoppingCartItem) => {
                                 // No matching variants.
                                 // Create a new cart item
@@ -513,19 +126,18 @@ internals.after = function (server, next) {
                     // NOTE: knex.js requires use of JSON.stringify() for json values
                     // http://knexjs.org/#Schema-json
                     function createCartItem() {
-                        return internals.createCartItem({
-                            qty: qty,
-                            variants: JSON.stringify({
-                                size: request.payload.options.size
-                            }),
-                            cart_id: shoppingCartId,
-                            product_id: productId
-                        });
+                        return server.plugins.BookshelfOrm.bookshelf.model('ShoppingCartItem')
+                            .create({
+                                qty: qty,
+                                variants: JSON.stringify({
+                                    size: request.payload.options.size
+                                }),
+                                cart_id: shoppingCartId,
+                                product_id: productId
+                            });
                     }
                 })
-                .then(() => {
-                    resolve();
-                })
+                .then(resolve)
                 .catch((err) => {
                     reject(err);
                 });
@@ -533,19 +145,77 @@ internals.after = function (server, next) {
     };
 
 
-    internals.getModelAsJson = (ShoppingCartModel) => {
-        let cartJson = ShoppingCartModel.toJSON();
+    internals.shoppingCartItem.get = (request, id) => {
+        // First verify that there is an active shopping cart for the
+        // JWT token from the request
+        return server.plugins.BookshelfOrm.bookshelf.model('ShoppingCart')
+            .getCart(request)
+            .then((ShoppingCart) => {
+                // No cart, so stop here
+                if(!ShoppingCart) {
+                    return;
+                }
 
-        if(isString(cartJson.cart_data)) {
-            cartJson.cart_data = JSON.parse(cartJson.cart_data);
-        }
+                // QUESTION
+                // Can we just pluck one of the models from the cart_items collection
+                // or is it better to make a DB query (as below)?
+                return ShoppingCart.get('cart_items').get({
+                    id
+                });
 
-        return cartJson;
+                // return server.plugins.BookshelfOrm.bookshelf.collection('ShoppingCartItems')
+                //     .query((qb) => {
+                //         qb.where('cart_id', '=', ShoppingCart.get('id'));
+                //         qb.andWhere('id', '=', id);
+                //     })
+                //     .fetch();
+            });
     };
 
 
+    /**
+     * Removes an item from the cart
+     *
+     * @param request
+     * @returns {Promise<U>|*|Promise.<TResult>}
+     */
+    internals.shoppingCartItem.remove = (request) => {
+        return internals.shoppingCartItem
+            .get(request, request.payload.id)
+            .then((ShoppingCartItem) => {
+                if(!ShoppingCartItem) {
+                    return;
+                }
+
+                return ShoppingCartItem.destroy();
+            });
+    };
+
+
+    /**
+     * Updates the qty value of a cart item
+     *
+     * @param request
+     * @returns {Promise<U>|*|Promise.<TResult>}
+     */
+    internals.shoppingCartItem.updateQty = (request) => {
+        return internals.shoppingCartItem
+            .get(request, request.payload.id)
+            .then((ShoppingCartItem) => {
+                if(!ShoppingCartItem) {
+                    return;
+                }
+
+                return ShoppingCartItem.save(
+                    { qty: parseInt((ShoppingCartItem.get('qty') + request.payload.qty), 10) },
+                    { method: 'update', patch: true }
+                );
+            });
+    };
+
 
     server.route([
+        //REFACTORED
         {
             method: 'GET',
             path: '/cart/get',
@@ -557,23 +227,18 @@ internals.after = function (server, next) {
                 handler: (request, reply) => {
                     internals
                         .findOrCreateCart(request)
-                        .then(
-                            (ShoppingCart) => {
-                                reply.apiSuccess(
-                                    internals.getModelAsJson(ShoppingCart)
-                                );
-                            }
-                        )
-                        .catch(
-                            (err) => {
-                                HelperService.getBoomError(err, (error, result) => {
-                                    reply(result);
-                                });
-                            }
-                        );
+                        .then((ShoppingCart) => {
+                            reply.apiSuccess(ShoppingCart);
+                        })
+                        .catch((err) => {
+                            HelperService.getBoomError(err, (error, result) => {
+                                reply(result);
+                            });
+                        });
                 }
             }
         },
+        //REFACTORED
         {
             method: 'POST',
             path: '/cart/item/add',
@@ -581,7 +246,7 @@ internals.after = function (server, next) {
                 description: 'Adds a new item to the cart',
                 validate: {
                     payload: Joi.object({
-                        id: Joi.number().min(1).required(),
+                        id: Joi.string().uuid().required(),
                         options: Joi.object({
                             size: Joi.string().uppercase().min(6), // 'SIZE_?'
                             qty: Joi.number().min(1).required()
@@ -589,15 +254,40 @@ internals.after = function (server, next) {
                     })
                 },
                 handler: (request, reply) => {
-                    internals
-                        .addProductToCart(request)
+                    internals.shoppingCartItem
+                        .add(request)
                         .then(() => {
-                            return internals.findCart(request)
+                            return server.plugins.BookshelfOrm.bookshelf.model('ShoppingCart').getCart(request);
                         })
                         .then((ShoppingCart) => {
-                            reply.apiSuccess(
-                                internals.getModelAsJson(ShoppingCart)
-                            );
+                            reply.apiSuccess(ShoppingCart);
+                        })
+                        .catch((err) => {
+                            winston.error(err);
+                            reply(Boom.badData(err));
+                        });
+                }
+            }
+        },
+        //REFACTORED
+        {
+            method: 'POST',
+            path: '/cart/item/remove/{id}',
+            config: {
+                description: 'Removes an item from the cart',
+                validate: {
+                    payload: {
+                        id: Joi.number().min(1).required()
+                    }
+                },
+                handler: (request, reply) => {
+                    internals.shoppingCartItem
+                        .remove(request)
+                        .then(() => {
+                            return server.plugins.BookshelfOrm.bookshelf.model('ShoppingCart').getCart(request);
+                        })
+                        .then((ShoppingCart) => {
+                            reply.apiSuccess(ShoppingCart);
                         })
                         .catch((err) => {
                             winston.error(err);
@@ -607,126 +297,59 @@ internals.after = function (server, next) {
             }
         },
         {
-            method: 'DELETE',
-            path: '/cart/item/remove/{id}',
-            config: {
-                description: 'Removes an item from the cart',
-                validate: {
-                    params: {
-                        id: Joi.number().min(1)
-                    }
-                },
-                handler: (request, reply) => {
-                    internals
-                        .findOrCreateCart(request)
-                        .then(
-                            (ShoppingCart) => {
-                                let cart_data = ShoppingCart.get('cart_data');
-                                let deletedItem = null;
-
-                                forEach(cart_data, (obj, key) => {
-                                    if(obj.itemId == request.params.id) {
-                                        deletedItem = obj.itemId;
-                                        cart_data.splice(key, 1);
-                                        return false;  // breaks out of forEach loop
-                                    }
-                                });
-
-                                if(deletedItem === null) {
-                                    throw new Error('A cart item was not found for the given key.');
-                                }
-
-                                // knex.js requires use of JSON.stringify() for json values;
-                                // http://knexjs.org/#Schema-json
-                                return ShoppingCart.save(
-                                    { cart_data: JSON.stringify(cart_data) },
-                                    { method: 'update', patch: true }
-                                );
-                            }
-                        )
-                        .then(
-                            (ShoppingCart) => {
-                                reply.apiSuccess(
-                                    internals.getModelAsJson(ShoppingCart)
-                                );
-                            }
-                        )
-                        .catch(
-                            (err) => {
-                                winston.error(err);
-                                reply(Boom.badData(err));
-                            }
-                        );
-                }
-            }
-        },
-
-        /**
-         * Updates the quantity of the given items in the cart.
-         * Payload data must be an object with keys and values as numbers
-         *
-         * Payload example:
-         * {"data":{"1468253343391":1,"1468289834717":2}}
-         */
-        {
             method: 'POST',
-            path: '/cart/qty/update',
+            path: '/cart/item/qty/update',
             config: {
                 description: 'Updates the quantity of the given item in the cart',
                 validate: {
-                    payload: {
-                        data: Joi.object().pattern(/^[0-9]+$/, Joi.number().min(0))
-                    }
+                    payload: Joi.object({
+                        id: Joi.number().min(1).required(),
+                        options: Joi.object({
+                            qty: Joi.number().min(1).required()
+                        }).required()
+                    })
                 },
                 handler: (request, reply) => {
                     internals
                         .findOrCreateCart(request)
-                        .then(
-                            (ShoppingCart) => {
-                                let cart_data = ShoppingCart.get('cart_data');
-                                let canUpdate = false;
+                        .then((ShoppingCart) => {
+                            let cart_data = ShoppingCart.get('cart_data');
+                            let canUpdate = false;
 
-                                if(isString(cart_data)) {
-                                    cart_data = JSON.parse(cart_data);
+                            if(isString(cart_data)) {
+                                cart_data = JSON.parse(cart_data);
+                            }
+
+                            forEach(cart_data, (obj) => {
+                                if(obj.hasOwnProperty('itemId')
+                                    && obj.hasOwnProperty('product')
+                                    && isObject(obj.product)
+                                    && obj.product.hasOwnProperty('qty')
+                                    && request.payload.data.hasOwnProperty(obj.itemId)) {
+
+                                    obj.product.qty = request.payload.data[obj.itemId];
+                                    canUpdate = true;
                                 }
+                            });
 
-                                forEach(cart_data, (obj) => {
-                                    if(obj.hasOwnProperty('itemId')
-                                        && obj.hasOwnProperty('product')
-                                        && isObject(obj.product)
-                                        && obj.product.hasOwnProperty('qty')
-                                        && request.payload.data.hasOwnProperty(obj.itemId)) {
-
-                                        obj.product.qty = request.payload.data[obj.itemId];
-                                        canUpdate = true;
-                                    }
-                                });
-
-                                if(!canUpdate) {
-                                    throw new Error(`Unable to update cart item because invalid item id was requested`);
-                                }
-
-                                // knex.js requires use of JSON.stringify() for json values;
-                                // http://knexjs.org/#Schema-json
-                                return ShoppingCart.save(
-                                    {cart_data: JSON.stringify(cart_data)},
-                                    {method: 'update', patch: true}
-                                );
+                            if(!canUpdate) {
+                                throw new Error(`Unable to update cart item because invalid item id was requested`);
                             }
-                        )
-                        .then(
-                            (ShoppingCart) => {
-                                reply.apiSuccess(
-                                    internals.getModelAsJson(ShoppingCart)
-                                );
-                            }
-                        )
-                        .catch(
-                            (err) => {
-                                request.server.log(['error'], err);
-                                reply(Boom.badData(err));
-                            }
-                        );
+
+                            // knex.js requires use of JSON.stringify() for json values;
+                            // http://knexjs.org/#Schema-json
+                            return ShoppingCart.save(
+                                {cart_data: JSON.stringify(cart_data)},
+                                {method: 'update', patch: true}
+                            );
+                        })
+                        .then((ShoppingCart) => {
+                            reply.apiSuccess(ShoppingCart);
+                        })
+                        .catch((err) => {
+                            request.server.log(['error'], err);
+                            reply(Boom.badData(err));
+                        });
                 }
             }
         },
@@ -747,30 +370,21 @@ internals.after = function (server, next) {
 
                     internals
                         .findOrCreateCart(request)
-                        .then(
-                            (ShoppingCart) => {
-                                cart = ShoppingCart;
-                                return server.plugins.Payments.runPayment(ShoppingCart, request);
-                            }
-                        )
-                        .then(
-                            () => {
-                                request.server.appEvents.emit('gmnst-payment-success', cart);
+                        .then((ShoppingCart) => {
+                            cart = ShoppingCart;
+                            return server.plugins.Payments.runPayment(ShoppingCart, request);
+                        })
+                        .then(() => {
+                            request.server.appEvents.emit('gmnst-payment-success', cart);
+                            reply.apiSuccess(cart);
+                        })
+                        .catch((err) => {
+                            winston.error(err);
 
-                                reply.apiSuccess(
-                                    internals.getModelAsJson(cart)
-                                );
-                            }
-                        )
-                        .catch(
-                            (err) => {
-                                winston.error(err);
-
-                                HelperService.getBoomError(err, (error, result) => {
-                                    reply(result);
-                                });
-                            }
-                        );
+                            HelperService.getBoomError(err, (error, result) => {
+                                reply(result);
+                            });
+                        });
                 }
             }
         },
@@ -789,29 +403,22 @@ internals.after = function (server, next) {
 
     server.expose('schema', internals.schema);
     server.expose('findOrCreateCart', internals.findOrCreateCart);
-    server.expose('getCartItemPrice', internals.getCartItemPrice);
-    server.expose('getCartItemTotalPrice', internals.getCartItemTotalPrice);
-    server.expose('getNumItemsInCart', internals.getNumItemsInCart);
-    server.expose('getCartSalesTax', internals.getCartSalesTax);
-    server.expose('getCartSubTotal', internals.getCartSubTotal);
-    server.expose('getCartGrandTotal', internals.getCartGrandTotal);
     server.expose('STATUS_PAYMENT_SUCCESS', internals.STATUS_PAYMENT_SUCCESS);
     server.expose('STATUS_PAYMENT_FAILED', internals.STATUS_PAYMENT_FAILED);
 
 
     // LOADING BOOKSHELF MODEL:
     let bookshelf = server.plugins.BookshelfOrm.bookshelf;
-    let baseModel = bookshelf.Model.extend({});
+    // let baseModel = bookshelf.Model.extend({});
+    let baseModel = require('bookshelf-modelbase')(bookshelf);
 
-    bookshelf['model'](
-        'ShoppingCart',
-        require('./models/ShoppingCart')(baseModel, bookshelf, server)
-    );
+    let ShoppingCart = require('./models/ShoppingCart')(baseModel, bookshelf, server);
+    let ShoppingCartItem = require('./models/ShoppingCartItem')(baseModel, bookshelf, server);
 
-    bookshelf['model'](
-        'ShoppingCartItem',
-        require('./models/ShoppingCartItem')(baseModel, bookshelf, server)
-    );
+    bookshelf.model('ShoppingCart', ShoppingCart);
+    bookshelf.model('ShoppingCartItem', ShoppingCartItem);
+    bookshelf.collection('ShoppingCarts', require('./models/ShoppingCarts')(bookshelf, ShoppingCart));
+    bookshelf.collection('ShoppingCartItems', require('./models/ShoppingCartItems')(bookshelf, ShoppingCartItem));
 
 
     return next();

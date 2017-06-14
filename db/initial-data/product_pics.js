@@ -1,4 +1,5 @@
 const Promise = require('bluebird');
+const faker = require('faker');
 const InfoService = require('../../server/plugins/info/info.service');
 
 
@@ -12,6 +13,8 @@ exports.seed = (knex) => {
             let promises = [];
             let d = new Date();
 
+            global.seedUuids = global.seedUuids || [];
+
             for(let i=1; i<31; i++) {
                 promises.push(
                     knex(InfoService.DB_TABLES.product_pics)
@@ -21,7 +24,7 @@ exports.seed = (knex) => {
                             is_visible: true,
                             created_at: d,
                             updated_at: d,
-                            product_id: i
+                            product_id: global.seedUuids[i-1]
                         })
                 )
             }

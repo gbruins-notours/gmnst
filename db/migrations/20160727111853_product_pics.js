@@ -13,7 +13,7 @@ module.exports.up = (knex) => {
             t.dateTime('updated_at').nullable();
 
             // Foreign Keys:
-            t.integer('product_id')
+            t.uuid('product_id')
                 .notNullable()
                 .references('id')
                 .inTable(InfoService.DB_TABLES.products)

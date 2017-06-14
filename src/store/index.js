@@ -20,13 +20,13 @@ export function createStore () {
                     hidden: false
                 }
             },
-            appInfo: {
-                product: {
-                    subTypes: []
-                }
-            },
-            cart: null,
-            jwtKey: null
+            // appInfo: {
+            //     product: {
+            //         subTypes: []
+            //     }
+            // },
+            cart: {}
+            // jwtKey: null
         },
         getters,
         mutations,

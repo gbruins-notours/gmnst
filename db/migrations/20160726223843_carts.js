@@ -5,9 +5,8 @@ module.exports.up = (knex) => {
     return knex.schema.createTable(
         InfoService.DB_TABLES.carts,
         (t) => {
-            t.increments('id');
+            t.uuid('id').primary();
             t.string('token').nullable();
-            // t.json('cart_data').nullable();
             t.string('billing_firstName').nullable();
             t.string('billing_lastName').nullable();
             t.string('billing_company').nullable();

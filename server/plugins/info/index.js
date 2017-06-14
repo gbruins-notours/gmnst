@@ -1,5 +1,4 @@
 const Boom = require('boom');
-const Promise = require('bluebird');
 const ProductService = require('../products/products.service');
 
 

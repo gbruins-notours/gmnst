@@ -1,48 +1,126 @@
+const jwt = require('jsonwebtoken');
 const InfoService = require('../../info/info.service');
+const helpers = require('../../../helpers.service');
+
 
 module.exports = function (baseModel, bookshelf, server) {
 
-    return baseModel.extend({
-        tableName: InfoService.DB_TABLES.carts,
+    return baseModel.extend(
+        {
+            tableName: InfoService.DB_TABLES.carts,
 
-        hasTimestamps: true,
+            uuid: true,
 
-        hidden: ['id', 'token', 'closed_at'],
+            hasTimestamps: true,
 
-        virtuals: {
-            num_items: function() {
-                return server.plugins.ShoppingCart.getNumItemsInCart( this.get('cart_data') );
+            hidden: ['id', 'token', 'closed_at'],
+
+            virtuals: {
+                num_items: function() {
+                    let numItems = 0;
+
+                    this.related('cart_items').forEach((model) => {
+                        console.log("CART ITEM",  model.get('price'), model);
+                        numItems += parseInt(model.get('qty') || 0, 10);
+                    });
+
+                    return numItems;
+                },
+                sub_total: function() {
+                    // return server.plugins.ShoppingCart.getCartSubTotal( this.related('cart_data') );
+                    let subtotal = 0;
+
+                    this.related('cart_items').forEach((model) => {
+                        subtotal += parseFloat(model.get('total_item_price') || 0);
+                    });
+
+                    return helpers.twoPointDecimal(subtotal);
+                },
+                // sales_tax: function() {
+                //     return server.plugins.ShoppingCart.getCartSalesTax( this.related('cart_data') );
+                // },
+                // grand_total: function() {
+                //      TODO: subtotal + sales tax
+                // }
             },
-            sub_total: function() {
-                return server.plugins.ShoppingCart.getCartSubTotal( this.get('cart_data') );
+
+            // Relationships:
+
+            // A payment could fail first, then another attempt
+            // could succeed, all related to the same ShoppingCart,
+            // so a ShoppingCart can have many Payments
+            //
+            // http://bookshelfjs.org/#Model-instance-hasMany
+            payments: function() {
+                return this.hasMany('Payment', 'cart_id');
             },
-            sales_tax: function() {
-                return server.plugins.ShoppingCart.getCartSalesTax( this.get('cart_data') );
+
+            // http://bookshelfjs.org/#Model-instance-belongsTo
+            customer: function() {
+                return this.belongsTo('Customer', 'customer_id');
             },
-            grand_total: function() {
-                return server.plugins.ShoppingCart.getCartGrandTotal( this.get('cart_data') );
+
+            // cart_id is the foreign key in ShoppingCartItem
+            cart_items: function() {
+                return this.hasMany('ShoppingCartItem', 'cart_id');
             }
         },
+        
+        // Custom methods:
+        {
+            getCartToken: function(request) {
+                if(request.auth.token) {
+                    let decoded = jwt.verify(request.auth.token, process.env.JWT_SERVER_SECRET);
+                    return decoded.ct;
+                }
+                return null;
+            },
 
-        // Relationships:
+            
+            /**
+             * Finds the cart using the cart token from JWT
+             *
+             * @param request
+             * @returns {Promise}
+             */
+            getCart: function(request) {
+                return this.query((qb) => {
+                        qb.where('token', '=', this.getCartToken(request));
+                        qb.whereNull('closed_at');
+                        qb.whereNull('status');
+                    })
+                    .orderBy('created_at', 'DESC')
+                    .fetch({
+                        withRelated: [
+                            'cart_items.product', // https://stackoverflow.com/questions/35679855/always-fetch-from-related-models-in-bookshelf-js#35841710
+                            {
+                                cart_items: (query) => {
+                                    query.orderBy('created_at', 'DESC');
+                                }
+                            }
+                        ]
+                    })
+            },
 
-        // A payment could fail first, then another attempt
-        // could succeed, all related to the same ShoppingCart,
-        // so a ShoppingCart can have many Payments
-        //
-        // http://bookshelfjs.org/#Model-instance-hasMany
-        payments: function() {
-            return this.hasMany('Payment', 'cart_id');
-        },
 
-        // http://bookshelfjs.org/#Model-instance-belongsTo
-        customer: function() {
-            return this.belongsTo('Customer', 'customer_id');
-        },
+            /**
+             * Finds the cart using the cart token from JWT,
+             * or creates one if it doesn't exist
+             *
+             * @param request
+             * @returns {Promise}
+             */
+            findOrCreateCart: function(request) {
+                let self = this;
 
-        // cart_id is the foreign key in ShoppingCartItem
-        cart_items: function() {
-            return this.hasMany('ShoppingCartItem', 'cart_id');
+                return self.getCart(request)
+                    .then((ShoppingCart) => {
+                        return ShoppingCart || self.create({
+                            token: self.getCartToken(request)
+                        });
+                    })
+            }
+
         }
-    });
+    );
 };

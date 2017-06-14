@@ -49,7 +49,10 @@ internals.manifest = {
                 options: {
                     knex: {
                         debug: Config.get('/db/debug')
-                    }
+                    },
+                    plugins: [
+                        require('bookshelf-uuid')
+                    ]
                 }
             }
         },

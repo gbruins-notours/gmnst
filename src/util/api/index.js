@@ -55,14 +55,13 @@ export default {
 
     shoppingCart: {
 
-        // TODO:
-        // getCart(params) {
-        //     return HTTP
-        //         .get(`/api/v1/products?${paramString}`)
-        //         .then((response) => {
-        //             return response.data.data;
-        //         });
-        // },
+        getCart() {
+            return HTTP
+                .get('/api/v1/cart/get')
+                .then((response) => {
+                    return response.data.data;
+                });
+        },
 
         addItem(params) {
             return HTTP

@@ -2,29 +2,50 @@ const InfoService = require('../../info/info.service');
 
 
 module.exports = function (baseModel, bookshelf) {
-    return baseModel.extend({
-        tableName: InfoService.DB_TABLES.products,
+    return baseModel.extend(
+        {
+            tableName: InfoService.DB_TABLES.products,
 
-        hasTimestamps: true,
+            uuid: true,
 
-        artist: function() {
-            // product_artist_id is the foreign key in this model
-            return this.belongsTo('ProductArtist', 'product_artist_id');
-        },
+            hasTimestamps: true,
 
-        sizes: function() {
-            // product_id is the foreign key in ProductSize
-            return this.hasMany('ProductSize', 'product_id');
-        },
+            artist: function() {
+                // product_artist_id is the foreign key in this model
+                return this.belongsTo('ProductArtist', 'product_artist_id');
+            },
 
-        pics: function() {
-            // product_id is the foreign key in ProductPic
-            return this.hasMany('ProductPic', 'product_id');
-        },
+            sizes: function() {
+                // product_id is the foreign key in ProductSize
+                return this.hasMany('ProductSize', 'product_id');
+            },
 
-        cart_items: function() {
-            // product_id is the foreign key in ShoppingCartItem
-            return this.hasMany('ShoppingCartItem', 'product_id');
+            pics: function() {
+                // product_id is the foreign key in ProductPic
+                return this.hasMany('ProductPic', 'product_id');
+            },
+
+            cart_items: function() {
+                // product_id is the foreign key in ShoppingCartItem
+                return this.hasMany('ShoppingCartItem', 'product_id');
+            },
+
+            virtuals: {
+                display_price: function() {
+                    let price = 0;
+                    let salePrice = this.get('sale_price') || 0;
+                    let basePrice = this.get('base_price') || 0;
+
+                    if(this.get('is_on_sale') && salePrice) {
+                        price = salePrice;
+                    }
+                    else if(basePrice) {
+                        price = basePrice;
+                    }
+
+                    return price;
+                }
+            }
         }
-    });
+    );
 };

@@ -136,9 +136,9 @@ export default {
         ]),
 
         addToCart() {
-            if (isObject(this.product) && !this.product.hasOwnProperty('__selectedOptions')) {
-                this.product.__selectedOptions = {};
-            }
+//            if (isObject(this.product) && !this.product.hasOwnProperty('__selectedOptions')) {
+//                this.product.__selectedOptions = {};
+//            }
 
             if (!this.selectedSize) {
                 openNotification({
@@ -154,20 +154,26 @@ export default {
                 })
             }
             else {
-                console.log('add to cart');
                 this.ADD_ITEM_TO_CART({
                     id: this.product.id,
                     options: {
                         size: this.selectedSize,
                         qty: this.selectedQty
                     }
-                });
-
-                openNotification({
-                    title: 'Cart updated',
-                    type: 'success'
                 })
+                .then(() => {
+//                    openNotification({
+//                            title: 'Cart updated',
+//                            type: 'success'
+//                    })
+                    this.$router.push(`/cart/${this.product.id}`);
+                });
             }
+        },
+
+
+        goToCart() {
+            this.$router.push(`/cart/${this.product.id}`);
         },
 
         buildSizeOptions(product) {

@@ -7,7 +7,7 @@
 
             <a class="Header-cart" @click="openModal">
                 <span class="icon is-medium"><i class="fa fa-shopping-cart"></i></span>
-                <sup class="badge">2</sup>
+                <sup class="badge">{{ numCartItems }}</sup>
             </a>
 
             <nav class="Header-middle Navigation">
@@ -94,9 +94,10 @@
         },
 
         computed: {
-            ...mapGetters({
-                appInfo: 'appInfo'
-            })
+            ...mapGetters([
+                'appInfo',
+                'numCartItems'
+            ])
         },
 
         methods: {

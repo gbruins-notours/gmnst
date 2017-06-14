@@ -15,7 +15,7 @@ module.exports.up = (knex) => {
             t.boolean('is_visible');
 
             // Foreign Keys:
-            t.integer('product_id')
+            t.uuid('product_id')
                 .notNullable()
                 .references('id')
                 .inTable(InfoService.DB_TABLES.products)

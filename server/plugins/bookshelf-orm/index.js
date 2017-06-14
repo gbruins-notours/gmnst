@@ -9,7 +9,8 @@ internals.schema = Joi.object().keys({
         connection: Joi.string().optional(),
         debug: Joi.boolean().optional()
     }).optional(),
-    plugins: Joi.array().items(Joi.string()).default([]),
+    // plugins: Joi.array().items(Joi.string()).default([]),
+    plugins: Joi.array(),
     namespace: Joi.string()
 });
 
@@ -24,29 +25,32 @@ internals.defaults = {
         //     password: process.env.PG_PASSWORD
         // },
         debug: false
-    },
-    plugins: ['registry', 'virtuals', 'visibility', 'pagination'] // Required
+    }
 };
 
 
 
 exports.register = (server, options, next) => {
 
+    let knex;
     let bookshelf = null;
+    let requiredPlugins = ['registry', 'virtuals', 'visibility', 'pagination'];
 
     const validateOptions = internals.schema.validate(options);
     if (validateOptions.error) {
+        server.log('error', validateOptions.error);
         return next(validateOptions.error);
     }
 
     const settings = Hoek.applyToDefaults(internals.defaults, options);
-    let knex;
+    settings.plugins = Array.isArray(settings.plugins) ? requiredPlugins.concat(settings.plugins) : requiredPlugins;
 
     try {
         knex = require('knex')(settings.knex);
         bookshelf = require('bookshelf');
         bookshelf = bookshelf(knex);
-    } catch (ex) {
+    }
+    catch (ex) {
         return next(new Error('Bad Knex Options: ' + ex.toString()));
     }
 

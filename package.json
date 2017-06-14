@@ -20,8 +20,8 @@
     "test:client": "npm run unit && npm run e2e",
     "test:server": "lab -a code -t 100 -v",
     "test2": "npm run test:client && npm run test:server",
-    "knex-migrate": "node node_modules/knex/bin/cli.js migrate:latest",
-    "knex-seed": "node node_modules/knex/bin/cli.js seed:run",
+    "knex:migrate": "node node_modules/knex/bin/cli.js migrate:latest",
+    "knex:seed": "node node_modules/knex/bin/cli.js seed:run",
     "heroku-postbuild": "npm run build"
   },
   "dependencies": {
@@ -38,6 +38,8 @@
     "bcrypt": "1.0.2",
     "bluebird": "3.5.0",
     "bookshelf": "0.10.3",
+    "bookshelf-modelbase": "2.10.4",
+    "bookshelf-uuid": "1.0.0",
     "boom": "4.3.1",
     "braintree": "2.0.2",
     "bulma": "0.3.2",

@@ -36,14 +36,16 @@ function getRandomGenderOption() {
 exports.seed = (knex) => {
     return knex(InfoService.DB_TABLES.products)
         .del()
-        .then(() => {
-            return knex.raw(`ALTER SEQUENCE ${InfoService.DB_TABLES.products}_id_seq RESTART WITH 1`);
-        })
+        // .then(() => {
+        //     return knex.raw(`ALTER SEQUENCE ${InfoService.DB_TABLES.products}_id_seq RESTART WITH 1`);
+        // })
         .then(() => {
             let promises = [];
             let artistId = 0;
             let d = new Date();
             let cents;
+
+            global.seedUuids = [];
 
             for(let i=1; i<31; i++) {
                 if(artistId === 5) {
@@ -52,9 +54,13 @@ exports.seed = (knex) => {
 
                 cents = (i < 10) ? parseFloat('0.0' + i) : parseFloat('0.' + i);
 
+                let uuid = faker.random.uuid();
+                global.seedUuids.push(uuid);
+
                 promises.push(
                     knex(InfoService.DB_TABLES.products)
                         .insert({
+                            id: uuid,
                             title: 'Product Title ' + i,
                             description_short: 'Short description ' + i + ' - ' + faker.lorem.sentence(),
                             description_long: 'Long description ' + i + ' - ' + faker.lorem.paragraph(),

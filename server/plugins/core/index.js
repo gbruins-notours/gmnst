@@ -3,10 +3,9 @@ const path = require('path');
 const fs = require('fs');
 const isObject = require('lodash.isobject');
 
-let internals= {};
 
 
-internals.after = function (server, next) {
+exports.register = function (server, options, next) {
 
     winston.handleExceptions(new winston.transports.File({
         filename: path.resolve(__dirname, '../../logs/exceptions.log'),
@@ -25,7 +24,7 @@ internals.after = function (server, next) {
 
         return this.response(response);
     });
-    
+
 
     // Handle Boom errors
     server.ext('onPreResponse', function (request, reply) {
@@ -92,13 +91,7 @@ internals.after = function (server, next) {
         }
     ]);
 
-    // return next();
-};
 
-
-
-exports.register = function (server, options, next) {
-    internals.after(server, next);
     return next();
 };
 

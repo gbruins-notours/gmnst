@@ -6,6 +6,10 @@ const sidebar = state => state.app.sidebar;
 export default {
     jwtKey,
     appInfo,
-    sidebar
+    sidebar,
+    numCartItems: (state) => {
+        console.log("num items", state);
+        return state.cart.num_items || 0;
+    }
 }
 

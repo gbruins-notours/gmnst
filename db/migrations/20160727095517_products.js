@@ -5,7 +5,7 @@ module.exports.up = (knex) => {
     return knex.schema.createTable(
         InfoService.DB_TABLES.products,
         (t) => {
-            t.increments('id');
+            t.uuid('id').primary();
             t.string('title').nullable();
             t.text('description_short').nullable();
             t.text('description_long').nullable();

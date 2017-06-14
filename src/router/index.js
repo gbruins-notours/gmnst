@@ -12,6 +12,7 @@ Vue.use(Router)
 import Home from '../pages/Home.vue';
 import ProductList from '../pages/product/ProductList.vue';
 import ProductDetail from '../pages/product/ProductDetail.vue';
+import CartUpdated from '../pages/cart/CartUpdated.vue';
 import Error404 from '../pages/Error404.vue';
 
 export function createRouter () {
@@ -22,6 +23,7 @@ export function createRouter () {
             { path: '/', component: Home },
             { path: '/type/:id', component: ProductList },
             { path: '/item/:id', component: ProductDetail },
+            { path: '/cart/:id', component: CartUpdated },
             { path: '*', component: Error404 }
         ]
     })
