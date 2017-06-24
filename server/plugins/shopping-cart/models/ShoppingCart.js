@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
+const accounting = require('accounting');
 const InfoService = require('../../info/info.service');
-const helpers = require('../../../helpers.service');
 
 
 module.exports = function (baseModel, bookshelf, server) {
@@ -20,7 +20,6 @@ module.exports = function (baseModel, bookshelf, server) {
                     let numItems = 0;
 
                     this.related('cart_items').forEach((model) => {
-                        console.log("CART ITEM",  model.get('price'), model);
                         numItems += parseInt(model.get('qty') || 0, 10);
                     });
 
@@ -34,7 +33,7 @@ module.exports = function (baseModel, bookshelf, server) {
                         subtotal += parseFloat(model.get('total_item_price') || 0);
                     });
 
-                    return helpers.twoPointDecimal(subtotal);
+                    return accounting.toFixed(subtotal, 2);
                 },
                 // sales_tax: function() {
                 //     return server.plugins.ShoppingCart.getCartSalesTax( this.related('cart_data') );

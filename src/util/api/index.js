@@ -65,7 +65,23 @@ export default {
 
         addItem(params) {
             return HTTP
-                .post(`/api/v1/cart/item/add`, params)
+                .post('/api/v1/cart/item/add', params)
+                .then((response) => {
+                    return response.data.data;
+                });
+        },
+
+        updateItemQty(params) {
+            return HTTP
+                .post('/api/v1/cart/item/qty', params)
+                .then((response) => {
+                    return response.data.data;
+                });
+        },
+
+        deleteItem(params) {
+            return HTTP
+                .post('/api/v1/cart/item/remove', params)
                 .then((response) => {
                     return response.data.data;
                 });

@@ -68,13 +68,29 @@ internals.after = function (server, next) {
     //     }
     // ];
 
+    internals.shoppingCart = {};
 
-    internals.findOrCreateCart = (request) => {
+
+    internals.shoppingCart.findOrCreate = (request) => {
         return server.plugins.BookshelfOrm.bookshelf.model('ShoppingCart').findOrCreateCart(request);
+    };
+
+    internals.shoppingCart.get = (request) => {
+        return new Promise((resolve, reject) => {
+            server.plugins.BookshelfOrm.bookshelf.model('ShoppingCart').getCart(request)
+                .then((ShoppingCart) => {
+                    if (!ShoppingCart) {
+                        return reject('Unable to find a shopping cart for the given token.');
+                    }
+
+                    resolve(ShoppingCart);
+                });
+        });
     };
 
 
     internals.shoppingCartItem = {};
+
 
     /**
      * Adds a product to the shopping cart using the HTTP request data
@@ -86,7 +102,7 @@ internals.after = function (server, next) {
             Promise
                 .all([
                     server.plugins.Products.getProductByAttribute('id', request.payload.id),
-                    internals.findOrCreateCart(request)
+                    internals.shoppingCart.findOrCreate(request)
                 ])
                 .then((results) => {
                     let Product = results[0];
@@ -145,31 +161,18 @@ internals.after = function (server, next) {
     };
 
 
-    internals.shoppingCartItem.get = (request, id) => {
-        // First verify that there is an active shopping cart for the
-        // JWT token from the request
-        return server.plugins.BookshelfOrm.bookshelf.model('ShoppingCart')
-            .getCart(request)
-            .then((ShoppingCart) => {
-                // No cart, so stop here
-                if(!ShoppingCart) {
-                    return;
-                }
+    internals.shoppingCartItem.get = (id) => {
+        return new Promise( (resolve, reject) => {
+            server.plugins.BookshelfOrm.bookshelf.model('ShoppingCartItem')
+                .findById(id)
+                .then((ShoppingCartItem) => {
+                    if(!ShoppingCartItem) {
+                        return reject('Unable to find a shopping cart item.');
+                    }
 
-                // QUESTION
-                // Can we just pluck one of the models from the cart_items collection
-                // or is it better to make a DB query (as below)?
-                return ShoppingCart.get('cart_items').get({
-                    id
+                    resolve(ShoppingCartItem);
                 });
-
-                // return server.plugins.BookshelfOrm.bookshelf.collection('ShoppingCartItems')
-                //     .query((qb) => {
-                //         qb.where('cart_id', '=', ShoppingCart.get('id'));
-                //         qb.andWhere('id', '=', id);
-                //     })
-                //     .fetch();
-            });
+        });
     };
 
 
@@ -181,7 +184,7 @@ internals.after = function (server, next) {
      */
     internals.shoppingCartItem.remove = (request) => {
         return internals.shoppingCartItem
-            .get(request, request.payload.id)
+            .get(request.payload.id)
             .then((ShoppingCartItem) => {
                 if(!ShoppingCartItem) {
                     return;
@@ -225,8 +228,7 @@ internals.after = function (server, next) {
                 //     strategy: 'jwt'
                 // },
                 handler: (request, reply) => {
-                    internals
-                        .findOrCreateCart(request)
+                    internals.shoppingCart.findOrCreate(request)
                         .then((ShoppingCart) => {
                             reply.apiSuccess(ShoppingCart);
                         })
@@ -269,22 +271,23 @@ internals.after = function (server, next) {
                 }
             }
         },
-        //REFACTORED
         {
             method: 'POST',
-            path: '/cart/item/remove/{id}',
+            path: '/cart/item/remove',
             config: {
                 description: 'Removes an item from the cart',
                 validate: {
                     payload: {
-                        id: Joi.number().min(1).required()
+                        id: Joi.string().uuid().required()
                     }
                 },
                 handler: (request, reply) => {
-                    internals.shoppingCartItem
-                        .remove(request)
+                    internals.shoppingCart.get(request)
+                        .then((ShoppingCart) => {
+                            return internals.shoppingCartItem.remove(request);
+                        })
                         .then(() => {
-                            return server.plugins.BookshelfOrm.bookshelf.model('ShoppingCart').getCart(request);
+                            return internals.shoppingCart.get(request);
                         })
                         .then((ShoppingCart) => {
                             reply.apiSuccess(ShoppingCart);
@@ -298,53 +301,37 @@ internals.after = function (server, next) {
         },
         {
             method: 'POST',
-            path: '/cart/item/qty/update',
+            path: '/cart/item/qty',
             config: {
-                description: 'Updates the quantity of the given item in the cart',
+                description: 'Updates the quantity of a shopping cart item (ShoppingCartItem model)',
                 validate: {
                     payload: Joi.object({
-                        id: Joi.number().min(1).required(),
-                        options: Joi.object({
-                            qty: Joi.number().min(1).required()
-                        }).required()
+                        id: Joi.string().uuid().required(),  // cart item id
+                        qty: Joi.number().min(1).required()
                     })
                 },
                 handler: (request, reply) => {
-                    internals
-                        .findOrCreateCart(request)
+                    internals.shoppingCart.get(request)
                         .then((ShoppingCart) => {
-                            let cart_data = ShoppingCart.get('cart_data');
-                            let canUpdate = false;
+                            return server.plugins.BookshelfOrm.bookshelf.model('ShoppingCartItem')
+                                .findById(request.payload.id)
+                                .then((ShoppingCartItem) => {
+                                    if(!ShoppingCartItem) {
+                                        throw new Error(`Unable to find a shopping cart item.`);
+                                        return;
+                                    }
 
-                            if(isString(cart_data)) {
-                                cart_data = JSON.parse(cart_data);
-                            }
-
-                            forEach(cart_data, (obj) => {
-                                if(obj.hasOwnProperty('itemId')
-                                    && obj.hasOwnProperty('product')
-                                    && isObject(obj.product)
-                                    && obj.product.hasOwnProperty('qty')
-                                    && request.payload.data.hasOwnProperty(obj.itemId)) {
-
-                                    obj.product.qty = request.payload.data[obj.itemId];
-                                    canUpdate = true;
-                                }
-                            });
-
-                            if(!canUpdate) {
-                                throw new Error(`Unable to update cart item because invalid item id was requested`);
-                            }
-
-                            // knex.js requires use of JSON.stringify() for json values;
-                            // http://knexjs.org/#Schema-json
-                            return ShoppingCart.save(
-                                {cart_data: JSON.stringify(cart_data)},
-                                {method: 'update', patch: true}
-                            );
-                        })
-                        .then((ShoppingCart) => {
-                            reply.apiSuccess(ShoppingCart);
+                                    return ShoppingCartItem.save(
+                                        { qty: parseInt((request.payload.qty || 1), 10) },
+                                        { method: 'update', patch: true }
+                                    );
+                                })
+                                .then(() => {
+                                    return internals.shoppingCart.get(request)
+                                })
+                                .then((ShoppingCart) => {
+                                    reply.apiSuccess(ShoppingCart);
+                                });
                         })
                         .catch((err) => {
                             request.server.log(['error'], err);
@@ -368,8 +355,7 @@ internals.after = function (server, next) {
                 handler: (request, reply) => {
                     var cart;
 
-                    internals
-                        .findOrCreateCart(request)
+                    internals.shoppingCart.findOrCreate(request)
                         .then((ShoppingCart) => {
                             cart = ShoppingCart;
                             return server.plugins.Payments.runPayment(ShoppingCart, request);
@@ -402,7 +388,7 @@ internals.after = function (server, next) {
 
 
     server.expose('schema', internals.schema);
-    server.expose('findOrCreateCart', internals.findOrCreateCart);
+    server.expose('findOrCreate', internals.shoppingCart.findOrCreate);
     server.expose('STATUS_PAYMENT_SUCCESS', internals.STATUS_PAYMENT_SUCCESS);
     server.expose('STATUS_PAYMENT_FAILED', internals.STATUS_PAYMENT_FAILED);
 

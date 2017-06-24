@@ -10,9 +10,9 @@
 <script>
 export default {
     props: {
-        min: String,
-        max: String,
-        initialize: String
+        min: Number,
+        max: Number,
+        initialize: Number
     },
 
     data() {

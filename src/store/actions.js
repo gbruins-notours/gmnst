@@ -1,5 +1,6 @@
 import api from '../util/api';
 
+
 export default {
     JWT_KEY: ({ commit }) => {
         return api.getToken().then((response) => {
@@ -27,11 +28,22 @@ export default {
         commit('TOGGLE_DEVICE', device)
     },
 
-    ADD_ITEM_TO_CART: ({ commit }, data) => {
+    CART_ITEM_ADD: ({ commit }, data) => {
         return api.shoppingCart.addItem(data).then((cartData) => {
-            console.log("ADD ITEM DONE", cartData)
             commit('CART_SET', cartData);
         })
+    },
+
+    CART_ITEM_SET_QTY: ({ commit }, data) => {
+        return api.shoppingCart.updateItemQty(data).then((cartData) => {
+            commit('CART_SET', cartData);
+        })
+    },
+
+    CART_ITEM_DELETE: ({ commit }, data) => {
+        return api.shoppingCart.deleteItem(data).then((cartData) => {
+            commit('CART_SET', cartData);
+        })  
     },
 
     CART_SYNC: ({ commit }, data) => {

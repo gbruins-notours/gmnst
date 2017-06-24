@@ -1,5 +1,8 @@
 const translations = {
     'Add to cart': 'Add to cart',
+    'Added to Cart': 'Added to Cart',
+    
+    'Delete': 'Delete',
 
     'GENDER_TYPE_BOYS': 'Boys',
     'GENDER_TYPE_GIRLS': 'Girls',
@@ -19,6 +22,7 @@ const translations = {
     'Shopping Cart': 'Shopping Cart',
     'Shorts': 'Shorts',
     'Size': 'Size',
+    'Subtotal': 'Subtotal',
 
     'SIZE_ADULT_XS': 'Adult Extra Small',
     'SIZE_ADULT_S': 'Adult Small',

@@ -1,5 +1,5 @@
 const InfoService = require('../../info/info.service');
-const helpers = require('../../../helpers.service');
+const accounting = require('accounting');
 
 
 module.exports = function (baseModel, bookshelf) {
@@ -26,7 +26,7 @@ module.exports = function (baseModel, bookshelf) {
             virtuals: {
                 total_item_price: function() {
                     let val = this.get('qty') * this.related('product').get('display_price');
-                    return helpers.twoPointDecimal(val);
+                    return accounting.toFixed(val, 2);
                 }
             }
         },

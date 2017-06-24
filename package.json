@@ -25,6 +25,7 @@
     "heroku-postbuild": "npm run build"
   },
   "dependencies": {
+    "accounting": "0.4.1",
     "animate.css": "3.5.2",
     "axios": "0.16.1",
     "babel-core": "6.22.1",

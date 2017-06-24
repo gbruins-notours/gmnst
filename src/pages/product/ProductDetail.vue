@@ -49,12 +49,9 @@
                             <div class="row">
                                 <div class="label">{{ $t('Quantity') }}:</div>
                                 <div class="value">
-                                    <span class="select">
-                                        <select name="selectedQty" v-model="selectedQty">
-                                            <option value=""></option>
-                                            <option v-for="qty in quantityOptions" :value="qty">{{ qty }}</option>
-                                        </select>
-                                    </span>
+                                    <number-select :min="1"
+                                                   :max="product.inventory_count"
+                                                   v-on:number_select_changed="updateProductQuantity"></number-select>
                                 </div>
                             </div>
 
@@ -79,6 +76,7 @@ import Vue from 'vue'
 import Notification from 'vue-bulma-notification'
 import api from '../../util/api'
 import ProductPrice from '../../components/product/ProductPrice.vue'
+import NumberSelect from '../../components/NumberSelect.vue'
 import { mapActions } from 'vuex'
 
 
@@ -105,14 +103,14 @@ export default {
         return {
             product: {},
             sizeOptions: [],
-            quantityOptions: [],
             selectedSize: null,
             selectedQty: null
         }
     },
 
     components: {
-        ProductPrice
+        ProductPrice,
+        NumberSelect
     },
 
     computed: {
@@ -132,8 +130,13 @@ export default {
 
     methods: {
         ...mapActions([
-            'ADD_ITEM_TO_CART'
+            'CART_ITEM_ADD'
         ]),
+
+        updateProductQuantity(val) {
+            console.log('update product qut', val);
+            this.selectedQty = val || 1;
+        },
 
         addToCart() {
 //            if (isObject(this.product) && !this.product.hasOwnProperty('__selectedOptions')) {
@@ -154,7 +157,7 @@ export default {
                 })
             }
             else {
-                this.ADD_ITEM_TO_CART({
+                this.CART_ITEM_ADD({
                     id: this.product.id,
                     options: {
                         size: this.selectedSize,
@@ -198,17 +201,6 @@ export default {
                     maxInventoryCount
                 });
             });
-        },
-
-        buildQtyOptions(maxInventoryCount) {
-            let opts = [];
-            let max = (maxInventoryCount < 100) ? maxInventoryCount : 100;
-
-            for (var i = 1; i <= max; i++) {
-                opts.push(i);
-            }
-
-            return opts.length ? opts : null;
         }
     },
 
@@ -216,14 +208,11 @@ export default {
         api.getProductBySeoUri(this.$route.params.id)
             .then((product) => {
                 this.product = product;
-                console.log('PRODUCT', this.product);
-
                 document.title = product.title;
                 return this.buildSizeOptions(product);
             })
             .then((result) => {
                 this.sizeOptions = result.sizeOpts;
-                this.quantityOptions = this.buildQtyOptions(result.maxInventoryCount);
             });
     }
 }

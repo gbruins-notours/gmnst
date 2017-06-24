@@ -38,7 +38,7 @@ export default {
         window.addEventListener('DOMContentLoaded', handler)
         window.addEventListener('resize', handler)
 
-//        if (!this.$store.state.jwtKey || !isObject(this.$store.state.appInfo)) {
+        if (!this.$store.state.jwtKey || !isObject(this.$store.state.appInfo)) {
             this.JWT_KEY()
                 .then(() => {
                     this.CART_SYNC();
@@ -47,7 +47,7 @@ export default {
                 .catch((error) => {
                         console.log('GET JWT Error', error);
                 });
-//        }
+        }
     },
 
     methods: {

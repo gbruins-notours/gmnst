@@ -1,4 +1,5 @@
-import cloneDeep from 'lodash.clonedeep';
+import cloneDeep from 'lodash.clonedeep'
+import isObject from 'lodash.isobject'
 
 
 /**
@@ -41,20 +42,6 @@ export default {
     receiveProducts (state, { products }) {
         state.allProducts = products
     },
-
-    // ADD_ITEM_TO_CART: (state, cartData) => {
-        // state.lastCheckout = null;
-        // const record = state.added.find(p => p.id === id);
-        // if (!record) {
-        //     state.added.push({
-        //         id,
-        //         quantity: qty || 1
-        //     })
-        // }
-        // else {
-        //     record.quantity++
-        // }
-    // },
 
     CART_SET: (state, cartData) => {
         state.cart = cartData;
