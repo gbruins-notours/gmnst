@@ -136,7 +136,6 @@
     "lolex": "1.5.2",
     "mocha": "3.3.0",
     "nightwatch": "0.9.12",
-    "phantomjs-prebuilt": "2.1.14",
     "promise-polyfill": "6.0.2",
     "selenium-server": "3.0.1",
     "sinon": "2.1.0",

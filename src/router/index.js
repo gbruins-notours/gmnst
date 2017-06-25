@@ -13,6 +13,7 @@ import Home from '../pages/Home.vue';
 import ProductList from '../pages/product/ProductList.vue';
 import ProductDetail from '../pages/product/ProductDetail.vue';
 import Cart from '../pages/cart/Cart.vue';
+import Checkout from '../pages/checkout/Checkout.vue';
 import Error404 from '../pages/Error404.vue';
 
 export function createRouter () {
@@ -23,7 +24,8 @@ export function createRouter () {
             { path: '/', component: Home },
             { path: '/type/:id', component: ProductList },
             { path: '/item/:id', component: ProductDetail },
-            { path: '/cart/:id', component: Cart },
+            { path: '/cart/:id', component: Cart }, //TODO: need route for optional :id
+            { path: '/checkout', component: Checkout },
             { path: '*', component: Error404 }
         ]
     })
