@@ -24,7 +24,7 @@ export function createRouter () {
             { path: '/', component: Home },
             { path: '/type/:id', component: ProductList },
             { path: '/item/:id', component: ProductDetail },
-            { path: '/cart/:id', component: Cart }, //TODO: need route for optional :id
+            { path: '/cart/:id?', component: Cart },
             { path: '/checkout', component: Checkout },
             { path: '*', component: Error404 }
         ]

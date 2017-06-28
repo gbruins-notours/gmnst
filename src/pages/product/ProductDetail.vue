@@ -37,10 +37,14 @@
                                 <div class="label">{{ $t('Size') }}:</div>
                                 <div class="value">
                                     <span class="select">
-                                        <select name="selectedSize" v-model="selectedSize">
-                                            <option value=""></option>
-                                            <option v-for="size in sizeOptions" :value="size">{{ $t(size) }}</option>
-                                        </select>
+                                        <el-select v-model="selectedSize" placeholder="Select">
+                                            <el-option
+                                                    v-for="size in sizeOptions"
+                                                    :key="size"
+                                                    :label="$t(size)"
+                                                    :value="size">
+                                            </el-option>
+                                        </el-select>
                                     </span>
                                 </div>
                             </div>
@@ -49,9 +53,13 @@
                             <div class="row">
                                 <div class="label">{{ $t('Quantity') }}:</div>
                                 <div class="value">
-                                    <number-select :min="1"
-                                                   :max="product.inventory_count"
-                                                   v-on:number_select_changed="updateProductQuantity"></number-select>
+                                    <el-input-number v-model="selectedQty"
+                                                     :step="1"
+                                                     :min="1"
+                                                     :max="product.inventory_count"
+                                                     :debounce="500"
+                                                     :controls="false"
+                                                     class="width50"></el-input-number>
                                 </div>
                             </div>
 
@@ -73,28 +81,17 @@
 import Promise from 'bluebird';
 import isObject from 'lodash.isobject'
 import Vue from 'vue'
-import Notification from 'vue-bulma-notification'
+import { Select, Option, InputNumber, Notification } from 'element-ui'
 import api from '../../util/api'
 import ProductPrice from '../../components/product/ProductPrice.vue'
-import NumberSelect from '../../components/NumberSelect.vue'
 import { mapActions } from 'vuex'
 
+Vue.use(Select);
+Vue.use(Option);
+Vue.use(InputNumber);
+Vue.use(Notification);
 
-const NotificationComponent = Vue.extend(Notification)
-
-const openNotification = (propsData = {
-    title: '',
-    message: '',
-    type: '',
-    direction: '',
-    duration: 4500,
-    container: '.notifications'
-}) => {
-    return new NotificationComponent({
-        el: document.createElement('div'),
-        propsData
-    })
-}
+Vue.prototype.$notify = Notification;
 
 export default {
     props: ['id'],
@@ -109,8 +106,7 @@ export default {
     },
 
     components: {
-        ProductPrice,
-        NumberSelect
+        ProductPrice
     },
 
     computed: {
@@ -133,28 +129,24 @@ export default {
             'CART_ITEM_ADD'
         ]),
 
-        updateProductQuantity(val) {
-            console.log('update product qut', val);
-            this.selectedQty = val || 1;
-        },
-
         addToCart() {
 //            if (isObject(this.product) && !this.product.hasOwnProperty('__selectedOptions')) {
 //                this.product.__selectedOptions = {};
 //            }
 
             if (!this.selectedSize) {
-                openNotification({
+                this.$notify.error({
                     title: this.$t('Please select a size'),
-                    // message: 'thats right',
-                    type: 'danger'
-                })
+                    message: this.$t('We want to make sure it fits!'),
+                    duration: 4500
+                });
             }
             else if (!this.selectedQty) {
-                openNotification({
+                this.$notify.error({
                     title: this.$t('Please select a quantity'),
-                    type: 'danger'
-                })
+                    message: this.$t('Thanks!'),
+                    duration: 4500
+                });
             }
             else {
                 this.CART_ITEM_ADD({
@@ -165,10 +157,6 @@ export default {
                     }
                 })
                 .then(() => {
-//                    openNotification({
-//                            title: 'Cart updated',
-//                            type: 'success'
-//                    })
                     this.$router.push(`/cart/${this.product.id}`);
                 });
             }
@@ -241,6 +229,5 @@ export default {
         padding-bottom: 10px;
     }
 }
-
 </style>
 

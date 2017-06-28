@@ -41,10 +41,10 @@
                                 <div class="level-left">
                                     <div class="level-item">
                                         <small>Quantity:</small>&nbsp;
-                                        <number-select v-on:number_select_changed="changed"
-                                                       min="0"
-                                                       max="100"
-                                                       initialize="3"></number-select>
+                                        <!--<number-select v-on:number_select_changed="changed"-->
+                                                       <!--min="0"-->
+                                                       <!--max="100"-->
+                                                       <!--initialize="3"></number-select>-->
                                     </div>
                                     <div class="level-item">
                                         <small>Size:</small>&nbsp;
@@ -72,7 +72,6 @@
 <script>
     import { mapActions, mapGetters } from 'vuex';
     import CardModal from './CardModal.vue';
-    import NumberSelect from './NumberSelect.vue';
     import ProductPrice from './product/ProductPrice.vue';
 
     export default {
@@ -82,7 +81,6 @@
 
         components: {
             CardModal,
-            NumberSelect,
             ProductPrice
         },
 

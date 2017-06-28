@@ -1,6 +1,5 @@
 @charset "UTF-8";
 
-// Mixins
 @import "components/prefixer";
 @import "components/variables";
 @import "components/objects";
@@ -11,8 +10,82 @@
 }
 
 
-@import '~bulma';
+//@import '~bulma';
+@import '~bulma/sass/utilities/_all';
+
+@import '~bulma/sass/base/generic';
+@import '~bulma/sass/base/minireset';
+@import '~bulma/sass/base/helpers'; //?
+@import '~bulma/sass/components/card';
+@import '~bulma/sass/components/level';
+@import '~bulma/sass/components/modal';
+@import '~bulma/sass/elements/button';
+@import '~bulma/sass/elements/form';
+@import '~bulma/sass/elements/other';
+@import '~bulma/sass/elements/icon';
+@import '~bulma/sass/elements/image';
+@import '~bulma/sass/elements/title';
+@import '~bulma/sass/grid/columns';
+@import '~bulma/sass/layout/section';
+@import '~bulma/sass/layout/footer';
+
 
 $fa-font-path: '~font-awesome/fonts/';
 @import '~font-awesome/scss/font-awesome';
+
+
+label {
+    margin-bottom: 0;
+
+    &.required:after {
+        color: #b31703 !important;
+        content: " *"
+    }
+}
+
+[role="alert"] {
+    color: $colorRed;
+}
+
+.g-spec {
+    display: block;
+    margin-top: 20px;
+
+    .g-spec-label {
+        font-size: 16px;
+        display: block;
+        padding: 10px 20px;
+        border-right: 0;
+        border-bottom: 1px solid #dfdedf;
+        vertical-align: top;
+        font-weight: 600;
+    }
+
+    .g-spec-content {
+        display: block;
+        padding: 10px 20px 10px 40px;
+        vertical-align: top;
+    }
+}
+
+@media all and (min-width: 63em) {
+    .g-spec {
+        display: table-row;
+
+        .g-spec-label {
+            font-size: 18px;
+            display: table-cell;
+            padding: 30px 20px 10px;
+            border-right: 1px solid #dfdedf;
+            border-bottom: 0;
+            vertical-align: top;
+        }
+
+        .g-spec-content {
+            display: table-cell;
+            padding: 30px 20px 10px;
+            vertical-align: top;
+        }
+    }
+}
 

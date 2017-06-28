@@ -10,85 +10,102 @@
             <!--{{ $t('Added to Cart') }}:-->
         <!--</div>-->
 
-        <div class="cartItems">
-            <div class="cartItemsHeader">
-                <span></span>
-                <span>{{ $t('Price') }}</span>
-                <span>{{ $t('Quantity') }}</span>
+        <div v-if="!this.cart.num_items" class="fs16">
+            {{ $t('Your shopping cart does not contain any items.') }}
+        </div>
+
+        <template v-else>
+            <div class="cartItems" id="cartItems">
+                <div class="cartItemsHeader">
+                    <span></span>
+                    <span></span>
+                    <span class="width100 tac">{{ $t('Price') }}</span>
+                    <span class="width100 tac">{{ $t('Quantity') }}</span>
+                </div>
+
+                <article class="cartItem" v-for="item in this.cart.cart_items" :key="item.id">
+                    <figure class="cartItemCell image is-128x128">
+                        <img v-bind:src="productPic(item)">
+                    </figure>
+
+                    <div class="cartItemCell">
+                        <strong>{{ item.product.title }}</strong>
+
+                        <div>
+                            Size:&nbsp;TODO
+                        </div>
+
+                        <div><a @click="removeItem(item.id)">{{ $t('Delete') }}</a></div>
+                    </div>
+
+                    <!-- Price -->
+                    <div class="cartItemCell fwb tar">
+                        <product-price :product="item.product"></product-price>
+                    </div>
+
+                    <!-- Quantity -->
+                    <div class="cartItemCell tac">
+                        <el-input-number v-model="item.qty"
+                                         :step="1"
+                                         :min="1"
+                                         :max="item.product.inventory_count"
+                                         size="small"
+                                         :debounce="300"
+                                         :controls="false"
+                                         v-on:change="function(val) { updateCartItemQuantity(item.id, val) }"
+                                         class="width50"></el-input-number>
+                    </div>
+                </article>
+
+                <div class="cartItemsFooter">
+                    <span></span>
+                    <span class="tar fwb">{{ $t('Subtotal') }} ({{ cart.num_items }} {{ $tc('items', cart.num_items) }}):</span>
+                    <span class="tar fwb">{{ subtotal }}</span>
+                    <span></span>
+                </div>
             </div>
 
-            <template v-for="item in this.cart.cart_items">
-                <!-- <cart-item :item="item" :key="item.id"></cart-item> -->
-                <article class="cartItem">
-                      <figure class="cartItemCell image is-128x128">
-                          <img v-bind:src="productPic">
-                      </figure>
-
-                      <div class="cartItemCell">
-                          <strong>{{ item.product.title }}</strong>
-
-                          <div class="level">
-                              <div class="level-left">
-                                  <div class="level-item">
-                                      <small>Size:</small>&nbsp;
-                                      TODO
-                                  </div>
-                              </div>
-                          </div>
-
-                          <div><a @click="removeItem(item.id)">{{ $t('Delete') }}</a></div>
-                      </div>
-
-                      <!-- Price -->
-                      <div class="cartItemCell">
-                          <product-price :product="item.product"></product-price>
-                      </div>
-
-                      <!-- Quantity -->
-                      <div class="cartItemCell">
-                          <number-select :min="1"
-                                         :max="item.product.inventory_count"
-                                         :initialize="item.qty"
-                                         v-on:number_select_changed="function(val) { updateCartItemQuantity(item.id, val) }"></number-select>
-                      </div>
-                </article>
-            </template>
-        </div>
-
-        <div class="tar fwb">
-            {{ $t('Subtotal') }} ({{ cart.num_items }} {{ $tc('items', cart.num_items) }}): {{ subtotal }}
-        </div>
-
-        <div>
-            <button class="delete" @click="goToProductList"></button>
-            <button @click="goToCheckout"></button>
-        </div>
+            <div>
+                <button class="delete" @click="goToProductList"></button>
+                <button @click="goToCheckout"></button>
+            </div>
+        </template>
     </section>
 </template>
 
 <script>
     import Promise from 'bluebird'
     import accounting from 'accounting'
-    //import Vue from 'vue'
+    import Vue from 'vue'
     import api from '../../util/api'
     import { mapGetters, mapActions } from 'vuex'
     import isObject from 'lodash.isobject'
-    import CartItem from '../../components/cart/CartItem.vue'
-    import NumberSelect from '../../components/NumberSelect.vue'
     import ProductPrice from '../../components/product/ProductPrice.vue'
+    import { Select, Option, InputNumber, Loading } from 'element-ui'
+
+    Vue.use(Select);
+    Vue.use(Option);
+    Vue.use(InputNumber);
+    Vue.use(Loading.directive)
+
+//    let loadingInstance = Loading.service({ fullscreen: true, body: true });
+//    loadingInstance.open();
+
+//    Vue.prototype.$loading = Loading.service
 
     export default {
         props: ['id'],
 
         data() {
             return {
-                added_cart_item: {}
+                added_cart_item: {},
+                selectedQty: 0,
+                loading: true
             }
         },
 
         components: {
-            ProductPrice,
-            NumberSelect
+            ProductPrice
         },
 
         computed: {
@@ -96,13 +113,6 @@
                 'cart',
                 'appInfo'
             ]),
-
-            productPic() {
-                if (this.item.product.featured_pic) {
-                    return '/static/images/product/' + this.item.product.featured_pic;
-                }
-                return;
-            },
 
             subtotal() {
                 return accounting.formatMoney(this.cart.sub_total)
@@ -115,17 +125,24 @@
                 'CART_ITEM_DELETE'
             ]),
 
-            productPic() {
-                if (this.item.product.featured_pic) {
-                    return '/static/images/product/' + this.item.product.featured_pic;
+            productPic(cartItem) {
+                if (cartItem.product.featured_pic) {
+                    return '/static/images/product/' + cartItem.product.featured_pic;
                 }
                 return;
             },
 
             updateCartItemQuantity(id, qty) {
+                console.log('updateCartItemQuantity', id, qty);
+
+//                let loadingInstance = this.$loading({ fullscreen: true });
+                let loadingInstance = Loading.service({ target: '#cartItems' });
+
                 this.CART_ITEM_SET_QTY({
                     id,
                     qty
+                }).then(() => {
+                    loadingInstance.close();
                 })
             },
 
@@ -143,7 +160,7 @@
 
             goToCheckout() {
                   this.$router.push(`/checkout`);
-            }
+            },
 
             goToProductList() {
                   //TODO: get the type of the 'added_cart_item' product and
@@ -172,20 +189,38 @@
 <style lang="scss">
 
 .cartItems {
-  display: table;
+    display: table;
+    /*border-collapse:separate;*/
+    /*border-spacing:10px;*/
+    width: 100%;
+}
 
-  .cartItemsHeader {
+.cartItemsHeader {
     border-bottom: 1px solid #ccc;
-  }
+}
 
-  .cartItemsHeader,
-  .cartItem {
+.cartItemsHeader,
+.cartItemsFooter,
+.cartItem {
     display: table-row;
+}
 
-    .cartItemsHeader > span,
+.cartItemsHeader > span,
+.cartItemsFooter > span,
+.cartItemCell {
+    display: table-cell;
+    vertical-align: top;
+    /*border: 1px solid blue;*/
+    padding: 2px 5px;
+}
+
+.cartItemCell {
+    border-top: 1px solid #dfdedf;
+}
+
+@media all and (min-width: 42em) {
     .cartItemCell {
-      display: table-cell;
+        padding: 5px 10px;
     }
-  }
 }
 </style>

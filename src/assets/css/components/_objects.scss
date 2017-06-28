@@ -3,16 +3,30 @@
 .displayTableCell { display: table-cell }
 .displayTableRow { display: table-row }
 
-.fwb{ font-weight:bold !important; }
+.fs16 { font-size: 16px !important }
+.fwb{ font-weight:bold !important }
 
-.pbm{ padding-bottom:10px !important; }
-.pbl{ padding-bottom:20px !important; }
-.pam{ padding:10px !important; }
-.prm{ padding-right:10px !important; }
-.ptm{ padding-top:10px !important; }
+.pbs{ padding-bottom:5px !important }
+.pbm{ padding-bottom:10px !important }
+.pbl{ padding-bottom:20px !important }
+.pam{ padding:10px !important }
+.plm{ padding-left:10px !important }
+.prm{ padding-right:10px !important }
+.prl{ padding-right:20px !important }
+.ptm{ padding-top:10px !important }
 
-.mtl{ margin-top:20px !important; }
+.mbm{ margin-bottom:10px !important }
+.mbl{ margin-bottom:30px !important }
+.mtl{ margin-top:20px !important }
 
-.tar{ text-align: right !important; }
+.tac{ text-align: center !important }
+.tar{ text-align: right !important }
+
+.underlineDotted { border-bottom: 1px dotted }
+
+.vat { vertical-align: top !important }
 
 .widthAll { width: 100% }
+.width50 { width: 50px !important }
+.width100 { width: 100px !important }
+.width200 { width: 200px !important }

@@ -6,8 +6,9 @@ import { createStore } from './store'
 import { createRouter } from './router'
 import App from './App.vue'
 import * as filters from './util/filters'
-import VueI18n from 'vue-i18n';
-import translations from './i18n';
+import VueI18n from 'vue-i18n'
+import translations from './i18n'
+import VeeValidate from 'vee-validate'
 
 
 Vue.config.productionTip = false;
@@ -18,6 +19,7 @@ Object.keys(filters).forEach(key => {
 })
 
 Vue.use(VueI18n)
+Vue.use(VeeValidate)
 Vue.config.productionTip = false
 
 
