@@ -38,11 +38,14 @@
                         <div class="displayTableRow">
                             <label class="displayTableCell prm pbm">{{ $t('FIRST NAME') }}</label>
                             <div class="field displayTableCell pbm">
-                                <input type="text"
-                                       name="shipping_firstName"
-                                       v-model="creditCardForm.shippingAddress.firstName"
-                                       v-validate="'required'"
-                                       class="input" />
+                                <el-input name="shipping_firstName"
+                                          v-model="creditCardForm.shippingAddress.firstName"
+                                          v-validate="'required'"></el-input>
+                                <!--<input type="text"-->
+                                       <!--name="shipping_firstName"-->
+                                       <!--v-model="creditCardForm.shippingAddress.firstName"-->
+                                       <!--v-validate="'required'"-->
+                                       <!--class="input" />-->
                                 <p role="alert" v-if="errors.first('shipping_firstName')">
                                     {{ $t('Required') }}
                                 </p>
@@ -53,11 +56,9 @@
                         <div class="displayTableRow">
                             <label class="displayTableCell prm pbm">{{ $t('LAST NAME') }}</label>
                             <div class="field displayTableCell pbm">
-                                <input type="text"
-                                       name="shipping_lastName"
-                                       v-model="creditCardForm.shippingAddress.lastName"
-                                       v-validate="'required'"
-                                       class="input" />
+                                <el-input name="shipping_lastName"
+                                          v-model="creditCardForm.shippingAddress.lastName"
+                                          v-validate="'required'"></el-input>
                                 <p role="alert" v-if="errors.first('shipping_lastName')">
                                     {{ $t('Required') }}
                                 </p>
@@ -68,11 +69,9 @@
                         <div class="displayTableRow">
                             <label class="displayTableCell prm pbm">{{ $t('STREET ADDRESS') }}</label>
                             <div class="field displayTableCell pbm">
-                                <input type="text"
-                                       name="shipping_streetAddress"
-                                       v-model="creditCardForm.shippingAddress.streetAddress"
-                                       v-validate="'required'"
-                                       class="input" />
+                                <el-input name="shipping_streetAddress"
+                                          v-model="creditCardForm.shippingAddress.streetAddress"
+                                          v-validate="'required'"></el-input>
                                 <p role="alert" v-if="errors.first('shipping_streetAddress')">
                                     {{ $t('Required') }}
                                 </p>
@@ -85,9 +84,7 @@
                              v-if="creditCardForm.shippingAddress.extendedAddress">
                             <label class="displayTableCell prm pbm">{{ $t('STREET ADDRESS 2') }}</label>
                             <div class="field displayTableCell pbm">
-                                <input type="text"
-                                       v-model="creditCardForm.shippingAddress.extendedAddress"
-                                       class="input" />
+                                <el-input v-model="creditCardForm.shippingAddress.extendedAddress"></el-input>
                             </div>
                         </div>
 
@@ -95,11 +92,9 @@
                         <div class="displayTableRow">
                             <label class="displayTableCell prm pbm">{{ $t('CITY') }}</label>
                             <div class="field displayTableCell pbm">
-                                <input type="text"
-                                       name="shipping_city"
-                                       v-model="creditCardForm.shippingAddress.city"
-                                       v-validate="'required'"
-                                       class="input" />
+                                <el-input name="shipping_city"
+                                          v-model="creditCardForm.shippingAddress.city"
+                                          v-validate="'required'"></el-input>
                                 <p role="alert" v-if="errors.first('shipping_city')">
                                     {{ $t('Required') }}
                                 </p>
@@ -110,11 +105,9 @@
                         <div class="displayTableRow">
                             <label class="displayTableCell prm pbm">{{ $t('STATE/PROVINCE') }}</label>
                             <div class="field displayTableCell pbm">
-                                <input type="text"
-                                       name="shipping_state"
-                                       v-model="creditCardForm.shippingAddress.state"
-                                       v-validate="'required'"
-                                       class="input" />
+                                <el-input name="shipping_state"
+                                          v-model="creditCardForm.shippingAddress.state"
+                                          v-validate="'required'"></el-input>
                                 <p role="alert" v-if="errors.first('shipping_state')">
                                     {{ $t('Required') }}
                                 </p>
@@ -125,11 +118,9 @@
                         <div class="displayTableRow">
                             <label class="displayTableCell prm pbm">{{ $t('POSTAL CODE') }}</label>
                             <div class="field displayTableCell pbm">
-                                <input type="text"
-                                       name="shipping_postalCode"
-                                       v-model="creditCardForm.shippingAddress.postalCode"
-                                       v-validate="'required'"
-                                       class="input" />
+                                <el-input name="shipping_postalCode"
+                                          v-model="creditCardForm.shippingAddress.postalCode"
+                                          v-validate="'required'"></el-input>
                                 <p role="alert" v-if="errors.first('shipping_postalCode')">
                                     {{ $t('Required') }}
                                 </p>
@@ -140,21 +131,20 @@
                         <div class="displayTableRow">
                             <label class="displayTableCell prm pbm">{{ $t('COUNTRY') }}</label>
                             <div class="field displayTableCell pbm">
-                                TODO
-                                <p role="alert" v-if="errors.first('shipping_postalCode')">
-                                    {{ $t('Required') }}
-                                </p>
+                                <country-select v-model="creditCardForm.shippingAddress.country"
+                                                :init-value="creditCardForm.shippingAddress.country"
+                                                value-type="alpha2"
+                                                v-on:change="val => { creditCardForm.shippingAddress.country = val }"></country-select>
                             </div>
                         </div>
 
                         <!-- Shipping: Company Name -->
                         <div class="displayTableRow">
                             <label class="displayTableCell prm pbm">
-                                {{ $t('COMPANY NAME') }}<br/>({{ $t('optional') }})</label>
+                                {{ $t('COMPANY NAME') }}<br/>({{ $t('optional') }})
+                            </label>
                             <div class="field displayTableCell pbm">
-                                <input type="text"
-                                       v-model="creditCardForm.shippingAddress.company"
-                                       class="input" />
+                                <el-input v-model="creditCardForm.shippingAddress.company"></el-input>
                             </div>
                         </div>
 
@@ -162,11 +152,9 @@
                         <div class="displayTableRow">
                             <label class="displayTableCell prm pbm">{{ $t('EMAIL') }}</label>
                             <div class="field displayTableCell pbm">
-                                <input type="text"
-                                       name="shipping_email"
-                                       v-model="creditCardForm.shippingAddress.email"
-                                       v-validate="'required|email'"
-                                       class="input" />
+                                <el-input name="shipping_email"
+                                          v-model="creditCardForm.shippingAddress.email"
+                                          v-validate="'required'"></el-input>
                                 <p role="alert" v-if="errors.first('shipping_email')">
                                     {{ $t('Please enter a valid email address.') }}
                                 </p>
@@ -226,17 +214,102 @@
                             <el-checkbox v-model="creditCardForm.billingSameAsShipping">{{ $t('Same as Shipping address') }}</el-checkbox>
                         </div>
 
+                        <!-- Billing: First Name -->
                         <div class="displayTableRow">
                             <label class="displayTableCell prm pbm">{{ $t('FIRST NAME') }}</label>
                             <div class="field displayTableCell pbm">
-                                <input type="text"
-                                       name="shipping_firstName"
-                                       v-model="creditCardForm.shippingAddress.firstName"
-                                       v-validate="'required'"
-                                       class="input" />
-                                <p role="alert" v-if="errors.first('shipping_firstName')">
+                                <el-input name="billing_firstName"
+                                          v-model="creditCardForm.billingAddress.firstName"
+                                          v-validate="'required'"></el-input>
+                                <p role="alert" v-if="errors.first('billing_firstName')">
                                     {{ $t('Required') }}
                                 </p>
+                            </div>
+                        </div>
+
+                        <!-- Billing: Last Name -->
+                        <div class="displayTableRow">
+                            <label class="displayTableCell prm pbm">{{ $t('LAST NAME') }}</label>
+                            <div class="field displayTableCell pbm">
+                                <el-input name="billing_lastName"
+                                          v-model="creditCardForm.billingAddress.lastName"
+                                          v-validate="'required'"></el-input>
+                                <p role="alert" v-if="errors.first('billing_lastName')">
+                                    {{ $t('Required') }}
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Billing: Street Address -->
+                        <div class="displayTableRow">
+                            <label class="displayTableCell prm pbm">{{ $t('STREET ADDRESS') }}</label>
+                            <div class="field displayTableCell pbm">
+                                <el-input name="billing_streetAddress"
+                                          v-model="creditCardForm.billingAddress.streetAddress"
+                                          v-validate="'required'"></el-input>
+                                <p role="alert" v-if="errors.first('billing_streetAddress')">
+                                    {{ $t('Required') }}
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Billing: City -->
+                        <div class="displayTableRow">
+                            <label class="displayTableCell prm pbm">{{ $t('CITY') }}</label>
+                            <div class="field displayTableCell pbm">
+                                <el-input name="billing_city"
+                                          v-model="creditCardForm.billingAddress.city"
+                                          v-validate="'required'"></el-input>
+                                <p role="alert" v-if="errors.first('billing_city')">
+                                    {{ $t('Required') }}
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Billing: State -->
+                        <div class="displayTableRow">
+                            <label class="displayTableCell prm pbm">{{ $t('STATE') }}</label>
+                            <div class="field displayTableCell pbm">
+                                <el-input name="billing_state"
+                                          v-model="creditCardForm.billingAddress.state"
+                                          v-validate="'required'"></el-input>
+                                <p role="alert" v-if="errors.first('billing_state')">
+                                    {{ $t('Required') }}
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Billing: Postal Code -->
+                        <div class="displayTableRow">
+                            <label class="displayTableCell prm pbm">{{ $t('POSTAL CODE') }}</label>
+                            <div class="field displayTableCell pbm">
+                                <el-input name="billing_postalCode"
+                                          v-model="creditCardForm.billingAddress.postalCode"
+                                          v-validate="'required'"></el-input>
+                                <p role="alert" v-if="errors.first('billing_postalCode')">
+                                    {{ $t('Required') }}
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Billing: Country -->
+                        <div class="displayTableRow">
+                            <label class="displayTableCell prm pbm">{{ $t('COUNTRY') }}</label>
+                            <div class="field displayTableCell pbm">
+                                <country-select v-model="creditCardForm.billingAddress.country"
+                                                :init-value="creditCardForm.billingAddress.country"
+                                                value-type="alpha2"
+                                                v-on:change="val => { creditCardForm.billingAddress.country = val }"></country-select>
+                            </div>
+                        </div>
+
+                        <!-- Billing: Company Name -->
+                        <div class="displayTableRow">
+                            <label class="displayTableCell prm pbm">
+                                {{ $t('COMPANY NAME') }}<br/>({{ $t('optional') }})
+                            </label>
+                            <div class="field displayTableCell pbm">
+                                <el-input v-model="creditCardForm.billingAddress.company"></el-input>
                             </div>
                         </div>
 
@@ -281,10 +354,12 @@
 <script>
     import Vue from 'vue'
     import { mapGetters, mapActions } from 'vuex'
-    import { Checkbox } from 'element-ui'
+    import { Checkbox, Input } from 'element-ui'
     import CardModal from '../../components/CardModal.vue'
+    import CountrySelect from '../../components/CountrySelect.vue'
 
     Vue.use(Checkbox)
+    Vue.use(Input)
 
     export default {
         computed: {
@@ -301,7 +376,26 @@
                 creditCardForm: {
                     billingSameAsShipping: false,
                     shippingAddress: {
-                        firstName: null
+                        firstName: null,
+                        lastName: null,
+                        streetAddress: null,
+                        extendedAddress: null,
+                        city: null,
+                        state: null,
+                        postalCode: null,
+                        country: null,
+                        company: null,
+                        email: null,
+                    },
+                    billingAddress: {
+                        firstName: null,
+                        lastName: null,
+                        streetAddress: null,
+                        city: null,
+                        state: null,
+                        postalCode: null,
+                        country: null,
+                        company: null
                     }
                 }
             }
@@ -309,19 +403,24 @@
 
         components: {
             CardModal,
-            Checkbox
+            Checkbox,
+            CountrySelect
         },
 
         methods: {
-            openCvvModal() {
+            changed: function(val) {
+                this.creditCardForm.shippingAddress.country = val;
+                console.log('parent changed', this.creditCardForm.shippingAddress.country)
+            },
+            openCvvModal: function() {
                 this.cvvModalIsActive = true;
             },
 
-            closeCvvModal() {
+            closeCvvModal: function() {
                 this.cvvModalIsActive = false;
             },
 
-            copyShippingDataToBillingData(checked) {
+            copyShippingDataToBillingData: function(checked) {
                 console.log("TODO", checked);
             }
         }
