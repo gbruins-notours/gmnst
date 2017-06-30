@@ -20,6 +20,7 @@
 @import '~bulma/sass/components/level';
 @import '~bulma/sass/components/modal';
 @import '~bulma/sass/elements/button';
+@import '~bulma/sass/elements/content';
 @import '~bulma/sass/elements/form';
 @import '~bulma/sass/elements/other';
 @import '~bulma/sass/elements/icon';
@@ -29,6 +30,7 @@
 @import '~bulma/sass/layout/hero';
 @import '~bulma/sass/layout/section';
 @import '~bulma/sass/layout/footer';
+@import '~bulma/sass/utilities/mixins';
 
 
 $fa-font-path: '~font-awesome/fonts/';
@@ -53,6 +55,7 @@ label {
     margin-top: 20px;
 
     .g-spec-label {
+        color: #6f6f6f;
         font-size: 16px;
         display: block;
         padding: 10px 20px;
@@ -60,6 +63,7 @@ label {
         border-bottom: 1px solid #dfdedf;
         vertical-align: top;
         font-weight: 600;
+        word-wrap: break-word;
     }
 
     .g-spec-content {
@@ -73,10 +77,14 @@ label {
     .g-spec {
         display: table-row;
 
+        &:nth-child(even) {
+            background-color: #f7f7f7;
+        }
+
         .g-spec-label {
             font-size: 18px;
             display: table-cell;
-            padding: 30px 20px 10px;
+            padding: 20px;
             border-right: 1px solid #dfdedf;
             border-bottom: 0;
             vertical-align: top;
@@ -84,9 +92,9 @@ label {
 
         .g-spec-content {
             display: table-cell;
-            padding: 30px 20px 10px;
+            padding: 20px;
             vertical-align: top;
+            width: 100%;
         }
     }
 }
-

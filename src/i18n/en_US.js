@@ -4,13 +4,24 @@ const translations = {
     'All other cards': 'All other cards',
     'American Express': 'American Express',
 
+    'Billing': 'Billing',
+
+    'CARD NUMBER': 'CARD NUMBER',
+    'CITY': 'CITY',
+    'Checkout': 'Checkout',
+    'COMPANY NAME': 'COMPANY NAME',
+    'COUNTRY': 'COUNTRY',
     'CREDIT CARD': 'CREDIT CARD',
     'cvv_help_3_digit': 'The code is printed on the back of your card. It is the last 3 digits on the right of the signature strip.',
     'cvv_help_4_digit': 'The 4 digit code is printed on the front of your card.',
 
     'Delete': 'Delete',
 
+    'EMAIL ADDRESS': 'EMAIL ADDRESS',
+    'EXPIRATION': 'EXPIRATION',
+
     'Finding your security code': 'Finding your security code',
+    'FIRST NAME': 'FIRST NAME',
 
     'GENDER_TYPE_BOYS': 'Boys',
     'GENDER_TYPE_GIRLS': 'Girls',
@@ -19,21 +30,31 @@ const translations = {
 
     'items': 'item | items',
 
+    'LAST NAME': 'LAST NAME',
+
+    'optional': 'optional',
+
     'Payment method': 'Payment method',
+    'PAYPAL': 'PAYPAL',
     'Please select a quantity': 'Please select a quantity',
     'Please select a size': 'Please select a size',
+    'Please enter a valid email address.': 'Please enter a valid email address.',
+    'POSTAL CODE': 'POSTAL CODE',
     'PRODUCT_SUBTYPE_HAT': 'Hat | Hats',
     'PRODUCT_SUBTYPE_TOP': 'Top | Tops',
     'PRODUCT_TYPE_APPAREL': 'Apparel',
 
     'Quantity': 'Quantity',
 
+    'Required': 'Required',
     'Review items': 'Review items',
 
+    'SECURITY CODE': 'SECURITY CODE',
     'Shipping': 'Shipping',
     'Shopping Cart': 'Shopping Cart',
     'Shorts': 'Shorts',
     'Size': 'Size',
+    'STATE/PROVINCE': 'STATE/PROVINCE',
     'Subtotal': 'Subtotal',
     'SIZE_ADULT_XS': 'Adult Extra Small',
     'SIZE_ADULT_S': 'Adult Small',
@@ -48,9 +69,11 @@ const translations = {
     'SIZE_YOUTH_M': 'Youth Medium',
     'SIZE_YOUTH_L': 'Youth Large',
     'SIZE_YOUTH_XL': 'Youth Extra Large',
+    'STREET ADDRESS': 'STREET ADDRESS',
+    'STREET ADDRESS 2': 'STREET ADDRESS 2',
 
     'Thanks!': 'Thanks!',
-    
+
     'We want to make sure it fits!': 'We want to make sure it fits!',
 
     'Your shopping cart does not contain any items.': 'Your shopping cart does not contain any items.'

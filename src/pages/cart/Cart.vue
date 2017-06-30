@@ -1,75 +1,78 @@
 <template>
     <section>
-        <div class="columns pam">
-            <div class="column is-8">
-                <div class="title">{{ $t('Shopping Cart') }}</div>
-            </div>
-        </div>
-
-        <!--<div v-if="added_cart_item ">-->
-            <!--{{ $t('Added to Cart') }}:-->
-        <!--</div>-->
-
-        <div v-if="!this.cart.num_items" class="fs16">
-            {{ $t('Your shopping cart does not contain any items.') }}
-        </div>
-
-        <template v-else>
-            <div class="cartItems" id="cartItems">
-                <div class="cartItemsHeader">
-                    <span></span>
-                    <span></span>
-                    <span class="width100 tac">{{ $t('Price') }}</span>
-                    <span class="width100 tac">{{ $t('Quantity') }}</span>
+        <div class="container">
+            <div class="columns pam">
+                <div class="column is-8">
+                    <div class="title">{{ $t('Shopping Cart') }}</div>
                 </div>
+            </div>
 
-                <article class="cartItem" v-for="item in this.cart.cart_items" :key="item.id">
-                    <figure class="cartItemCell image is-128x128">
-                        <img v-bind:src="productPic(item)">
-                    </figure>
+            <!--<div v-if="added_cart_item ">-->
+                <!--{{ $t('Added to Cart') }}:-->
+            <!--</div>-->
 
-                    <div class="cartItemCell">
-                        <strong>{{ item.product.title }}</strong>
+            <div v-if="!this.cart.num_items" class="fs16">
+                {{ $t('Your shopping cart does not contain any items.') }}
+            </div>
 
-                        <div>
-                            Size:&nbsp;TODO
+            <template v-else>
+                <div class="cartItems" id="cartItems">
+                    <div class="cartItemsHeader">
+                        <span></span>
+                        <span></span>
+                        <span class="width100 tac">{{ $t('Price') }}</span>
+                        <span class="width100 tac">{{ $t('Quantity') }}</span>
+                    </div>
+
+                    <article class="cartItem" v-for="item in this.cart.cart_items" :key="item.id">
+                        <figure class="cartItemCell image is-128x128">
+                            <img v-bind:src="productPic(item)">
+                        </figure>
+
+                        <div class="cartItemCell">
+                            <strong>{{ item.product.title }}</strong>
+
+                            <div>
+                                Size:&nbsp;TODO
+                            </div>
+
+                            <div><a @click="removeItem(item.id)">{{ $t('Delete') }}</a></div>
                         </div>
 
-                        <div><a @click="removeItem(item.id)">{{ $t('Delete') }}</a></div>
-                    </div>
+                        <!-- Price -->
+                        <div class="cartItemCell fwb tar">
+                            <product-price :product="item.product"></product-price>
+                        </div>
 
-                    <!-- Price -->
-                    <div class="cartItemCell fwb tar">
-                        <product-price :product="item.product"></product-price>
-                    </div>
+                        <!-- Quantity -->
+                        <div class="cartItemCell tac">
+                            <el-input-number v-model="item.qty"
+                                             :step="1"
+                                             :min="1"
+                                             :max="item.product.inventory_count"
+                                             size="small"
+                                             :debounce="300"
+                                             :controls="false"
+                                             v-on:change="function(val) { updateCartItemQuantity(item.id, val) }"
+                                             class="width50"></el-input-number>
+                        </div>
+                    </article>
 
-                    <!-- Quantity -->
-                    <div class="cartItemCell tac">
-                        <el-input-number v-model="item.qty"
-                                         :step="1"
-                                         :min="1"
-                                         :max="item.product.inventory_count"
-                                         size="small"
-                                         :debounce="300"
-                                         :controls="false"
-                                         v-on:change="function(val) { updateCartItemQuantity(item.id, val) }"
-                                         class="width50"></el-input-number>
+                    <div class="cartItemsFooter">
+                        <span></span>
+                        <span class="tar fwb">{{ $t('Subtotal') }} ({{ cart.num_items }} {{ $tc('items', cart.num_items) }}):</span>
+                        <span class="tar fwb">{{ subtotal }}</span>
+                        <span></span>
                     </div>
-                </article>
-
-                <div class="cartItemsFooter">
-                    <span></span>
-                    <span class="tar fwb">{{ $t('Subtotal') }} ({{ cart.num_items }} {{ $tc('items', cart.num_items) }}):</span>
-                    <span class="tar fwb">{{ subtotal }}</span>
-                    <span></span>
                 </div>
-            </div>
 
-            <div>
-                <button class="delete" @click="goToProductList"></button>
-                <button @click="goToCheckout"></button>
-            </div>
-        </template>
+                <div>
+                    <button class="delete" @click="goToProductList"></button>
+                    <button @click="goToCheckout"></button>
+                </div>
+            </template>
+
+        </div>
     </section>
 </template>
 
