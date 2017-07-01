@@ -13,30 +13,18 @@
             }
         },
 
-        data() {
-            return {
-                price: 0
-            }
-        },
-
-        methods: {
-            getPrice(product) {
-                if (isObject(product)) {
-                    if (product.is_on_sale && product.sale_price) {
-                        return product.sale_price;
+        computed: {
+            price: function() {
+                if (isObject(this.product)) {
+                    if (this.product.is_on_sale && this.product.sale_price) {
+                        return this.product.sale_price;
                     }
-                    else if (product.base_price) {
-                        return product.base_price;
+                    else if (this.product.base_price) {
+                        return this.product.base_price;
                     }
                 }
 
                 return 0;
-            }
-        },
-
-        watch: {
-            product (val) {
-                this.price = this.getPrice(val);
             }
         }
     }

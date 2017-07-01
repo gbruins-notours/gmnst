@@ -20,6 +20,8 @@ router.onReady(() => {
     // the data that we already have. Using router.beforeResolve() so that all
     // async components are resolved.
     router.beforeResolve((to, from, next) => {
+        bar.start();
+
         const matched = router.getMatchedComponents(to);
         const prevMatched = router.getMatchedComponents(from);
         let diffed = false;
@@ -28,10 +30,9 @@ router.onReady(() => {
         });
 
         if (!activated.length) {
+            bar.finish();
             return next()
         }
-
-        bar.start();
 
         Promise.all(activated.map(c => {
             if (c.asyncData) {

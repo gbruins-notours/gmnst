@@ -18,6 +18,9 @@ export function createStore () {
                 sidebar: {
                     opened: false,
                     hidden: false
+                },
+                pageHeader: {
+                    inCheckoutFlow: false
                 }
             },
             // appInfo: {

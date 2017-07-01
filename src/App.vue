@@ -1,6 +1,6 @@
 <template>
     <div id="app">
-        <navbar :show="false"></navbar>
+        <navbar></navbar>
         <default-layout></default-layout>
         <footer-bar></footer-bar>
     </div>
@@ -20,6 +20,12 @@ export default {
         DefaultLayout,
         FooterBar
     },
+
+    // data: function() {
+    //     return {
+    //         inCheckoutFlow: false
+    //     }
+    // }
 
     created () {
         const { body } = document
@@ -58,6 +64,16 @@ export default {
             'TOGGLE_DEVICE'
         ])
     }
+
+    // watch: {
+    //     '$route' (to, from) {
+    //         console.log("Navbar ROUTE watch", to)
+    //         // if(isObject(to) && to.name && to.name.indexOf('cart') === 0) {
+    //         //     console.log("IS CHECKOUT FLEO!")
+    //         //     this.inCheckoutFlow = true;
+    //         // }
+    //     }
+    // }
 }
 </script>
 

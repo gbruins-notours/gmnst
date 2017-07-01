@@ -4,7 +4,7 @@
     <div class="progress" :style="{
     'width': percent+'%',
     'height': height,
-    'background-color': canSuccess? color : failedColor,
+    'background-color': canSuccess ? color : failedColor,
     'opacity': show ? 1 : 0
   }"></div>
 </template>
@@ -18,7 +18,7 @@
                 canSuccess: true,
                 duration: 3000,
                 height: '2px',
-                color: '#ffca2b',
+                color: '#ed198a',
                 failedColor: '#ff0000'
             }
         },

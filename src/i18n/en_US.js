@@ -40,6 +40,7 @@ const translations = {
     'Please select a size': 'Please select a size',
     'Please enter a valid email address.': 'Please enter a valid email address.',
     'POSTAL CODE': 'POSTAL CODE',
+    'Proceed to checkout': 'Proceed to checkout',
     'PRODUCT_SUBTYPE_HAT': 'Hat | Hats',
     'PRODUCT_SUBTYPE_TOP': 'Top | Tops',
     'PRODUCT_TYPE_APPAREL': 'Apparel',

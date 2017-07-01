@@ -337,14 +337,14 @@
 
                 </div>
             </template>
-            
+
         </div>
     </section>
 </template>
 
 <script>
     import Vue from 'vue'
-    import { mapGetters, mapActions } from 'vuex'
+    import { mapGetters } from 'vuex'
     import { Checkbox, Input, Dialog, RadioGroup, RadioButton } from 'element-ui'
     import CountrySelect from '../../components/CountrySelect.vue'
 
@@ -414,15 +414,17 @@
             copyShippingDataToBillingData: function(checked) {
                 console.log("TODO", checked);
             }
+        },
+
+        mounted: function() {
+            this.$store.dispatch('IN_CHECKOUT_FLOW', true);
         }
     }
 </script>
 
 <style lang="scss">
-
-.cvvHelpCell {
-    display: inline-block;
-    text-align: left;
-}
-
+    .cvvHelpCell {
+        display: inline-block;
+        text-align: left;
+    }
 </style>

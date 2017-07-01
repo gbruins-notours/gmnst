@@ -21,12 +21,36 @@ export function createRouter () {
         mode: 'history',
         scrollBehavior: () => ({ y: 0 }),
         routes: [
-            { path: '/', component: Home },
-            { path: '/type/:id', component: ProductList },
-            { path: '/item/:id', component: ProductDetail },
-            { path: '/cart/:id?', component: Cart },
-            { path: '/checkout', component: Checkout },
-            { path: '*', component: Error404 }
+            {
+                name: 'home',
+                path: '/',
+                component: Home
+            },
+            {
+                name: 'product_list',
+                path: '/type/:id',
+                component: ProductList
+            },
+            {
+                name: 'product_detail',
+                path: '/item/:id',
+                component: ProductDetail
+            },
+            {
+                name: 'cart_checkout',
+                path: '/cart/checkout',
+                component: Checkout
+            },
+            {
+                name: 'cart',
+                path: '/cart/:id?',
+                component: Cart
+            },
+            {
+                name: 'error404',
+                path: '*',
+                component: Error404
+            }
         ]
     })
 }

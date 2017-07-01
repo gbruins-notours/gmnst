@@ -14,6 +14,10 @@ export default {
         })
     },
 
+    IN_CHECKOUT_FLOW: ({ commit }, inCheckoutFlow) => {
+        commit('IN_CHECKOUT_FLOW', inCheckoutFlow);
+    },
+
     GET_ALL_PRODUCTS: ({ commit }) => {
         return api.getProducts(products => {
             commit('receiveProducts', { products });
@@ -43,7 +47,7 @@ export default {
     CART_ITEM_DELETE: ({ commit }, data) => {
         return api.shoppingCart.deleteItem(data).then((cartData) => {
             commit('CART_SET', cartData);
-        })  
+        })
     },
 
     CART_SYNC: ({ commit }, data) => {

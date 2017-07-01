@@ -2,8 +2,11 @@
     <section>
         <div class="container">
             <div class="columns pam">
-                <div class="column is-8">
-                    <div class="title">{{ $t('Shopping Cart') }}</div>
+                <div class="column is-2">
+                    <div class="title wordwrap">{{ $t('Shopping Cart') }}</div>
+                </div>
+                <div class="column is-10">
+                    <el-button type="warning" @click="goToCheckout" class="colorBlack">{{ $t('Proceed to checkout') }}</el-button>
                 </div>
             </div>
 
@@ -30,13 +33,20 @@
                         </figure>
 
                         <div class="cartItemCell">
-                            <strong>{{ item.product.title }}</strong>
+                            <div class="fwb mbs fs16">{{ item.product.title }}</div>
 
-                            <div>
-                                Size:&nbsp;TODO
+                            <!-- Variants -->
+                            <template v-if="item.variants && item.variants.size">
+                                <div class="displayTableRow">
+                                    <div class="displayTableCell prm">{{ $t('Size') }}:</div>
+                                    <div class="displayTableCell">{{ $t(item.variants.size) }}</div>
+                                </div>
+                            </template>
+
+                            <!-- <div><a class="colorGray" @click="removeItem(item.id)">{{ $t('Delete') }}</a></div> -->
+                            <div class="mtl">
+                                <el-button type="text" @click="removeItem(item.id)">{{ $t('Delete') }}</el-button>
                             </div>
-
-                            <div><a @click="removeItem(item.id)">{{ $t('Delete') }}</a></div>
                         </div>
 
                         <!-- Price -->
@@ -58,17 +68,17 @@
                         </div>
                     </article>
 
-                    <div class="cartItemsFooter">
-                        <span></span>
-                        <span class="tar fwb">{{ $t('Subtotal') }} ({{ cart.num_items }} {{ $tc('items', cart.num_items) }}):</span>
-                        <span class="tar fwb">{{ subtotal }}</span>
-                        <span></span>
+                    <div class="cartItem">
+                        <span class="cartItemCell"></span>
+                        <span class="cartItemCell tar fwb">{{ $t('Subtotal') }} ({{ cart.num_items }} {{ $tc('items', cart.num_items) }}):</span>
+                        <span class="cartItemCell tar fwb">{{ subtotal }}</span>
+                        <span class="cartItemCell"></span>
                     </div>
                 </div>
 
-                <div>
-                    <button class="delete" @click="goToProductList"></button>
-                    <button @click="goToCheckout"></button>
+                <div class="mtl tac">
+                    <!-- <button class="delete" @click="goToProductList"></button> -->
+                    <el-button type="warning" @click="goToCheckout" class="colorBlack">{{ $t('Proceed to checkout') }}</el-button>
                 </div>
             </template>
 
@@ -81,20 +91,16 @@
     import accounting from 'accounting'
     import Vue from 'vue'
     import api from '../../util/api'
-    import { mapGetters, mapActions } from 'vuex'
+    import { mapGetters } from 'vuex'
     import isObject from 'lodash.isobject'
     import ProductPrice from '../../components/product/ProductPrice.vue'
-    import { Select, Option, InputNumber, Loading } from 'element-ui'
+    import { Select, Option, InputNumber, Loading, Button } from 'element-ui'
 
     Vue.use(Select);
     Vue.use(Option);
     Vue.use(InputNumber);
+    Vue.use(Button);
     Vue.use(Loading.directive)
-
-//    let loadingInstance = Loading.service({ fullscreen: true, body: true });
-//    loadingInstance.open();
-
-//    Vue.prototype.$loading = Loading.service
 
     export default {
         props: ['id'],
@@ -123,11 +129,6 @@
         },
 
         methods: {
-            ...mapActions([
-                'CART_ITEM_SET_QTY',
-                'CART_ITEM_DELETE'
-            ]),
-
             productPic(cartItem) {
                 if (cartItem.product.featured_pic) {
                     return '/static/images/product/' + cartItem.product.featured_pic;
@@ -136,12 +137,9 @@
             },
 
             updateCartItemQuantity(id, qty) {
-                console.log('updateCartItemQuantity', id, qty);
-
-//                let loadingInstance = this.$loading({ fullscreen: true });
                 let loadingInstance = Loading.service({ target: '#cartItems' });
 
-                this.CART_ITEM_SET_QTY({
+                this.$store.dispatch('CART_ITEM_SET_QTY', {
                     id,
                     qty
                 }).then(() => {
@@ -150,9 +148,9 @@
             },
 
             removeItem(id) {
-                this.CART_ITEM_DELETE({
+                this.$store.dispatch('CART_ITEM_DELETE', {
                     id
-                })
+                });
             },
 
             goToDetails() {
@@ -162,7 +160,7 @@
             },
 
             goToCheckout() {
-                  this.$router.push(`/checkout`);
+                  this.$router.push({ name: 'cart_checkout' });
             },
 
             goToProductList() {
@@ -185,16 +183,19 @@
                     });
                 }
             }
+        },
+
+        mounted: function() {
+            this.$store.dispatch('IN_CHECKOUT_FLOW', true);
         }
     }
 </script>
 
 <style lang="scss">
+@import '../../assets/css/components/_variables.scss';
 
 .cartItems {
     display: table;
-    /*border-collapse:separate;*/
-    /*border-spacing:10px;*/
     width: 100%;
 }
 
@@ -203,27 +204,18 @@
 }
 
 .cartItemsHeader,
-.cartItemsFooter,
 .cartItem {
     display: table-row;
+
+    &:nth-child(even) {
+        background-color: $background_color_gray;
+    }
 }
 
 .cartItemsHeader > span,
-.cartItemsFooter > span,
 .cartItemCell {
     display: table-cell;
     vertical-align: top;
-    /*border: 1px solid blue;*/
-    padding: 2px 5px;
-}
-
-.cartItemCell {
-    border-top: 1px solid #dfdedf;
-}
-
-@media all and (min-width: 42em) {
-    .cartItemCell {
-        padding: 5px 10px;
-    }
+    padding: 10px;
 }
 </style>

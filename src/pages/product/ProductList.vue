@@ -85,6 +85,13 @@ export default {
 
     beforeMount() {
         this.init(this.$route.params.id)
+    },
+
+    watch: {
+        // React to route param changes:
+        '$route' (to, from) {
+            this.init(this.$route.params.id)
+        }
     }
 }
 </script>

@@ -1,14 +1,18 @@
 export default {
     jwtKey: (state) => {
-        return state.jwtKey
+        return state.jwtKey;
     },
 
     appInfo: (state) => {
-        return state.appInfo
+        return state.appInfo;
+    },
+
+    inCheckoutFlow: (state) => {
+        return state.app.pageHeader.inCheckoutFlow;
     },
 
     sidebar: (state) => {
-        return state.app.sidebar
+        return state.app.sidebar;
     },
 
     cart: (state) => {
@@ -19,4 +23,3 @@ export default {
         return state.cart.num_items || 0;
     }
 }
-

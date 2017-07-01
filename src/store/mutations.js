@@ -39,6 +39,10 @@ export default {
         state.jwtKey = key
     },
 
+    IN_CHECKOUT_FLOW: (state, inCheckoutFlow) => {
+        state.app.pageHeader.inCheckoutFlow = inCheckoutFlow
+    },
+
     receiveProducts (state, { products }) {
         state.allProducts = products
     },
@@ -56,4 +60,3 @@ export default {
         state.app.device.isTablet = device === 'tablet';
     }
 }
-

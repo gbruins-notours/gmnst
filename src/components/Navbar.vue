@@ -1,112 +1,74 @@
 <template>
     <div>
-        <header role="banner" class="Header">
-            <div class="Header-brand">
-                <a href="/"><img class="Header-logo" src="/static/images/logo_header.png" alt="gmnst"></a>
-            </div>
+        <template v-if="!inCheckoutFlow">
+            <header role="banner" class="Header">
+                <div class="Header-container">
+                    <div class="Header-brand cursorPointer" v-on:click="goHome">
+                        <img class="Header-image" src="static/images/logo_header.png" alt="gmnst">
+                    </div>
 
-            <a class="Header-cart" @click="openModal">
-                <span class="icon is-medium"><i class="fa fa-shopping-cart"></i></span>
-                <sup class="badge">{{ numCartItems }}</sup>
-            </a>
+                    <a class="Header-cart">
+                        <span class="icon is-medium"><i class="fa fa-shopping-cart"></i></span>
+                        <sup class="badge">{{ numCartItems }}</sup>
+                    </a>
 
-            <nav class="Header-middle Navigation">
-                <ul class="Navigation-list">
-                    <li class="Navigation-item" v-for="(val, key) in appInfo.product.subTypes">
-                        <a class="Navigation-link" :href="'/type/' + appInfo.seoUri[key]">{{ $tc(key, 2) }}</a>
-                    </li>
-                </ul>
-            </nav>
-        </header>
-
-        <card-modal :visible="modalIsActive"
-                    v-on:card_modal_closed="closeModal"
-                    v-on:card_modal_opened="onModalOpened">
-            <div slot="title">{{ $t('Shopping Cart') }}</div>
-            <div slot="content">
-
-                <div class="box">
-                    <article class="media">
-                        <figure class="media-left">
-                            <p class="image is-64x64">
-                                <img src="http://bulma.io/images/placeholders/128x128.png">
-                            </p>
-                        </figure>
-                        <div class="media-content">
-                            <div class="content">
-                                <strong>Product Title</strong>
-                            </div>
-
-                            <div class="level">
-                                <div class="level-left">
-                                    <div class="level-item">
-                                        <small>Quantity:</small>&nbsp;
-                                        <!--<number-select v-on:number_select_changed="changed"-->
-                                                       <!--min="0"-->
-                                                       <!--max="100"-->
-                                                       <!--initialize="3"></number-select>-->
-                                    </div>
-                                    <div class="level-item">
-                                        <small>Size:</small>&nbsp;
-                                        SMALL
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="media-right">
-                            <!--<button class="delete"></button>-->
-                            <!--<product-price product=""></product-price>-->
-                        </div>
-                    </article>
+                    <nav class="Header-middle Navigation">
+                        <ul class="Navigation-list">
+                            <router-link :to="'/type/' + appInfo.seoUri[key]"
+                                         tag="li"
+                                         exact-active-class="active"
+                                         v-for="(val, key) in appInfo.product.subTypes"
+                                         :key="key">{{ $tc(key, 2) }}</router-link>
+                        </ul>
+                    </nav>
                 </div>
-
-            </div>
-            <div slot="footer">
-                <a class="button is-primary">OK</a>
-                <a class="button">cancel</a>
-            </div>
-        </card-modal>
+            </header>
+        </template>
+        <template v-else>
+            <header role="banner" class="Header">
+                <div class="container">
+                    <div class="columns">
+                        <div class="cursorPointer column is-one-third" v-on:click="goHome" style="border:1px solid blue">
+                            <img class="Header-image" src="static/images/logo_header.png" alt="gmnst">
+                        </div>
+                        <div class="column is-one-third tac fs24 colorBlack" style="border:1px solid blue">
+                            {{ $t('Checkout') }}
+                        </div>
+                        <div class="column is-one-third tar" style="border:1px solid blue">
+                            <span class="icon is-medium"><i class="fa fa-lock colorGrayLighter"></i></span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+        </template>
     </div>
 </template>
 
 <script>
-    import { mapActions, mapGetters } from 'vuex';
-    import CardModal from './CardModal.vue';
+    import { mapGetters } from 'vuex';
+    import isObject from 'lodash.isobject'
     import ProductPrice from './product/ProductPrice.vue';
 
     export default {
-        props: {
-            show: Boolean
-        },
-
         components: {
-            CardModal,
             ProductPrice
         },
 
         data() {
             return {
-                showBigLogo: window.innerWidth > 480,
-                modalIsActive: false
+                showBigLogo: window.innerWidth > 480
             }
         },
 
         computed: {
             ...mapGetters([
                 'appInfo',
-                'numCartItems'
+                'numCartItems',
+                'inCheckoutFlow'
             ])
         },
 
         methods: {
-            ...mapActions([
-                'ADD_TO_CART'
-            ]),
-
-            handleSelect(key, keyPath) {
-                console.log(key, keyPath);
-            },
-
             handleResize() {
                 if (window.innerWidth > 480) {
                     this.showBigLogo = true
@@ -116,38 +78,45 @@
                 }
             },
 
-            openModal() {
-                this.modalIsActive = true;
+            goHome: function() {
+                this.$router.push('/');
             },
 
-            closeModal() {
-                this.modalIsActive = false;
-            },
-
-            onModalOpened() {
-                console.log('TODO: get cart contents')
-            },
-
-            changed(val) {
-                console.log('changed', val)
+            dispatchCheckoutFlow: function(route) {
+                let isCartPage = (isObject(route) && route.name && route.name.indexOf('cart') === 0);
+                console.log("NAVBAR - IS CART PAGE", isCartPage);
+                this.$store.dispatch('IN_CHECKOUT_FLOW', isCartPage);
             }
         },
 
-        created() {
-            window.addEventListener('resize', this.handleResize)
+        created: function() {
+            window.addEventListener('resize', this.handleResize);
+            this.dispatchCheckoutFlow(this.$route)
+        },
+
+        watch: {
+            // React to route param changes:
+            '$route' (to, from) {
+                this.dispatchCheckoutFlow(to);
+            }
         }
     }
 </script>
 
 <style lang="scss">
     .Header {
+        background-color: #fff;
+        box-shadow: 0 1px 1px rgba(10, 10, 10, 0.1);
+        position: relative;
+    }
+
+    .Header-container {
         display: -webkit-box;
         display: -ms-flexbox;
         display: flex;
         -ms-flex-wrap: wrap;
         flex-wrap: wrap;
-        background-color: #fff;
-        box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1);
+        flex-direction: row;
     }
 
     .Header-brand {
@@ -156,10 +125,16 @@
         display: flex;
         -webkit-box-align: center;
         -ms-flex-align: center;
+        flex-grow: 1;
         align-items: center;
-        width: 80%;
-        padding-left: 0.75em;
         color: #02182B;
+        margin-left: 20px;
+    }
+
+    .Header-image {
+        display: inline-block;
+        width: 140px;
+        margin-top: 7px;
     }
 
     .Header-cart {
@@ -179,8 +154,8 @@
         margin-left: 0;
 
         .icon {
-            height: 2.5rem!important;
-            color: white!important;
+            height: 30px !important;
+            color: white !important;
         }
 
         .fa {
@@ -193,18 +168,10 @@
         }
     }
 
-    .Header-logo {
-        display: inline-block;
-        width: 140px;
-        margin-top: 7px;
-    }
-
     .Navigation {
         background-color: whitesmoke;
         color: #010101;
         width: 100%;
-        padding-bottom: 0.9em;
-        padding-top: 0.9em;
     }
 
     .Navigation-list {
@@ -215,23 +182,30 @@
         justify-content: space-around;
         -ms-flex-item-align: center;
         align-self: center;
+        margin: 0 20px 0 0;
         margin: 0;
-    }
 
-    .Navigation-item {
-        list-style: none;
-        padding: 0;
-        text-transform: uppercase;
-    }
+        li {
+            list-style: none;
+            padding: 0;
+            text-transform: uppercase;
+            color: #7a7a7a;
+            font-size: 14px;
+            text-decoration: none;
+            cursor: pointer;
+            padding: 0 10px;
+            height: 50px;
+            line-height: 50px;
 
-    .Navigation-link {
-        color: #7a7a7a;
-        font-size: 0.8rem;
-        text-decoration: none;
+            &:hover,
+            &:focus {
+                color: #363636;
+            }
 
-        &:hover,
-        &:focus {
-            color: #363636;
+            &.active {
+                border-bottom: 3px solid #41b883;
+                color: #000;
+            }
         }
     }
 
@@ -247,20 +221,20 @@
         text-align: center;
         white-space: nowrap;
         position: absolute;
-        transform: translateY(-70%) translateX(70%);
+        transform: translateY(-70%) translateX(60%);
         box-shadow: 0 0 1px 1px rgba(10, 10, 10, 0.1);
     }
 
     @media all and (min-width: 42em) {
         .Header {
             height: 50px;
+        }
+        .Header-container {
             -ms-flex-wrap: nowrap;
             flex-wrap: nowrap;
         }
         .Header-brand {
             max-width: 170px;
-            padding-top: 0.85em;
-            padding-bottom: 0.7em;
         }
         .Header-cart {
             -webkit-box-ordinal-group: 4;
@@ -301,10 +275,6 @@
             -ms-flex-pack: end;
             justify-content: flex-end;
         }
-        .Navigation-link {
-            font-size: 1rem;
-            padding: 0 1em;
-        }
     }
 
     @media all and (min-width: 63em) {
@@ -314,8 +284,12 @@
         .Header-brand {
             max-width: 220px;
         }
-        .Header-logo {
+        .Header-image {
             width: 180px;
+        }
+        .Navigation-list li {
+            height: 73px;
+            line-height: 78px;
         }
     }
 </style>
