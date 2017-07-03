@@ -7,8 +7,12 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const baseConfig = require('./webpack.base.conf');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin');
+const utils = require('./utils');
 
 let webpackConfig = merge(baseConfig, {
+    module: {
+        rules: utils.getStyleLoaders()
+    },
     output: {
         filename: 'static/js/[name].[chunkhash].js'
         // chunkFilename: 'js/[id].[chunkhash].js'

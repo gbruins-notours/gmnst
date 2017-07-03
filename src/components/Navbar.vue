@@ -3,16 +3,16 @@
         <template v-if="!inCheckoutFlow">
             <header role="banner" class="Header">
                 <div class="Header-container">
-                    <div class="Header-brand cursorPointer" v-on:click="goHome">
-                        <img class="Header-image" src="static/images/logo_header.png" alt="gmnst">
+                    <div class="Header-brand">
+                        <img class="Header-image cursorPointer" @click="goHome" src="/static/images/logo_header.png" alt="gmnst" />
                     </div>
 
-                    <a class="Header-cart">
+                    <a class="Header-cart" @click="goToCart">
                         <span class="icon is-medium"><i class="fa fa-shopping-cart"></i></span>
                         <sup class="badge">{{ numCartItems }}</sup>
                     </a>
 
-                    <nav class="Header-middle Navigation">
+                    <nav class="Navigation">
                         <ul class="Navigation-list">
                             <router-link :to="'/type/' + appInfo.seoUri[key]"
                                          tag="li"
@@ -25,16 +25,28 @@
             </header>
         </template>
         <template v-else>
-            <header role="banner" class="Header">
+            <header role="banner" class="Header-checkout">
                 <div class="container">
-                    <div class="columns">
-                        <div class="cursorPointer column is-one-third" v-on:click="goHome" style="border:1px solid blue">
-                            <img class="Header-image" src="static/images/logo_header.png" alt="gmnst">
+                    <div class="displayTable widthAll">
+                        <div class="Header-checkout-cell">
+                            <img class="Header-image cursorPointer" @click="goHome" src="/static/images/logo_header.png" alt="gmnst">
                         </div>
-                        <div class="column is-one-third tac fs24 colorBlack" style="border:1px solid blue">
+                        <div class="Header-checkout-cell tac colorBlack">
                             {{ $t('Checkout') }}
+                            <span class="pls nowrap" >(<a @click="headerPopoverVisible = true">test # items</a>)</span>
+                            <el-popover
+                                ref="headerpopover"
+                                placement="bottom"
+                                offset="100"
+                                v-model="headerPopoverVisible">
+                                <div>
+                                    <div class="fs12 mbm">{{ $t('Are you sure you want to return to your Shopping Cart?') }}</div>
+                                    <el-button :plain="true" type="info" @click="headerPopoverVisible = false" class="mbs">{{ $t('Stay in checkout') }}</el-button>
+                                    <el-button type="warning" @click="headerPopoverVisible = false; goToCart()" class="mbs colorBlack">{{ $t('Return to cart') }}</el-button>
+                                </div>
+                            </el-popover>
                         </div>
-                        <div class="column is-one-third tar" style="border:1px solid blue">
+                        <div class="Header-checkout-cell tar">
                             <span class="icon is-medium"><i class="fa fa-lock colorGrayLighter"></i></span>
                         </div>
                     </div>
@@ -45,9 +57,14 @@
 </template>
 
 <script>
+    import Vue from 'vue';
     import { mapGetters } from 'vuex';
     import isObject from 'lodash.isobject'
-    import ProductPrice from './product/ProductPrice.vue';
+    import ProductPrice from './product/ProductPrice.vue'
+    import { Popover, Button } from 'element-ui'
+
+    Vue.use(Popover);
+    Vue.use(Button);
 
     export default {
         components: {
@@ -56,7 +73,8 @@
 
         data() {
             return {
-                showBigLogo: window.innerWidth > 480
+                showBigLogo: window.innerWidth > 480,
+                headerPopoverVisible: false
             }
         },
 
@@ -79,18 +97,25 @@
             },
 
             goHome: function() {
-                this.$router.push('/');
+                this.$router.push({ name: 'home' });
+            },
+
+            goToCart() {
+                return this.$router.push({ name: 'cart' });
             },
 
             dispatchCheckoutFlow: function(route) {
-                let isCartPage = (isObject(route) && route.name && route.name.indexOf('cart') === 0);
-                console.log("NAVBAR - IS CART PAGE", isCartPage);
-                this.$store.dispatch('IN_CHECKOUT_FLOW', isCartPage);
+                let isCheckoutPage = (isObject(route) && route.name && route.name.indexOf('checkout') === 0);
+                this.$store.dispatch('IN_CHECKOUT_FLOW', isCheckoutPage);
             }
         },
 
         created: function() {
+            // this.dispatchCheckoutFlow(this.$route)
             window.addEventListener('resize', this.handleResize);
+        },
+
+        mounted: function() {
             this.dispatchCheckoutFlow(this.$route)
         },
 
@@ -104,10 +129,23 @@
 </script>
 
 <style lang="scss">
-    .Header {
+    @import "../assets/css/components/_variables.scss";
+
+    .Header,
+    .Header-checkout {
         background-color: #fff;
         box-shadow: 0 1px 1px rgba(10, 10, 10, 0.1);
         position: relative;
+    }
+
+    .Header-checkout-cell {
+        display: table-cell;
+        width: 33%;
+        padding: 0;
+        vertical-align: middle;
+        padding: 0 5px;
+        height: 73px;
+        font-size: 24px;
     }
 
     .Header-container {
@@ -247,7 +285,6 @@
             padding-right: 1.5em;
             margin-left: 20px;
         }
-
         .Navigation {
             background-color: white;
             padding: 0;
@@ -277,7 +314,9 @@
         }
     }
 
-    @media all and (min-width: 63em) {
+    // @media all and (min-width: 63em) {
+    @media all and (min-width: 601px) {
+    // @media #{$medium-and-up}  {
         .Header {
             height: 73px;
         }
@@ -292,4 +331,27 @@
             line-height: 78px;
         }
     }
+
+    @media all and (max-width: 993px) {
+        .Header-checkout,
+        .Header-checkout-cell {
+            height: 50px;
+            font-size: 18px;
+
+            .Header-image {
+                width: 140px;
+            }
+        }
+    }
+
+    // @media all and (min-width: 42em) {
+    //     .Header-checkout,
+    //     .Header-checkout-cell {
+    //         height: 50px;
+    //
+    //         .Header-image {
+    //             width: 180px;
+    //         }
+    //     }
+    // }
 </style>

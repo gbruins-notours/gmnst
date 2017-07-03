@@ -40,6 +40,7 @@ export default {
     },
 
     IN_CHECKOUT_FLOW: (state, inCheckoutFlow) => {
+        console.log("in checkouit flow", inCheckoutFlow);
         state.app.pageHeader.inCheckoutFlow = inCheckoutFlow
     },
 

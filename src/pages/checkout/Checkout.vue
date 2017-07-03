@@ -308,7 +308,7 @@
                         <div class="g-spec-label nowrap">
                             {{ paymentType === 'PAYPAL' ? '3' : '4' }}) {{ $t('Review items') }}</div>
                         <div class="g-spec-content">
-                            TODO
+                            <cart-items :allow-delete="false"></cart-items>
                         </div>
                     </div>
 
@@ -347,6 +347,7 @@
     import { mapGetters } from 'vuex'
     import { Checkbox, Input, Dialog, RadioGroup, RadioButton } from 'element-ui'
     import CountrySelect from '../../components/CountrySelect.vue'
+    import CartItems from '../../components/cart/CartItems'
 
     Vue.use(Checkbox)
     Vue.use(Input)
@@ -359,6 +360,12 @@
             ...mapGetters([
                 'cart'
             ])
+        },
+
+        components: {
+            Checkbox,
+            CountrySelect,
+            CartItems
         },
 
         data() {
@@ -391,11 +398,6 @@
                     }
                 }
             }
-        },
-
-        components: {
-            Checkbox,
-            CountrySelect
         },
 
         methods: {

@@ -96,6 +96,3 @@ exports.register = function (server, options, next) {
 };
 
 exports.register.attributes = require('./package.json');
-
-
-

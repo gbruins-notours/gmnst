@@ -3,6 +3,7 @@ const translations = {
     'Added to Cart': 'Added to Cart',
     'All other cards': 'All other cards',
     'American Express': 'American Express',
+    'Are you sure you want to return to your Shopping Cart?': 'Are you sure you want to return to your Shopping Cart?',
 
     'Billing': 'Billing',
 
@@ -40,6 +41,7 @@ const translations = {
     'Please select a size': 'Please select a size',
     'Please enter a valid email address.': 'Please enter a valid email address.',
     'POSTAL CODE': 'POSTAL CODE',
+    'Price': 'Price',
     'Proceed to checkout': 'Proceed to checkout',
     'PRODUCT_SUBTYPE_HAT': 'Hat | Hats',
     'PRODUCT_SUBTYPE_TOP': 'Top | Tops',
@@ -48,6 +50,7 @@ const translations = {
     'Quantity': 'Quantity',
 
     'Required': 'Required',
+    'Return to cart': 'Return to cart',
     'Review items': 'Review items',
 
     'SECURITY CODE': 'SECURITY CODE',
@@ -70,6 +73,7 @@ const translations = {
     'SIZE_YOUTH_M': 'Youth Medium',
     'SIZE_YOUTH_L': 'Youth Large',
     'SIZE_YOUTH_XL': 'Youth Extra Large',
+    'Stay in checkout': 'Stay in checkout',
     'STREET ADDRESS': 'STREET ADDRESS',
     'STREET ADDRESS 2': 'STREET ADDRESS 2',
 

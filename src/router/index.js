@@ -37,7 +37,7 @@ export function createRouter () {
                 component: ProductDetail
             },
             {
-                name: 'cart_checkout',
+                name: 'checkout',
                 path: '/cart/checkout',
                 component: Checkout
             },
