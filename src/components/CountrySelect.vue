@@ -2,6 +2,7 @@
     <el-select v-model="selectedCountry"
                filterable
                :placeholder="placeholder"
+               :no-match-text="$t('No matching values')"
                v-on:change="updateValue">
         <el-option
                 v-for="item in countries"

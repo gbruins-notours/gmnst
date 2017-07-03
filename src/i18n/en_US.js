@@ -33,10 +33,13 @@ const translations = {
 
     'LAST NAME': 'LAST NAME',
 
+    'No matching values': 'No matching values',
+
     'optional': 'optional',
 
     'Payment method': 'Payment method',
     'PAYPAL': 'PAYPAL',
+    'PayPal tokenization failed': 'PayPal tokenization failed',
     'Please select a quantity': 'Please select a quantity',
     'Please select a size': 'Please select a size',
     'Please enter a valid email address.': 'Please enter a valid email address.',
@@ -78,6 +81,12 @@ const translations = {
     'STREET ADDRESS 2': 'STREET ADDRESS 2',
 
     'Thanks!': 'Thanks!',
+    'There was an error setting up the payment client!': 'There was an error setting up the payment client!',
+    'There was an error setting up the payment input fields!': 'There was an error setting up the payment input fields!',
+    'There was an error tokenizing the payment input fields!': 'There was an error tokenizing the payment input fields!',
+    'There was an error tokenizing PayPal!': 'There was an error tokenizing PayPal!',
+
+    'Unable to initialize PayPal flow. Are your options correct?': 'Unable to initialize PayPal flow. Are your options correct?',
 
     'We want to make sure it fits!': 'We want to make sure it fits!',
 
