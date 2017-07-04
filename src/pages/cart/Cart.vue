@@ -17,6 +17,13 @@
 
                 <cart-items :allow-delete="true"></cart-items>
             </div>
+
+            <div class="tac pal">
+                <el-button type="warning"
+                           class="colorBlack"
+                           size="large"
+                           @click="goToCheckout">{{ $t('Proceed to checkout') }}</el-button>
+            </div>
         </div>
     </section>
 </template>

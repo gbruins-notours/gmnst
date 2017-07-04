@@ -54,7 +54,10 @@
 
             <div class="cartItem">
                 <span class="cartItemCell"></span>
-                <span class="cartItemCell tar fwb">{{ $t('Subtotal') }} ({{ cart.num_items }} {{ $tc('items', cart.num_items) }}):</span>
+                <span class="cartItemCell tar fwb">
+                    {{ $t('Subtotal') }}
+                    <span class="nowrap">({{ cart.num_items }} {{ $tc('items', cart.num_items) }})</span>:
+                </span>
                 <span class="cartItemCell tar fwb">{{ subtotal }}</span>
                 <span class="cartItemCell"></span>
             </div>

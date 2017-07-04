@@ -154,15 +154,29 @@
                     <div class="g-spec">
                         <div class="g-spec-label nowrap">2) {{ $t('Payment method') }}</div>
                         <div class="g-spec-content">
-                            <el-radio-group v-model="paymentType" size="large" v-on:change="paymentTypeChange">
-                              <el-radio-button label="CREDIT_CARD">{{ $t('CREDIT CARD') }}</el-radio-button>
-                              <el-radio-button label="PAYPAL" :disabled="paymentTypePaypalDisabled">{{ $t('PAYPAL') }}</el-radio-button>
-                            </el-radio-group>
+                            <!-- <div class="displayTableCell prm">{{ $t('CHOOSE') }}:</div>
+                            <div class="displayTableCell prm">
+                                <el-radio-group v-model="paymentType" size="large" v-on:change="paymentTypeChange">
+                                  <el-radio-button label="CREDIT_CARD">{{ $t('CREDIT CARD') }}</el-radio-button>
+                                  <el-radio-button label="PAYPAL" :disabled="paymentTypePaypalDisabled">{{ $t('PAYPAL') }}</el-radio-button>
+                                </el-radio-group>
+                            </div> -->
 
                             <div class="ptl">
-                                <div class="pvl phm" v-if="paymentType === 'CREDIT_CARD'">
-                                    <!-- Card Number -->
+                                <div class="pvl phm" >
+                                    <!-- Payment type -->
                                     <div class="displayTableRow">
+                                        <label class="displayTableCell prm vat  ">{{ $t('CHOOSE') }}:</label>
+                                        <div class="displayTableCell pbl">
+                                            <el-radio-group v-model="paymentType" size="large" v-on:change="paymentTypeChange">
+                                                <el-radio-button label="CREDIT_CARD">{{ $t('CREDIT CARD') }}</el-radio-button>
+                                                <el-radio-button label="PAYPAL" :disabled="paymentTypePaypalDisabled">{{ $t('PAYPAL') }}</el-radio-button>
+                                            </el-radio-group>
+                                        </div>
+                                    </div>
+
+                                    <!-- Card Number -->
+                                    <div class="displayTableRow" v-show="paymentType === 'CREDIT_CARD'">
                                         <label class="checkout_form_label">{{ $t('CARD NUMBER') }}:</label>
                                         <div class="checkout_form_value">
                                             <div id="card-number" class="el-input__inner"></div>
@@ -171,7 +185,7 @@
                                     </div>
 
                                     <!-- Expiration -->
-                                    <div class="displayTableRow">
+                                    <div class="displayTableRow" v-show="paymentType === 'CREDIT_CARD'">
                                         <label class="checkout_form_label">{{ $t('EXPIRATION') }}:</label>
                                         <div class="checkout_form_value">
                                             <div id="expiration-date" class="el-input__inner"></div>
@@ -179,7 +193,7 @@
                                     </div>
 
                                     <!-- CVV -->
-                                    <div class="displayTableRow">
+                                    <div class="displayTableRow" v-show="paymentType === 'CREDIT_CARD'">
                                         <label class="checkout_form_label">
                                             <a class="underlineDotted" @click="openCvvModal">{{ $t('SECURITY CODE') }}</a>:
                                         </label>
@@ -194,13 +208,13 @@
 
 
                     <!-- Billing -->
-                    <div class="g-spec" v-show="paymentType !== 'PAYPAL'">
+                    <div class="g-spec" v-if="paymentType === 'CREDIT_CARD'">
                         <div class="g-spec-label nowrap">
-                            3) {{ $t('Billing') }}
+                            {{ numbers.billing }}) {{ $t('Billing') }}
                         </div>
                         <div class="g-spec-content">
                             <div>
-                                <el-checkbox v-model="billingSameAsShipping">{{ $t('Same as Shipping address') }}</el-checkbox>
+                                <el-checkbox v-model="billingSameAsShipping">&nbsp;{{ $t('Same as Shipping address') }}</el-checkbox>
                             </div>
 
                             <div class="mtl" v-show="!billingSameAsShipping">
@@ -310,28 +324,30 @@
                     <!-- Review -->
                     <div class="g-spec">
                         <div class="g-spec-label nowrap">
-                            {{ paymentType === 'PAYPAL' ? '3' : '4' }}) {{ $t('Review items') }}</div>
+                            {{ numbers.review }}) {{ $t('Review items') }}</div>
                         <div class="g-spec-content">
                             <cart-items :allow-delete="false"></cart-items>
                         </div>
                     </div>
 
-                    <!-- Done -->
-                    <div class="g-spec">
-                        <div class="g-spec-label"></div>
+                    <div class="g-spec" v-show="paymentType !== 'PAYPAL'">
+                        <div class="g-spec-label no-line"></div>
                         <div class="g-spec-content">
-                            <el-button type="success"
-                                       @click="tokenizeHostedFields"
-                                       :disabled="braintree.checkoutButtonDisabled">TOKENIZE</el-button>
-
-                            <!-- <button type="submit"
-                                    id="submitTransaction"
-                                    @click="tokenizeHostedFields"
-                                    disabled>TOKENIZE</button> -->
+                            <div v-show="paymentType === 'CREDIT_CARD'">
+                                <el-button type="warning"
+                                           class="colorBlack"
+                                           size="large"
+                                           @click="tokenizeHostedFields"
+                                           :loading="placeOrderButtonLoading"
+                                           :disabled="braintree.checkoutButtonDisabled">{{ $t('Place your order') }}</el-button>
+                           </div>
+                           <div v-show="!paymentType" class="fs16 colorRed">
+                               <el-button type="danger">{{ $t('Please choose a payment method') }}</el-button>
+                           </div>
                         </div>
                     </div>
 
-
+                    <!-- Security code popup -->
                     <el-dialog :title="$t('Finding your security code')" :visible.sync="cvvModalIsActive">
                         <div class="g-spec">
                             <div class="g-spec-label nowrap">{{ $t('American Express') }}</div>
@@ -354,8 +370,6 @@
                         </div>
                     </el-dialog>
                 </div>
-
-
             </template>
         </div>
     </section>
@@ -393,10 +407,15 @@
 
         data() {
             return {
-                paymentType: 'CREDIT_CARD',
+                numbers: {
+                    billing: null,
+                    review: 3
+                },
+                paymentType: null,
                 paymentTypePaypalDisabled: false,
                 billingSameAsShipping: false,
                 cvvModalIsActive: false,
+                placeOrderButtonLoading: false,
                 creditCardForm: {
                     shippingAddress: {
                         firstName: null,
@@ -453,6 +472,13 @@
             paymentTypeChange: function() {
                 if(this.paymentType === 'PAYPAL') {
                     this.paypalTransaction();
+
+                    this.numbers.billing = null;
+                    this.numbers.review = 3;
+                }
+                else {
+                    this.numbers.billing = 3;
+                    this.numbers.review = 4;
                 }
             },
 
@@ -469,7 +495,8 @@
                     if (clientErr) {
                         this.$notify.error({
                             title: this.$t('There was an error setting up the payment client!'),
-                            message: clientErr.message
+                            message: clientErr.message,
+                            duration: 0
                         });
                     }
                     else {
@@ -497,23 +524,24 @@
                     },
                     fields: {
                         number: {
-                            selector: '#card-number',
-                            placeholder: '4111 1111 1111 1111'
+                            selector: '#card-number'
+                            // placeholder: '4111 1111 1111 1111'
                         },
                         cvv: {
-                            selector: '#cvv',
-                            placeholder: '123'
+                            selector: '#cvv'
+                            // placeholder: '123'
                         },
                         expirationDate: {
-                            selector: '#expiration-date',
-                            placeholder: '10/2019'
+                            selector: '#expiration-date'
+                            // placeholder: '10/2019'
                         }
                     }
                 }, (hostedFieldsErr, hostedFieldsInstance) => {
                     if (hostedFieldsErr) {
                         this.$notify.error({
-                            title: this.$t('There was an error setting up the payment input fields!'),
-                            message: hostedFieldsErr.message
+                            title: this.$t('Payment method error') + ':',
+                            message: hostedFieldsErr.message,
+                            duration: 0
                         });
                         return;
                     }
@@ -534,7 +562,8 @@
                     if (createPaypalErr) {
                         this.$notify.error({
                             title: this.$t('There was an error setting up the payment input fields!'),
-                            message: createPaypalErr.message
+                            message: createPaypalErr.message,
+                            duration: 0
                         });
                         this.paymentTypePaypalDisabled = true;
                         return;
@@ -550,12 +579,17 @@
             },
 
             tokenizeHostedFields() {
+                this.placeOrderButtonLoading = true;
+
                 this.braintree.hostedFieldsInstance.tokenize((tokenizeErr, payload) => {
                     if (tokenizeErr) {
                         this.$notify.error({
-                            title: this.$t('There was an error tokenizing the payment input fields!'),
-                            message: tokenizeErr.message
+                            title: this.$t('Payment method error') + ':',
+                            message: tokenizeErr.message,
+                            duration: 0
                         });
+
+                        this.placeOrderButtonLoading = false;
                         return;
                     }
 
@@ -567,9 +601,11 @@
                         if (teardownErr) {
                             console.log('There was an error tearing it down!', teardownErr.message);
                         }
-                        // else {
-                        //     this.showPaymentFields = false;
-                        // }
+                        else {
+                            console.log("hosted fields teardown done")
+                        }
+
+                        this.placeOrderButtonLoading = false;
                     });
                 });
             },
@@ -581,13 +617,15 @@
                     if (pptokenizeErr) {
                         let errorMsg = {
                             title: null,
-                            message: null
+                            message: null,
+                            duration: 0
                         };
 
                         // Handle tokenization errors or premature flow closure
                         switch (pptokenizeErr.code) {
                             case 'PAYPAL_POPUP_CLOSED':
                                 console.error('Customer closed PayPal popup.');
+                                this.paymentType = 'CREDIT_CARD';
                                 break;
 
                             case 'PAYPAL_ACCOUNT_TOKENIZATION_FAILED':

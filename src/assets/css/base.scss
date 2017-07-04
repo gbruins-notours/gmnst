@@ -64,6 +64,10 @@ label {
         vertical-align: top;
         font-weight: 600;
         word-wrap: break-word;
+
+        &.no-line {
+            border: 0 !important;
+        }
     }
 
     .g-spec-content {

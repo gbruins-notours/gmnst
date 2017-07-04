@@ -10,6 +10,7 @@ const translations = {
     'CARD NUMBER': 'CARD NUMBER',
     'CITY': 'CITY',
     'Checkout': 'Checkout',
+    'CHOOSE': 'CHOOSE',
     'COMPANY NAME': 'COMPANY NAME',
     'COUNTRY': 'COUNTRY',
     'CREDIT CARD': 'CREDIT CARD',
@@ -38,8 +39,11 @@ const translations = {
     'optional': 'optional',
 
     'Payment method': 'Payment method',
+    'Payment method error': 'Payment method error',
     'PAYPAL': 'PAYPAL',
     'PayPal tokenization failed': 'PayPal tokenization failed',
+    'Place your order': 'Place your order',
+    'Please choose a payment method': 'Please choose a payment method',
     'Please select a quantity': 'Please select a quantity',
     'Please select a size': 'Please select a size',
     'Please enter a valid email address.': 'Please enter a valid email address.',
@@ -82,8 +86,6 @@ const translations = {
 
     'Thanks!': 'Thanks!',
     'There was an error setting up the payment client!': 'There was an error setting up the payment client!',
-    'There was an error setting up the payment input fields!': 'There was an error setting up the payment input fields!',
-    'There was an error tokenizing the payment input fields!': 'There was an error tokenizing the payment input fields!',
     'There was an error tokenizing PayPal!': 'There was an error tokenizing PayPal!',
 
     'Unable to initialize PayPal flow. Are your options correct?': 'Unable to initialize PayPal flow. Are your options correct?',
