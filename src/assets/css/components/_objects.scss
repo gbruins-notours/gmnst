@@ -45,11 +45,12 @@
 .tac{ text-align: center !important }
 .tar{ text-align: right !important }
 
-.underlineDotted { border-bottom: 1px dotted }
+.underlineDotted { border-bottom: 1px dotted !important }
 
 .vat { vertical-align: top !important }
 
-.widthAll { width: 100% }
+.heightAll { height: 100% !important }
+.widthAll { width: 100% !important }
 .width50 { width: 50px !important }
 .width100 { width: 100px !important }
 .width200 { width: 200px !important }

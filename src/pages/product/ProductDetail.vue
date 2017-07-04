@@ -16,11 +16,10 @@
             <div class="container">
                 <div class="columns">
                     <div class="column is-6">
-                        <div class="image is-2by2 picShadow">
-                            <!-- <img :src="productPic"> -->
-                            <el-carousel trigger="click" height="450px">
-                                <el-carousel-item v-for="pic in productPics" :key="pic">
-                                    <img :src="pic">
+                        <div class="image is-2by2">
+                            <el-carousel trigger="click" arrow="always">
+                                <el-carousel-item v-for="(pic, key) in productPics" :key="key">
+                                    <img :src="pic" class="heightAll">
                                 </el-carousel-item>
                            </el-carousel>
                         </div>
@@ -288,6 +287,19 @@ export default {
 <style lang="scss">
 .picShadow {
     box-shadow: 0 0 3px #333;
+}
+
+.el-carousel,
+.el-carousel__container {
+    height: 650px;
+}
+
+@media all and (max-width: 42em) {
+    .el-carousel,
+    .el-carousel__container {
+        height: 500px;
+        border:1px solid red;
+    }
 }
 
 .prod-attributes-table {

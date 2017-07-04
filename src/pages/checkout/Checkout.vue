@@ -555,6 +555,7 @@
                             duration: 0
                         });
                         this.paymentTypePaypalDisabled = true;
+                        this.braintree.checkoutButtonDisabled = true;
                         return;
                     }
                     else {
@@ -562,6 +563,7 @@
                         //document.querySelector('#submitTransaction').removeAttribute('disabled');
                         this.braintree.paypalInstance = paypalInstance;
                         this.paymentTypePaypalDisabled = false;
+                        this.braintree.checkoutButtonDisabled = false;
                     }
                 });
             },
@@ -581,8 +583,11 @@
                         return;
                     }
 
-                    this.braintree.tokenizePayload = payload;
-                    this.braintree.paymentMethodNonce = payload.nonce;
+                    // Not sure why this is needed.  Commenting out for now:
+                    // this.braintree.tokenizePayload = payload;
+                    // this.braintree.paymentMethodNonce = payload.nonce;
+
+                    //TODO: send payload.nonce to your server (with shipping/billing info)
 
                     // teardown HF and present payment information
                     this.braintree.hostedFieldsInstance.teardown((teardownErr) => {
