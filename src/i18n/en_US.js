@@ -60,6 +60,7 @@ const translations = {
     'Return to cart': 'Return to cart',
     'Review items': 'Review items',
 
+    'Same as Shipping address': 'Same as Shipping address', 
     'SECURITY CODE': 'SECURITY CODE',
     'Shipping': 'Shipping',
     'Shopping Cart': 'Shopping Cart',

@@ -17,7 +17,12 @@
                 <div class="columns">
                     <div class="column is-6">
                         <div class="image is-2by2 picShadow">
-                            <img v-bind:src="productPic">
+                            <!-- <img :src="productPic"> -->
+                            <el-carousel trigger="click" height="450px">
+                                <el-carousel-item v-for="pic in productPics" :key="pic">
+                                    <img :src="pic">
+                                </el-carousel-item>
+                           </el-carousel>
                         </div>
                     </div>
                     <div class="column is-5 is-offset-1">
@@ -29,7 +34,7 @@
                             <product-price :product="product"></product-price>
                         </div>
 
-                        <hr>
+                        <div class="pvl"><hr></div>
 
                         <div class="prod-attributes-table">
                             <!-- Size -->
@@ -65,8 +70,8 @@
 
                             <div class="row">
                                 <div class="label"></div>
-                                <div class="value title is-3 has-text-muted">
-                                    <a class="button is-primary" @click="addToCart()">{{ $t('Add to cart') }}</a>
+                                <div class="value is-3 ptl">
+                                    <el-button type="warning" @click="addToCart" class="mbs colorBlack">{{ $t('Add to cart') }}</el-button>
                                 </div>
                             </div>
                         </div>
@@ -81,17 +86,18 @@
 import Promise from 'bluebird';
 import isObject from 'lodash.isobject'
 import Vue from 'vue'
-import { Select, Option, InputNumber, Notification } from 'element-ui'
+import { Select, Option, InputNumber, Notification, Button, Carousel, CarouselItem } from 'element-ui'
 import api from '../../util/api'
 import ProductPrice from '../../components/product/ProductPrice.vue'
 import { mapActions } from 'vuex'
+import _forEach from 'lodash.forEach';
 
 Vue.use(Select);
 Vue.use(Option);
 Vue.use(InputNumber);
-Vue.use(Notification);
-
-Vue.prototype.$notify = Notification;
+Vue.use(Button);
+Vue.use(Carousel);
+Vue.use(CarouselItem);
 
 export default {
     props: ['id'],
@@ -100,6 +106,7 @@ export default {
         return {
             product: {},
             sizeOptions: [],
+            productPics: [],
             selectedSize: null,
             selectedQty: null
         }
@@ -129,20 +136,20 @@ export default {
             'CART_ITEM_ADD'
         ]),
 
-        addToCart() {
+        addToCart: function() {
 //            if (isObject(this.product) && !this.product.hasOwnProperty('__selectedOptions')) {
 //                this.product.__selectedOptions = {};
 //            }
 
             if (!this.selectedSize) {
-                this.$notify.error({
+                Notification.error({
                     title: this.$t('Please select a size'),
                     message: this.$t('We want to make sure it fits!'),
                     duration: 4500
                 });
             }
             else if (!this.selectedQty) {
-                this.$notify.error({
+                Notification.error({
                     title: this.$t('Please select a quantity'),
                     message: this.$t('Thanks!'),
                     duration: 4500
@@ -162,12 +169,11 @@ export default {
             }
         },
 
-
-        goToCart() {
+        goToCart: function() {
             this.$router.push(`/cart/${this.product.id}`);
         },
 
-        buildSizeOptions(product) {
+        buildSizeOptions: function(product) {
             return new Promise((resolve, reject) => {
                 let sizeOpts = [];
                 let maxInventoryCount = 0;
@@ -189,18 +195,91 @@ export default {
                     maxInventoryCount
                 });
             });
+        },
+
+        // buildPictures: function(product) {
+        //     return new Promise((resolve, reject) => {
+        //         let pics = [];
+        //
+        //         if(product.featured_pic) {
+        //             pics.push('/static/images/product/' + product.featured_pic)
+        //         }
+        //
+        //         if (Array.isArray(product.pics)) {
+        //             product.pics.forEach((obj) => {
+        //                 if (obj.is_visible && obj.file_name) {
+        //                     pics.push('/static/images/product/' + obj.file_name);
+        //                 }
+        //             });
+        //         }
+        //
+        //         resolve(pics);
+        //     });
+        // }
+        buildPictures: function(product) {
+            let sortObj = {};
+            let pics = [];
+
+            function add(sortOrder, val) {
+                let order = sortOrder || 100;
+
+                if(!sortObj.hasOwnProperty(order)) {
+  	                 sortObj[order] = [];
+                }
+
+                 sortObj[order].push(val);
+             }
+
+             function getSortedArray(sortObj) {
+                 let vals = [];
+
+                 _forEach(sortObj, (arr) => {
+                     if(Array.isArray(arr)) {
+                        arr.forEach((val) => {
+                            vals.push(val);
+                        })
+                     }
+                 });
+
+                 return vals;
+            }
+
+            return new Promise((resolve, reject) => {
+                // featured pic is always first
+                if(product.featured_pic) {
+                    add(1, `/static/images/product/${product.featured_pic}`)
+                }
+
+                if (Array.isArray(product.pics)) {
+                    product.pics.forEach((obj) => {
+                        if (obj.is_visible && obj.file_name) {
+                            add(obj.sort_order, `/static/images/product/${obj.file_name}`)
+                        }
+                    });
+                }
+
+                let sorted = getSortedArray(sortObj)
+                console.log("SORTED PICS", sorted);
+
+                resolve(sorted);
+            });
         }
     },
 
     created() {
         api.getProductBySeoUri(this.$route.params.id)
             .then((product) => {
+                console.log("PRODUCT", product);
                 this.product = product;
                 document.title = product.title;
-                return this.buildSizeOptions(product);
-            })
-            .then((result) => {
-                this.sizeOptions = result.sizeOpts;
+
+                this.buildSizeOptions(product).then((result) => {
+                    this.sizeOptions = result.sizeOpts;
+                });
+
+                this.buildPictures(product).then((pics) => {
+                    this.productPics = pics;
+                });
             });
     }
 }
@@ -230,4 +309,3 @@ export default {
     }
 }
 </style>
-

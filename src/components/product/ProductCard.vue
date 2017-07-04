@@ -1,26 +1,19 @@
 <template>
-    <div class="card widthAll cursorPointer" @click="goToDetails()">
-        <div class="card-image">
-            <figure class="image is-square">
-                <img v-bind:src="productPic" alt="Image">
-            </figure>
+    <el-card :body-style="{ padding: '0px' }">
+        <img :src="productPic" alt="Image" class="image cursorPointer" @click="goToDetails">
+        <div style="padding: 14px;" @click="goToDetails" class="cursorPointer">
+            <div class="fwb mbs">{{ product.title }}</div>
+            <div>{{ product.description_short }}</div>
         </div>
-        <div class="card-content">
-            <div class="media">
-                <div class="media-content">
-                    <p class="title is-4">{{ product.title }}</p>
-                    <p class="subtitle is-6"></p>
-                </div>
-            </div>
-
-            <div class="content">
-                {{ product.description_short }}
-            </div>
-        </div>
-    </div>
+    </el-card>
 </template>
 
 <script>
+    import Vue from 'vue'
+    import { Card } from 'element-ui';
+
+    Vue.use(Card)
+
     export default {
         props: ['product'],
 
