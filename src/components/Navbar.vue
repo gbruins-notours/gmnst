@@ -16,7 +16,7 @@
                         <ul class="Navigation-list">
                             <router-link :to="'/type/' + appInfo.seoUri[key]"
                                          tag="li"
-                                         exact-active-class="active"
+                                         active-class="active"
                                          v-for="(val, key) in appInfo.product.subTypes"
                                          :key="key">{{ $tc(key, 2) }}</router-link>
                         </ul>
@@ -134,7 +134,7 @@
     .Header,
     .Header-checkout {
         background-color: #fff;
-        box-shadow: 0 1px 1px rgba(10, 10, 10, 0.1);
+        // box-shadow: 0 1px 1px rgba(10, 10, 10, 0.1);
         position: relative;
     }
 
@@ -172,7 +172,6 @@
     .Header-image {
         display: inline-block;
         width: 140px;
-        margin-top: 7px;
     }
 
     .Header-cart {
@@ -188,7 +187,7 @@
         align-items: center;
         width: 20%;
         height: 57px;
-        background-color: #3faf63;
+        background-color: $colorBluePurple;
         margin-left: 0;
 
         .icon {
@@ -248,7 +247,7 @@
     }
 
     .badge {
-        background-color: #ef59a3;
+        background-color: #ed198a;
         border-radius: 10px;
         color: #fff;
         display: inline-block;

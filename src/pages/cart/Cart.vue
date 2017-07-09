@@ -1,14 +1,20 @@
 <template>
     <section>
+        <page-header :title="$t('Shopping Cart')">
+            <span class="is-8 pll">
+                <el-button type="warning" @click="goToCheckout" class="colorBlack">{{ $t('Proceed to checkout') }}</el-button>
+            </span>
+        </page-header>
+
         <div class="container">
             <div class="pam">
-               <div class="inlineBlock mrl mbm">
+               <!-- <div class="inlineBlock mrl mbm">
                    <div class="title nowrap">{{ $t('Shopping Cart') }}</div>
                </div>
 
                <div class="inlineBlock">
                    <el-button type="warning" @click="goToCheckout" class="colorBlack">{{ $t('Proceed to checkout') }}</el-button>
-               </div>
+               </div> -->
 
                 <div v-if="added_cart_item">
                     {{ $t('Added to Cart') }}:
@@ -31,13 +37,15 @@
 <script>
     import Vue from 'vue'
     import isObject from 'lodash.isobject'
+    import PageHeader from '../../components/PageHeader.vue'
     import CartItems from '../../components/cart/CartItems'
 
     export default {
         props: ['id'],
 
         components: {
-            CartItems
+            CartItems,
+            PageHeader
         },
 
         data: function() {

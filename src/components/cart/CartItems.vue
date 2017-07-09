@@ -134,7 +134,10 @@
 
             goToDetails() {
                 if (this.product.seo_uri) {
-                    this.$router.push(`/item/${this.product.seo_uri}`);
+                    this.$router.push({
+                        name: 'product_detail',
+                        params: { itemId: this.product.seo_uri }
+                    });
                 }
             },
 
@@ -169,7 +172,7 @@
     display: table-row;
 
     &:nth-child(even) {
-        background-color: $background_color_gray;
+        background-color: $bgGrayZebra;
     }
 }
 

@@ -33,7 +33,7 @@ export function createRouter () {
             },
             {
                 name: 'product_detail',
-                path: '/item/:id',
+                path: '/type/:id/:itemId',
                 component: ProductDetail
             },
             {

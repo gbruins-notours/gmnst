@@ -1,13 +1,8 @@
 <template>
     <section>
+        <page-header :title="$t('Checkout')"></page-header>
+
         <div class="container">
-
-            <div class="columns pam">
-                <div class="column is-8">
-                    <div class="title">{{ $t('Checkout') }}</div>
-                </div>
-            </div>
-
             <div v-if="!this.cart.num_items" class="fs16">
                 {{ $t('Your shopping cart does not contain any items.') }}
             </div>
@@ -367,6 +362,7 @@
     import { Checkbox, Input, Dialog, RadioGroup, RadioButton, Notification } from 'element-ui'
     import CountrySelect from '../../components/CountrySelect.vue'
     import CartItems from '../../components/cart/CartItems'
+    import PageHeader from '../../components/PageHeader.vue'
 
     Vue.use(Checkbox)
     Vue.use(Input)
@@ -385,7 +381,8 @@
         components: {
             Checkbox,
             CountrySelect,
-            CartItems
+            CartItems,
+            PageHeader
         },
 
         data() {

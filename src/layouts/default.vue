@@ -1,7 +1,7 @@
 <template>
-    <div class="container is-fluid mtl pbl">
+    <section>
         <router-view></router-view>
-    </div>
+    </section>
 </template>
 
 <script>

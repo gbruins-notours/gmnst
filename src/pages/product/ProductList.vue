@@ -1,14 +1,10 @@
 <template>
-    <section>
-        <div class="columns pam">
-            <div class="column is-8">
-                <div class="title">{{ $tc(pageTitle, 2) }}</div>
-            </div>
-        </div>
-
+    <section class="section container is-fluid">
         <div class="columns is-multiline">
-            <div class="column is-4" v-for="(product, index) in products">
-                <product-card :product="product"></product-card>
+            <div class="column is-4" v-for="(product, index) in products" :key="product.id">
+                <span v-on:click="goToDetails(product)" class="cursorPointer">
+                    <product-card :product="product"></product-card>
+                </span>
             </div>
         </div>
     </section>
@@ -23,7 +19,7 @@ export default {
     props: ['id'],
 
     components: {
-        'product-card': ProductCard
+        ProductCard
     },
 
     data() {
@@ -72,6 +68,15 @@ export default {
             });
         },
 
+        goToDetails(product) {
+            if (product.seo_uri) {
+                this.$router.push({
+                    name: 'product_detail',
+                    params: { itemId: product.seo_uri }
+                });
+            }
+        },
+
         init(productType) {
             let { productTypeId, productSubType } = this.getIdByProductType(productType);
 
@@ -98,4 +103,3 @@ export default {
 
 <style>
 </style>
-

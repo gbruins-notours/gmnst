@@ -1,3 +1,5 @@
+.bgBlack { background-color: #000 !important }
+
 .colorBlack { color: #000 !important }
 .colorGray { color: $colorGray !important }
 .colorGrayLighter { color: #b0b0b0 !important }
@@ -8,6 +10,7 @@
 .displayTableCell { display: table-cell }
 .displayTableRow { display: table-row }
 
+.inline { display: inline }
 .inlineBlock { display: inline-block }
 
 .fs14 { font-size: 14px !important }
@@ -22,8 +25,10 @@
 .pbs { padding-bottom:5px !important }
 .pbm { padding-bottom:10px !important }
 .pbl { padding-bottom:20px !important }
+.phm { padding-left:10px !important; padding-right:10px !important }
 .pls { padding-left:5px !important }
 .plm { padding-left:10px !important }
+.pll { padding-left:20px !important }
 .prm { padding-right:10px !important }
 .prl { padding-right:20px !important }
 .pts { padding-top:5px !important }

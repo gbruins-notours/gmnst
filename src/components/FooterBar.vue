@@ -22,5 +22,16 @@
     }
 </script>
 
-<style>
+<style lang="scss">
+    @import "../assets/css/components/_variables.scss";
+
+    .footer {
+        background-color: inherit;
+        border-top: 1px solid #f7c9e1;
+        margin-top: 50px;
+
+        .content {
+            color: #fff;
+        }
+    }
 </style>

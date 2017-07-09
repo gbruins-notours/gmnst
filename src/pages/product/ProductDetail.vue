@@ -1,77 +1,69 @@
 <template>
-    <div>
-        <!--<div class="section product-header">-->
-            <!--<div class="container">-->
-                <!--<div class="columns">-->
-                    <!--<div class="column">-->
-                        <!--<span class="title is-12">{{ product.title }}</span>-->
-                        <!--<span class="title is-3 has-text-muted">&nbsp;-&nbsp;</span>-->
-                        <!--<span class="title is-4 has-text-muted">{{ productCategory }}</span>-->
-                    <!--</div>-->
-                <!--</div>-->
-            <!--</div>-->
-        <!--</div>-->
+    <div class="section">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-6">
+                    <div class="image is-2by2 phm">
+                       <carousel :autoplay="true"
+                                 :autoplayHoverPause="true"
+                                 :navigationEnabled="true"
+                                 :perPage="1"
+                                 paginationColor="#cacac8"
+                                 paginationActiveColor="#ed198a">
+                          <slide v-for="(pic, key) in productPics" :key="key">
+                            <img :src="pic">
+                          </slide>
+                        </carousel>
 
-        <div class="section">
-            <div class="container">
-                <div class="columns">
-                    <div class="column is-6">
-                        <div class="image is-2by2">
-                            <el-carousel trigger="click" arrow="always">
-                                <el-carousel-item v-for="(pic, key) in productPics" :key="key">
-                                    <img :src="pic" class="heightAll">
-                                </el-carousel-item>
-                           </el-carousel>
-                        </div>
                     </div>
-                    <div class="column is-5 is-offset-1">
-                        <div class="title is-2">{{ product.title }}</div>
+                </div>
+                <div class="column is-5 is-offset-1">
+                    <div class="title is-2">{{ product.title }}</div>
 
-                        <div class="pbl">{{ product.description_long }}</div>
+                    <div class="pbl">{{ product.description_long }}</div>
 
-                        <div class="title is-3">
-                            <product-price :product="product"></product-price>
+                    <div class="title is-3">
+                        <product-price :product="product"></product-price>
+                    </div>
+
+                    <div class="pvl"><hr></div>
+
+                    <div class="prod-attributes-table">
+                        <!-- Size -->
+                        <div class="row">
+                            <div class="label">{{ $t('Size') }}:</div>
+                            <div class="value">
+                                <span class="select">
+                                    <el-select v-model="selectedSize" placeholder="Select">
+                                        <el-option
+                                                v-for="size in sizeOptions"
+                                                :key="size"
+                                                :label="$t(size)"
+                                                :value="size">
+                                        </el-option>
+                                    </el-select>
+                                </span>
+                            </div>
                         </div>
 
-                        <div class="pvl"><hr></div>
-
-                        <div class="prod-attributes-table">
-                            <!-- Size -->
-                            <div class="row">
-                                <div class="label">{{ $t('Size') }}:</div>
-                                <div class="value">
-                                    <span class="select">
-                                        <el-select v-model="selectedSize" placeholder="Select">
-                                            <el-option
-                                                    v-for="size in sizeOptions"
-                                                    :key="size"
-                                                    :label="$t(size)"
-                                                    :value="size">
-                                            </el-option>
-                                        </el-select>
-                                    </span>
-                                </div>
+                        <!-- Quantity -->
+                        <div class="row">
+                            <div class="label">{{ $t('Quantity') }}:</div>
+                            <div class="value">
+                                <el-input-number v-model="selectedQty"
+                                                 :step="1"
+                                                 :min="1"
+                                                 :max="product.inventory_count"
+                                                 :debounce="500"
+                                                 :controls="false"
+                                                 class="width50"></el-input-number>
                             </div>
+                        </div>
 
-                            <!-- Quantity -->
-                            <div class="row">
-                                <div class="label">{{ $t('Quantity') }}:</div>
-                                <div class="value">
-                                    <el-input-number v-model="selectedQty"
-                                                     :step="1"
-                                                     :min="1"
-                                                     :max="product.inventory_count"
-                                                     :debounce="500"
-                                                     :controls="false"
-                                                     class="width50"></el-input-number>
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="label"></div>
-                                <div class="value is-3 ptl">
-                                    <el-button type="warning" @click="addToCart" class="mbs colorBlack">{{ $t('Add to cart') }}</el-button>
-                                </div>
+                        <div class="row">
+                            <div class="label"></div>
+                            <div class="value is-3 ptl">
+                                <el-button type="warning" @click="addToCart" class="colorBlack">{{ $t('Add to cart') }}</el-button>
                             </div>
                         </div>
                     </div>
@@ -85,22 +77,19 @@
 import Promise from 'bluebird';
 import isObject from 'lodash.isobject'
 import Vue from 'vue'
-import { Select, Option, InputNumber, Notification, Button, Carousel, CarouselItem } from 'element-ui'
+import { Select, Option, InputNumber, Notification, Button } from 'element-ui'
 import api from '../../util/api'
 import ProductPrice from '../../components/product/ProductPrice.vue'
 import { mapActions } from 'vuex'
 import _forEach from 'lodash.forEach';
+import { Carousel, Slide } from 'vue-carousel';
 
 Vue.use(Select);
 Vue.use(Option);
 Vue.use(InputNumber);
 Vue.use(Button);
-Vue.use(Carousel);
-Vue.use(CarouselItem);
 
 export default {
-    props: ['id'],
-
     data() {
         return {
             product: {},
@@ -112,7 +101,9 @@ export default {
     },
 
     components: {
-        ProductPrice
+        ProductPrice,
+        Carousel,
+        Slide
     },
 
     computed: {
@@ -196,25 +187,6 @@ export default {
             });
         },
 
-        // buildPictures: function(product) {
-        //     return new Promise((resolve, reject) => {
-        //         let pics = [];
-        //
-        //         if(product.featured_pic) {
-        //             pics.push('/static/images/product/' + product.featured_pic)
-        //         }
-        //
-        //         if (Array.isArray(product.pics)) {
-        //             product.pics.forEach((obj) => {
-        //                 if (obj.is_visible && obj.file_name) {
-        //                     pics.push('/static/images/product/' + obj.file_name);
-        //                 }
-        //             });
-        //         }
-        //
-        //         resolve(pics);
-        //     });
-        // }
         buildPictures: function(product) {
             let sortObj = {};
             let pics = [];
@@ -257,18 +229,15 @@ export default {
                     });
                 }
 
-                let sorted = getSortedArray(sortObj)
-                console.log("SORTED PICS", sorted);
-
-                resolve(sorted);
+                resolve( getSortedArray(sortObj) );
             });
         }
     },
 
     created() {
-        api.getProductBySeoUri(this.$route.params.id)
+        // api.getProductBySeoUri(this.$route.params.id)
+        api.getProductBySeoUri(this.$route.params.itemId)
             .then((product) => {
-                console.log("PRODUCT", product);
                 this.product = product;
                 document.title = product.title;
 
@@ -285,21 +254,14 @@ export default {
 </script>
 
 <style lang="scss">
-.picShadow {
-    box-shadow: 0 0 3px #333;
-}
+@import '../../assets/css/components/_variables.scss';
 
-.el-carousel,
-.el-carousel__container {
-    height: 650px;
+.VueCarousel-navigation-button {
+    font-size: 20px;
+    color: $colorPink !important;
 }
-
-@media all and (max-width: 42em) {
-    .el-carousel,
-    .el-carousel__container {
-        height: 500px;
-        border:1px solid red;
-    }
+.VueCarousel-navigation--disabled {
+    color: $colorGray !important;
 }
 
 .prod-attributes-table {
