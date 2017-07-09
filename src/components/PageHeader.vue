@@ -21,7 +21,7 @@
     @import "../assets/css/components/_variables.scss";
 
     .page-header {
-        background-color: $bgGrayZebra;
+        background-color: #e4e4e4;
         padding: 10px 10px;
     }
 </style>

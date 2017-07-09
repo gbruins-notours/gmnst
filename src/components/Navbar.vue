@@ -9,7 +9,7 @@
 
                     <a class="Header-cart" @click="goToCart">
                         <span class="icon is-medium"><i class="fa fa-shopping-cart"></i></span>
-                        <sup class="badge">{{ numCartItems }}</sup>
+                        <span class="badge">{{ numCartItems }}</span>
                     </a>
 
                     <nav class="Navigation">
@@ -31,16 +31,16 @@
                         <div class="Header-checkout-cell">
                             <img class="Header-image cursorPointer" @click="goHome" src="/static/images/logo_header.png" alt="gmnst">
                         </div>
-                        <div class="Header-checkout-cell tac colorBlack">
+                        <div class="Header-checkout-cell tac colorBlack" v-if="numCartItems">
                             {{ $t('Checkout') }}
-                            <span class="pls nowrap" >(<a @click="headerPopoverVisible = true">test # items</a>)</span>
+                            <span class="pls nowrap" >(<a @click="headerPopoverVisible = true">{{ numCartItems }}&nbsp;{{ $tc('items', numCartItems) }}</a>)</span>
                             <el-popover
                                 ref="headerpopover"
                                 placement="bottom"
                                 offset="100"
                                 v-model="headerPopoverVisible">
                                 <div>
-                                    <div class="fs12 mbm">{{ $t('Are you sure you want to return to your Shopping Cart?') }}</div>
+                                    <div class="fs14 mbm">{{ $t('Are you sure you want to return to your Shopping Cart?') }}</div>
                                     <el-button :plain="true" type="info" @click="headerPopoverVisible = false" class="mbs">{{ $t('Stay in checkout') }}</el-button>
                                     <el-button type="warning" @click="headerPopoverVisible = false; goToCart()" class="mbs colorBlack">{{ $t('Return to cart') }}</el-button>
                                 </div>

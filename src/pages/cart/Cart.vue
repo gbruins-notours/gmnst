@@ -1,7 +1,7 @@
 <template>
     <section>
         <page-header :title="$t('Shopping Cart')">
-            <span class="is-8 pll">
+            <span class="is-8 pll" v-if="this.cart.num_items">
                 <el-button type="warning" @click="goToCheckout" class="colorBlack">{{ $t('Proceed to checkout') }}</el-button>
             </span>
         </page-header>
@@ -24,7 +24,7 @@
                 <cart-items :allow-delete="true"></cart-items>
             </div>
 
-            <div class="tac pal">
+            <div class="tac pal" v-if="this.cart.num_items">
                 <el-button type="warning"
                            class="colorBlack"
                            size="large"
@@ -36,16 +36,21 @@
 
 <script>
     import Vue from 'vue'
+    import { mapGetters } from 'vuex'
     import isObject from 'lodash.isobject'
     import PageHeader from '../../components/PageHeader.vue'
     import CartItems from '../../components/cart/CartItems'
 
     export default {
-        props: ['id'],
-
         components: {
             CartItems,
             PageHeader
+        },
+
+        computed: {
+            ...mapGetters([
+                'cart'
+            ])
         },
 
         data: function() {

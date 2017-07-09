@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div v-if="!this.cart.num_items" class="fs16">
+        <div v-if="!this.cart.num_items" class="fs16 tac pal">
             {{ $t('Your shopping cart does not contain any items.') }}
         </div>
         <div v-else class="cartItems" id="cartItems">

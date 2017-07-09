@@ -1,7 +1,9 @@
 <template>
     <div id="app">
         <navbar></navbar>
-        <default-layout></default-layout>
+        <main>
+            <router-view></router-view>
+        </main>
         <footer-bar></footer-bar>
     </div>
 </template>
@@ -9,7 +11,6 @@
 <script>
 import Promise from 'bluebird';
 import Navbar from '@/components/Navbar'
-import DefaultLayout from '@/layouts/default'
 import FooterBar from '@/components/FooterBar'
 import { mapActions } from 'vuex';
 import isObject from 'lodash.isobject';
@@ -17,7 +18,6 @@ import isObject from 'lodash.isobject';
 export default {
     components: {
         Navbar,
-        DefaultLayout,
         FooterBar
     },
 
@@ -79,4 +79,14 @@ export default {
 
 <style lang="scss">
     @import "assets/css/base";
+
+    #app {
+        display: flex;
+        min-height: 100vh;
+        flex-direction: column;
+    }
+
+    main {
+        flex: 1;
+    }
 </style>

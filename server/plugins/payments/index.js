@@ -200,31 +200,33 @@ internals.after = function (server, next) {
     internals.runPayment = (ShoppingCart, request) => {
         let p = new Promise( (resolve, reject) => {
             let cartUpdateData = {};
+            let shippingData = request.payload.shipping;
+            let billingData = request.payload.billing;
 
             let opts = {};
             opts.nonce = request.payload.nonce;
-            opts.amount = ShoppingCart.get('grand_total');
+            opts.amount = ShoppingCart.get('grand_total'); //TODO
             opts.shipping = {
-                company: request.payload.shipping.company,
-                countryCodeAlpha2: request.payload.shipping.countryCodeAlpha2,
-                extendedAddress: request.payload.shipping.extendedAddress,
-                firstName: request.payload.shipping.firstName,
-                lastName: request.payload.shipping.lastName,
-                locality: request.payload.shipping.city,
-                postalCode: request.payload.shipping.postalCode,
-                region: request.payload.shipping.state,
-                streetAddress: request.payload.shipping.streetAddress
+                company: shippingData.company,
+                countryCodeAlpha2: shippingData.countryCodeAlpha2,
+                extendedAddress: shippingData.extendedAddress,
+                firstName: shippingData.firstName,
+                lastName: shippingData.lastName,
+                locality: shippingData.city,
+                postalCode: shippingData.postalCode,
+                region: shippingData.state,
+                streetAddress: shippingData.streetAddress
             };
             opts.billing = {
-                company: request.payload.billing.company,
-                countryCodeAlpha2: request.payload.billing.countryCodeAlpha2,
-                extendedAddress: request.payload.billing.extendedAddress,
-                firstName: request.payload.billing.firstName,
-                lastName: request.payload.billing.lastName,
-                locality: request.payload.billing.city,
-                postalCode: request.payload.billing.postalCode,
-                region: request.payload.billing.state,
-                streetAddress: request.payload.billing.streetAddress
+                company: billingData.company,
+                countryCodeAlpha2: billingData.countryCodeAlpha2,
+                extendedAddress: billingData.extendedAddress,
+                firstName: billingData.firstName,
+                lastName: billingData.lastName,
+                locality: billingData.city,
+                postalCode: billingData.postalCode,
+                region: billingData.state,
+                streetAddress: billingData.streetAddress
             };
             opts.options = {
                 submitForSettlement: true
@@ -232,7 +234,7 @@ internals.after = function (server, next) {
             opts.customer = {
                 // NOTE: Braintree requires that this email has a '.' in the domain name (i.e test@test.com)
                 // which technically isn't correct. This fails validation: test@test
-                email: request.payload.shipping.email
+                email: shippingData.email
             };
 
             /*
@@ -301,12 +303,12 @@ internals.after = function (server, next) {
                 .finally(
                     () => {
                         // shipping
-                        forEach(request.payload.shipping, (val, key) => {
+                        forEach(shippingData, (val, key) => {
                             cartUpdateData['shipping_' + key] = val;
                         });
 
                         // billing
-                        forEach(request.payload.billing, (val, key) => {
+                        forEach(billingData, (val, key) => {
                             cartUpdateData['billing_' + key] = val;
                         });
 

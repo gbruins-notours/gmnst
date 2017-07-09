@@ -3,7 +3,7 @@
         <page-header :title="$t('Checkout')"></page-header>
 
         <div class="container">
-            <div v-if="!this.cart.num_items" class="fs16">
+            <div v-if="!this.cart.num_items" class="fs16 pal tac">
                 {{ $t('Your shopping cart does not contain any items.') }}
             </div>
 
@@ -374,6 +374,7 @@
         computed: {
             ...mapGetters([
                 'cart',
+                'numCartItems',
                 'appInfo'
             ])
         },
