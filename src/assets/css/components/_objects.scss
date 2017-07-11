@@ -1,6 +1,7 @@
 .bgBlack { background-color: #000 !important }
 
 .colorBlack { color: #000 !important }
+.colorGreen { color: $colorGreen !important }
 .colorGray { color: $colorGray !important }
 .colorGrayLighter { color: #b0b0b0 !important }
 .colorRed { color: $colorRed !important }
@@ -53,6 +54,7 @@
 
 .underlineDotted { border-bottom: 1px dotted !important }
 
+.vam { vertical-align: middle !important }
 .vat { vertical-align: top !important }
 
 .heightAll { height: 100% !important }

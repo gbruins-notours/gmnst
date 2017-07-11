@@ -7,6 +7,7 @@ const translations = {
 
     'Billing': 'Billing',
 
+    'card_expiration_hint': 'MM/YY',
     'CARD NUMBER': 'CARD NUMBER',
     'CITY': 'CITY',
     'Checkout': 'Checkout',
@@ -17,7 +18,9 @@ const translations = {
     'cvv_help_3_digit': 'The code is printed on the back of your card. It is the last 3 digits on the right of the signature strip.',
     'cvv_help_4_digit': 'The 4 digit code is printed on the front of your card.',
 
+
     'Delete': 'Delete',
+    'digits_text': 'digit | digits',
 
     'EMAIL ADDRESS': 'EMAIL ADDRESS',
     'EXPIRATION': 'EXPIRATION',
@@ -60,7 +63,7 @@ const translations = {
     'Return to cart': 'Return to cart',
     'Review items': 'Review items',
 
-    'Same as Shipping address': 'Same as Shipping address', 
+    'Same as Shipping address': 'Same as Shipping address',
     'SECURITY CODE': 'SECURITY CODE',
     'Shipping': 'Shipping',
     'Shopping Cart': 'Shopping Cart',

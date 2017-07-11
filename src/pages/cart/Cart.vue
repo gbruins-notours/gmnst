@@ -16,11 +16,6 @@
                    <el-button type="warning" @click="goToCheckout" class="colorBlack">{{ $t('Proceed to checkout') }}</el-button>
                </div> -->
 
-                <div v-if="added_cart_item">
-                    {{ $t('Added to Cart') }}:
-                    <div>TODO</div>
-                </div>
-
                 <cart-items :allow-delete="true"></cart-items>
             </div>
 

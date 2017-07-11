@@ -121,7 +121,8 @@
                             <!-- Shipping: Company Name -->
                             <div class="displayTableRow">
                                 <label class="checkout_form_label">
-                                    {{ $t('COMPANY NAME') }}<br/>({{ $t('optional') }}):
+                                    {{ $t('COMPANY NAME') }}&nbsp;
+                                    <span class="colorGrayLighter">({{ $t('optional') }})</span>:
                                 </label>
                                 <div class="checkout_form_value">
                                     <el-input v-model="creditCardForm.shippingAddress.company"></el-input>
@@ -150,50 +151,96 @@
                         <div class="g-spec-label nowrap">2) {{ $t('Payment method') }}</div>
                         <div class="g-spec-content">
                             <div class="pvl phm" >
+
                                 <!-- Payment type -->
                                 <div class="displayTableRow">
-                                    <label class="displayTableCell prm vat  ">{{ $t('CHOOSE') }}:</label>
-                                    <div class="displayTableCell pbl">
-                                        <el-radio-group v-model="paymentType" size="large" v-on:change="paymentTypeChange">
+                                    <label class="checkout_form_label"></label>
+                                    <div class="checkout_form_value pbl">
+                                        <el-radio-group v-model="paymentMethod" size="large" v-on:change="paymentMethodChanged">
                                             <el-radio-button label="CREDIT_CARD">{{ $t('CREDIT CARD') }}</el-radio-button>
-                                            <el-radio-button label="PAYPAL" :disabled="paymentTypePaypalDisabled">{{ $t('PAYPAL') }}</el-radio-button>
+                                            <el-radio-button label="PAYPAL">{{ $t('PAYPAL') }}</el-radio-button>
+                                            <!-- <div class="inlineBlock mrl">
+                                                <el-radio class="radio" label="CREDIT_CARD">{{ $t('CREDIT CARD') }}</el-radio>
+                                            </div>
+                                            <div class="inlineBlock">
+                                                <el-radio class="radio" label="PAYPAL" :disabled="!braintree.paypalInstance">{{ $t('PAYPAL') }}</el-radio>
+                                            </div> -->
                                         </el-radio-group>
                                     </div>
                                 </div>
 
                                 <!-- Card Number -->
-                                <div class="displayTableRow" v-show="paymentType === 'CREDIT_CARD'">
-                                    <label class="checkout_form_label">{{ $t('CARD NUMBER') }}:</label>
+                                <div class="displayTableRow" v-show="paymentMethod === 'CREDIT_CARD'">
+                                    <label class="checkout_form_label">
+                                        {{ $t('CARD NUMBER') }}:
+                                    </label>
                                     <div class="checkout_form_value">
-                                        <div id="card-number" class="el-input__inner"></div>
-                                        <!-- <span id="payment-method-icon" ng-class="vm.creditCardForm.cardTypeIcon"></span> -->
+                                        <div id="card-number" class="el-input__inner displayTableCell"></div>
+                                        <i v-show="inputClasses['card-number']"
+                                           class="displayTableCell pls vam"
+                                           :class="inputClasses['card-number']"></i>
+                                        <div v-show="cardTypeIcon"><img class="card-icon displayTableCell" :src="cardTypeIcon" /></div>
                                     </div>
                                 </div>
 
                                 <!-- Expiration -->
-                                <div class="displayTableRow" v-show="paymentType === 'CREDIT_CARD'">
-                                    <label class="checkout_form_label">{{ $t('EXPIRATION') }}:</label>
+                                <div class="displayTableRow" v-show="paymentMethod === 'CREDIT_CARD'">
+                                    <label class="checkout_form_label">
+                                        {{ $t('EXPIRATION') }}
+                                        <span class="colorGrayLighter">({{ $t('card_expiration_hint') }})</span>:
+                                    </label>
                                     <div class="checkout_form_value">
-                                        <div id="expiration-date" class="el-input__inner"></div>
+                                        <div id="expiration-date" class="el-input__inner displayTableCell"></div>
+                                        <i v-show="inputClasses['expiration-date']"
+                                           class="displayTableCell pls vam"
+                                           :class="inputClasses['expiration-date']"></i>
                                     </div>
                                 </div>
 
                                 <!-- CVV -->
-                                <div class="displayTableRow" v-show="paymentType === 'CREDIT_CARD'">
+                                <div class="displayTableRow" v-show="paymentMethod === 'CREDIT_CARD'">
                                     <label class="checkout_form_label">
-                                        <a class="underlineDotted" @click="openCvvModal">{{ $t('SECURITY CODE') }}</a>:
+                                        <a class="underlineDotted" @click="cvvModalIsActive = true">{{ $t('SECURITY CODE') }}</a>
+                                        <span class="colorGrayLighter">({{ securityCodeHint }})</span>:
                                     </label>
                                     <div class="checkout_form_value">
-                                        <div id="cvv" class="el-input__inner"></div>
+                                        <div id="cvv" class="el-input__inner displayTableCell"></div>
+                                        <i v-show="inputClasses.cvv"
+                                           class="displayTableCell pls vam"
+                                           :class="inputClasses.cvv"></i>
                                     </div>
                                 </div>
+
+                                <!-- Security code popup -->
+                                <el-dialog :title="$t('Finding your security code')" :visible.sync="cvvModalIsActive">
+                                    <div class="g-spec">
+                                        <div class="g-spec-label nowrap">{{ $t('American Express') }}</div>
+                                        <div class="g-spec-content">
+                                            <div class="inlineBlock prl">
+                                                <img src="/static/images/creditcards/card_back_cvv_4.png">
+                                            </div>
+                                            <div class="inlineBlock vat plm">{{ $t('cvv_help_4_digit') }}</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="g-spec">
+                                        <div class="g-spec-label nowrap">{{ $t('All other cards') }}</div>
+                                        <div class="g-spec-content">
+                                            <div class="inlineBlock prl">
+                                                <img src="/static/images/creditcards/card_back_cvv_3.png">
+                                            </div>
+                                            <div class="inlineBlock vat plm">{{ $t('cvv_help_3_digit') }}</div>
+                                        </div>
+                                    </div>
+                                </el-dialog>
+
                             </div>
                         </div>
                     </div>
 
 
                     <!-- Billing -->
-                    <div class="g-spec" v-if="paymentType === 'CREDIT_CARD'">
+                    <div class="g-spec" v-if="paymentMethod === 'CREDIT_CARD'">
                         <div class="g-spec-label nowrap">
                             {{ numbers.billing }}) {{ $t('Billing') }}
                         </div>
@@ -295,7 +342,8 @@
                                 <!-- Billing: Company Name -->
                                 <div class="displayTableRow">
                                     <label class="checkout_form_label">
-                                        {{ $t('COMPANY NAME') }}<br/>({{ $t('optional') }}):
+                                        {{ $t('COMPANY NAME') }}&nbsp;
+                                        <span class="colorGrayLighter">({{ $t('optional') }})</span>:
                                     </label>
                                     <div class="checkout_form_value">
                                         <el-input v-model="creditCardForm.billingAddress.company"></el-input>
@@ -315,15 +363,15 @@
                         </div>
                     </div>
 
-                    <div class="pal tac" v-show="paymentType !== 'PAYPAL'">
+                    <div class="pal tac" v-show="paymentMethod !== 'PAYPAL'">
                        <el-button type="warning"
                                   class="colorBlack"
                                   size="large"
                                   @click="tokenizeHostedFields"
                                   :loading="placeOrderButtonLoading"
-                                  :disabled="braintree.checkoutButtonDisabled">{{ $t('Place your order') }}</el-button>
+                                  :disabled="!checkoutButtonEnabled">{{ $t('Place your order') }}</el-button>
 
-                        <div v-show="braintree.checkoutButtonDisabled && paymentType !== 'PAYPAL'" class="colorRed fs16">
+                        <div v-show="!checkoutButtonEnabled && paymentMethod !== 'PAYPAL'" class="colorRed fs16">
                            {{ $t('Please choose a payment method') }}
                         </div>
                     </div>
@@ -359,7 +407,8 @@
 <script>
     import Vue from 'vue'
     import { mapGetters } from 'vuex'
-    import { Checkbox, Input, Dialog, RadioGroup, RadioButton, Notification } from 'element-ui'
+    import isObject from 'lodash.isobject'
+    import { Checkbox, Input, Dialog, RadioGroup, RadioButton, Radio, Notification } from 'element-ui'
     import CountrySelect from '../../components/CountrySelect.vue'
     import CartItems from '../../components/cart/CartItems'
     import PageHeader from '../../components/PageHeader.vue'
@@ -369,6 +418,7 @@
     Vue.use(Dialog)
     Vue.use(RadioGroup)
     Vue.use(RadioButton)
+    Vue.use(Radio)
 
     export default {
         computed: {
@@ -376,7 +426,19 @@
                 'cart',
                 'numCartItems',
                 'appInfo'
-            ])
+            ]),
+
+            checkoutButtonEnabled: function() {
+                return (this.paymentMethod === 'CREDIT_CARD');
+            },
+
+            cardTypeIcon: function() {
+                let type = this.cardType;
+                if(type) {
+                    return `/static/images/creditcards/${type}.png`;
+                }
+                return null;
+            }
         },
 
         components: {
@@ -389,14 +451,20 @@
         data() {
             return {
                 numbers: {
-                    billing: null,
-                    review: 3
+                    billing: 3,
+                    review: 4
                 },
-                paymentType: null,
-                paymentTypePaypalDisabled: false,
+                paymentMethod: 'CREDIT_CARD',
+                cardType: null,
+                securityCodeHint: `3 ${ this.$tc('digits_text', 3) }`,
                 billingSameAsShipping: false,
                 cvvModalIsActive: false,
                 placeOrderButtonLoading: false,
+                inputClasses: {
+                    'card-number': null,
+                    'expiration-date': null,
+                    'cvv': null,
+                },
                 creditCardForm: {
                     shippingAddress: {
                         firstName: null,
@@ -422,12 +490,11 @@
                     }
                 },
                 braintree: {
-                    clientInstance: '',
+                    clientInstance: null,
                     tokenizePayload: '',
-                    hostedFieldsInstance: '',
-                    paypalInstance: '',
+                    hostedFieldsInstance: null,
+                    paypalInstance: null,
                     paymentMethodNonce: null,
-                    checkoutButtonDisabled: true,
                     transaction: {
                         nonce: null,
                         payPalPayload: null
@@ -442,32 +509,24 @@
                 console.log('parent changed', this.creditCardForm.shippingAddress.country)
             },
 
-            openCvvModal: function() {
-                this.cvvModalIsActive = true;
-            },
-
-            closeCvvModal: function() {
-                this.cvvModalIsActive = false;
-            },
-
-            paymentTypeChange: function() {
-                switch(this.paymentType) {
+            paymentMethodChanged: function() {
+                switch(this.paymentMethod) {
                     case 'PAYPAL':
                         this.paypalTransaction();
                         this.numbers.billing = null;
                         this.numbers.review = 3;
-                        this.braintree.checkoutButtonDisabled = true;
-                        break;
-
-                    case 'CREDIT_CARD':
-                        this.numbers.billing = 3;
-                        this.numbers.review = 4;
-                        this.braintree.checkoutButtonDisabled = false;
                         break;
 
                     default:
-                        this.braintree.checkoutButtonDisabled = true;
+                        this.numbers.billing = 3;
+                        this.numbers.review = 4;
+                        break;
                 }
+            },
+
+            setPaymentMethod: function(paymentMethod) {
+                this.paymentMethod = paymentMethod;
+                this.paymentMethodChanged()
             },
 
             copyShippingDataToBillingData: function(checked) {
@@ -512,16 +571,16 @@
                     },
                     fields: {
                         number: {
-                            selector: '#card-number'
-                            // placeholder: '4111 1111 1111 1111'
+                            selector: '#card-number',
+                            placeholder: '•••• •••• •••• ••••'
                         },
                         cvv: {
-                            selector: '#cvv'
-                            // placeholder: '123'
+                            selector: '#cvv',
+                            placeholder: '•••'
                         },
                         expirationDate: {
-                            selector: '#expiration-date'
-                            // placeholder: '10/2019'
+                            selector: '#expiration-date',
+                            placeholder: this.$t('card_expiration_hint')
                         }
                     }
                 }, (hostedFieldsErr, hostedFieldsInstance) => {
@@ -537,6 +596,69 @@
                         //enable submit button
                         // document.querySelector('#submitTransaction').removeAttribute('disabled');
                         this.braintree.hostedFieldsInstance = hostedFieldsInstance;
+                        this.setHostedFieldsEventHandlers(hostedFieldsInstance);
+                    }
+                });
+            },
+
+            setHostedFieldsEventHandlers: function(hostedFieldsInstance) {
+
+                function getElementId(field) {
+                    if(isObject(field) && isObject(field.container)) {
+                        return field.container.id;
+                    }
+                    return null;
+                }
+
+                hostedFieldsInstance.on('validityChange', (event) => {
+                    let field = event.fields[event.emittedBy];
+                    let id = getElementId(field);
+                    let classesSuccess = ['el-icon-circle-check', 'colorGreen'];
+                    let classesError = ['el-icon-circle-cross', 'colorRed'];
+
+                    console.log("ON VALIDITY CHANGE", field, id, event.isValid)
+
+                    if(id) {
+                        if (field.isValid === false && !field.isPotentiallyValid) {
+                            this.inputClasses[id] = classesError;
+                        }
+                        else if (field.isValid === true) {
+                            this.inputClasses[id] = classesSuccess;
+                        }
+                        else {
+                            this.inputClasses[id] = null;
+                        }
+                    }
+                });
+
+//TODO
+                hostedFieldsInstance.on('cardTypeChange', (event) => {
+                    // console.log('cardTypeChange', event);
+                    let isPotentiallyValid = (isObject(event.fields) && isObject(event.fields.number) && !event.fields.number.isPotentiallyValid);
+
+                    if(isPotentiallyValid) {
+                        this.cardType = null;
+                    }
+
+                    // Change card bg depending on card type
+                    if (event.cards.length === 1) {
+                        // Change the CVV length for AmericanExpress cards
+                        if (event.cards[0].code.size === 4) {
+                            hostedFieldsInstance.setPlaceholder('cvv', '••••');
+                            this.securityCodeHint = `4 ${this.$tc('digits_text', 4)}`;
+                        }
+
+                        if(!isPotentiallyValid) {
+                            this.cardType = event.cards[0].type;
+                        }
+                    }
+                    else {
+                        hostedFieldsInstance.setPlaceholder('cvv', '•••');
+                        this.securityCodeHint = `3 ${this.$tc('digits_text', 3)}`;
+
+                        if(!isPotentiallyValid) {
+                            this.cardType = null;
+                        }
                     }
                 });
             },
@@ -552,16 +674,10 @@
                             message: createPaypalErr.message,
                             duration: 0
                         });
-                        this.paymentTypePaypalDisabled = true;
-                        this.braintree.checkoutButtonDisabled = true;
                         return;
                     }
                     else {
-                        //enable submit button
-                        //document.querySelector('#submitTransaction').removeAttribute('disabled');
                         this.braintree.paypalInstance = paypalInstance;
-                        this.paymentTypePaypalDisabled = false;
-                        this.braintree.checkoutButtonDisabled = false;
                     }
                 });
             },
@@ -616,7 +732,7 @@
                         switch (pptokenizeErr.code) {
                             case 'PAYPAL_POPUP_CLOSED':
                                 console.error('Customer closed PayPal popup.');
-                                this.paymentType = 'CREDIT_CARD';
+                                this.setPaymentMethod('CREDIT_CARD')
                                 break;
 
                             case 'PAYPAL_ACCOUNT_TOKENIZATION_FAILED':
@@ -641,6 +757,7 @@
                     else {
                         this.braintree.transaction.nonce = paypalPayload.paymentMethodNonce;
                         this.braintree.transaction.payPalPayload = paypalPayload;
+                        console.log("PAYPAY NONCE", paypalPayload.paymentMethodNonce)
                     }
                 });
             }
@@ -660,14 +777,13 @@
     @import '../../assets/css/components/_variables.scss';
 
     .checkout_form_label {
-        display: table-cell;
-        padding: 0 10px 10px 0;
-        vertical-align: top;
+        display: block;
+        padding: 0;
     }
 
     .checkout_form_value {
-        display: table-cell;
-        padding-bottom: 10px;
+        display: block;
+        margin-bottom: 15px;
 
         .el-input__inner {
             font-size: 20px !important;
@@ -676,8 +792,25 @@
         }
     }
 
+    @media all and (min-width: 601px) {
+        .checkout_form_label {
+            display: table-cell;
+            padding: 0 10px 10px 0;
+            vertical-align: top;
+        }
+
+        .checkout_form_value {
+            display: table-cell;
+            padding-bottom: 10px;
+        }
+    }
+
     .cvvHelpCell {
         display: inline-block;
         text-align: left;
+    }
+
+    .card-icon {
+        width: 50px;
     }
 </style>
