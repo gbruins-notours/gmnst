@@ -1,6 +1,9 @@
 const translations = {
+    'About Billing and Shipping Addresses': 'About Billing and Shipping Addresses',
     'Add to cart': 'Add to cart',
     'Added to Cart': 'Added to Cart',
+    'ADDRESS LINE 1': 'ADDRESS LINE 1',
+    'ADDRESS LINE 2': 'ADDRESS LINE 2',
     'All other cards': 'All other cards',
     'American Express': 'American Express',
     'Are you sure you want to return to your Shopping Cart?': 'Are you sure you want to return to your Shopping Cart?',
@@ -13,6 +16,8 @@ const translations = {
     'Checkout': 'Checkout',
     'CHOOSE': 'CHOOSE',
     'COMPANY NAME': 'COMPANY NAME',
+    'Continue': 'Continue',
+    'correct_address_statement': 'If the address contains typos or other errors, your package may be undeliverable.',
     'COUNTRY': 'COUNTRY',
     'CREDIT CARD': 'CREDIT CARD',
     'cvv_help_3_digit': 'The code is printed on the back of your card. It is the last 3 digits on the right of the signature strip.',
@@ -22,6 +27,7 @@ const translations = {
     'Delete': 'Delete',
     'digits_text': 'digit | digits',
 
+    'Edit Address': 'Edit Address',
     'EMAIL ADDRESS': 'EMAIL ADDRESS',
     'EXPIRATION': 'EXPIRATION',
 
@@ -37,6 +43,8 @@ const translations = {
 
     'LAST NAME': 'LAST NAME',
 
+    'Make sure your address is correct': 'Make sure your address is correct',
+
     'No matching values': 'No matching values',
 
     'optional': 'optional',
@@ -44,6 +52,8 @@ const translations = {
     'Payment method': 'Payment method',
     'Payment method error': 'Payment method error',
     'PAYPAL': 'PAYPAL',
+    'PAYPAL_ACCOUNT_TOKENIZATION_FAILED': 'PayPal tokenization failed',
+    'PAYPAL_FLOW_FAILED': 'Unable to initialize PayPal flow. Are your options correct?',
     'PayPal tokenization failed': 'PayPal tokenization failed',
     'Place your order': 'Place your order',
     'Please choose a payment method': 'Please choose a payment method',
@@ -63,13 +73,15 @@ const translations = {
     'Return to cart': 'Return to cart',
     'Review items': 'Review items',
 
-    'Same as Shipping address': 'Same as Shipping address',
+    'Same as shipping address': 'Same as shipping address',
     'SECURITY CODE': 'SECURITY CODE',
     'Shipping': 'Shipping',
+    'Shipping Address': 'Shipping Address',
+    'Shipping Method': 'Shipping Method',
     'Shopping Cart': 'Shopping Cart',
     'Shorts': 'Shorts',
     'Size': 'Size',
-    'STATE/PROVINCE': 'STATE/PROVINCE',
+    'STATE/PROVINCE/REGION': 'STATE/PROVINCE/REGION',
     'Subtotal': 'Subtotal',
     'SIZE_ADULT_XS': 'Adult Extra Small',
     'SIZE_ADULT_S': 'Adult Small',
@@ -85,12 +97,11 @@ const translations = {
     'SIZE_YOUTH_L': 'Youth Large',
     'SIZE_YOUTH_XL': 'Youth Extra Large',
     'Stay in checkout': 'Stay in checkout',
-    'STREET ADDRESS': 'STREET ADDRESS',
-    'STREET ADDRESS 2': 'STREET ADDRESS 2',
 
     'Thanks!': 'Thanks!',
     'There was an error setting up the payment client!': 'There was an error setting up the payment client!',
     'There was an error tokenizing PayPal!': 'There was an error tokenizing PayPal!',
+    'Tips for entering addresses': 'Tips for entering addresses',
 
     'Unable to initialize PayPal flow. Are your options correct?': 'Unable to initialize PayPal flow. Are your options correct?',
 

@@ -1,3 +1,4 @@
+.bbGray { border-bottom: 1px solid $borderColorGray !important }
 .bgBlack { background-color: #000 !important }
 
 .colorBlack { color: #000 !important }
@@ -15,6 +16,7 @@
 .inline { display: inline }
 .inlineBlock { display: inline-block }
 
+.fs12 { font-size: 12px !important }
 .fs14 { font-size: 14px !important }
 .fs16 { font-size: 16px !important }
 .fs20 { font-size: 20px !important }
@@ -28,6 +30,7 @@
 .pbm { padding-bottom:10px !important }
 .pbl { padding-bottom:20px !important }
 .phm { padding-left:10px !important; padding-right:10px !important }
+.phl { padding-left:20px !important; padding-right:20px !important }
 .pls { padding-left:5px !important }
 .plm { padding-left:10px !important }
 .pll { padding-left:20px !important }

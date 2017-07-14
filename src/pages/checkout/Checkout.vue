@@ -153,20 +153,17 @@
                             <div class="pvl phm" >
 
                                 <!-- Payment type -->
-                                <div class="displayTableRow">
-                                    <label class="checkout_form_label"></label>
-                                    <div class="checkout_form_value pbl">
-                                        <el-radio-group v-model="paymentMethod" size="large" v-on:change="paymentMethodChanged">
-                                            <el-radio-button label="CREDIT_CARD">{{ $t('CREDIT CARD') }}</el-radio-button>
-                                            <el-radio-button label="PAYPAL">{{ $t('PAYPAL') }}</el-radio-button>
-                                            <!-- <div class="inlineBlock mrl">
-                                                <el-radio class="radio" label="CREDIT_CARD">{{ $t('CREDIT CARD') }}</el-radio>
-                                            </div>
-                                            <div class="inlineBlock">
-                                                <el-radio class="radio" label="PAYPAL" :disabled="!braintree.paypalInstance">{{ $t('PAYPAL') }}</el-radio>
-                                            </div> -->
-                                        </el-radio-group>
-                                    </div>
+                                <div class="pbl">
+                                    <el-radio-group v-model="paymentMethod" size="large" v-on:change="paymentMethodChanged">
+                                        <el-radio-button label="CREDIT_CARD">{{ $t('CREDIT CARD') }}</el-radio-button>
+                                        <el-radio-button label="PAYPAL">{{ $t('PAYPAL') }}</el-radio-button>
+                                        <!-- <div class="inlineBlock mrl">
+                                            <el-radio class="radio" label="CREDIT_CARD">{{ $t('CREDIT CARD') }}</el-radio>
+                                        </div>
+                                        <div class="inlineBlock">
+                                            <el-radio class="radio" label="PAYPAL" :disabled="!braintree.paypalInstance">{{ $t('PAYPAL') }}</el-radio>
+                                        </div> -->
+                                    </el-radio-group>
                                 </div>
 
                                 <!-- Card Number -->
@@ -179,7 +176,7 @@
                                         <i v-show="inputClasses['card-number']"
                                            class="displayTableCell pls vam"
                                            :class="inputClasses['card-number']"></i>
-                                        <div v-show="cardTypeIcon"><img class="card-icon displayTableCell" :src="cardTypeIcon" /></div>
+                                        <div class="card-icon" v-show="cardTypeIcon"><img :src="cardTypeIcon" /></div>
                                     </div>
                                 </div>
 
@@ -200,8 +197,11 @@
                                 <!-- CVV -->
                                 <div class="displayTableRow" v-show="paymentMethod === 'CREDIT_CARD'">
                                     <label class="checkout_form_label">
-                                        <a class="underlineDotted" @click="cvvModalIsActive = true">{{ $t('SECURITY CODE') }}</a>
+                                        <span>{{ $t('SECURITY CODE') }}</span>
                                         <span class="colorGrayLighter">({{ securityCodeHint }})</span>:
+                                        <div>
+                                            <span class="underlineDotted cursorPointer" @click="cvvModalIsActive = true">what's this?</span>
+                                        </div>
                                     </label>
                                     <div class="checkout_form_value">
                                         <div id="cvv" class="el-input__inner displayTableCell"></div>
@@ -210,30 +210,6 @@
                                            :class="inputClasses.cvv"></i>
                                     </div>
                                 </div>
-
-                                <!-- Security code popup -->
-                                <el-dialog :title="$t('Finding your security code')" :visible.sync="cvvModalIsActive">
-                                    <div class="g-spec">
-                                        <div class="g-spec-label nowrap">{{ $t('American Express') }}</div>
-                                        <div class="g-spec-content">
-                                            <div class="inlineBlock prl">
-                                                <img src="/static/images/creditcards/card_back_cvv_4.png">
-                                            </div>
-                                            <div class="inlineBlock vat plm">{{ $t('cvv_help_4_digit') }}</div>
-                                        </div>
-                                    </div>
-
-                                    <div class="g-spec">
-                                        <div class="g-spec-label nowrap">{{ $t('All other cards') }}</div>
-                                        <div class="g-spec-content">
-                                            <div class="inlineBlock prl">
-                                                <img src="/static/images/creditcards/card_back_cvv_3.png">
-                                            </div>
-                                            <div class="inlineBlock vat plm">{{ $t('cvv_help_3_digit') }}</div>
-                                        </div>
-                                    </div>
-                                </el-dialog>
-
                             </div>
                         </div>
                     </div>
@@ -245,8 +221,14 @@
                             {{ numbers.billing }}) {{ $t('Billing') }}
                         </div>
                         <div class="g-spec-content">
-                            <div>
-                                <el-checkbox v-model="billingSameAsShipping">&nbsp;{{ $t('Same as Shipping address') }}</el-checkbox>
+                            <div class="pbl">
+                                <!-- <el-checkbox v-model="billingSameAsShipping"
+                                             v-on:change="copyShippingDataToBillingData">&nbsp;{{ $t('Same as Shipping address') }}</el-checkbox> -->
+
+                                <el-radio-group v-model="billingSameAsShipping" size="large" v-on:change="copyShippingDataToBillingData">
+                                    <el-radio-button :label="true">{{ $t('Same as shipping address') }}</el-radio-button>
+                                    <el-radio-button :label="false">{{ $t('Use a different billing address') }}</el-radio-button>
+                                </el-radio-group>
                             </div>
 
                             <div class="mtl" v-show="!billingSameAsShipping">
@@ -375,32 +357,36 @@
                            {{ $t('Please choose a payment method') }}
                         </div>
                     </div>
-
-                    <!-- Security code popup -->
-                    <el-dialog :title="$t('Finding your security code')" :visible.sync="cvvModalIsActive">
-                        <div class="g-spec">
-                            <div class="g-spec-label nowrap">{{ $t('American Express') }}</div>
-                            <div class="g-spec-content">
-                                <div class="inlineBlock prl">
-                                    <img src="/static/images/creditcards/card_back_cvv_4.png">
-                                </div>
-                                <div class="inlineBlock vat plm">{{ $t('cvv_help_4_digit') }}</div>
-                            </div>
-                        </div>
-
-                        <div class="g-spec">
-                            <div class="g-spec-label nowrap">{{ $t('All other cards') }}</div>
-                            <div class="g-spec-content">
-                                <div class="inlineBlock prl">
-                                    <img src="/static/images/creditcards/card_back_cvv_3.png">
-                                </div>
-                                <div class="inlineBlock vat plm">{{ $t('cvv_help_3_digit') }}</div>
-                            </div>
-                        </div>
-                    </el-dialog>
                 </div>
             </template>
         </div>
+
+
+        <!-- Security code popup -->
+        <el-dialog :title="$t('Finding your security code')"
+                   :visible.sync="cvvModalIsActive"
+                   :modal-append-to-body="false">
+            <div class="g-spec">
+                <div class="g-spec-label nowrap">{{ $t('American Express') }}</div>
+                <div class="g-spec-content">
+                    <div class="inlineBlock prl">
+                        <img src="/static/images/creditcards/card_back_cvv_4.png">
+                    </div>
+                    <div class="inlineBlock vat plm">{{ $t('cvv_help_4_digit') }}</div>
+                </div>
+            </div>
+
+            <div class="g-spec">
+                <div class="g-spec-label nowrap">{{ $t('All other cards') }}</div>
+                <div class="g-spec-content">
+                    <div class="inlineBlock prl">
+                        <img src="/static/images/creditcards/card_back_cvv_3.png">
+                    </div>
+                    <div class="inlineBlock vat plm">{{ $t('cvv_help_3_digit') }}</div>
+                </div>
+            </div>
+        </el-dialog>
+
     </section>
 </template>
 
@@ -408,10 +394,12 @@
     import Vue from 'vue'
     import { mapGetters } from 'vuex'
     import isObject from 'lodash.isobject'
+    import forEach from 'lodash.forEach'
     import { Checkbox, Input, Dialog, RadioGroup, RadioButton, Radio, Notification } from 'element-ui'
     import CountrySelect from '../../components/CountrySelect.vue'
     import CartItems from '../../components/cart/CartItems'
     import PageHeader from '../../components/PageHeader.vue'
+    import VeeValidate from 'vee-validate'
 
     Vue.use(Checkbox)
     Vue.use(Input)
@@ -419,6 +407,9 @@
     Vue.use(RadioGroup)
     Vue.use(RadioButton)
     Vue.use(Radio)
+    Vue.use(VeeValidate)
+
+    let supportedCardIcons = ['american-express', 'diners-club', 'discover', 'jcb', 'maestro', 'master-card', 'visa'];
 
     export default {
         computed: {
@@ -429,13 +420,12 @@
             ]),
 
             checkoutButtonEnabled: function() {
-                return (this.paymentMethod === 'CREDIT_CARD');
+                return (this.paymentMethod === 'CREDIT_CARD' && !this.errors.any());
             },
 
             cardTypeIcon: function() {
-                let type = this.cardType;
-                if(type) {
-                    return `/static/images/creditcards/${type}.png`;
+                if(supportedCardIcons.indexOf(this.cardType) > -1) {
+                    return `/static/images/creditcards/${this.cardType}.png`;
                 }
                 return null;
             }
@@ -456,7 +446,7 @@
                 },
                 paymentMethod: 'CREDIT_CARD',
                 cardType: null,
-                securityCodeHint: `3 ${ this.$tc('digits_text', 3) }`,
+                securityCodeHint: `3 ${this.$tc('digits_text', 3)}`,
                 billingSameAsShipping: false,
                 cvvModalIsActive: false,
                 placeOrderButtonLoading: false,
@@ -486,6 +476,7 @@
                         state: null,
                         postalCode: null,
                         country: null,
+                        countryInit: null,
                         company: null
                     }
                 },
@@ -504,11 +495,6 @@
         },
 
         methods: {
-            changed: function(val) {
-                this.creditCardForm.shippingAddress.country = val;
-                console.log('parent changed', this.creditCardForm.shippingAddress.country)
-            },
-
             paymentMethodChanged: function() {
                 switch(this.paymentMethod) {
                     case 'PAYPAL':
@@ -524,14 +510,30 @@
                 }
             },
 
+
             setPaymentMethod: function(paymentMethod) {
                 this.paymentMethod = paymentMethod;
                 this.paymentMethodChanged()
             },
 
-            copyShippingDataToBillingData: function(checked) {
-                console.log("TODO", checked);
+
+            /**
+             * Copies the shippingAddress values into the billingAddress values
+             *
+             * NOTE: This should be done right before submitting the form data,
+             * otherwise any shipping data modified after copying will not make
+             * it into the billing data
+             */
+            copyShippingDataToBillingData: function() {
+                if(this.billingSameAsShipping) {
+                    forEach(this.creditCardForm.shippingAddress, (val, key) => {
+                        if(key !== 'email') {
+                            this.creditCardForm.billingAddress[key] = val;
+                        }
+                    });
+                }
             },
+
 
             createBraintree: function() {
                 let client = require('braintree-web/client');
@@ -718,48 +720,45 @@
             },
 
             paypalTransaction() {
-                this.braintree.paypalInstance.tokenize({
-                    flow: 'vault'
-                }, (pptokenizeErr, paypalPayload) => {
-                    if (pptokenizeErr) {
-                        let errorMsg = {
-                            title: null,
-                            message: null,
-                            duration: 0
-                        };
+                this.braintree.paypalInstance.tokenize(
+                    { flow: 'vault' },
+                    (pptokenizeErr, paypalPayload) => {
+                        if (pptokenizeErr) {
+                            let errorMsg = {
+                                title: null,
+                                message: null,
+                                duration: 0
+                            };
 
-                        // Handle tokenization errors or premature flow closure
-                        switch (pptokenizeErr.code) {
-                            case 'PAYPAL_POPUP_CLOSED':
-                                console.error('Customer closed PayPal popup.');
-                                this.setPaymentMethod('CREDIT_CARD')
-                                break;
+                            // Handle tokenization errors or premature flow closure
+                            switch (pptokenizeErr.code) {
+                                case 'PAYPAL_POPUP_CLOSED':
+                                    // console.error('Customer closed PayPal popup.');
+                                    this.setPaymentMethod('CREDIT_CARD')
+                                    break;
 
-                            case 'PAYPAL_ACCOUNT_TOKENIZATION_FAILED':
-                                errorMsg.title = $t('PayPal tokenization failed');
-                                errorMsg.message = pptokenizeErr.details
-                                break;
+                                case 'PAYPAL_ACCOUNT_TOKENIZATION_FAILED':
+                                case 'PAYPAL_FLOW_FAILED':
+                                    errorMsg.title = $t(pptokenizeErr.code);
+                                    errorMsg.message = pptokenizeErr.details
+                                    break;
 
-                            case 'PAYPAL_FLOW_FAILED':
-                                errorMsg.title = $t('Unable to initialize PayPal flow. Are your options correct?');
-                                errorMsg.message = pptokenizeErr.details
-                                break;
+                                default:
+                                    errorMsg.title = $t('There was an error tokenizing PayPal!');
+                                    errorMsg.message = pptokenizeErr.details
+                            }
 
-                            default:
-                                errorMsg.title = $t('There was an error tokenizing PayPal!');
-                                errorMsg.message = pptokenizeErr.details
+                            if(errorMsg.title) {
+                                Notification.error(errorMsg);
+                            }
                         }
-
-                        if(errorMsg.title) {
-                            Notification.error(errorMsg);
+                        else {
+                            this.braintree.transaction.nonce = paypalPayload.paymentMethodNonce;
+                            this.braintree.transaction.payPalPayload = paypalPayload;
+                            console.log("PAYPAL NONCE", paypalPayload.paymentMethodNonce)
                         }
                     }
-                    else {
-                        this.braintree.transaction.nonce = paypalPayload.paymentMethodNonce;
-                        this.braintree.transaction.payPalPayload = paypalPayload;
-                        console.log("PAYPAY NONCE", paypalPayload.paymentMethodNonce)
-                    }
-                });
+                );
             }
         },
 
@@ -774,43 +773,13 @@
 </script>
 
 <style lang="scss">
-    @import '../../assets/css/components/_variables.scss';
-
-    .checkout_form_label {
-        display: block;
-        padding: 0;
-    }
-
-    .checkout_form_value {
-        display: block;
-        margin-bottom: 15px;
-
-        .el-input__inner {
-            font-size: 20px !important;
-            color: $colorGray !important;
-            min-width: 200px;
-        }
-    }
-
-    @media all and (min-width: 601px) {
-        .checkout_form_label {
-            display: table-cell;
-            padding: 0 10px 10px 0;
-            vertical-align: top;
-        }
-
-        .checkout_form_value {
-            display: table-cell;
-            padding-bottom: 10px;
-        }
-    }
-
     .cvvHelpCell {
         display: inline-block;
         text-align: left;
     }
 
     .card-icon {
+        padding-top: 2px;
         width: 50px;
     }
 </style>

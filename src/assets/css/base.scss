@@ -53,6 +53,29 @@ label {
     }
 }
 
+::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+    color: #f5f5f5 !important;
+}
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+   color: #f5f5f5 !important;
+   opacity: 1;
+}
+::-moz-placeholder { /* Mozilla Firefox 19+ */
+   color: #f5f5f5 !important;
+   opacity: 1;
+}
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+   color: #f5f5f5 !important;
+}
+::-ms-input-placeholder { /* Microsoft Edge */
+    color: #f5f5f5 !important;
+}
+
+ul.disc {
+    list-style-type: disc;
+    list-style-position: outside;
+}
+
 .pageContainer {
     padding: 20px 0 60px 0;
 }
@@ -99,7 +122,7 @@ label {
         display: block;
         padding: 10px 20px;
         border-right: 0;
-        border-bottom: 1px solid #dfdedf;
+        border-bottom: 1px solid $borderColorGray;
         vertical-align: top;
         font-weight: 600;
         word-wrap: break-word;
@@ -128,7 +151,7 @@ label {
             font-size: 18px;
             display: table-cell;
             padding: 20px;
-            border-right: 1px solid #dfdedf;
+            border-right: 1px solid $borderColorGray;
             border-bottom: 0;
             vertical-align: top;
         }
@@ -139,5 +162,35 @@ label {
             vertical-align: top;
             width: 100%;
         }
+    }
+}
+
+
+.checkout_form_label {
+    display: block;
+    padding: 0;
+}
+
+.checkout_form_value {
+    display: block;
+    margin-bottom: 15px;
+
+    .el-input__inner {
+        font-size: 20px !important;
+        color: $colorGray !important;
+        min-width: 200px;
+    }
+}
+
+@media all and (min-width: 601px) {
+    .checkout_form_label {
+        display: table-cell;
+        padding: 0 10px 10px 0;
+        vertical-align: top;
+    }
+
+    .checkout_form_value {
+        display: table-cell;
+        padding-bottom: 10px;
     }
 }

@@ -42,14 +42,20 @@
         },
 
         methods: {
-            updateValue() {
-                this.$emit('input', this.selectedCountry)
+            updateValue(val) {
+                this.$emit('input', val)
             }
         },
 
         computed: {
             optionValueAttr: function() {
                 return (this.valueType && this.countries[0].hasOwnProperty(this.valueType) ? this.valueType : 'alpha2');
+            }
+        },
+
+        watch: {
+            'initValue' (to, from) {
+                this.selectedCountry = to;
             }
         },
 
