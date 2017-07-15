@@ -76,118 +76,17 @@
                 <div class="g-spec" v-if="paymentMethod === 'CREDIT_CARD'">
                     <div class="g-spec-label nowrap">{{ $t('Billing') }}</div>
                     <div class="g-spec-content">
-                        
-                        <el-tabs v-model="activeBillingTab" @tab-click="copyShippingDataToBillingData">
-                              <el-tab-pane :label="$t('Same as shipping address')" name="same_as_shipping">
-                                  <div class="phl">
-                                      <shipping-view :show-details="true" :show-email="false"></shipping-view>
-                                  </div>
-                              </el-tab-pane>
+                        <!-- <el-checkbox v-model="shippingSameAsBilling">{{ $t('SAME AS SHIPPING ADDRESS') }}</el-checkbox> -->
+                        <el-checkbox v-model="billingSameAsShipping">{{ $t('SAME AS SHIPPING ADDRESS') }}</el-checkbox>
 
-                              <el-tab-pane :label="$t('Use a different billing address')" name="not_same_as_shipping">
-                                  <div class="phl">
-                                      <!-- Billing: First Name -->
-                                      <div class="displayTableRow">
-                                          <label class="checkout_form_label">{{ $t('FIRST NAME') }}:</label>
-                                          <div class="checkout_form_value">
-                                              <el-input name="billing_firstName"
-                                                        v-model="creditCardForm.billingAddress.firstName"
-                                                        v-validate="'required'"></el-input>
-                                              <p role="alert" v-if="errors.first('billing_firstName')">
-                                                  {{ $t('Required') }}
-                                              </p>
-                                          </div>
-                                      </div>
+                        <div v-show="billingSameAsShipping" class="pal">
+                            <shipping-view :show-details="true" :show-email="false"></shipping-view>
+                        </div>
 
-                                      <!-- Billing: Last Name -->
-                                      <div class="displayTableRow">
-                                          <label class="checkout_form_label">{{ $t('LAST NAME') }}:</label>
-                                          <div class="checkout_form_value">
-                                              <el-input name="billing_lastName"
-                                                        v-model="creditCardForm.billingAddress.lastName"
-                                                        v-validate="'required'"></el-input>
-                                              <p role="alert" v-if="errors.first('billing_lastName')">
-                                                  {{ $t('Required') }}
-                                              </p>
-                                          </div>
-                                      </div>
-
-                                      <!-- Billing: Street Address -->
-                                      <div class="displayTableRow">
-                                          <label class="checkout_form_label">{{ $t('STREET ADDRESS') }}:</label>
-                                          <div class="checkout_form_value">
-                                              <el-input name="billing_streetAddress"
-                                                        v-model="creditCardForm.billingAddress.streetAddress"
-                                                        v-validate="'required'"></el-input>
-                                              <p role="alert" v-if="errors.first('billing_streetAddress')">
-                                                  {{ $t('Required') }}
-                                              </p>
-                                          </div>
-                                      </div>
-
-                                      <!-- Billing: City -->
-                                      <div class="displayTableRow">
-                                          <label class="checkout_form_label">{{ $t('CITY') }}:</label>
-                                          <div class="checkout_form_value">
-                                              <el-input name="billing_city"
-                                                        v-model="creditCardForm.billingAddress.city"
-                                                        v-validate="'required'"></el-input>
-                                              <p role="alert" v-if="errors.first('billing_city')">
-                                                  {{ $t('Required') }}
-                                              </p>
-                                          </div>
-                                      </div>
-
-                                      <!-- Billing: State -->
-                                      <div class="displayTableRow">
-                                          <label class="checkout_form_label">{{ $t('STATE/PROVINCE') }}:</label>
-                                          <div class="checkout_form_value">
-                                              <el-input name="billing_state"
-                                                        v-model="creditCardForm.billingAddress.state"
-                                                        v-validate="'required'"></el-input>
-                                              <p role="alert" v-if="errors.first('billing_state')">
-                                                  {{ $t('Required') }}
-                                              </p>
-                                          </div>
-                                      </div>
-
-                                      <!-- Billing: Postal Code -->
-                                      <div class="displayTableRow">
-                                          <label class="checkout_form_label">{{ $t('POSTAL CODE') }}:</label>
-                                          <div class="checkout_form_value">
-                                              <el-input name="billing_postalCode"
-                                                        v-model="creditCardForm.billingAddress.postalCode"
-                                                        v-validate="'required'"></el-input>
-                                              <p role="alert" v-if="errors.first('billing_postalCode')">
-                                                  {{ $t('Required') }}
-                                              </p>
-                                          </div>
-                                      </div>
-
-                                      <!-- Billing: Country -->
-                                      <div class="displayTableRow">
-                                          <label class="checkout_form_label">{{ $t('COUNTRY') }}:</label>
-                                          <div class="checkout_form_value">
-                                              <country-select v-model="creditCardForm.billingAddress.country"
-                                                              :init-value="creditCardForm.billingAddress.country"
-                                                              value-type="alpha2"
-                                                              v-on:change="val => { creditCardForm.billingAddress.country = val }"></country-select>
-                                          </div>
-                                      </div>
-
-                                      <!-- Billing: Company Name -->
-                                      <div class="displayTableRow">
-                                          <label class="checkout_form_label">
-                                              {{ $t('COMPANY NAME') }}&nbsp;
-                                              <span class="colorGrayLighter">({{ $t('optional') }})</span>:
-                                          </label>
-                                          <div class="checkout_form_value">
-                                              <el-input v-model="creditCardForm.billingAddress.company"></el-input>
-                                          </div>
-                                      </div>
-                                  </div>
-                              </el-tab-pane>
-                        </el-tabs>
+                        <div v-show="!billingSameAsShipping" class="pal">
+                            <div class="fwb mbl">{{ $t('Enter a new billing address') }}:</div>
+                            <billing-view></billing-view>
+                        </div>
                     </div>
                 </div>
 
@@ -195,7 +94,7 @@
                 <div class="g-spec">
                     <div class="g-spec-label nowrap">{{ $t('Review items') }}</div>
                     <div class="g-spec-content">
-                        <cart-items :allow-delete="false"></cart-items>
+                        <cart-items :allow-edit="false"></cart-items>
                     </div>
                 </div>
 
@@ -248,19 +147,17 @@
     import { mapGetters } from 'vuex'
     import isObject from 'lodash.isobject'
     import forEach from 'lodash.forEach'
-    import { Checkbox, Input, Dialog, RadioGroup, RadioButton, Radio, Notification, Tabs, TabPane } from 'element-ui'
+    import { Checkbox, Input, Dialog, Notification, Tabs, TabPane } from 'element-ui'
     import CountrySelect from '../../components/CountrySelect.vue'
     import CartItems from '../../components/cart/CartItems'
     import CheckoutSteps from '../../components/checkout/CheckoutSteps.vue'
     import ShippingView from '../../components/checkout/ShippingView.vue'
+    import BillingView from '../../components/checkout/BillingView.vue'
     import VeeValidate from 'vee-validate'
 
     Vue.use(Checkbox)
     Vue.use(Input)
     Vue.use(Dialog)
-    Vue.use(RadioGroup)
-    Vue.use(RadioButton)
-    Vue.use(Radio)
     Vue.use(Tabs)
     Vue.use(TabPane)
     Vue.use(VeeValidate)
@@ -273,7 +170,8 @@
             CountrySelect,
             CartItems,
             CheckoutSteps,
-            ShippingView
+            ShippingView,
+            BillingView
         },
 
         computed: {
@@ -292,13 +190,21 @@
                     return `/static/images/creditcards/${this.cardType}.png`;
                 }
                 return null;
+            },
+
+            billingSameAsShipping: {
+                get: function() {
+                    return this.$store.state.checkout.billingSameAsShipping;
+                },
+                set: function(newVal) {
+                    this.$store.dispatch('CHECKOUT_BILLING_SAME_AS_SHIPPING', newVal);
+                }
             }
         },
 
         data() {
             return {
                 paymentMethod: 'CREDIT_CARD',
-                activeBillingTab: 'same_as_shipping',
                 cardType: null,
                 securityCodeHint: `3 ${this.$tc('digits_text', 3)}`,
                 cvvModalIsActive: false,
@@ -307,31 +213,6 @@
                     'card-number': null,
                     'expiration-date': null,
                     'cvv': null,
-                },
-                creditCardForm: {
-                    shippingAddress: {
-                        firstName: null,
-                        lastName: null,
-                        streetAddress: null,
-                        extendedAddress: null,
-                        city: null,
-                        state: null,
-                        postalCode: null,
-                        country: null,
-                        company: null,
-                        email: null,
-                    },
-                    billingAddress: {
-                        firstName: null,
-                        lastName: null,
-                        streetAddress: null,
-                        city: null,
-                        state: null,
-                        postalCode: null,
-                        country: null,
-                        countryInit: null,
-                        company: null
-                    }
                 },
                 braintree: {
                     clientInstance: null,
@@ -374,7 +255,7 @@
              * it into the billing data
              */
             copyShippingDataToBillingData: function() {
-                if(this.activeBillingTab === 'same_as_shipping') {
+                if(this.billingSameAsShipping) {
                     forEach(this.creditCardForm.shippingAddress, (val, key) => {
                         if(key !== 'email') {
                             this.creditCardForm.billingAddress[key] = val;

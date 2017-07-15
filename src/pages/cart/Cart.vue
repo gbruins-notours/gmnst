@@ -8,15 +8,7 @@
 
         <div class="container">
             <div class="pam">
-               <!-- <div class="inlineBlock mrl mbm">
-                   <div class="title nowrap">{{ $t('Shopping Cart') }}</div>
-               </div>
-
-               <div class="inlineBlock">
-                   <el-button type="warning" @click="goToCheckout" class="colorBlack">{{ $t('Proceed to checkout') }}</el-button>
-               </div> -->
-
-                <cart-items :allow-delete="true"></cart-items>
+                <cart-items></cart-items>
             </div>
 
             <div class="tac pal" v-if="this.cart.num_items">
@@ -33,6 +25,7 @@
     import Vue from 'vue'
     import { mapGetters } from 'vuex'
     import isObject from 'lodash.isobject'
+    import { Notification } from 'element-ui'
     import PageHeader from '../../components/PageHeader.vue'
     import CartItems from '../../components/cart/CartItems'
 
@@ -56,7 +49,7 @@
 
         methods: {
             goToCheckout() {
-                this.$router.push({ name: 'checkout' });
+                this.$router.push({ name: 'checkout_shipping' });
             },
         },
 
@@ -68,10 +61,16 @@
                     this.cart.cart_items.forEach((item) => {
                         if(item.product_id === this.$route.params.id) {
                             this.added_cart_item = item;
+
+                            Notification.success({
+                                title: this.$t('Cart updated!'),
+                                duration: 3000
+                            });
                         }
                     });
                 }
             }
+
         }
     }
 </script>

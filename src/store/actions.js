@@ -1,4 +1,5 @@
 import api from '../util/api';
+import isObject from 'lodash.isobject'
 
 
 export default {
@@ -55,5 +56,25 @@ export default {
             console.log("CART", cartData);
             commit('CART_SET', cartData);
         })
+    },
+
+    CHECKOUT_SHIPPING_ATTRIBUTE: ({ commit }, config) => {
+        if(isObject(config)
+            && config.hasOwnProperty('attribute')
+            && config.hasOwnProperty('value')) {
+            commit('CHECKOUT_SHIPPING_ATTRIBUTE', config)
+        }
+    },
+
+    CHECKOUT_BILLING_ATTRIBUTE: ({ commit }, config) => {
+        if(isObject(config)
+            && config.hasOwnProperty('attribute')
+            && config.hasOwnProperty('value')) {
+            commit('CHECKOUT_BILLING_ATTRIBUTE', config)
+        }
+    },
+
+    CHECKOUT_BILLING_SAME_AS_SHIPPING: ({ commit }, sameAsShipping) => {
+        commit('CHECKOUT_BILLING_SAME_AS_SHIPPING', sameAsShipping)
     }
 }

@@ -40,7 +40,8 @@ body {
 }
 
 body,
-.section {
+.section,
+#app {
     background-color: #f9f9f9;
 }
 
@@ -51,24 +52,6 @@ label {
         color: #b31703 !important;
         content: " *"
     }
-}
-
-::-webkit-input-placeholder { /* WebKit, Blink, Edge */
-    color: #f5f5f5 !important;
-}
-:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
-   color: #f5f5f5 !important;
-   opacity: 1;
-}
-::-moz-placeholder { /* Mozilla Firefox 19+ */
-   color: #f5f5f5 !important;
-   opacity: 1;
-}
-:-ms-input-placeholder { /* Internet Explorer 10-11 */
-   color: #f5f5f5 !important;
-}
-::-ms-input-placeholder { /* Microsoft Edge */
-    color: #f5f5f5 !important;
 }
 
 ul.disc {
@@ -115,6 +98,10 @@ ul.disc {
 .g-spec {
     display: block;
     margin-top: 20px;
+
+    &.no-zebra {
+        background-color: inherit !important;
+    }
 
     .g-spec-label {
         color: #6f6f6f;

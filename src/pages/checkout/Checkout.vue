@@ -341,7 +341,7 @@
                         <div class="g-spec-label nowrap">
                             {{ numbers.review }}) {{ $t('Review items') }}</div>
                         <div class="g-spec-content">
-                            <cart-items :allow-delete="false"></cart-items>
+                            <cart-items :allow-edit="false"></cart-items>
                         </div>
                     </div>
 

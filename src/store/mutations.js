@@ -58,5 +58,25 @@ export default {
     TOGGLE_DEVICE: (state, device) => {
         state.app.device.isMobile = device === 'mobile';
         state.app.device.isTablet = device === 'tablet';
+    },
+
+    /**
+     * Updates an attribute in the checkout.shipping Object
+     */
+    CHECKOUT_SHIPPING_ATTRIBUTE: (state, config) => {
+        state.checkout.shipping[config.attribute] = config.value;
+        console.log("SHIPPING STATE UPDATED", config.attribute, config.value, state.checkout.shipping)
+    },
+
+    /**
+     * Updates an attribute in the checkout.shipping Object
+     */
+    CHECKOUT_BILLING_ATTRIBUTE: (state, config) => {
+        state.checkout.billing[config.attribute] = config.value;
+        console.log("BILLING STATE UPDATED", config.attribute, config.value, state.checkout.billing)
+    },
+
+    CHECKOUT_BILLING_SAME_AS_SHIPPING: (state, sameAsShipping) => {
+        state.checkout.billingSameAsShipping = sameAsShipping;
     }
 }

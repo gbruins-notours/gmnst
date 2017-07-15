@@ -17,7 +17,7 @@
                 <template v-else>2) {{ labelShippingMethod }}</template>
             </div>
 
-            <div class="level-item">3) {{ $t('Place Order') }}</div>
+            <div class="level-item">3) {{ $t('Place your order') }}</div>
         </div>
         <el-progress :show-text="false"
                     :stroke-width="18"
@@ -57,7 +57,7 @@
         data: function() {
             return {
                 labelShipping: this.$t('Shipping'),
-                labelShippingMethod: this.$t('Shipping Method')
+                labelShippingMethod: this.$t('Shipping method')
             }
         },
 

@@ -28,7 +28,32 @@ export function createStore () {
             //         subTypes: []
             //     }
             // },
-            cart: {}
+            cart: {},
+            checkout: {
+                shipping: {
+                    firstName: null,
+                    lastName: null,
+                    streetAddress: null,
+                    extendedAddress: null,
+                    city: null,
+                    state: null,
+                    postalCode: null,
+                    country: null,
+                    company: null,
+                    email: null,
+                },
+                billing: {
+                    firstName: null,
+                    lastName: null,
+                    streetAddress: null,
+                    city: null,
+                    state: null,
+                    postalCode: null,
+                    country: null,
+                    company: null
+                },
+                billingSameAsShipping: true
+            }
             // jwtKey: null
         },
         getters,

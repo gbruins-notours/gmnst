@@ -125,7 +125,7 @@
                 <div class="checkout_form_value">
                     <el-input name="shipping_email"
                               v-model="email"
-                              v-validate="'required'"></el-input>
+                              v-validate="'required|email'"></el-input>
 
                     <p role="alert" v-if="errors.first('shipping_email')">
                         {{ $t('Please enter a valid email address.') }}
@@ -141,7 +141,7 @@
         <!-- Details view -->
         <template v-else>
             <div>{{ formattedName }}</div>
-            <div v-show="company">{{ company.toUpperCase() }}</div>
+            <div v-show="company">{{ companyDisplay }}</div>
             <div>{{ streetAddress }}</div>
             <div v-show="extendedAddress">{{ extendedAddress }}</div>
             <div>{{ formattedCityStateZip }}</div>
@@ -183,38 +183,112 @@
         },
 
         computed: {
+            firstName: {
+                get: function() {
+                    return this.getShippingAttribute('firstName');
+                },
+                set: function(newVal) {
+                    this.setShippingAttribute('firstName', newVal)
+                }
+            },
+            lastName: {
+                get: function() {
+                    return this.getShippingAttribute('lastName');
+                },
+                set: function(newVal) {
+                    this.setShippingAttribute('lastName', newVal)
+                }
+            },
+            streetAddress: {
+                get: function() {
+                    return this.getShippingAttribute('streetAddress');
+                },
+                set: function(newVal) {
+                    this.setShippingAttribute('streetAddress', newVal)
+                }
+            },
+            extendedAddress: {
+                get: function() {
+                    return this.getShippingAttribute('extendedAddress');
+                },
+                set: function(newVal) {
+                    this.setShippingAttribute('extendedAddress', newVal)
+                }
+            },
+            city: {
+                get: function() {
+                    return this.getShippingAttribute('city');
+                },
+                set: function(newVal) {
+                    this.setShippingAttribute('city', newVal)
+                }
+            },
+            state: {
+                get: function() {
+                    return this.getShippingAttribute('state');
+                },
+                set: function(newVal) {
+                    this.setShippingAttribute('state', newVal)
+                }
+            },
+            postalCode: {
+                get: function() {
+                    return this.getShippingAttribute('postalCode');
+                },
+                set: function(newVal) {
+                    this.setShippingAttribute('postalCode', newVal)
+                }
+            },
+            country: {
+                get: function() {
+                    return this.getShippingAttribute('country');
+                },
+                set: function(newVal) {
+                    this.setShippingAttribute('country', newVal)
+                }
+            },
+            company: {
+                get: function() {
+                    return this.getShippingAttribute('company');
+                },
+                set: function(newVal) {
+                    this.setShippingAttribute('company', newVal)
+                }
+            },
+            email: {
+                get: function() {
+                    return this.getShippingAttribute('email');
+                },
+                set: function(newVal) {
+                    this.setShippingAttribute('email', newVal)
+                }
+            },
+
             formattedName: function() {
                 return `${this.firstName} ${this.lastName}`;
             },
 
             formattedCityStateZip: function() {
                 return `${this.city}, ${this.state} ${this.postalCode}`;
+            },
+
+            companyDisplay: function() {
+                if(this.company) {
+                    return this.company.toUpperCase()
+                }
+                return null;
             }
         },
 
-        data: function() {
-            return {
-                // firstName: null,
-                // lastName: null,
-                // streetAddress: null,
-                // extendedAddress: null,
-                // city: null,
-                // state: null,
-                // postalCode: null,
-                // country: null,
-                // company: null,
-                // email: null,
-
-                firstName: 'greg',
-                lastName: 'bruins',
-                streetAddress: '123 abc st',
-                extendedAddress: null,
-                city: 'san mateo',
-                state: 'CA',
-                postalCode: '12345',
-                country: 'AD',
-                company: 'foo company',
-                email: 'greg@greg.com',
+        methods: {
+            setShippingAttribute: function(attribute, value) {
+                this.$store.dispatch('CHECKOUT_SHIPPING_ATTRIBUTE', {
+                    attribute,
+                    value
+                });
+            },
+            getShippingAttribute: function(attribute) {
+                return this.$store.state.checkout.shipping[attribute];
             }
         }
     }

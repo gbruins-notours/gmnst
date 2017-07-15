@@ -12,6 +12,7 @@ const translations = {
 
     'card_expiration_hint': 'MM/YY',
     'CARD NUMBER': 'CARD NUMBER',
+    'Cart updated!': 'Cart updated!',
     'CITY': 'CITY',
     'Checkout': 'Checkout',
     'CHOOSE': 'CHOOSE',
@@ -29,6 +30,7 @@ const translations = {
 
     'Edit Address': 'Edit Address',
     'EMAIL ADDRESS': 'EMAIL ADDRESS',
+    'Enter a new billing address': 'Enter a new billing address',
     'EXPIRATION': 'EXPIRATION',
 
     'Finding your security code': 'Finding your security code',
@@ -73,11 +75,11 @@ const translations = {
     'Return to cart': 'Return to cart',
     'Review items': 'Review items',
 
-    'Same as shipping address': 'Same as shipping address',
+    'SAME AS SHIPPING ADDRESS': 'SAME AS SHIPPING ADDRESS',
     'SECURITY CODE': 'SECURITY CODE',
     'Shipping': 'Shipping',
     'Shipping Address': 'Shipping Address',
-    'Shipping Method': 'Shipping Method',
+    'Shipping method': 'Shipping method',
     'Shopping Cart': 'Shopping Cart',
     'Shorts': 'Shorts',
     'Size': 'Size',
@@ -97,6 +99,7 @@ const translations = {
     'SIZE_YOUTH_L': 'Youth Large',
     'SIZE_YOUTH_XL': 'Youth Extra Large',
     'Stay in checkout': 'Stay in checkout',
+    'STREET ADDRESS': 'STREET ADDRESS',
 
     'Thanks!': 'Thanks!',
     'There was an error setting up the payment client!': 'There was an error setting up the payment client!',
@@ -104,6 +107,7 @@ const translations = {
     'Tips for entering addresses': 'Tips for entering addresses',
 
     'Unable to initialize PayPal flow. Are your options correct?': 'Unable to initialize PayPal flow. Are your options correct?',
+    'USE A DIFFERENT BILLING ADDRESS': 'USE A DIFFERENT BILLING ADDRESS',
 
     'We want to make sure it fits!': 'We want to make sure it fits!',
 

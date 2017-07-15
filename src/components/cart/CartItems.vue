@@ -28,7 +28,7 @@
                     </template>
 
                     <!-- <div><a class="colorGray" @click="removeItem(item.id)">{{ $t('Delete') }}</a></div> -->
-                    <div v-if="allowDelete" class="mtl">
+                    <div v-if="allowEdit" class="mtl">
                         <el-button type="text" @click="removeItem(item.id)">{{ $t('Delete') }}</el-button>
                     </div>
                 </div>
@@ -40,15 +40,20 @@
 
                 <!-- Quantity -->
                 <div class="cartItemCell tac">
-                    <el-input-number v-model="item.qty"
-                                     :step="1"
-                                     :min="1"
-                                     :max="item.product.inventory_count"
-                                     size="small"
-                                     :debounce="300"
-                                     :controls="false"
-                                     v-on:change="function(val) { updateCartItemQuantity(item.id, val) }"
-                                     class="width50"></el-input-number>
+                    <template v-if="allowEdit">
+                        <el-input-number v-model="item.qty"
+                                         :step="1"
+                                         :min="1"
+                                         :max="item.product.inventory_count"
+                                         size="small"
+                                         :debounce="300"
+                                         :controls="false"
+                                         v-on:change="function(val) { updateCartItemQuantity(item.id, val) }"
+                                         class="width50"></el-input-number>
+                     </template>
+                     <div v-else class="fwb">
+                         {{ item.qty }}
+                     </div>
                 </div>
             </article>
 
@@ -82,7 +87,12 @@
     Vue.use(Loading.directive)
 
     export default {
-        props: ['allowDelete'],
+        props: {
+            allowEdit: {
+                type: Boolean,
+                default: true
+            }
+        },
 
         data() {
             return {
@@ -163,17 +173,21 @@
     width: 100%;
 }
 
-.cartItemsHeader {
-    border-bottom: 1px solid #ccc;
-}
+// .cartItemsHeader {
+//     border-bottom: 1px solid #ccc;
+// }
 
 .cartItemsHeader,
 .cartItem {
     display: table-row;
 
-    &:nth-child(even) {
-        background-color: $bgGrayZebra;
-    }
+    // &:nth-child(even) {
+    //     background-color: $bgGrayZebra;
+    // }
+}
+
+.cartItemCell {
+    border-top: 1px solid $borderColorGray;
 }
 
 .cartItemsHeader > span,

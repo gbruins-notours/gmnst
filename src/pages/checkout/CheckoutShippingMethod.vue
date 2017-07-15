@@ -8,8 +8,8 @@
         <template v-else>
             <checkout-steps :step="2"></checkout-steps>
 
-            <div class="g-spec mbl">
-                <div class="g-spec-label nowrap">2) {{ $t('Shipping Method') }}</div>
+            <div class="g-spec no-zebra mbl">
+                <div class="g-spec-label nowrap">{{ $t('Shipping Method') }}</div>
                 <div class="g-spec-content">
                     SHIPPING METHOD GOES HERE
 
