@@ -49,7 +49,7 @@
 
         methods: {
             goToCheckout() {
-                this.$router.push({ name: 'checkout_shipping' });
+                this.$router.push({ name: 'checkout' });
             },
         },
 

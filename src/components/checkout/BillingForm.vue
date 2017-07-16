@@ -5,12 +5,8 @@
         <div class="displayTableRow">
             <label class="checkout_form_label">{{ $t('FIRST NAME') }}:</label>
             <div class="checkout_form_value">
-                <el-input name="billing_firstName"
-                          v-model="firstName"
-                          v-validate="'required'"></el-input>
-                <p role="alert" v-if="errors.first('billing_firstName')">
-                    {{ $t('Required') }}
-                </p>
+                <el-input v-model="firstName" @input="$v.firstName.$touch()"></el-input>
+                <p role="alert" v-if="$v.firstName.$dirty && !$v.firstName.required">{{ $t('Required') }}</p>
             </div>
         </div>
 
@@ -18,12 +14,8 @@
         <div class="displayTableRow">
             <label class="checkout_form_label">{{ $t('LAST NAME') }}:</label>
             <div class="checkout_form_value">
-                <el-input name="billing_lastName"
-                          v-model="lastName"
-                          v-validate="'required'"></el-input>
-                <p role="alert" v-if="errors.first('billing_lastName')">
-                    {{ $t('Required') }}
-                </p>
+                <el-input v-model="lastName" @input="$v.lastName.$touch()"></el-input>
+                <p role="alert" v-if="$v.lastName.$dirty && !$v.lastName.required">{{ $t('Required') }}</p>
             </div>
         </div>
 
@@ -31,12 +23,8 @@
         <div class="displayTableRow">
             <label class="checkout_form_label">{{ $t('STREET ADDRESS') }}:</label>
             <div class="checkout_form_value">
-                <el-input name="billing_streetAddress"
-                          v-model="streetAddress"
-                          v-validate="'required'"></el-input>
-                <p role="alert" v-if="errors.first('billing_streetAddress')">
-                    {{ $t('Required') }}
-                </p>
+                <el-input v-model="streetAddress" @input="$v.streetAddress.$touch()"></el-input>
+                <p role="alert" v-if="$v.streetAddress.$dirty && !$v.streetAddress.required">{{ $t('Required') }}</p>
             </div>
         </div>
 
@@ -44,12 +32,8 @@
         <div class="displayTableRow">
             <label class="checkout_form_label">{{ $t('CITY') }}:</label>
             <div class="checkout_form_value">
-                <el-input name="billing_city"
-                          v-model="city"
-                          v-validate="'required'"></el-input>
-                <p role="alert" v-if="errors.first('billing_city')">
-                    {{ $t('Required') }}
-                </p>
+                <el-input v-model="city" @input="$v.city.$touch()"></el-input>
+                <p role="alert" v-if="$v.city.$dirty && !$v.city.required">{{ $t('Required') }}</p>
             </div>
         </div>
 
@@ -57,12 +41,8 @@
         <div class="displayTableRow">
             <label class="checkout_form_label">{{ $t('STATE/PROVINCE/REGION') }}:</label>
             <div class="checkout_form_value">
-                <el-input name="billing_state"
-                          v-model="state"
-                          v-validate="'required'"></el-input>
-                <p role="alert" v-if="errors.first('billing_state')">
-                    {{ $t('Required') }}
-                </p>
+                <el-input v-model="state" @input="$v.state.$touch()"></el-input>
+                <p role="alert" v-if="$v.state.$dirty && !$v.state.required">{{ $t('Required') }}</p>
             </div>
         </div>
 
@@ -70,12 +50,8 @@
         <div class="displayTableRow">
             <label class="checkout_form_label">{{ $t('POSTAL CODE') }}:</label>
             <div class="checkout_form_value">
-                <el-input name="billing_postalCode"
-                          v-model="postalCode"
-                          v-validate="'required'"></el-input>
-                <p role="alert" v-if="errors.first('billing_postalCode')">
-                    {{ $t('Required') }}
-                </p>
+                <el-input v-model="postalCode" @input="$v.postalCode.$touch()"></el-input>
+                <p role="alert" v-if="$v.postalCode.$dirty && !$v.postalCode.required">{{ $t('Required') }}</p>
             </div>
         </div>
 
@@ -113,12 +89,13 @@
     import Vue from 'vue'
     import { mapGetters } from 'vuex'
     import { Input } from 'element-ui'
-    import CountrySelect from '../../components/CountrySelect.vue'
-    import ShippingBillingHelp from '../../components/checkout/ShippingBillingHelp.vue'
-    import VeeValidate from 'vee-validate'
+    import CountrySelect from '../CountrySelect.vue'
+    import ShippingBillingHelp from './ShippingBillingHelp.vue'
+    import Validations from 'vuelidate'
+    import { required } from 'vuelidate/lib/validators'
 
     Vue.use(Input)
-    Vue.use(VeeValidate)
+    Vue.use(Validations)
 
     export default{
         components: {

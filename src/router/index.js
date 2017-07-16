@@ -14,9 +14,7 @@ import ProductList from '../pages/product/ProductList.vue';
 import ProductDetail from '../pages/product/ProductDetail.vue';
 import Cart from '../pages/cart/Cart.vue';
 import Checkout from '../pages/checkout/Checkout.vue';
-import CheckoutShipping from '../pages/checkout/CheckoutShipping.vue';
-import CheckoutShippingMethod from '../pages/checkout/CheckoutShippingMethod.vue';
-import CheckoutPlaceOrder from '../pages/checkout/CheckoutPlaceOrder.vue';
+// import CheckoutPlaceOrder from '../pages/checkout/CheckoutPlaceOrder.vue';
 import Error404 from '../pages/Error404.vue';
 
 export function createRouter () {
@@ -44,21 +42,11 @@ export function createRouter () {
                 path: '/cart/checkout',
                 component: Checkout
             },
-            {
-                name: 'checkout_shipping',
-                path: '/cart/checkout/shipping',
-                component: CheckoutShipping
-            },
-            {
-                name: 'checkout_shipping_method',
-                path: '/cart/checkout/almost-there',
-                component: CheckoutShippingMethod
-            },
-            {
-                name: 'checkout_place_order',
-                path: '/cart/checkout/lets-do-this',
-                component: CheckoutPlaceOrder
-            },
+            // {
+            //     name: 'checkout_place_order',
+            //     path: '/cart/checkout/lets-do-this',
+            //     component: CheckoutPlaceOrder
+            // },
             {
                 name: 'cart',
                 path: '/cart/:id?',

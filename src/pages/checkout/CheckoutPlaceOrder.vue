@@ -85,7 +85,7 @@
 
                         <div v-show="!billingSameAsShipping" class="pal">
                             <div class="fwb mbl">{{ $t('Enter a new billing address') }}:</div>
-                            <billing-view></billing-view>
+                            <billing-form></billing-form>
                         </div>
                     </div>
                 </div>
@@ -152,15 +152,13 @@
     import CartItems from '../../components/cart/CartItems'
     import CheckoutSteps from '../../components/checkout/CheckoutSteps.vue'
     import ShippingView from '../../components/checkout/ShippingView.vue'
-    import BillingView from '../../components/checkout/BillingView.vue'
-    import VeeValidate from 'vee-validate'
+    import BillingForm from '../../components/checkout/BillingForm.vue'
 
     Vue.use(Checkbox)
     Vue.use(Input)
     Vue.use(Dialog)
     Vue.use(Tabs)
     Vue.use(TabPane)
-    Vue.use(VeeValidate)
 
     let supportedCardIcons = ['american-express', 'diners-club', 'discover', 'jcb', 'maestro', 'master-card', 'visa'];
 
@@ -171,7 +169,7 @@
             CartItems,
             CheckoutSteps,
             ShippingView,
-            BillingView
+            BillingForm
         },
 
         computed: {
@@ -240,12 +238,10 @@
                 }
             },
 
-
             setPaymentMethod: function(paymentMethod) {
                 this.paymentMethod = paymentMethod;
                 this.paymentMethodChanged()
             },
-
 
             /**
              * Copies the shippingAddress values into the billingAddress values
@@ -263,7 +259,6 @@
                     });
                 }
             },
-
 
             createBraintree: function() {
                 let client = require('braintree-web/client');

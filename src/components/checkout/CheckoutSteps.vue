@@ -63,11 +63,11 @@
 
         methods: {
             goToShipping: function() {
-                this.$router.push({ name: 'checkout_shipping' });
+                this.$emit('checkout_step_changed', 1)
             },
 
             goToShippingMethod: function() {
-                this.$router.push({ name: 'checkout_shipping_method' });
+                this.$emit('checkout_step_changed', 2)
             }
         }
     }

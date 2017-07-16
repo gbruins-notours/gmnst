@@ -65,7 +65,6 @@ export default {
      */
     CHECKOUT_SHIPPING_ATTRIBUTE: (state, config) => {
         state.checkout.shipping[config.attribute] = config.value;
-        console.log("SHIPPING STATE UPDATED", config.attribute, config.value, state.checkout.shipping)
     },
 
     /**
@@ -73,7 +72,6 @@ export default {
      */
     CHECKOUT_BILLING_ATTRIBUTE: (state, config) => {
         state.checkout.billing[config.attribute] = config.value;
-        console.log("BILLING STATE UPDATED", config.attribute, config.value, state.checkout.billing)
     },
 
     CHECKOUT_BILLING_SAME_AS_SHIPPING: (state, sameAsShipping) => {

@@ -21,8 +21,8 @@ const translations = {
     'correct_address_statement': 'If the address contains typos or other errors, your package may be undeliverable.',
     'COUNTRY': 'COUNTRY',
     'CREDIT CARD': 'CREDIT CARD',
-    'cvv_help_3_digit': 'The code is printed on the back of your card. It is the last 3 digits on the right of the signature strip.',
-    'cvv_help_4_digit': 'The 4 digit code is printed on the front of your card.',
+    'cvv_help_3_digit': 'The code is printed on the back of your card. It is the last 3 digits AFTER the credit card number in the signature area of the card.',
+    'cvv_help_4_digit': 'The 4 digit code is printed on the front of your card, above the credit card number, on either the right or left side.',
 
 
     'Delete': 'Delete',
@@ -110,6 +110,7 @@ const translations = {
     'USE A DIFFERENT BILLING ADDRESS': 'USE A DIFFERENT BILLING ADDRESS',
 
     'We want to make sure it fits!': 'We want to make sure it fits!',
+    'what\'s this?': 'what\'s this?',
 
     'Your shopping cart does not contain any items.': 'Your shopping cart does not contain any items.'
 };
