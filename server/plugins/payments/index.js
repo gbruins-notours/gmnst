@@ -119,7 +119,7 @@ internals.after = function (server, next) {
              internals.braintreeGateway.transaction.sale(opts)
                 .then((result) => {
                     if (result.success) {
-                        return resolve(result.transaction);
+                        return resolve(result);
                     }
                     return reject(result.message);
                 })

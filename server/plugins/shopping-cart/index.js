@@ -417,6 +417,7 @@ internals.after = function (server, next) {
                             };
 
                             let paymentPromise = server.plugins.Payments.runPayment(opts);
+
                             updateCart(cart, {
                                 shipping: request.payload.shipping,
                                 billing: request.payload.billing
@@ -425,7 +426,7 @@ internals.after = function (server, next) {
                             return paymentPromise;
                         })
                         .then((transactionObj) => {
-                            // console.log("BRAINTREE TRANSACTION RESULT", transactionObj)
+                            console.log("BRAINTREE TRANSACTION RESULT", transactionObj)
 
                             //TODO: appEvents is undefined
                             // request.server.appEvents.emit('gmnst-payment-success', cart);
