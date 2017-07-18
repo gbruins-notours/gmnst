@@ -38,7 +38,7 @@ export function createStore () {
                     city: null,
                     state: null,
                     postalCode: null,
-                    country: null,
+                    countryCodeAlpha2: null,
                     company: null,
                     email: null,
                 },
@@ -49,7 +49,7 @@ export function createStore () {
                     city: null,
                     state: null,
                     postalCode: null,
-                    country: null,
+                    countryCodeAlpha2: null,
                     company: null
                 },
                 billingSameAsShipping: true

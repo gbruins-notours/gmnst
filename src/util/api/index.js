@@ -12,15 +12,24 @@ export default {
 
     getInfo() {
         return HTTP
-            .get(`/api/v1/info`)
+            .get('/api/v1/info')
             .then((response) => {
                 return response.data.data;
             });
     },
 
+    logger(type, message) {
+        if(message) {
+            return HTTP.post('/api/v1/logger', {
+                type: type || 'error',
+                message: message
+            });
+        }
+    },
+
     getProductById(id) {
         return HTTP
-            .get(`/api/v1/product`, {
+            .get('/api/v1/product', {
                 params: {
                     id
                 }
@@ -32,7 +41,7 @@ export default {
 
     getProductBySeoUri(str) {
         return HTTP
-            .get(`/api/v1/product/seo`, {
+            .get('/api/v1/product/seo', {
                 params: {
                     id: str
                 }
@@ -82,6 +91,14 @@ export default {
         deleteItem(params) {
             return HTTP
                 .post('/api/v1/cart/item/remove', params)
+                .then((response) => {
+                    return response.data.data;
+                });
+        },
+
+        checkout(params) {
+            return HTTP
+                .post('/api/v1/cart/checkout', params)
                 .then((response) => {
                     return response.data.data;
                 });

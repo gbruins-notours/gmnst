@@ -5,6 +5,7 @@ const braintree = require('braintree');
 const Promise = require('bluebird');
 const isObject = require('lodash.isobject');
 const forEach = require('lodash.foreach');
+const winston = require('winston');
 
 
 let internals = {};
@@ -39,70 +40,13 @@ internals.after = function (server, next) {
      */
     internals.getClientToken = () => {
         let p = new Promise( (resolve, reject) => {
-            internals
-                .braintreeGateway
-                .clientToken
-                .generate(
-                    {},
-                    (err, response) => {
-                        if(err || !response.clientToken) {
-                            return reject(err);
-                        }
+            internals.braintreeGateway.clientToken.generate({},(err, response) => {
+                if(err || !response.clientToken) {
+                    return reject(err);
+                }
 
-                        return resolve(response.clientToken);
-                    }
-                );
-        });
-
-        return p;
-    };
-
-
-    /**
-     * Creates a transaction in Braintree
-     * The returned Promise is resolved with the transaction JSON data returned from Braintree
-     *
-     * @param {opts}
-     * @returns {Promise}
-     */
-    internals.makeBraintreeSale = (opts) => {
-        let p = new Promise( (resolve, reject) => {
-
-            let schema = Joi.object().keys({
-                paymentMethodNonce: Joi.string().trim().required(),
-                amount: Joi.number().precision(2).positive().required(),
-                shipping: Joi.object().unknown().required(),
-                customer: Joi.object().unknown(),
-                billing: Joi.object().unknown(),
-                options: Joi.object().unknown()
+                return resolve(response.clientToken);
             });
-
-            let saleOptions = {
-                paymentMethodNonce: opts.nonce,
-                amount: opts.amount,
-                shipping: opts.shipping,
-                customer: opts.customer,
-                billing: opts.billing,
-                options: opts.options || { submitForSettlement: true }
-            };
-
-            const validateOptions = schema.validate(saleOptions);
-            if (validateOptions.error) {
-                // console.log("MAKE SALE", opts.amount);
-                reject( Boom.badData(validateOptions.error) );
-                return;
-            }
-
-            internals
-                .braintreeGateway
-                .transaction
-                .sale(saleOptions, (err, transactionJson) => {
-                    if(err) {
-                        return reject(err);
-                    }
-
-                    return resolve(transactionJson);
-                });
         });
 
         return p;
@@ -117,211 +61,73 @@ internals.after = function (server, next) {
      * Therefore, pulling out only a few relevant transaction attributes (most importantly the transaction id)
      * and persisting those only.
      *
-     * @param request
      * @param cart_id
      * @param transactionJson
      * @returns {Promise}
      */
-    internals.savePayment = (request, cart_id, transactionJson) => {
-        let p = new Promise( (resolve, reject) => {
-
+    internals.savePayment = (cart_id, transactionJson) => {
+        return new Promise( (resolve, reject) => {
             if(!isObject(transactionJson) || !isObject(transactionJson.transaction)) {
-                reject('An error occurred while processing the transaction.');
-                return;
+                return reject('An error occurred while processing the transaction.');
             }
 
-            let paymentSchema = Joi.object().keys({
-                cart_id: Joi.number().integer().min(1).required(),
-                transaction_id: Joi.string().required(),
-                processor_response_code: Joi.string().allow(''), // Allow empty strings
-                amount: Joi.number().precision(2),
-                payment_type: Joi.string().allow(''),
-                currency_iso_code: Joi.string().allow(''),
-                success: Joi.boolean()
-            });
-
-            let paymentOptions = {
-                cart_id: cart_id,
-                transaction_id: transactionJson.transaction.id,
-                processor_response_code: transactionJson.transaction.processorResponseCode,
-                amount: transactionJson.transaction.amount,
-                payment_type: transactionJson.transaction.paymentInstrumentType,
-                currency_iso_code: transactionJson.transaction.currencyIsoCode,
-                success: transactionJson.success
-            };
-
-            const validateOptions = paymentSchema.validate(paymentOptions);
-            if (validateOptions.error) {
-                reject( Boom.badData(validateOptions.error) );
-                return;
-            }
-
-            let Payment = server.plugins.BookshelfOrm.bookshelf.model('Payment');
-
-            // let args = {};
-            // _.forEach(paymentOptions, (val, key) => {
-            //     args[key] = val;
-            // });
-
-            Payment
-                .forge()
+            server.plugins.BookshelfOrm.bookshelf.model('Payment').forge()
                 .save(
-                    paymentOptions,
+                    {
+                        cart_id: cart_id,
+                        transaction_id: transactionJson.transaction.id,
+                        processor_response_code: transactionJson.transaction.processorResponseCode || null,
+                        amount: transactionJson.transaction.amount || null,
+                        payment_type: transactionJson.transaction.paymentInstrumentType || null,
+                        currency_iso_code: transactionJson.transaction.currencyIsoCode || null,
+                        success: transactionJson.success || null
+                    },
                     { method: 'insert'}
                 )
-                .then(
-                    (Payment) => {
-                        resolve(Payment);
-                    }
-                )
-                .catch(
-                    (err) => {
-                        reject(err);
-                    }
-                );
+                .then((Payment) => {
+                    resolve(Payment);
+                })
+                .catch((err) => {
+                    reject(err);
+                });
         });
-
-        return p;
     };
 
 
     /**
      * Submits a payment 'sale' to Braintree
      *
-     * 1) Get the current shopping cart from the session
-     * 2) Set shipping and billing data and save the cart
-     * 3) Make the sale in Braintree
-     *
-     * @param ShoppingCart  The ShoppingCart model
-     * @param request
-     *
+     * @param opts  Options object to pass to braintree.transaction.sale
      * @returns {Promise}
      */
-    internals.runPayment = (ShoppingCart, request) => {
-        let p = new Promise( (resolve, reject) => {
-            let cartUpdateData = {};
-            let shippingData = request.payload.shipping;
-            let billingData = request.payload.billing;
+    internals.runPayment = (opts) => {
+        return new Promise((resolve, reject) => {
+             let schema = Joi.object().keys({
+                 paymentMethodNonce: Joi.string().trim().required(),
+                 amount: Joi.number().precision(2).positive().required(),
+                 shipping: Joi.object().unknown().required(),
+                 customer: Joi.object().unknown(),
+                 billing: Joi.object().unknown(),
+                 options: Joi.object().unknown()
+             });
 
-            let opts = {};
-            opts.nonce = request.payload.nonce;
-            opts.amount = ShoppingCart.get('grand_total'); //TODO
-            opts.shipping = {
-                company: shippingData.company,
-                countryCodeAlpha2: shippingData.countryCodeAlpha2,
-                extendedAddress: shippingData.extendedAddress,
-                firstName: shippingData.firstName,
-                lastName: shippingData.lastName,
-                locality: shippingData.city,
-                postalCode: shippingData.postalCode,
-                region: shippingData.state,
-                streetAddress: shippingData.streetAddress
-            };
-            opts.billing = {
-                company: billingData.company,
-                countryCodeAlpha2: billingData.countryCodeAlpha2,
-                extendedAddress: billingData.extendedAddress,
-                firstName: billingData.firstName,
-                lastName: billingData.lastName,
-                locality: billingData.city,
-                postalCode: billingData.postalCode,
-                region: billingData.state,
-                streetAddress: billingData.streetAddress
-            };
-            opts.options = {
-                submitForSettlement: true
-            };
-            opts.customer = {
-                // NOTE: Braintree requires that this email has a '.' in the domain name (i.e test@test.com)
-                // which technically isn't correct. This fails validation: test@test
-                email: shippingData.email
-            };
+             const validateResult = schema.validate(opts);
+             if (validateResult.error) {
+                 return reject( Boom.badData(validateResult.error) );
+             }
 
-            /*
-             * If the Braintree transaction is successful then anything that happens after this
-             * (i.e saving the payment details to DB) needs to fail silently, as the user has
-             * already been changed and we can't give the impression of an overall transaction
-             * failure that may prompt them to re-do the purchase.
-             */
-            internals
-                .makeBraintreeSale(opts)
-                .then(
-                    (transactionJson) => {
-                        let genericErrorMsg = 'An error occurred when creating the transaction.';
-
-                        if (!isObject(transactionJson)) {
-                            request.server.log(['error', 'braintree'], genericErrorMsg);
-                            reject(
-                                Boom.badData(genericErrorMsg)
-                            );
-                            return;
-                        }
-
-                        cartUpdateData.status = transactionJson.success
-                            ? server.plugins.ShoppingCart.STATUS_PAYMENT_SUCCESS
-                            : server.plugins.ShoppingCart.STATUS_PAYMENT_FAILED;
-
-                        /*
-                         * Saving the payment transaction whether it was successful (transactionJson.success === true)
-                         * or not (transactionJson.success === false)
-                         *
-                         * Any failures that happen while saving the payment info do not affect the
-                         * braintree transaction and thus should fail silently.
-                         */
-                        internals
-                            .savePayment(
-                                request,
-                                ShoppingCart.get('id'),
-                                transactionJson
-                            )
-                            .catch(
-                                (err) => {
-                                    request.server.log(['error', 'payment'], 'ERROR SAVING PAYMENT INFO: ' + err);
-                                }
-                            )
-                            .finally(
-                                () => {
-                                    if (transactionJson.success) {
-                                        resolve(ShoppingCart);
-                                    }
-                                    else {
-                                        let error = transactionJson.message || genericErrorMsg;
-                                        request.server.log(['error', 'payment'], error);
-                                        reject(Boom.badData(error));
-                                    }
-                                }
-                            );
+             internals.braintreeGateway.transaction.sale(opts)
+                .then((result) => {
+                    if (result.success) {
+                        return resolve(result.transaction);
                     }
-                )
-                .catch(
-                    (err) => {
-                        cartUpdateData.status = server.plugins.ShoppingCart.STATUS_PAYMENT_FAILED;
-                        request.server.log(['info', 'braintree'], err);
-                        reject(err);
-                    }
-                )
-                .finally(
-                    () => {
-                        // shipping
-                        forEach(shippingData, (val, key) => {
-                            cartUpdateData['shipping_' + key] = val;
-                        });
-
-                        // billing
-                        forEach(billingData, (val, key) => {
-                            cartUpdateData['billing_' + key] = val;
-                        });
-
-                        return ShoppingCart.save(
-                            cartUpdateData,
-                            { method: 'update', patch: true }
-                        );
-                    }
-                ) ;
+                    return reject(result.message);
+                })
+                .catch((err) => {
+                    return reject(err);
+                });
         });
-
-        return p;
-    };
+    }
 
 
     // LOADING BOOKSHELF MODEL:
@@ -336,6 +142,7 @@ internals.after = function (server, next) {
 
     server.expose('getClientToken', internals.getClientToken);
     server.expose('runPayment', internals.runPayment);
+    server.expose('savePayment', internals.savePayment);
 
     return next();
 };

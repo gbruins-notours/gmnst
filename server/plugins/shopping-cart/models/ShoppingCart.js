@@ -38,9 +38,10 @@ module.exports = function (baseModel, bookshelf, server) {
                 // sales_tax: function() {
                 //     return server.plugins.ShoppingCart.getCartSalesTax( this.related('cart_data') );
                 // },
-                // grand_total: function() {
-                //      TODO: subtotal + sales tax
-                // }
+                grand_total: function() {
+                    //TODO: add sales tax and shipping cost
+                    return this.get('sub_total')
+                }
             },
 
             // Relationships:
@@ -64,7 +65,7 @@ module.exports = function (baseModel, bookshelf, server) {
                 return this.hasMany('ShoppingCartItem', 'cart_id');
             }
         },
-        
+
         // Custom methods:
         {
             getCartToken: function(request) {
@@ -75,7 +76,7 @@ module.exports = function (baseModel, bookshelf, server) {
                 return null;
             },
 
-            
+
             /**
              * Finds the cart using the cart token from JWT
              *

@@ -6,6 +6,7 @@ const HelperService = require('../../helpers.service');
 const forEach = require('lodash.foreach');
 const isObject = require('lodash.isobject');
 const isString = require('lodash.isstring');
+const cloneDeep = require('lodash.clonedeep');
 const jwt = require('jsonwebtoken');
 
 
@@ -27,7 +28,7 @@ internals.schema = Joi.object().keys({
         lastName: Joi.string().trim().max(255),
         company: Joi.string().trim().max(255),
         streetAddress: Joi.string().trim().max(255),
-        extendedAddress: Joi.string().trim().max(255),
+        extendedAddress: Joi.string().trim().max(255).empty(null),
         city: Joi.string().trim().max(255),
         state: Joi.string().trim().max(255),
         postalCode: Joi.string().trim().max(10),
@@ -40,7 +41,7 @@ internals.schema = Joi.object().keys({
         lastName: Joi.string().trim().max(255).required(),
         company: Joi.string().trim().max(255),
         streetAddress: Joi.string().trim().max(255).required(),
-        extendedAddress: Joi.string().trim().max(255),
+        extendedAddress: Joi.string().trim().max(255).empty(null),
         city: Joi.string().trim().max(255).required(),
         state: Joi.string().trim().max(255).required(),
         postalCode: Joi.string().trim().max(10).required(),
@@ -54,9 +55,6 @@ internals.schema = Joi.object().keys({
 internals.after = function (server, next) {
 
     internals.SALES_TAX_RATE = .0875;
-    internals.STATUS_PAYMENT_SUCCESS = 'payment_success';
-    internals.STATUS_PAYMENT_FAILED = 'payment_failed';
-
     internals.ShoppingCartModel = server.plugins.BookshelfOrm.bookshelf.model('ShoppingCart');
 
 
@@ -355,18 +353,107 @@ internals.after = function (server, next) {
                 handler: (request, reply) => {
                     var cart;
 
-                    internals.shoppingCart.findOrCreate(request)
+                    // update the cart"
+                    // Any failures that happen while saving the cart do not affect the
+                    // braintree transaction and thus should fail silently.
+                    function updateCart(ShoppingCart, opts) {
+                        let cartUpdateData = {};
+
+                        forEach(opts.shipping, (val, key) => {
+                            cartUpdateData['shipping_' + key] = val;
+                        });
+
+                        // billing
+                        forEach(opts.billing, (val, key) => {
+                            cartUpdateData['billing_' + key] = val;
+                        });
+
+                        ShoppingCart.save(
+                            cartUpdateData,
+                            { method: 'update', patch: true }
+                        )
+                        .catch((err) => {
+                            winston.error(err);
+                        });
+                    }
+
+                    internals.shoppingCart.get(request)
                         .then((ShoppingCart) => {
                             cart = ShoppingCart;
-                            return server.plugins.Payments.runPayment(ShoppingCart, request);
+
+                            let opts = {
+                                paymentMethodNonce: request.payload.nonce,
+                                amount: ShoppingCart.get('grand_total'), //TODO
+                                customer: {
+                                    // NOTE: Braintree requires that this email has a '.' in the domain name (i.e test@test.com)
+                                    // which technically isn't correct. This fails validation: test@test
+                                    email: request.payload.shipping.email
+                                },
+                                shipping: {
+                                    company: request.payload.shipping.company,
+                                    countryCodeAlpha2: request.payload.shipping.countryCodeAlpha2,
+                                    extendedAddress: request.payload.shipping.extendedAddress || null,
+                                    firstName: request.payload.shipping.firstName,
+                                    lastName: request.payload.shipping.lastName,
+                                    locality: request.payload.shipping.city,
+                                    postalCode: request.payload.shipping.postalCode,
+                                    region: request.payload.shipping.state,
+                                    streetAddress: request.payload.shipping.streetAddress
+                                },
+                                billing: {
+                                    company: request.payload.billing.company,
+                                    countryCodeAlpha2: request.payload.billing.countryCodeAlpha2,
+                                    extendedAddress: request.payload.billing.extendedAddress || null,
+                                    firstName: request.payload.billing.firstName,
+                                    lastName: request.payload.billing.lastName,
+                                    locality: request.payload.billing.city,
+                                    postalCode: request.payload.billing.postalCode,
+                                    region: request.payload.billing.state,
+                                    streetAddress: request.payload.billing.streetAddress
+                                },
+                                options: {
+                                    submitForSettlement: true
+                                }
+                            };
+
+                            let paymentPromise = server.plugins.Payments.runPayment(opts);
+                            updateCart(cart, {
+                                shipping: request.payload.shipping,
+                                billing: request.payload.billing
+                            });
+
+                            return paymentPromise;
                         })
-                        .then(() => {
-                            request.server.appEvents.emit('gmnst-payment-success', cart);
+                        .then((transactionObj) => {
+                            // console.log("BRAINTREE TRANSACTION RESULT", transactionObj)
+
+                            //TODO: appEvents is undefined
+                            // request.server.appEvents.emit('gmnst-payment-success', cart);
+
+                             // If the Braintree transaction is successful then anything that happens after this
+                             // (i.e saving the payment details to DB) needs to fail silently, as the user has
+                             // already been changed and we can't give the impression of an overall transaction
+                             // failure that may prompt them to re-do the purchase.
+
+                            // Saving the payment transaction whether it was successful (transactionObj.success === true)
+                            // or not (transactionObj.success === false)
+                            //
+                            // Any failures that happen while saving the payment info do not affect the
+                            // braintree transaction and thus should fail silently.
+                            server.plugins.Payments.savePayment(cart.get('id'), transactionObj)
+                                .catch((err) => {
+                                    winston.error(`ERROR SAVING PAYMENT INFO: ${err}`)
+                                })
+                                .finally(() => {
+                                    if (!transactionObj.success) {
+                                        winston.error(transactionObj.message || 'An error occurred when saving the Payment transaction data.')
+                                    }
+                                });
+
                             reply.apiSuccess(cart);
                         })
                         .catch((err) => {
                             winston.error(err);
-
                             HelperService.getBoomError(err, (error, result) => {
                                 reply(result);
                             });
@@ -389,8 +476,6 @@ internals.after = function (server, next) {
 
     server.expose('schema', internals.schema);
     server.expose('findOrCreate', internals.shoppingCart.findOrCreate);
-    server.expose('STATUS_PAYMENT_SUCCESS', internals.STATUS_PAYMENT_SUCCESS);
-    server.expose('STATUS_PAYMENT_FAILED', internals.STATUS_PAYMENT_FAILED);
 
 
     // LOADING BOOKSHELF MODEL:

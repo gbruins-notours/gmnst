@@ -11,6 +11,8 @@ const translations = {
     'Billing': 'Billing',
 
     'card_expiration_hint': 'MM/YY',
+    'card_expiration_year_hint': 'YY',
+    'card_expiration_month_hint': 'MM',
     'CARD NUMBER': 'CARD NUMBER',
     'Cart updated!': 'Cart updated!',
     'CITY': 'CITY',
@@ -112,7 +114,12 @@ const translations = {
     'We want to make sure it fits!': 'We want to make sure it fits!',
     'what\'s this?': 'what\'s this?',
 
-    'Your shopping cart does not contain any items.': 'Your shopping cart does not contain any items.'
+    'Your shopping cart does not contain any items.': 'Your shopping cart does not contain any items.',
+
+    'braintree': {
+        'HOSTED_FIELDS_FIELDS_EMPTY': 'Please fill out the entire "Payment method" section.',
+        'HOSTED_FIELDS_ATTRIBUTE_VALUE_NOT_ALLOWED': '"Payment method" section contains an invalid value',
+    }
 };
 
 

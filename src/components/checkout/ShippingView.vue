@@ -5,13 +5,13 @@
         <div>{{ $store.state.checkout.shipping.streetAddress }}</div>
         <div v-if="$store.state.checkout.shipping.extendedAddress">{{ $store.state.checkout.shipping.extendedAddress }}</div>
         <div>{{ formattedCityStateZip }}</div>
-        <div>{{ $store.state.checkout.shipping.country }}</div>
+        <div>{{ $store.state.checkout.shipping.countryCodeAlpha2 }}</div>
         <div class="pts" v-if="showEmail">{{ $store.state.checkout.shipping.email }}</div>
     </div>
 </template>
 
 <script>
-    export default{
+    export default {
         props: {
             showEmail: {
                 type: Boolean,

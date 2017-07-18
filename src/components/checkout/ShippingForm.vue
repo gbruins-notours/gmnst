@@ -203,10 +203,10 @@
             },
             country: {
                 get: function() {
-                    return this.getShippingAttribute('country');
+                    return this.getShippingAttribute('countryCodeAlpha2');
                 },
                 set: function(newVal) {
-                    this.setShippingAttribute('country', newVal)
+                    this.setShippingAttribute('countryCodeAlpha2', newVal)
                 }
             },
             company: {

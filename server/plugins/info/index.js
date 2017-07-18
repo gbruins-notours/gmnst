@@ -1,4 +1,6 @@
+const Joi = require('joi');
 const Boom = require('boom');
+const winston = require('winston');
 const ProductService = require('../products/products.service');
 
 
@@ -8,33 +10,60 @@ let internals = {};
 internals.after = function (server, next) {
     let getBraintreeToken = server.plugins['Payments'].getClientToken;
 
-    server.route({
-        method: 'GET',
-        path: '/info',
-        config: {
-            description: 'Gets app related info',
-            handler: function (request, reply) {
-                getBraintreeToken()
-                    .then((token) => {
-                        reply.apiSuccess({
-                            product: {
-                                types: ProductService.getProductTypes(),
-                                subTypes: ProductService.getProductSubTypes(),
-                                sizes: ProductService.getSizeTypes(),
-                                genders: ProductService.getGenderTypes()
-                            },
-                            clientToken: token
-                            // crumb: server.plugins.crumb.generate(request, reply)
-                        });
+    server.route([
+        {
+            method: 'GET',
+            path: '/info',
+            config: {
+                description: 'Gets app related info',
+                handler: function (request, reply) {
+                    getBraintreeToken()
+                        .then((token) => {
+                            reply.apiSuccess({
+                                product: {
+                                    types: ProductService.getProductTypes(),
+                                    subTypes: ProductService.getProductSubTypes(),
+                                    sizes: ProductService.getSizeTypes(),
+                                    genders: ProductService.getGenderTypes()
+                                },
+                                clientToken: token
+                                // crumb: server.plugins.crumb.generate(request, reply)
+                            });
+                        })
+                        .catch(
+                            (err) => {
+                                reply(Boom.badData(err));
+                            }
+                        );
+                }
+            }
+        },
+        {
+            method: 'POST',
+            path: '/logger',
+            config: {
+                description: 'Logs stuff',
+                validate: {
+                    payload: Joi.object({
+                        type: Joi.string(),
+                        message: Joi.string()
                     })
-                    .catch(
-                        (err) => {
-                            reply(Boom.badData(err));
-                        }
-                    );
+                },
+                handler: function (request, reply) {
+                    switch(request.payload.type) {
+                        case 'error':
+                            winston.error(request.payload.message);
+                            break;
+
+                        default:
+                            winston.info(request.payload.message);
+                    }
+
+                    reply.apiSuccess();
+                }
             }
         }
-    });
+    ]);
 
     return next();
 };

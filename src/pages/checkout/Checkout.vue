@@ -43,13 +43,22 @@
                                       <div class="displayTableRow" v-show="paymentMethod === 'CREDIT_CARD'">
                                           <label class="checkout_form_label">
                                               {{ $t('EXPIRATION') }}
-                                              <span class="colorGrayLighter">({{ $t('card_expiration_hint') }})</span>:
+                                              <!-- <span class="colorGrayLighter">({{ $t('card_expiration_hint') }})</span>: -->
                                           </label>
                                           <div class="checkout_form_value">
-                                              <div id="expiration-date" class="el-input__inner displayTableCell"></div>
-                                              <i v-show="inputClasses['expiration-date']"
+                                              <!-- month -->
+                                              <div class="displayTableCell">
+                                                  <div id="expiration-month" class="el-input__inner hostedField60"></div>
+                                              </div>
+
+                                              <!-- year -->
+                                              <div class="displayTableCell">
+                                                  <div id="expiration-year" class="el-input__inner hostedField60 mlm"></div>
+                                              </div>
+
+                                              <i v-show="inputClasses['expiration-month'] && inputClasses['expiration-year']"
                                                  class="displayTableCell pls vam"
-                                                 :class="inputClasses['expiration-date']"></i>
+                                                 :class="getPaymentMonthYearClass(inputClasses['expiration-month'], inputClasses['expiration-year'])"></i>
                                           </div>
                                       </div>
 
@@ -63,7 +72,7 @@
                                               </div>
                                           </label>
                                           <div class="checkout_form_value">
-                                              <div id="cvv" class="el-input__inner displayTableCell"></div>
+                                              <div id="cvv" class="el-input__inner hostedField80 displayTableCell"></div>
                                               <i v-show="inputClasses.cvv"
                                                  class="displayTableCell pls vam"
                                                  :class="inputClasses.cvv"></i>
@@ -246,7 +255,7 @@
     import CartItems from '../../components/cart/CartItems'
     import ShippingView from '../../components/checkout/ShippingView.vue'
     import ShippingBillingHelp from '../../components/checkout/ShippingBillingHelp.vue'
-
+    import api from '../../util/api'
 
     Vue.use(Checkbox)
     Vue.use(Input)
@@ -256,6 +265,7 @@
     Vue.use(Validations)
 
     let supportedCardIcons = ['american-express', 'diners-club', 'discover', 'jcb', 'maestro', 'master-card', 'visa'];
+
 
     export default {
         components: {
@@ -347,10 +357,10 @@
             },
             billingCountry: {
                 get: function() {
-                    return this.getBillingAttribute('country');
+                    return this.getBillingAttribute('countryCodeAlpha2');
                 },
                 set: function(newVal) {
-                    this.setBillingAttribute('country', newVal)
+                    this.setBillingAttribute('countryCodeAlpha2', newVal)
                 }
             },
             billingCompany: {
@@ -373,7 +383,8 @@
                 placeOrderButtonLoading: false,
                 inputClasses: {
                     'card-number': null,
-                    'expiration-date': null,
+                    'expiration-year': null,
+                    'expiration-month': null,
                     'cvv': null,
                 },
                 braintree: {
@@ -421,7 +432,7 @@
             paymentMethodChanged: function() {
                 switch(this.paymentMethod) {
                     case 'PAYPAL':
-                        this.paypalTransaction();
+                        this.tokenizePaypal();
                         break;
 
                     default:
@@ -434,93 +445,164 @@
                 this.paymentMethodChanged()
             },
 
-            /**
-             * Copies the shippingAddress values into the billingAddress values
-             *
-             * NOTE: This should be done right before submitting the form data,
-             * otherwise any shipping data modified after copying will not make
-             * it into the billing data
-             */
-            copyShippingDataToBillingData: function() {
-                if(this.billingSameAsShipping) {
-                    forEach(this.creditCardForm.shippingAddress, (val, key) => {
-                        if(key !== 'email') {
-                            this.creditCardForm.billingAddress[key] = val;
-                        }
-                    });
+            getPaymentMonthYearClass: function(monthClasses, yearClasses) {
+                if(Array.isArray(monthClasses) && Array.isArray(yearClasses)) {
+                    if(monthClasses[0] === yearClasses[0]) {
+                        return monthClasses;
+                    }
+                    // find which set has the error classes and return those;
+                    else if(monthClasses[0] === 'el-icon-circle-cross') {
+                        return monthClasses;
+                    }
+                    else {
+                        return yearClasses;
+                    }
                 }
             },
 
-            createBraintree: function() {
-                let client = require('braintree-web/client');
+            /**
+             * Copies the shippingAddress values into the billingAddress values
+             */
+            copyShippingDataToBillingData: function() {
+                if(this.billingSameAsShipping) {
+                    this.billingFirstName = this.$store.state.checkout.shipping.firstName;
+                    this.billingLastName = this.$store.state.checkout.shipping.lastName;
+                    this.billingStreetAddress = this.$store.state.checkout.shipping.streetAddress;
+                    this.billingCity = this.$store.state.checkout.shipping.city;
+                    this.billingState = this.$store.state.checkout.shipping.state;
+                    this.billingPostalCode = this.$store.state.checkout.shipping.postalCode;
+                    this.billingCountry = this.$store.state.checkout.shipping.countryCodeAlpha2;
+                    this.billingCompany = this.$store.state.checkout.shipping.company;
+                }
+            },
 
-                client.create({
-                    authorization: this.appInfo.clientToken
-                }, (clientErr, clientInstance) => {
-                    if (clientErr) {
+            getBraintreeErrorMessage: function(clientErr) {
+                let errorMessage = clientErr;
+
+                if(isObject(clientErr) && clientErr.hasOwnProperty('code')) {
+                    api.logger('error', clientErr.code);
+
+                    // https://github.com/braintree/braintree-web/blob/3beb6d43b1c453e3c97f01129fa07a89234b2003/src/hosted-fields/shared/errors.js
+                    // Not translating all errors, just the ones that could be caused by the user
+                    switch(clientErr.code) {
+                        case 'HOSTED_FIELDS_FIELDS_EMPTY':
+                            errorMessage = this.$t('braintree.HOSTED_FIELDS_FIELDS_EMPTY');
+                            break;
+
+                        case 'HOSTED_FIELDS_ATTRIBUTE_VALUE_NOT_ALLOWED':
+                            errorMessage = this.$t('braintree.HOSTED_FIELDS_ATTRIBUTE_VALUE_NOT_ALLOWED');
+                            break;
+
+                        default:
+                            if(clientErr.hasOwnProperty('message')) {
+                                errorMessage = clientErr.message;
+                            }
+                            else {
+                                errorMessage = clientErr.code;
+                            }
+                    }
+                }
+                else {
+                    api.logger('error', clientErr);
+                }
+
+                return errorMessage;
+            },
+
+            tokenizeHostedFields() {
+                this.placeOrderButtonLoading = true;
+                this.copyShippingDataToBillingData();
+
+                this.braintree.hostedFieldsInstance.tokenize((tokenizeErr, payload) => {
+                    if (tokenizeErr) {
                         Notification.error({
-                            title: this.$t('There was an error setting up the payment client!'),
-                            message: clientErr.message,
+                            title: this.$t('Payment method error') + ':',
+                            message: this.getBraintreeErrorMessage(tokenizeErr),
                             duration: 0
                         });
+
+                        this.placeOrderButtonLoading = false;
+                        return;
                     }
-                    else {
-                      this.braintree.clientInstance = clientInstance
-                      this.createHostedFields();
-                      this.createPaypal();
-                    }
+
+                    // Not sure why this is needed.  Commenting out for now:
+                    // this.braintree.tokenizePayload = payload;
+                    // this.braintree.paymentMethodNonce = payload.nonce;
+                    console.log("TOKENIZED PAYLOAD", payload)
+                    console.log("NONCE", payload.nonce)
+                    // return;
+
+                    api.shoppingCart.checkout({
+                        nonce: payload.nonce,
+                        shipping: this.$store.state.checkout.shipping,
+                        billing: this.$store.state.checkout.billing
+                    })
+                    .then((result) => {
+
+                    })
+                    .catch((err) => {
+
+                    })
+                    .finally(() => {
+                        // teardown HF and present payment information
+                        this.braintree.hostedFieldsInstance.teardown((teardownErr) => {
+                            if (teardownErr) {
+                                console.log('There was an error tearing it down!', teardownErr.message);
+                                this.getBraintreeErrorMessage(teardownErr);
+                            }
+                            else {
+                                console.log("hosted fields teardown done")
+                            }
+
+                            this.placeOrderButtonLoading = false;
+                        });
+                    })
                 });
             },
 
-            createHostedFields() {
-                let hostedFields = require('braintree-web/hosted-fields');
-                hostedFields.create({
-                    client: this.braintree.clientInstance,
-                    styles: {
-                      'input': {
-                        'font-size': '18px'
-                      },
-                      'input.invalid': {
-                        'color': 'red'
-                      },
-                      'input.valid': {
-                        'color': 'green'
-                      }
-                    },
-                    fields: {
-                        number: {
-                            selector: '#card-number',
-                            placeholder: '•••• •••• •••• ••••'
-                        },
-                        cvv: {
-                            selector: '#cvv',
-                            placeholder: '•••'
-                        },
-                        expirationDate: {
-                            selector: '#expiration-date',
-                            placeholder: this.$t('card_expiration_hint')
+            tokenizePaypal() {
+                this.braintree.paypalInstance.tokenize(
+                    { flow: 'vault' },
+                    (pptokenizeErr, paypalPayload) => {
+                        if (pptokenizeErr) {
+                            let errorMsg = {
+                                title: null,
+                                message: null,
+                                duration: 0
+                            };
+
+                            // Handle tokenization errors or premature flow closure
+                            switch (pptokenizeErr.code) {
+                                case 'PAYPAL_POPUP_CLOSED':
+                                    // console.error('Customer closed PayPal popup.');
+                                    this.setPaymentMethod('CREDIT_CARD')
+                                    break;
+
+                                case 'PAYPAL_ACCOUNT_TOKENIZATION_FAILED':
+                                case 'PAYPAL_FLOW_FAILED':
+                                    errorMsg.title = $t(pptokenizeErr.code);
+                                    errorMsg.message = pptokenizeErr.details
+                                    break;
+
+                                default:
+                                    errorMsg.title = $t('There was an error tokenizing PayPal!');
+                                    errorMsg.message = pptokenizeErr.details
+                            }
+
+                            if(errorMsg.title) {
+                                Notification.error(errorMsg);
+                            }
+                        }
+                        else {
+                            this.braintree.transaction.nonce = paypalPayload.paymentMethodNonce;
+                            this.braintree.transaction.payPalPayload = paypalPayload;
+                            console.log("PAYPAL NONCE", paypalPayload.paymentMethodNonce)
                         }
                     }
-                }, (hostedFieldsErr, hostedFieldsInstance) => {
-                    if (hostedFieldsErr) {
-                        Notification.error({
-                            title: this.$t('Payment method error') + ':',
-                            message: hostedFieldsErr.message,
-                            duration: 0
-                        });
-                        return;
-                    }
-                    else {
-                        //enable submit button
-                        // document.querySelector('#submitTransaction').removeAttribute('disabled');
-                        this.braintree.hostedFieldsInstance = hostedFieldsInstance;
-                        this.setHostedFieldsEventHandlers(hostedFieldsInstance);
-                    }
-                });
+                );
             },
 
             setHostedFieldsEventHandlers: function(hostedFieldsInstance) {
-
                 function getElementId(field) {
                     if(isObject(field) && isObject(field.container)) {
                         return field.container.id;
@@ -534,7 +616,7 @@
                     let classesSuccess = ['el-icon-circle-check', 'colorGreen'];
                     let classesError = ['el-icon-circle-cross', 'colorRed'];
 
-                    console.log("ON VALIDITY CHANGE", field, id, event.isValid)
+                    // console.log("ON VALIDITY CHANGE", field, id, event.isValid)
 
                     if(id) {
                         if (field.isValid === false && !field.isPotentiallyValid) {
@@ -581,98 +663,70 @@
                 });
             },
 
-            createPaypal() {
-                let paypal = require('braintree-web/paypal');
-                paypal.create({
-                    client: this.braintree.clientInstance
-                }, (createPaypalErr, paypalInstance) => {
-                    if (createPaypalErr) {
+            createHostedFields: function(clientInstance) {
+                let hostedFields = require('braintree-web/hosted-fields');
+                hostedFields.create({
+                    client: clientInstance,
+                    styles: {
+                      'input': {
+                        'font-size': '18px'
+                      },
+                      'input.invalid': {
+                        'color': 'red'
+                      },
+                      'input.valid': {
+                        'color': 'green'
+                      }
+                    },
+                    fields: {
+                        number: {
+                            selector: '#card-number',
+                            placeholder: '•••• •••• •••• ••••'
+                        },
+                        cvv: {
+                            selector: '#cvv',
+                            placeholder: '•••'
+                        },
+                        expirationMonth: {
+                            selector: '#expiration-month',
+                            placeholder: this.$t('card_expiration_month_hint')
+                        },
+                        expirationYear: {
+                            selector: '#expiration-year',
+                            placeholder: this.$t('card_expiration_year_hint')
+                        }
+                    }
+                }, (hostedFieldsErr, hostedFieldsInstance) => {
+                    if (hostedFieldsErr) {
                         Notification.error({
-                            title: this.$t('There was an error setting up the payment input fields!'),
-                            message: createPaypalErr.message,
+                            title: this.$t('Payment method error') + ':',
+                            message: this.getBraintreeErrorMessage(hostedFieldsErr),
                             duration: 0
                         });
                         return;
                     }
                     else {
-                        this.braintree.paypalInstance = paypalInstance;
+                        this.braintree.hostedFieldsInstance = hostedFieldsInstance;
+                        this.setHostedFieldsEventHandlers(hostedFieldsInstance);
                     }
                 });
             },
 
-            tokenizeHostedFields() {
-                this.placeOrderButtonLoading = true;
-
-                this.braintree.hostedFieldsInstance.tokenize((tokenizeErr, payload) => {
-                    if (tokenizeErr) {
-                        Notification.error({
-                            title: this.$t('Payment method error') + ':',
-                            message: tokenizeErr.message,
-                            duration: 0
-                        });
-
-                        this.placeOrderButtonLoading = false;
-                        return;
-                    }
-
-                    // Not sure why this is needed.  Commenting out for now:
-                    // this.braintree.tokenizePayload = payload;
-                    // this.braintree.paymentMethodNonce = payload.nonce;
-
-                    //TODO: send payload.nonce to your server (with shipping/billing info)
-
-                    // teardown HF and present payment information
-                    this.braintree.hostedFieldsInstance.teardown((teardownErr) => {
-                        if (teardownErr) {
-                            console.log('There was an error tearing it down!', teardownErr.message);
-                        }
-                        else {
-                            console.log("hosted fields teardown done")
-                        }
-
-                        this.placeOrderButtonLoading = false;
-                    });
-                });
-            },
-
-            paypalTransaction() {
-                this.braintree.paypalInstance.tokenize(
-                    { flow: 'vault' },
-                    (pptokenizeErr, paypalPayload) => {
-                        if (pptokenizeErr) {
-                            let errorMsg = {
-                                title: null,
-                                message: null,
+            createPaypal: function(clientInstance) {
+                let paypal = require('braintree-web/paypal');
+                paypal.create(
+                    { client: clientInstance },
+                    (createPaypalErr, paypalInstance) => {
+                        if (createPaypalErr) {
+                            Notification.error({
+                                title: this.$t('There was an error setting up the payment input fields!'),
+                                message: this.getBraintreeErrorMessage(createPaypalErr),
                                 duration: 0
-                            };
-
-                            // Handle tokenization errors or premature flow closure
-                            switch (pptokenizeErr.code) {
-                                case 'PAYPAL_POPUP_CLOSED':
-                                    // console.error('Customer closed PayPal popup.');
-                                    this.setPaymentMethod('CREDIT_CARD')
-                                    break;
-
-                                case 'PAYPAL_ACCOUNT_TOKENIZATION_FAILED':
-                                case 'PAYPAL_FLOW_FAILED':
-                                    errorMsg.title = $t(pptokenizeErr.code);
-                                    errorMsg.message = pptokenizeErr.details
-                                    break;
-
-                                default:
-                                    errorMsg.title = $t('There was an error tokenizing PayPal!');
-                                    errorMsg.message = pptokenizeErr.details
-                            }
-
-                            if(errorMsg.title) {
-                                Notification.error(errorMsg);
-                            }
+                            });
+                            return;
                         }
-                        else {
-                            this.braintree.transaction.nonce = paypalPayload.paymentMethodNonce;
-                            this.braintree.transaction.payPalPayload = paypalPayload;
-                            console.log("PAYPAL NONCE", paypalPayload.paymentMethodNonce)
-                        }
+
+                        this.braintree.paypalInstance = paypalInstance;
                     }
                 );
             }
@@ -688,7 +742,24 @@
         },
 
         created() {
-          this.createBraintree();
+            let client = require('braintree-web/client');
+            client.create(
+                { authorization: this.appInfo.clientToken },
+                (clientErr, clientInstance) => {
+                    if (clientErr) {
+                        Notification.error({
+                            title: this.$t('There was an error setting up the payment client!'),
+                            message: this.getBraintreeErrorMessage(clientErr),
+                            duration: 0
+                        });
+                    }
+                    else {
+                      this.braintree.clientInstance = clientInstance
+                      this.createHostedFields(clientInstance);
+                      this.createPaypal(clientInstance);
+                    }
+                }
+            );
         },
 
         mounted: function() {
@@ -706,5 +777,15 @@
     .card-icon {
         padding-top: 2px;
         width: 50px;
+    }
+
+    .hostedField60 {
+        min-width:60px !important;
+        width:60px !important;
+    }
+
+    .hostedField80 {
+        min-width:80px !important;
+        width:80px !important;
     }
 </style>
