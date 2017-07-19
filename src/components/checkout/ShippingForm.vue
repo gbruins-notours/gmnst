@@ -6,7 +6,9 @@
             <div class="g-spec-content">
                 <!-- Shipping: First Name -->
                 <div class="displayTableRow">
-                    <label class="checkout_form_label">{{ $t('FIRST NAME') }}:</label>
+                    <label class="checkout_form_label">
+                        {{ $t('FIRST NAME') }}:
+                    </label>
                     <div class="checkout_form_value">
                         <el-input v-model.trim="firstName" @input="$v.firstName.$touch()"></el-input>
                         <p role="alert" v-if="$v.firstName.$dirty && !$v.firstName.required">{{ $t('Required') }}</p>
@@ -15,7 +17,9 @@
 
                 <!-- Shipping: Last Name -->
                 <div class="displayTableRow">
-                    <label class="checkout_form_label">{{ $t('LAST NAME') }}:</label>
+                    <label class="checkout_form_label">
+                        {{ $t('LAST NAME') }}:
+                    </label>
                     <div class="checkout_form_value">
                         <el-input v-model.trim="lastName" @input="$v.lastName.$touch()"></el-input>
                         <p role="alert" v-if="$v.lastName.$dirty && !$v.lastName.required">{{ $t('Required') }}</p>
@@ -24,7 +28,9 @@
 
                 <!-- Shipping: Street Address -->
                 <div class="displayTableRow">
-                    <label class="checkout_form_label">{{ $t('ADDRESS LINE 1') }}:</label>
+                    <label class="checkout_form_label">
+                        {{ $t('ADDRESS LINE 1') }}:
+                    </label>
                     <div class="checkout_form_value">
                         <el-input v-model.trim="streetAddress" @input="$v.streetAddress.$touch()"></el-input>
                         <p role="alert" v-if="$v.streetAddress.$dirty && !$v.streetAddress.required">{{ $t('Required') }}</p>
@@ -42,7 +48,9 @@
 
                 <!-- Shipping: City -->
                 <div class="displayTableRow">
-                    <label class="checkout_form_label">{{ $t('CITY') }}:</label>
+                    <label class="checkout_form_label">
+                        {{ $t('CITY') }}:
+                    </label>
                     <div class="checkout_form_value">
                         <el-input v-model.trim="city" @input="$v.city.$touch()"></el-input>
                         <p role="alert" v-if="$v.city.$dirty && !$v.city.required">{{ $t('Required') }}</p>
@@ -51,7 +59,9 @@
 
                 <!-- Shipping: State -->
                 <div class="displayTableRow">
-                    <label class="checkout_form_label">{{ $t('STATE/PROVINCE/REGION') }}:</label>
+                    <label class="checkout_form_label">
+                        {{ $t('STATE/PROVINCE/REGION') }}:
+                    </label>
                     <div class="checkout_form_value">
                         <el-input v-model.trim="state" @input="$v.state.$touch()"></el-input>
                         <p role="alert" v-if="$v.state.$dirty && !$v.state.required">{{ $t('Required') }}</p>
@@ -60,7 +70,9 @@
 
                 <!-- Shipping: Postal Code -->
                 <div class="displayTableRow">
-                    <label class="checkout_form_label">{{ $t('POSTAL CODE') }}:</label>
+                    <label class="checkout_form_label">
+                        {{ $t('POSTAL CODE') }}:
+                    </label>
                     <div class="checkout_form_value">
                         <el-input v-model.trim="postalCode" @input="$v.postalCode.$touch()"></el-input>
                         <p role="alert" v-if="$v.postalCode.$dirty && !$v.postalCode.required">{{ $t('Required') }}</p>
@@ -69,7 +81,9 @@
 
                 <!-- Shipping: Country -->
                 <div class="displayTableRow">
-                    <label class="checkout_form_label">{{ $t('COUNTRY') }}:</label>
+                    <label class="checkout_form_label">
+                        {{ $t('COUNTRY') }}:
+                    </label>
                     <div class="checkout_form_value">
                         <country-select v-model="country"
                                         :init-value="country"
@@ -91,7 +105,9 @@
 
                 <!-- Shipping: Email -->
                 <div class="displayTableRow">
-                    <label class="checkout_form_label">{{ $t('EMAIL ADDRESS') }}:</label>
+                    <label class="checkout_form_label">
+                        {{ $t('EMAIL ADDRESS') }}:
+                    </label>
                     <div class="checkout_form_value">
                         <el-input v-model.trim="email" @input="delayTouch($v.email)"></el-input>
                         <div role="alert" v-if="$v.email.$dirty">

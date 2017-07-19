@@ -8,7 +8,8 @@ const translations = {
     'American Express': 'American Express',
     'Are you sure you want to return to your Shopping Cart?': 'Are you sure you want to return to your Shopping Cart?',
 
-    'Billing': 'Billing',
+    'Billing address': 'Billing address',
+    'BILLING ADDRESS SAME AS SHIPPING': 'BILLING ADDRESS SAME AS SHIPPING',
 
     'card_expiration_hint': 'MM/YY',
     'card_expiration_year_hint': 'YY',
@@ -32,8 +33,7 @@ const translations = {
 
     'Edit Address': 'Edit Address',
     'EMAIL ADDRESS': 'EMAIL ADDRESS',
-    'Enter a new billing address': 'Enter a new billing address',
-    'EXPIRATION': 'EXPIRATION',
+    'EXPIRES': 'EXPIRES',
 
     'Finding your security code': 'Finding your security code',
     'FIRST NAME': 'FIRST NAME',
@@ -53,7 +53,7 @@ const translations = {
 
     'optional': 'optional',
 
-    'Payment method': 'Payment method',
+    'Pay with PAYPAL': 'Pay with PAYPAL',
     'Payment method error': 'Payment method error',
     'PAYPAL': 'PAYPAL',
     'PAYPAL_ACCOUNT_TOKENIZATION_FAILED': 'PayPal tokenization failed',
@@ -75,9 +75,7 @@ const translations = {
 
     'Required': 'Required',
     'Return to cart': 'Return to cart',
-    'Review items': 'Review items',
 
-    'SAME AS SHIPPING ADDRESS': 'SAME AS SHIPPING ADDRESS',
     'SECURITY CODE': 'SECURITY CODE',
     'Shipping': 'Shipping',
     'Shipping Address': 'Shipping Address',
@@ -114,6 +112,8 @@ const translations = {
     'We want to make sure it fits!': 'We want to make sure it fits!',
     'what\'s this?': 'what\'s this?',
 
+    'Your billing info': 'Your billing info',
+    'Your order': 'Your order',
     'Your shopping cart does not contain any items.': 'Your shopping cart does not contain any items.',
 
     'braintree': {
