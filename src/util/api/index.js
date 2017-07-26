@@ -96,6 +96,16 @@ export default {
                 });
         },
 
+        validateAddress(address) {
+            return HTTP
+                .get('/api/v1/shipping/validateAddress', {
+                    params: address
+                })
+                .then((response) => {
+                    return response.data.data;
+                });
+        },
+
         checkout(params) {
             return HTTP
                 .post('/api/v1/cart/checkout', params)

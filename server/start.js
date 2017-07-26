@@ -124,6 +124,12 @@ internals.manifest = {
         {
             plugin: {
                 register: './plugins/shipping'
+            },
+            options: {
+                select: ['api'],
+                routes: {
+                    prefix: '/api/v1'
+                }
             }
         },
         {

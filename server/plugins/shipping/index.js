@@ -1,6 +1,7 @@
 const apiKey = process.env.NODE_ENV === 'development' ? process.env.SHIPPO_API_KEY_TEST : process.env.SHIPPO_API_KEY_PROD;
 const shippo = require('shippo')(apiKey);
 const isObject = require('lodash.isobject');
+const Joi = require('joi');
 
 let internals = {};
 
@@ -21,14 +22,50 @@ let internals = {};
  *       country : 'US'
  * }
  */
-internals.validateAddress = (address) => {
+internals.validateAddress = (address, callbackFn) => {
     address.validate = true;
-    return shippo.address.create(address);
+    shippo.address.create(address, callbackFn);
 }
 
 
 exports.register = (server, options, next) => {
-    server.expose('validateAddress', internals.validateAddress);
+
+    server.route([
+        {
+            method: 'GET',
+            path: '/shipping/validateAddress',
+            config: {
+                description: 'Validates an address',
+                validate: {
+                    query: {
+                        street1: Joi.string().required(),
+                        city: Joi.string().required(),
+                        state: Joi.string().required(),
+                        zip: Joi.string().required(),
+                        country: Joi.string().required()
+                    }
+                },
+                handler: (request, reply) => {
+                    console.log("GET REQUEST", request.query)
+
+                    internals.validateAddress(request.query, (err, response) => {
+                        if(err) {
+                            console.log("ADDRESS VALIDATION ERR", err);
+                            reply(Boom.badRequest(err));
+                            return;
+                        }
+
+                        console.log("ADDRESS VALIDATION RESPONSE", response);
+
+                        //TODO - get value from response
+                        reply.apiSuccess(response);
+                    });
+                }
+            }
+        }
+    ]);
+
+    // server.expose('validateAddress', internals.validateAddress);
     return next();
 };
 
