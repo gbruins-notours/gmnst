@@ -117,8 +117,8 @@ const translations = {
     'Your shopping cart does not contain any items.': 'Your shopping cart does not contain any items.',
 
     'braintree': {
-        'HOSTED_FIELDS_FIELDS_EMPTY': 'Please fill out the entire "Payment method" section.',
-        'HOSTED_FIELDS_ATTRIBUTE_VALUE_NOT_ALLOWED': '"Payment method" section contains an invalid value',
+        'HOSTED_FIELDS_FIELDS_EMPTY': 'Please fill out the entire "Your billing info" section.',
+        'HOSTED_FIELDS_ATTRIBUTE_VALUE_NOT_ALLOWED': 'Your credit card info contains an invalid value',
     },
 
     // US states

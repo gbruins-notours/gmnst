@@ -2,6 +2,7 @@ const apiKey = process.env.NODE_ENV === 'development' ? process.env.SHIPPO_API_K
 const shippo = require('shippo')(apiKey);
 const isObject = require('lodash.isobject');
 const Joi = require('joi');
+const Boom = require('boom');
 
 let internals = {};
 

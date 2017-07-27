@@ -71,6 +71,7 @@
              */
             'country' (to, from) {
                 this.selectedState = null;
+                this.updateValue(null);
             }
         },
 

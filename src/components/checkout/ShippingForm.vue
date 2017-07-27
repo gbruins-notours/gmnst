@@ -28,6 +28,7 @@
                         <country-select v-model="country"
                                         :init-value="country"
                                         value-type="alpha2"
+                                        @input="$v.country.$touch()"
                                         v-on:change="val => { country = val }"></country-select>
                     </div>
                 </div>
@@ -92,7 +93,11 @@
                     </label>
                     <div class="checkout_form_value">
                         <!-- <el-input v-model.trim="state" @input="$v.state.$touch()"></el-input> -->
-                        <state-province-select :country="country"></state-province-select>
+                        <state-province-select v-model.trim="state"
+                                               :init-value="state"
+                                               :country="country"
+                                               @input="$v.state.$touch()"
+                                               v-on:change="val => { state = val }"></state-province-select>
                         <p role="alert" v-if="$v.state.$dirty && !$v.state.required">{{ $t('Required') }}</p>
                     </div>
                 </div>
@@ -127,6 +132,7 @@
                     <el-button type="warning"
                                 @click="submitForm"
                                 :disabled="submitButtonDisabled"
+                                :loading="submitButtonLoading"
                                 class="colorBlack">{{ $t('Continue') }}</el-button>
                     <div v-if="submitButtonDisabled" class="colorGreen">Please fill out the form completely before continuing. Thanks!</div>
                 </div>
@@ -140,7 +146,8 @@
 <script>
     import Vue from 'vue'
     import { mapGetters } from 'vuex'
-    import { Button, Input } from 'element-ui'
+    import { Button, Input, Notification } from 'element-ui'
+    import isObject from 'lodash.isobject'
     import CountrySelect from '../CountrySelect.vue'
     import StateProvinceSelect from '../StateProvinceSelect.vue'
     import ShippingBillingHelp from './ShippingBillingHelp.vue'
@@ -152,6 +159,9 @@
     Vue.use(Input)
     Vue.use(Validations)
 
+    Vue.prototype.$notify = Notification;
+
+    let currentNotification = null;
     const touchMap = new WeakMap();
 
     export default {
@@ -159,6 +169,12 @@
             ShippingBillingHelp,
             CountrySelect,
             StateProvinceSelect
+        },
+
+        data: function() {
+            return {
+                submitButtonLoading: false,
+            }
         },
 
         computed: {
@@ -269,7 +285,13 @@
             },
 
             submitForm: function() {
+                if(currentNotification) {
+                    currentNotification.close();
+                }
+
                 if(!this.submitButtonDisabled) {
+                    this.submitButtonLoading = true;
+
                     api.shoppingCart.validateAddress({
                         street1: this.streetAddress,
                         city: this.city,
@@ -278,21 +300,51 @@
                         country: this.country
                     })
                     .then((result) => {
-                        //TODO
-                        // this.$emit('shipping_form_submit')
+                        console.log("submit response", result)
+
+                        let errorTitle = null;
+                        let errorMessage = null;
+
+                        this.submitButtonLoading = false;
+
+                        if(isObject(result.validation_results)
+                            && result.validation_results.hasOwnProperty('is_valid')
+                            && !result.validation_results.is_valid) {
+
+                            // just get the first error I guess
+                            if(Array.isArray(result.validation_results.messages)) {
+                                errorTitle = result.validation_results.messages[0].code;
+                                errorMessage = result.validation_results.messages[0].text;
+                            }
+                        }
+
+                        if(errorTitle) {
+                            currentNotification = this.$notify({
+                                title: errorTitle + ':',
+                                message: errorMessage,
+                                duration: 0,
+                                type: 'error'
+                            });
+
+                            return;
+                        }
+                        else {
+                            this.$emit('shipping_form_submit')
+                        }
                     });
                 }
             }
         },
 
         validations: {
+            email: { required, email },
+            country: { required },
             firstName: { required },
             lastName: { required },
             streetAddress: { required },
             city: { required },
             state: { required },
-            postalCode: { required },
-            email: { required, email },
+            postalCode: { required }
         }
     }
 </script>
