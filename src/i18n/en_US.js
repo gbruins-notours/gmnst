@@ -102,6 +102,7 @@ const translations = {
     'STREET ADDRESS': 'STREET ADDRESS',
 
     'Thanks!': 'Thanks!',
+    'The address you provided does not seem to be a valid mailing adddress.': 'The address you provided does not seem to be a valid mailing adddress.',
     'There was an error setting up the payment client!': 'There was an error setting up the payment client!',
     'There was an error tokenizing PayPal!': 'There was an error tokenizing PayPal!',
     'Tips for entering addresses': 'Tips for entering addresses',

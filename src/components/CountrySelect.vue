@@ -7,7 +7,7 @@
         <el-option
                 v-for="item in countryList"
                 :key="item.alpha2"
-                :label="item.name"
+                :label="item.alpha2 == 'GB' ? 'United Kingdom of Great Britain' : item.name"
                 :value="item[optionValueAttr]">
         </el-option>
     </el-select>

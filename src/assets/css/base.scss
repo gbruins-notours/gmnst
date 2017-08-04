@@ -181,3 +181,10 @@ ul.disc {
         padding-bottom: 10px;
     }
 }
+
+
+/* element.io overrides */
+.el-notification__content {
+    text-align: inherit;
+    color: #6f7071;
+}

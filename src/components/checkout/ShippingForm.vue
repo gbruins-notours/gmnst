@@ -148,6 +148,7 @@
     import { mapGetters } from 'vuex'
     import { Button, Input, Notification } from 'element-ui'
     import isObject from 'lodash.isobject'
+    import forEach from 'lodash.forEach'
     import CountrySelect from '../CountrySelect.vue'
     import StateProvinceSelect from '../StateProvinceSelect.vue'
     import ShippingBillingHelp from './ShippingBillingHelp.vue'
@@ -170,6 +171,11 @@
             CountrySelect,
             StateProvinceSelect
         },
+
+        // render: function (createElement) {
+        //     console.log("RENDER");
+        //     h = createElement;
+        // },
 
         data: function() {
             return {
@@ -285,6 +291,8 @@
             },
 
             submitForm: function() {
+                let self = this;
+
                 if(currentNotification) {
                     currentNotification.close();
                 }
@@ -293,58 +301,116 @@
                     this.submitButtonLoading = true;
 
                     api.shoppingCart.validateAddress({
-                        street1: this.streetAddress,
-                        city: this.city,
-                        state: this.state,
-                        zip: this.postalCode,
-                        country: this.country
+                        company_name: this.company,
+                        address_line1: this.streetAddress,
+                        city_locality: this.city,
+                        state_province: this.state,
+                        postal_code: this.postalCode,
+                        country_code: this.country
                     })
                     .then((result) => {
-                        console.log("submit response", result)
+                        let validation = Array.isArray(result) ? result[0] : result;
 
-                        let errorTitle = null;
-                        let errorMessage = null;
+                        self.submitButtonLoading = false;
 
-                        this.submitButtonLoading = false;
+                        switch(validation.status) {
+                            case 'verified':
+                                self.company = validation.matched_address.company
+                                self.streetAddress = validation.matched_address.address_line1
+                                self.city = validation.matched_address.city_locality
+                                self.state = validation.matched_address.state_province
+                                self.postalCode = validation.matched_address.postal_code
+                                self.country = validation.matched_address.country_code
 
-                        if(isObject(result.validation_results)
-                            && result.validation_results.hasOwnProperty('is_valid')
-                            && !result.validation_results.is_valid) {
+                                self.$emit('shipping_form_submit')
+                                return;
 
-                            // just get the first error I guess
-                            if(Array.isArray(result.validation_results.messages)) {
-                                errorTitle = result.validation_results.messages[0].code;
-                                errorMessage = result.validation_results.messages[0].text;
-                            }
+                            // NOTE: The 'unverified' case could still be a correct address.
+                            // This will most likely happen if the country value
+                            // is not supported (https://docs.shipengine.com/docs/address-validation).
+                            // In this case we should consider 'unverified' as valid so the transaction can continue.
+                            //
+                            // ALSO NOTE: The 'matched_address' property is null when the status is 'unverified',
+                            // so we need to get the values from the 'original_address' property
+                            case 'unverified':
+                                self.company = validation.original_address.company
+                                self.streetAddress = validation.original_address.address_line1
+                                self.city = validation.original_address.city_locality
+                                self.state = validation.original_address.state_province
+                                self.postalCode = validation.original_address.postal_code
+                                self.country = validation.original_address.country_code
+
+                                self.$emit('shipping_form_submit')
+                                return;
+
+                            default:
+                                let message = this.$t('The address you provided does not seem to be a valid mailing adddress.');
+
+                                if(isObject(validation) && Array.isArray(validation.messages)) {
+                                    let messages = [];
+
+                                    // Skipping message code 'a1003', because it seems kind of useless.  It's message is
+                                    // "Some fields were modified while verifying the address.".  That will just confuse the user,
+                                    // so it's probably better to display the default message in this case.
+                                    let skipCodes = ['a1003'];
+
+                                    forEach(validation.messages, (msg) => {
+                                        if(skipCodes.indexOf(msg.code) < 0) {
+                                            messages.push(msg.message)
+                                        }
+                                    });
+                                    message = messages.join('\n\n');
+                                }
+
+                                currentNotification = this.$notify({
+                                    title: this.$t('Address validation error'),
+                                    message: message,
+                                    duration: 0,
+                                    type: 'error'
+                                });
+                                break;
+                        }
+                    })
+                    .catch((error) => {
+                        let msg = error.message;
+
+                        if (error.response) {
+                            msg = error.response.data.message;
                         }
 
-                        if(errorTitle) {
-                            currentNotification = this.$notify({
-                                title: errorTitle + ':',
-                                message: errorMessage,
-                                duration: 0,
-                                type: 'error'
-                            });
+                        console.log("CATCH", error.response);
+                        console.log("CATCH MSG", msg);
 
-                            return;
-                        }
-                        else {
-                            this.$emit('shipping_form_submit')
-                        }
+                        this.$notify({
+                            title: msg || "An internal server error occurred",
+                            // message: errorMessage,
+                            duration: 0,
+                            type: 'error'
+                        });
                     });
                 }
             }
         },
 
         validations: {
-            email: { required, email },
-            country: { required },
-            firstName: { required },
-            lastName: { required },
-            streetAddress: { required },
-            city: { required },
-            state: { required },
-            postalCode: { required }
+            // email: { required, email },
+            // country: { required },
+            // firstName: { required },
+            // lastName: { required },
+            // streetAddress: { required },
+            // city: { required },
+            // state: { required },
+            // postalCode: { required }
+
+            //testing only
+            email: {  },
+            country: {  },
+            firstName: {  },
+            lastName: {  },
+            streetAddress: {  },
+            city: {  },
+            state: {  },
+            postalCode: {  }
         }
     }
 </script>
