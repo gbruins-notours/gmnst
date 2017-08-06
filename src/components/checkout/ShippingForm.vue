@@ -1,144 +1,136 @@
 <template>
     <section class="container">
-
-        <div class="g-spec no-zebra mbl">
-            <div class="g-spec-label nowrap">{{ $t('Shipping') }}</div>
-            <div class="g-spec-content">
-
-                <!-- Email -->
-                <div class="displayTableRow">
-                    <label class="checkout_form_label">
-                        {{ $t('EMAIL ADDRESS') }}:
-                    </label>
-                    <div class="checkout_form_value">
-                        <el-input v-model.trim="email" @input="delayTouch($v.email)"></el-input>
-                        <div role="alert" v-if="$v.email.$dirty">
-                            <p v-if="!$v.email.required">{{ $t('Required') }}</p>
-                            <p v-if="!$v.email.email">{{ $t('Please enter a valid email address.') }}</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Country -->
-                <div class="displayTableRow">
-                    <label class="checkout_form_label">
-                        {{ $t('COUNTRY') }}:
-                    </label>
-                    <div class="checkout_form_value">
-                        <country-select v-model="country"
-                                        :init-value="country"
-                                        value-type="alpha2"
-                                        @input="$v.country.$touch()"
-                                        v-on:change="val => { country = val }"></country-select>
-                    </div>
-                </div>
-
-                <!-- First Name -->
-                <div class="displayTableRow">
-                    <label class="checkout_form_label">
-                        {{ $t('FIRST NAME') }}:
-                    </label>
-                    <div class="checkout_form_value">
-                        <el-input v-model.trim="firstName" @input="$v.firstName.$touch()"></el-input>
-                        <p role="alert" v-if="$v.firstName.$dirty && !$v.firstName.required">{{ $t('Required') }}</p>
-                    </div>
-                </div>
-
-                <!-- Last Name -->
-                <div class="displayTableRow">
-                    <label class="checkout_form_label">
-                        {{ $t('LAST NAME') }}:
-                    </label>
-                    <div class="checkout_form_value">
-                        <el-input v-model.trim="lastName" @input="$v.lastName.$touch()"></el-input>
-                        <p role="alert" v-if="$v.lastName.$dirty && !$v.lastName.required">{{ $t('Required') }}</p>
-                    </div>
-                </div>
-
-                <!-- Street Address -->
-                <div class="displayTableRow">
-                    <label class="checkout_form_label">
-                        {{ $t('ADDRESS LINE 1') }}:
-                    </label>
-                    <div class="checkout_form_value">
-                        <el-input v-model.trim="streetAddress" @input="$v.streetAddress.$touch()"></el-input>
-                        <p role="alert" v-if="$v.streetAddress.$dirty && !$v.streetAddress.required">{{ $t('Required') }}</p>
-                    </div>
-                </div>
-
-                <!-- Extended Address -->
-                <!-- This value may be returned by the paypal response, so only displaying it if it does -->
-                <div class="displayTableRow" v-if="extendedAddress">
-                    <label class="checkout_form_label">{{ $t('ADDRESS LINE 2') }}:</label>
-                    <div class="checkout_form_value">
-                        <el-input v-model.trim="extendedAddress"></el-input>
-                    </div>
-                </div>
-
-                <!-- City -->
-                <div class="displayTableRow">
-                    <label class="checkout_form_label">
-                        {{ $t('CITY') }}:
-                    </label>
-                    <div class="checkout_form_value">
-                        <el-input v-model.trim="city" @input="$v.city.$touch()"></el-input>
-                        <p role="alert" v-if="$v.city.$dirty && !$v.city.required">{{ $t('Required') }}</p>
-                    </div>
-                </div>
-
-                <!-- State -->
-                <div class="displayTableRow">
-                    <label class="checkout_form_label">
-                        {{ $t('STATE/PROVINCE/REGION') }}:
-                    </label>
-                    <div class="checkout_form_value">
-                        <!-- <el-input v-model.trim="state" @input="$v.state.$touch()"></el-input> -->
-                        <state-province-select v-model.trim="state"
-                                               :init-value="state"
-                                               :country="country"
-                                               @input="$v.state.$touch()"
-                                               v-on:change="val => { state = val }"></state-province-select>
-                        <p role="alert" v-if="$v.state.$dirty && !$v.state.required">{{ $t('Required') }}</p>
-                    </div>
-                </div>
-
-                <!-- Postal Code -->
-                <div class="displayTableRow">
-                    <label class="checkout_form_label">
-                        {{ $t('POSTAL CODE') }}:
-                    </label>
-                    <div class="checkout_form_value">
-                        <el-input v-model.trim="postalCode" @input="$v.postalCode.$touch()"></el-input>
-                        <p role="alert" v-if="$v.postalCode.$dirty && !$v.postalCode.required">{{ $t('Required') }}</p>
-                    </div>
-                </div>
-
-                <!-- Company Name -->
-                <div class="displayTableRow">
-                    <label class="checkout_form_label">
-                        {{ $t('COMPANY NAME') }}&nbsp;
-                        <span class="colorGrayLighter">({{ $t('optional') }})</span>:
-                    </label>
-                    <div class="checkout_form_value">
-                        <el-input v-model.trim="company"></el-input>
-                    </div>
-                </div>
-
-                <div class="ptl">
-                    <shipping-billing-help></shipping-billing-help>
-                </div>
-
-                <div class="mtl">
-                    <el-button type="warning"
-                                @click="submitForm"
-                                :disabled="submitButtonDisabled"
-                                :loading="submitButtonLoading"
-                                class="colorBlack">{{ $t('Continue') }}</el-button>
-                    <div v-if="submitButtonDisabled" class="colorGreen">Please fill out the form completely before continuing. Thanks!</div>
+        <!-- Email -->
+        <div class="displayTableRow">
+            <label class="checkout_form_label">
+                {{ $t('EMAIL ADDRESS') }}:
+            </label>
+            <div class="checkout_form_value">
+                <el-input v-model.trim="email" @input="delayTouch($v.email)"></el-input>
+                <div role="alert" v-if="$v.email.$dirty">
+                    <p v-if="!$v.email.required">{{ $t('Required') }}</p>
+                    <p v-if="!$v.email.email">{{ $t('Please enter a valid email address.') }}</p>
                 </div>
             </div>
         </div>
 
+        <!-- Country -->
+        <div class="displayTableRow">
+            <label class="checkout_form_label">
+                {{ $t('COUNTRY') }}:
+            </label>
+            <div class="checkout_form_value">
+                <country-select v-model="country"
+                                :init-value="country"
+                                value-type="alpha2"
+                                @input="$v.country.$touch()"
+                                v-on:change="val => { country = val }"></country-select>
+            </div>
+        </div>
+
+        <!-- First Name -->
+        <div class="displayTableRow">
+            <label class="checkout_form_label">
+                {{ $t('FIRST NAME') }}:
+            </label>
+            <div class="checkout_form_value">
+                <el-input v-model.trim="firstName" @input="$v.firstName.$touch()"></el-input>
+                <p role="alert" v-if="$v.firstName.$dirty && !$v.firstName.required">{{ $t('Required') }}</p>
+            </div>
+        </div>
+
+        <!-- Last Name -->
+        <div class="displayTableRow">
+            <label class="checkout_form_label">
+                {{ $t('LAST NAME') }}:
+            </label>
+            <div class="checkout_form_value">
+                <el-input v-model.trim="lastName" @input="$v.lastName.$touch()"></el-input>
+                <p role="alert" v-if="$v.lastName.$dirty && !$v.lastName.required">{{ $t('Required') }}</p>
+            </div>
+        </div>
+
+        <!-- Street Address -->
+        <div class="displayTableRow">
+            <label class="checkout_form_label">
+                {{ $t('ADDRESS LINE 1') }}:
+            </label>
+            <div class="checkout_form_value">
+                <el-input v-model.trim="streetAddress" @input="$v.streetAddress.$touch()"></el-input>
+                <p role="alert" v-if="$v.streetAddress.$dirty && !$v.streetAddress.required">{{ $t('Required') }}</p>
+            </div>
+        </div>
+
+        <!-- Extended Address -->
+        <!-- This value may be returned by the paypal response, so only displaying it if it does -->
+        <div class="displayTableRow" v-if="extendedAddress">
+            <label class="checkout_form_label">{{ $t('ADDRESS LINE 2') }}:</label>
+            <div class="checkout_form_value">
+                <el-input v-model.trim="extendedAddress"></el-input>
+            </div>
+        </div>
+
+        <!-- City -->
+        <div class="displayTableRow">
+            <label class="checkout_form_label">
+                {{ $t('CITY') }}:
+            </label>
+            <div class="checkout_form_value">
+                <el-input v-model.trim="city" @input="$v.city.$touch()"></el-input>
+                <p role="alert" v-if="$v.city.$dirty && !$v.city.required">{{ $t('Required') }}</p>
+            </div>
+        </div>
+
+        <!-- State -->
+        <div class="displayTableRow">
+            <label class="checkout_form_label">
+                {{ $t('STATE/PROVINCE/REGION') }}:
+            </label>
+            <div class="checkout_form_value">
+                <!-- <el-input v-model.trim="state" @input="$v.state.$touch()"></el-input> -->
+                <state-province-select v-model.trim="state"
+                                       :init-value="state"
+                                       :country="country"
+                                       @input="$v.state.$touch()"
+                                       v-on:change="val => { state = val }"></state-province-select>
+                <p role="alert" v-if="$v.state.$dirty && !$v.state.required">{{ $t('Required') }}</p>
+            </div>
+        </div>
+
+        <!-- Postal Code -->
+        <div class="displayTableRow">
+            <label class="checkout_form_label">
+                {{ $t('POSTAL CODE') }}:
+            </label>
+            <div class="checkout_form_value">
+                <el-input v-model.trim="postalCode" @input="$v.postalCode.$touch()"></el-input>
+                <p role="alert" v-if="$v.postalCode.$dirty && !$v.postalCode.required">{{ $t('Required') }}</p>
+            </div>
+        </div>
+
+        <!-- Company Name -->
+        <div class="displayTableRow">
+            <label class="checkout_form_label">
+                {{ $t('COMPANY NAME') }}&nbsp;
+                <span class="colorGrayLighter">({{ $t('optional') }})</span>:
+            </label>
+            <div class="checkout_form_value">
+                <el-input v-model.trim="company"></el-input>
+            </div>
+        </div>
+
+        <div class="ptl">
+            <shipping-billing-help></shipping-billing-help>
+        </div>
+
+        <div class="mtl">
+            <el-button type="warning"
+                        @click="submitForm"
+                        :disabled="submitButtonDisabled"
+                        :loading="submitButtonLoading"
+                        class="colorBlack">{{ $t('Continue') }}</el-button>
+            <div v-if="submitButtonDisabled" class="colorGreen">Please fill out the form completely before continuing. Thanks!</div>
+        </div>
     </section>
 </template>
 
@@ -416,4 +408,5 @@
 </script>
 
 
-<style></style>
+<style>
+</style>

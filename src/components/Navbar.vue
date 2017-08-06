@@ -32,8 +32,8 @@
                             <img class="Header-image cursorPointer" @click="goHome" src="/static/images/logo_header.png" alt="gmnst">
                         </div>
                         <div class="Header-checkout-cell tac colorBlack" v-if="numCartItems">
-                            {{ $t('Checkout') }}
-                            <span class="pls nowrap" >(<a @click="headerPopoverVisible = true">{{ numCartItems }}&nbsp;{{ $tc('items', numCartItems) }}</a>)</span>
+                            <span>{{ $t('Checkout') }}</span>
+                            <span class="nowrap">(<a @click="headerPopoverVisible = true">{{ numCartItems }}&nbsp;{{ $tc('items', numCartItems) }}</a>)</span>
                             <el-popover
                                 ref="headerpopover"
                                 placement="bottom"
@@ -47,7 +47,7 @@
                             </el-popover>
                         </div>
                         <div class="Header-checkout-cell tar">
-                            <span class="icon is-medium"><i class="fa fa-lock colorGrayLighter"></i></span>
+                            <span class="icon is-medium vam"><i class="fa fa-lock colorGrayLighter"></i></span>
                         </div>
                     </div>
                 </div>
@@ -145,7 +145,7 @@
         vertical-align: middle;
         padding: 0 5px;
         height: 73px;
-        font-size: 24px;
+        font-size: 22px;
     }
 
     .Header-container {
@@ -172,6 +172,7 @@
     .Header-image {
         display: inline-block;
         width: 140px;
+        vertical-align: middle;
     }
 
     .Header-cart {

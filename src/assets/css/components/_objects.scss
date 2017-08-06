@@ -4,7 +4,7 @@
 .colorBlack { color: #000 !important }
 .colorGreen { color: $colorGreen !important }
 .colorGray { color: $colorGray !important }
-.colorGrayLighter { color: #b0b0b0 !important }
+.colorGrayLighter { color: $colorGrayLighter !important }
 .colorRed { color: $colorRed !important }
 .colorWhite { color: #fff !important }
 .cursorPointer { cursor:pointer }
@@ -45,10 +45,11 @@
 .man { margin:0 !important }
 .mbs { margin-bottom:5px !important }
 .mbm { margin-bottom:10px !important }
-.mbl { margin-bottom:30px !important }
+.mbl { margin-bottom:20px !important }
 .mts { margin-top:5px !important }
 .mtm { margin-top:10px !important }
 .mtl { margin-top:20px !important }
+.mrs { margin-right:5px !important }
 .mrl { margin-right:20px !important }
 .mlm { margin-left:10px !important }
 

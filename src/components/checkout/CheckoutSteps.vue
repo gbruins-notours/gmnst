@@ -56,7 +56,7 @@
 
         data: function() {
             return {
-                labelShipping: this.$t('Shipping'),
+                labelShipping: this.$t('Shipping address'),
                 labelShippingMethod: this.$t('Shipping method')
             }
         },
