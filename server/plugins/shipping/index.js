@@ -1,11 +1,10 @@
-// const apiKey = process.env.NODE_ENV === 'development' ? process.env.SHIPPO_API_KEY_TEST : process.env.SHIPPO_API_KEY_PROD;
 const apiKey = process.env.NODE_ENV === 'development' ? process.env.SHIPENGINE_API_KEY_TEST : process.env.SHIPENGINE_API_KEY_PROD;
 const isObject = require('lodash.isobject');
 const Joi = require('joi');
 const Boom = require('boom');
 const Wreck = require('wreck');
 const Promise = require('bluebird');
-const helpers = require('../../helpers.service.js')
+const helpers = require('../../helpers.service.js');
 
 const wreck = Wreck.defaults({
     baseUrl: 'https://api.shipengine.com/v1',
@@ -18,6 +17,25 @@ const wreck = Wreck.defaults({
 
 let internals = {};
 
+
+internals.getShipEngineErrorMessage = (err) => {
+    let message = null;
+
+    if(err.data.isResponseError && Array.isArray(err.data.payload.errors)) {
+        let msgs = [];
+
+        err.data.payload.errors.forEach((obj) => {
+            msgs.push(obj.message)
+        });
+
+        if(msgs.length) {
+            message = msgs.join(' ');
+        }
+    }
+
+    return message;
+}
+
 internals.validateAddress = (address) => {
     return new Promise((resolve, reject) => {
         wreck.post(
@@ -25,7 +43,24 @@ internals.validateAddress = (address) => {
             { payload: helpers.makeArray(address) },
             (err, res, payload) => {
                 if(err) {
-                    return reject(err);
+                    return reject(new Error('ERROR VALIDATING SHIPPING ADDRESS: ' + internals.getShipEngineErrorMessage(err)));
+                }
+
+                return resolve(payload);
+            }
+        );
+    });
+};
+
+
+internals.getShippingRates = (config) => {
+    return new Promise((resolve, reject) => {
+        wreck.post(
+            '/rates',
+            { payload: config },
+            (err, res, payload) => {
+                if(err) {
+                    return reject(new Error('ERROR GETTING SHIPPING RATES: ' + internals.getShipEngineErrorMessage(err)));
                 }
 
                 return resolve(payload);
@@ -39,14 +74,14 @@ exports.register = (server, options, next) => {
 
     server.route([
         {
-            method: 'GET',
+            method: 'POST',
             path: '/shipping/validateAddress',
             config: {
                 description: 'Validates an address',
                 validate: {
-                    query: {
-                        name: Joi.string().optional(),
-                        company_name: Joi.string().allow(''),
+                    payload: {
+                        name: Joi.string(),
+                        company_name: Joi.string().allow(null),
                         address_line1: Joi.string().required(),
                         address_line2: Joi.string().allow(''),
                         address_line3: Joi.string().allow(''),
@@ -57,29 +92,72 @@ exports.register = (server, options, next) => {
                     }
                 },
                 handler: (request, reply) => {
-                    console.log("GET REQUEST", request.query)
-
                     internals
-                        .validateAddress(request.query)
-                        // .validateAddress(  {
-                        //     "name": "Mickey and Minnie Mouse",
-                        //     "phone": "714-781-4565",
-                        //     "company_name": "The Walt Disney Company",
-                        //     "address_line1": "500 South Buena Vista Street",
-                        //     "city_locality": "Burbank",
-                        //     "state_province": "CA",
-                        //     "postal_code": "91521",
-                        //     "country_code": "US"
-                        //   })
+                        .validateAddress(request.payload)
                         .then((response) => {
-                            console.log("ADDRESS VALIDATION SUCCESS", response);
                             //TODO - get value from response
                             reply.apiSuccess(response);
                         })
                         .catch((err) => {
-                            console.log("ADDRESS VALIDATION ERR", err);
                             reply(Boom.badRequest(err));
-                            return;
+                        });
+                }
+            }
+        },
+        {
+            method: 'POST',
+            path: '/shipping/rates',
+            config: {
+                description: 'Returns shipping rates',
+                validate: {
+                    payload: {
+                        validate_address: Joi.string().required(),
+                        ship_to: Joi.object().keys({
+                            name: Joi.string().optional(),
+                            company_name: Joi.string().allow(''),
+                            address_line1: Joi.string().required(),
+                            address_line2: Joi.string().allow(''),
+                            address_line3: Joi.string().allow(''),
+                            city_locality: Joi.string().required(),
+                            state_province: Joi.string().required(),
+                            postal_code: Joi.string().required(),
+                            country_code: Joi.string().max(3).regex(/^[A-z]+$/).required()
+                        }),
+                        packages: Joi.array().items(
+                            Joi.object().keys({
+                                weight: Joi.object().keys({
+                                    value: Joi.number().precision(3).required(),
+                                    unit: Joi.string().required()
+                                })
+                            })
+                        )
+                    }
+                },
+                handler: (request, reply) => {
+                    let payload = {
+                        shipment: request.payload,
+                        rate_options: {
+                            carrier_ids: [ process.env.SHIPENGINE_CARRIER_ID_FEDEX ]
+                        }
+                    };
+
+                    payload.shipment.ship_from = {
+                        name: process.env.SHIPPING_ADDRESS_FROM_NAME,
+                        address_line1: process.env.SHIPPING_ADDRESS_FROM_ADDRESS1,
+                        city_locality: process.env.SHIPPING_ADDRESS_FROM_CITY,
+                        state_province: process.env.SHIPPING_ADDRESS_FROM_STATE,
+                        postal_code: process.env.SHIPPING_ADDRESS_FROM_ZIP,
+                        country_code: process.env.SHIPPING_ADDRESS_FROM_COUNTRY_CODE,
+                        phone: process.env.SHIPPING_ADDRESS_FROM_PHONE
+                    };
+
+                    internals
+                        .getShippingRates(payload)
+                        .then((response) => {
+                            reply.apiSuccess(response);
+                        })
+                        .catch((err) => {
+                            reply(Boom.badRequest(err));
                         });
                 }
             }

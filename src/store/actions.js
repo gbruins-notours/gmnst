@@ -76,5 +76,9 @@ export default {
 
     CHECKOUT_BILLING_SAME_AS_SHIPPING: ({ commit }, sameAsShipping) => {
         commit('CHECKOUT_BILLING_SAME_AS_SHIPPING', sameAsShipping)
+    },
+
+    CHECKOUT_SHIPPING_METHODS: ({ commit }, data) => {
+        commit('CHECKOUT_SHIPPING_METHODS', data)
     }
 }

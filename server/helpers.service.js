@@ -3,6 +3,8 @@ const isString = require('lodash.isstring');
 const isObject = require('lodash.isobject');
 const forEach = require('lodash.foreach');
 const queryString = require('query-string');
+const winston = require('winston');
+
 
 
 function queryHelper(request) {
@@ -96,9 +98,15 @@ function twoPointDecimal(value) {
 }
 
 
+function logError(msg) {
+    winston.error(msg);
+}
+
+
 
 module.exports.queryHelper = queryHelper;
 module.exports.getBoomError = getBoomError;
 module.exports.isDev = isDev;
 module.exports.makeArray = makeArray;
 module.exports.twoPointDecimal = twoPointDecimal;
+module.exports.logError = logError;

@@ -19,6 +19,10 @@ export default {
         return state.cart;
     },
 
+    checkout: (state) => {
+        return state.checkout;
+    },
+
     numCartItems: (state) => {
         return state.cart.num_items || 0;
     }

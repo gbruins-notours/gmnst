@@ -52,7 +52,8 @@ export function createStore () {
                     countryCodeAlpha2: null,
                     company: null
                 },
-                billingSameAsShipping: true
+                billingSameAsShipping: true,
+                shippingMethods: null
             }
             // jwtKey: null
         },

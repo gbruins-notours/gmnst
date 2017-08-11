@@ -67,6 +67,7 @@ exports.seed = (knex) => {
                             sku: (10000 + i),
                             seo_uri: 'seo_uri_' + i,
                             cost: ((100 + i + cents).toFixed(2)),
+                            weight_oz: 5.3,
                             base_price: ((100 + i + cents).toFixed(2)),
                             sale_price: ((99 - i + cents).toFixed(2)),
                             is_on_sale:  faker.random.boolean(),

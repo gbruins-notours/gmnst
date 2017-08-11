@@ -12,6 +12,7 @@ module.exports.up = (knex) => {
             t.string('sku').nullable();
             t.string('seo_uri').nullable();
             t.decimal('cost').nullable();
+            t.decimal('weight_oz').nullable();
             t.decimal('base_price').nullable();
             t.decimal('sale_price').nullable();
             t.boolean('is_on_sale').nullable();

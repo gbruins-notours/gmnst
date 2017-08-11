@@ -283,6 +283,7 @@
         computed: {
             ...mapGetters([
                 'cart',
+                'checkout',
                 'numCartItems',
                 'appInfo'
             ]),
@@ -415,7 +416,39 @@
             },
 
             shippingFormDone: function() {
+                this.$store.dispatch('CHECKOUT_SHIPPING_METHODS', null);
                 this.currentStep = 1;
+
+                api.shoppingCart.getShippingRates({
+                    validate_address: 'no_validation',
+                    ship_to: {
+                        address_line1: this.checkout.shipping.streetAddress,
+                        city_locality: this.checkout.shipping.city,
+                        state_province: this.checkout.shipping.state,
+                        postal_code: this.checkout.shipping.postalCode,
+                        country_code: this.checkout.shipping.countryCodeAlpha2
+                    },
+                    packages: [
+                        {
+                            weight: {
+                                value: '6.0',  //TODO
+                                unit: 'ounce'
+                            }
+                        }
+                    ]
+                })
+                .then((result) => {
+                    console.log("SHIP METHODS", result);
+                    this.$store.dispatch('CHECKOUT_SHIPPING_METHODS', result);
+                })
+                .catch((result) => {
+                    currentNotification = this.$notify({
+                        title: this.$t('An error occurred'),
+                        message: 'We were unable to get shipping rates because of a server error.',
+                        duration: 0,
+                        type: 'error'
+                    });
+                });
             },
 
             shippingMethodDone: function() {
@@ -769,6 +802,7 @@
         line-height: 14px;
         white-space: nowrap;
         color: #000;
+        font-size: 20px;
 
         &.before,
         &.before i {

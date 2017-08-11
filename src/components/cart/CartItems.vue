@@ -8,7 +8,7 @@
                 <span></span>
                 <span></span>
                 <span class="width100 tac">{{ $t('Price') }}</span>
-                <span class="width100 tac">{{ $t('Quantity') }}</span>
+                <span class="width200 tac">{{ $t('Quantity') }}</span>
             </div>
 
             <article class="cartItem" v-for="item in this.cart.cart_items" :key="item.id">
@@ -39,9 +39,18 @@
                 </div>
 
                 <!-- Quantity -->
-                <div class="cartItemCell tac">
-                    <template v-if="allowEdit">
-                        <el-input-number v-model="item.qty"
+                <div class="cartItemCell tar">
+                    <div v-if="allowEdit" class="inlineBlock">
+                        <div class="displayTableCell prl fwb vam">{{ item.qty }}</div>
+                        <div class="displayTableCell">
+                            <number-buttons :step="1"
+                                            :min="1"
+                                            :max="item.product.inventory_count"
+                                            :init-value="item.qty"
+                                            size="small"
+                                            v-on:change="function(val) { updateCartItemQuantity(item, val) }"></number-buttons>
+                        </div>
+                        <!-- <el-input-number v-model="item.qty"
                                          :step="1"
                                          :min="1"
                                          :max="item.product.inventory_count"
@@ -49,8 +58,8 @@
                                          :debounce="300"
                                          :controls="false"
                                          v-on:change="function(val) { updateCartItemQuantity(item.id, val) }"
-                                         class="width50"></el-input-number>
-                     </template>
+                                         class="width50"></el-input-number> -->
+                     </div>
                      <div v-else class="fwb">
                          {{ item.qty }}
                      </div>
@@ -78,6 +87,7 @@
     import { mapGetters } from 'vuex'
     import isObject from 'lodash.isobject'
     import ProductPrice from '../../components/product/ProductPrice.vue'
+    import NumberButtons from '../../components/NumberButtons.vue'
     import { Select, Option, InputNumber, Loading, Button } from 'element-ui'
 
     Vue.use(Select);
@@ -103,7 +113,8 @@
         },
 
         components: {
-            ProductPrice
+            ProductPrice,
+            NumberButtons
         },
 
         computed: {
@@ -125,13 +136,15 @@
                 return;
             },
 
-            updateCartItemQuantity(id, qty) {
+            updateCartItemQuantity(item, qty) {
+                console.log('updateCartItemQuantity');
                 let loadingInstance = Loading.service({ target: '#cartItems' });
 
                 this.$store.dispatch('CART_ITEM_SET_QTY', {
-                    id,
+                    id: item.id,
                     qty
                 }).then(() => {
+                    item.qty = qty;
                     loadingInstance.close();
                 })
             },

@@ -17,6 +17,7 @@
 
                     </div>
                 </div>
+
                 <div class="column is-5 is-offset-1">
                     <div class="title is-2">{{ product.title }}</div>
 
@@ -28,45 +29,38 @@
 
                     <div class="pvl"><hr></div>
 
-                    <div class="prod-attributes-table">
-                        <!-- Size -->
-                        <div class="row">
-                            <div class="label">{{ $t('Size') }}:</div>
-                            <div class="value">
-                                <span class="select">
-                                    <el-select v-model="selectedSize" placeholder="Select">
-                                        <el-option
-                                                v-for="size in sizeOptions"
-                                                :key="size"
-                                                :label="$t(size)"
-                                                :value="size">
-                                        </el-option>
-                                    </el-select>
-                                </span>
-                            </div>
-                        </div>
+                    <!-- Size -->
+                    <div class="inlineBlock vat" style="padding-right:40px;">
+                        <div class="fwb mbs">{{ $t('Size') }}</div>
+                        <el-select v-model="selectedSize" placeholder="Select" class="width125">
+                            <el-option
+                                    v-for="size in sizeOptions"
+                                    :key="size"
+                                    :label="$t(size)"
+                                    :value="size">
+                            </el-option>
+                        </el-select>
+                    </div>
 
-                        <!-- Quantity -->
-                        <div class="row">
-                            <div class="label">{{ $t('Quantity') }}:</div>
-                            <div class="value">
-                                <el-input-number v-model="selectedQty"
-                                                 :step="1"
-                                                 :min="1"
-                                                 :max="product.inventory_count"
-                                                 :debounce="500"
-                                                 :controls="false"
-                                                 class="width50"></el-input-number>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="label"></div>
-                            <div class="value is-3 ptl">
-                                <el-button type="warning" @click="addToCart" class="colorBlack">{{ $t('Add to cart') }}</el-button>
+                    <!-- quantity -->
+                    <div class="inlineBlock vat">
+                        <div class="fwb mbs">{{ $t('Quantity') }}</div>
+                        <div>
+                            <div class="displayTableCell prl fs20 vam colorGreen fw600">{{ selectedQty }}</div>
+                            <div class="displayTableCell">
+                                <number-buttons :step="1"
+                                                :min="1"
+                                                :max="product.inventory_count"
+                                                :init-value="1"
+                                                v-on:change="val => { selectedQty = val }"></number-buttons>
                             </div>
                         </div>
                     </div>
+
+                    <div class="ptxl">
+                        <el-button type="warning" @click="addToCart" class="colorBlack">{{ $t('Add to cart') }}</el-button>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -80,6 +74,7 @@ import Vue from 'vue'
 import { Select, Option, InputNumber, Notification, Button } from 'element-ui'
 import api from '../../util/api'
 import ProductPrice from '../../components/product/ProductPrice.vue'
+import NumberButtons from '../../components/NumberButtons.vue'
 import { mapActions } from 'vuex'
 import _forEach from 'lodash.forEach';
 import { Carousel, Slide } from 'vue-carousel';
@@ -96,12 +91,13 @@ export default {
             sizeOptions: [],
             productPics: [],
             selectedSize: null,
-            selectedQty: null
+            selectedQty: 1
         }
     },
 
     components: {
         ProductPrice,
+        NumberButtons,
         Carousel,
         Slide
     },
@@ -273,7 +269,7 @@ export default {
 
     .label {
         display: table-cell;
-        padding: 0 10px 10px;
+        padding: 0 20px 10px;
         font-weight: bold;
     }
 

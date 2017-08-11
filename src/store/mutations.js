@@ -76,5 +76,9 @@ export default {
 
     CHECKOUT_BILLING_SAME_AS_SHIPPING: (state, sameAsShipping) => {
         state.checkout.billingSameAsShipping = sameAsShipping;
+    },
+
+    CHECKOUT_SHIPPING_METHODS: (state, data) => {
+        state.checkout.shippingMethods = data;
     }
 }

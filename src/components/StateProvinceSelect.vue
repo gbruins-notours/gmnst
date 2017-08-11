@@ -1,5 +1,6 @@
 <template>
     <el-select v-if="stateOptions"
+               filterable
                v-model="selectedState"
                :placeholder="placeholder"
                v-on:change="updateValue">

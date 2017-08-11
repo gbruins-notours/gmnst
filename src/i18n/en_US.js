@@ -6,6 +6,7 @@ const translations = {
     'ADDRESS LINE 2': 'ADDRESS LINE 2',
     'All other cards': 'All other cards',
     'American Express': 'American Express',
+    'An error occurred': 'An error occurred',
     'Are you sure you want to return to your Shopping Cart?': 'Are you sure you want to return to your Shopping Cart?',
 
     'Billing address': 'Billing address',
@@ -17,8 +18,10 @@ const translations = {
     'CARD NUMBER': 'CARD NUMBER',
     'Cart updated!': 'Cart updated!',
     'CITY': 'CITY',
+    'Change': 'Change',
     'Checkout': 'Checkout',
     'CHOOSE': 'CHOOSE',
+    'Choose a delivery option': 'Choose a delivery option',
     'COMPANY NAME': 'COMPANY NAME',
     'Continue': 'Continue',
     'correct_address_statement': 'If the address contains typos or other errors, your package may be undeliverable.',
@@ -31,7 +34,6 @@ const translations = {
     'Delete': 'Delete',
     'digits_text': 'digit | digits',
 
-    'Edit Address': 'Edit Address',
     'EMAIL ADDRESS': 'EMAIL ADDRESS',
     'EXPIRES': 'EXPIRES',
 
@@ -79,11 +81,10 @@ const translations = {
     'SECURITY CODE': 'SECURITY CODE',
     'Shipping address': 'Shipping address',
     'Shipping method': 'Shipping method',
+    'Shipping options are loading': 'Shipping options are loading',
     'Shopping Cart': 'Shopping Cart',
     'Shorts': 'Shorts',
     'Size': 'Size',
-    'STATE/PROVINCE/REGION': 'STATE/PROVINCE/REGION',
-    'Subtotal': 'Subtotal',
     'SIZE_ADULT_XS': 'Adult XS',
     'SIZE_ADULT_S': 'Adult S',
     'SIZE_ADULT_M': 'Adult M',
@@ -97,6 +98,9 @@ const translations = {
     'SIZE_YOUTH_M': 'Youth M',
     'SIZE_YOUTH_L': 'Youth L',
     'SIZE_YOUTH_XL': 'Youth XL',
+    'STATE/PROVINCE/REGION': 'STATE/PROVINCE/REGION',
+    'Subtotal': 'Subtotal',
+
     'Stay in checkout': 'Stay in checkout',
     'STREET ADDRESS': 'STREET ADDRESS',
 

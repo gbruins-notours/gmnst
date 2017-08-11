@@ -385,24 +385,24 @@
         },
 
         validations: {
-            // email: { required, email },
-            // country: { required },
-            // firstName: { required },
-            // lastName: { required },
-            // streetAddress: { required },
-            // city: { required },
-            // state: { required },
-            // postalCode: { required }
+            email: { required, email },
+            country: { required },
+            firstName: { required },
+            lastName: { required },
+            streetAddress: { required },
+            city: { required },
+            state: { required },
+            postalCode: { required }
 
             //testing only
-            email: {  },
-            country: {  },
-            firstName: {  },
-            lastName: {  },
-            streetAddress: {  },
-            city: {  },
-            state: {  },
-            postalCode: {  }
+            // email: {  },
+            // country: {  },
+            // firstName: {  },
+            // lastName: {  },
+            // streetAddress: {  },
+            // city: {  },
+            // state: {  },
+            // postalCode: {  }
         }
     }
 </script>
