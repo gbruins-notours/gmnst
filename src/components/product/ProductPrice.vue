@@ -1,5 +1,5 @@
 <template>
-    <span>${{ price }}</span>
+    <span>{{ $n(price, 'currency') }}</span>
 </template>
 
 <script>

@@ -134,6 +134,17 @@ internals.manifest = {
         },
         {
             plugin: {
+                register: './plugins/sales-tax'
+            },
+            options: {
+                select: ['api'],
+                routes: {
+                    prefix: '/api/v1'
+                }
+            }
+        },
+        {
+            plugin: {
                 register: './plugins/core'
             },
             options: {

@@ -31,6 +31,15 @@ function decorateAppInfo(data) {
 
 
 export default {
+    TOGGLE_SIDEBAR: (state, opened) => {
+        state.app.sidebar.opened = opened
+    },
+
+    TOGGLE_DEVICE: (state, device) => {
+        state.app.device.isMobile = device === 'mobile';
+        state.app.device.isTablet = device === 'tablet';
+    },
+
     APP_INFO: (state, data) => {
         state.appInfo = decorateAppInfo(data);
     },
@@ -49,15 +58,6 @@ export default {
 
     CART_SET: (state, cartData) => {
         state.cart = cartData;
-    },
-
-    TOGGLE_SIDEBAR: (state, opened) => {
-        state.app.sidebar.opened = opened
-    },
-
-    TOGGLE_DEVICE: (state, device) => {
-        state.app.device.isMobile = device === 'mobile';
-        state.app.device.isTablet = device === 'tablet';
     },
 
     /**
@@ -80,5 +80,9 @@ export default {
 
     CHECKOUT_SHIPPING_METHODS: (state, data) => {
         state.checkout.shippingMethods = data;
+    },
+
+    CHECKOUT_SALES_TAX: (state, salesTax) => {
+        state.checkout.salesTax = salesTax;
     }
 }

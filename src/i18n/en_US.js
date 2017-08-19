@@ -30,7 +30,6 @@ const translations = {
     'cvv_help_3_digit': 'The code is printed on the back of your card. It is the last 3 digits AFTER the credit card number in the signature area of the card.',
     'cvv_help_4_digit': 'The 4 digit code is printed on the front of your card, above the credit card number, on either the right or left side.',
 
-
     'Delete': 'Delete',
     'digits_text': 'digit | digits',
 
@@ -54,6 +53,7 @@ const translations = {
     'No matching values': 'No matching values',
 
     'optional': 'optional',
+    'Order total': 'Order total',
 
     'Pay with PAYPAL': 'Pay with PAYPAL',
     'Payment method error': 'Payment method error',
@@ -79,6 +79,7 @@ const translations = {
     'Return to cart': 'Return to cart',
 
     'SECURITY CODE': 'SECURITY CODE',
+    'Shipping': 'Shipping',
     'Shipping address': 'Shipping address',
     'Shipping method': 'Shipping method',
     'Shipping options are loading': 'Shipping options are loading',
@@ -104,6 +105,7 @@ const translations = {
     'Stay in checkout': 'Stay in checkout',
     'STREET ADDRESS': 'STREET ADDRESS',
 
+    'Tax': 'Tax',
     'Thanks!': 'Thanks!',
     'The address you provided does not seem to be a valid mailing adddress.': 'The address you provided does not seem to be a valid mailing adddress.',
     'There was an error setting up the payment client!': 'There was an error setting up the payment client!',
@@ -124,6 +126,8 @@ const translations = {
         'HOSTED_FIELDS_FIELDS_EMPTY': 'Please fill out the entire "Your billing info" section.',
         'HOSTED_FIELDS_ATTRIBUTE_VALUE_NOT_ALLOWED': 'Your credit card info contains an invalid value',
     },
+
+
 
     // US states
     'Alabama': 'Alabama',

@@ -63,7 +63,6 @@ export default {
 
 
     shoppingCart: {
-
         getCart() {
             return HTTP
                 .get('/api/v1/cart/get')
@@ -119,7 +118,16 @@ export default {
                     return response.data.data;
                 });
         }
+    },
 
+    salesTax: {
+        getSalesTaxAmount(params) {
+            return HTTP
+                .post('/api/v1/salestax/get', params)
+                .then((response) => {
+                    return response.data.data;
+                });
+        }
     }
-
+    
 };

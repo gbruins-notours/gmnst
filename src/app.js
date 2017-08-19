@@ -9,9 +9,6 @@ import * as filters from './util/filters'
 import VueI18n from 'vue-i18n'
 import translations from './i18n'
 
-
-Vue.config.productionTip = false;
-
 // register global utility filters.
 Object.keys(filters).forEach(key => {
     Vue.filter(key, filters[key])

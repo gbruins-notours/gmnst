@@ -40,7 +40,7 @@ export function createStore () {
                     postalCode: null,
                     countryCodeAlpha2: null,
                     company: null,
-                    email: null,
+                    email: null
                 },
                 billing: {
                     firstName: null,
@@ -53,7 +53,8 @@ export function createStore () {
                     company: null
                 },
                 billingSameAsShipping: true,
-                shippingMethods: null
+                shippingMethods: null,
+                salesTax: null
             }
             // jwtKey: null
         },

@@ -54,7 +54,6 @@ internals.schema = Joi.object().keys({
 
 internals.after = function (server, next) {
 
-    internals.SALES_TAX_RATE = .0875;
     internals.ShoppingCartModel = server.plugins.BookshelfOrm.bookshelf.model('ShoppingCart');
 
 

@@ -6,16 +6,10 @@
         </div>
 
         <template v-else>
-            <!-- <checkout-steps :step="currentStep"
-                            v-on:checkout_step_changed="checkoutStepChanged"></checkout-steps> -->
-
-            <!-- <wizard-bar :steps="steps"
-                        :current-step="currentStep"
-                        :completed="false"></wizard-bar> -->
-
             <div class="g-spec no-zebra">
                 <div class="g-spec-label nowrap">
                     <div v-for="(step, index) in steps"
+                         :key="index"
                          class="checkout-wizard-row"
                          :class="{'before': index < currentStep, 'after': index > currentStep }">
                          <span class="checkout-wizard-row-label" @click="checkoutStepChanged(index)">{{step.label}}</span>&nbsp;
@@ -26,18 +20,20 @@
                     <shipping-form v-show="currentStep === 0"
                                    v-on:shipping_form_submit="shippingFormDone"></shipping-form>
 
-                    <shipping-method-form v-show="currentStep === 1"
+                    <!-- <shipping-method-form v-show="currentStep === 1"
                                           v-on:shipping_method_submit="shippingMethodDone"
-                                          v-on:shipping_method_go_back="shippingMethodGoBack"></shipping-method-form>
+                                          v-on:shipping_method_go_back="shippingMethodGoBack"></shipping-method-form> -->
 
-                    <div v-show="currentStep === 2">
+                    <div v-show="currentStep === 1">
                         <!-- Payment method -->
-                        <el-radio-group v-model="paymentMethod">
-                            <el-radio label="CREDIT_CARD">{{ $t('CREDIT CARD') }}</el-radio>
-                            <el-radio label="PAYPAL">{{ $t('PAYPAL') }}</el-radio>
-                        </el-radio-group>
+                        <div class="fwb">
+                            <el-radio-group v-model="paymentMethod">
+                                <el-radio label="CREDIT_CARD">{{ $t('CREDIT CARD') }}</el-radio>
+                                <el-radio label="PAYPAL">{{ $t('PAYPAL') }}</el-radio>
+                            </el-radio-group>
+                        </div>
 
-                        <div v-show="paymentMethod === 'CREDIT_CARD'" class="pal mts">
+                        <div v-show="paymentMethod === 'CREDIT_CARD'" class="pal">
                             <!-- Card Number -->
                             <div class="displayTableRow">
                                 <label class="checkout_form_label">{{ $t('CARD NUMBER') }}:</label>
@@ -86,12 +82,12 @@
                             </div>
 
                             <!-- BILLING ADDRESS -->
-                            <div class="ptl">
+                            <div id="billing_addr_check" class="fwb">
                                 <el-checkbox v-model="billingSameAsShipping">{{ $t('BILLING ADDRESS SAME AS SHIPPING') }}</el-checkbox>
                             </div>
 
-                            <div class="ptl">
-                                <div class="fwb mbm">{{ $t('Billing address') }}:</div>
+                            <div class="ptm pls">
+                                <!-- <div class="fwb mbm">{{ $t('Billing address') }}:</div> -->
                                 <shipping-view :show-details="true"
                                                 :show-email="false"
                                                 v-show="billingSameAsShipping"></shipping-view>
@@ -182,7 +178,9 @@
                         <!-- end payment method -->
 
                         <!-- Review -->
-                        <cart-items :allow-edit="false"></cart-items>
+                        <cart-items :allow-edit="false"
+                                    :show-shipping-cost="true"
+                                    :show-sales-tax="true"></cart-items>
 
                         <!-- Submit button -->
                         <div class="pal tac">
@@ -247,9 +245,8 @@
     import { Checkbox, Input, Notification, RadioGroup, Radio, Tabs, TabPane, Dialog } from 'element-ui'
     import Validations from 'vuelidate'
     import { required } from 'vuelidate/lib/validators'
-    import CheckoutSteps from '../../components/checkout/CheckoutSteps.vue'
     import ShippingForm from '../../components/checkout/ShippingForm'
-    import ShippingMethodForm from '../../components/checkout/ShippingMethodForm'
+    // import ShippingMethodForm from '../../components/checkout/ShippingMethodForm'
     import CountrySelect from '../../components/CountrySelect.vue'
     import CartItems from '../../components/cart/CartItems'
     import ShippingView from '../../components/checkout/ShippingView.vue'
@@ -270,10 +267,9 @@
 
     export default {
         components: {
-            CheckoutSteps,
             ShippingForm,
             ShippingView,
-            ShippingMethodForm,
+            // ShippingMethodForm,
             ShippingBillingHelp,
             Checkbox,
             CountrySelect,
@@ -378,9 +374,9 @@
         data: function() {
             return {
                 steps: [
-                    { label: this.$t('Shipping address'), completed: false },
-                    { label: this.$t('Shipping method'), completed: false },
-                    { label: this.$t('Place your order'), completed: false },
+                    { label: this.$t('Shipping address'), id: 'shipping_address' },
+                    // { label: this.$t('Shipping method'), id: 'shipping_method' },
+                    { label: this.$t('Place your order'), id: 'place_order' },
                 ],
                 currentStep: 0,
                 paymentMethod: 'CREDIT_CARD',
@@ -416,30 +412,18 @@
             },
 
             shippingFormDone: function() {
-                this.$store.dispatch('CHECKOUT_SHIPPING_METHODS', null);
                 this.currentStep = 1;
 
-                api.shoppingCart.getShippingRates({
-                    validate_address: 'no_validation',
-                    ship_to: {
-                        address_line1: this.checkout.shipping.streetAddress,
-                        city_locality: this.checkout.shipping.city,
-                        state_province: this.checkout.shipping.state,
-                        postal_code: this.checkout.shipping.postalCode,
-                        country_code: this.checkout.shipping.countryCodeAlpha2
-                    },
-                    packages: [
-                        {
-                            weight: {
-                                value: '6.0',  //TODO
-                                unit: 'ounce'
-                            }
-                        }
-                    ]
+                // get sales tax rate for the given shipping address
+                api.salesTax.getSalesTaxAmount({
+                    city: this.checkout.shipping.city,
+                    state: this.checkout.shipping.state,
+                    countryCodeAlpha2: this.checkout.shipping.countryCodeAlpha2,
+                    subtotal: this.cart.sub_total,
+                    shipping: this.appInfo.shipping.flatCost
                 })
                 .then((result) => {
-                    console.log("SHIP METHODS", result);
-                    this.$store.dispatch('CHECKOUT_SHIPPING_METHODS', result);
+                    this.$store.dispatch('CHECKOUT_SALES_TAX', result);
                 })
                 .catch((result) => {
                     currentNotification = this.$notify({
@@ -449,6 +433,39 @@
                         type: 'error'
                     });
                 });
+
+                // this.$store.dispatch('CHECKOUT_SHIPPING_METHODS', null);
+
+                // api.shoppingCart.getShippingRates({
+                //     validate_address: 'no_validation',
+                //     ship_to: {
+                //         address_line1: this.checkout.shipping.streetAddress,
+                //         city_locality: this.checkout.shipping.city,
+                //         state_province: this.checkout.shipping.state,
+                //         postal_code: this.checkout.shipping.postalCode,
+                //         country_code: this.checkout.shipping.countryCodeAlpha2
+                //     },
+                //     packages: [
+                //         {
+                //             weight: {
+                //                 value: '6.0',  //TODO
+                //                 unit: 'ounce'
+                //             }
+                //         }
+                //     ]
+                // })
+                // .then((result) => {
+                //     console.log("SHIP METHODS", result);
+                //     this.$store.dispatch('CHECKOUT_SHIPPING_METHODS', result);
+                // })
+                // .catch((result) => {
+                //     currentNotification = this.$notify({
+                //         title: this.$t('An error occurred'),
+                //         message: 'We were unable to get shipping rates because of a server error.',
+                //         duration: 0,
+                //         type: 'error'
+                //     });
+                // });
             },
 
             shippingMethodDone: function() {
@@ -853,5 +870,9 @@
     .hostedField80 {
         min-width:80px !important;
         width:80px !important;
+    }
+
+    #billing_addr_check {
+        margin: 40px 0 0 -20px;
     }
 </style>

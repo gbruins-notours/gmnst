@@ -26,6 +26,9 @@ internals.after = function (server, next) {
                                     sizes: ProductService.getSizeTypes(),
                                     genders: ProductService.getGenderTypes()
                                 },
+                                shipping: {
+                                    flatCost: process.env.SHIPPING_FLAT_COST || false
+                                },
                                 clientToken: token
                                 // crumb: server.plugins.crumb.generate(request, reply)
                             });

@@ -8,7 +8,7 @@
                 <span></span>
                 <span></span>
                 <span class="width100 tac">{{ $t('Price') }}</span>
-                <span class="width200 tac">{{ $t('Quantity') }}</span>
+                <span class="width200 tar">{{ $t('Quantity') }}</span>
             </div>
 
             <article class="cartItem" v-for="item in this.cart.cart_items" :key="item.id">
@@ -50,15 +50,6 @@
                                             size="small"
                                             v-on:change="function(val) { updateCartItemQuantity(item, val) }"></number-buttons>
                         </div>
-                        <!-- <el-input-number v-model="item.qty"
-                                         :step="1"
-                                         :min="1"
-                                         :max="item.product.inventory_count"
-                                         size="small"
-                                         :debounce="300"
-                                         :controls="false"
-                                         v-on:change="function(val) { updateCartItemQuantity(item.id, val) }"
-                                         class="width50"></el-input-number> -->
                      </div>
                      <div v-else class="fwb">
                          {{ item.qty }}
@@ -66,13 +57,38 @@
                 </div>
             </article>
 
+            <!-- subtotal -->
             <div class="cartItem">
                 <span class="cartItemCell"></span>
                 <span class="cartItemCell tar fwb">
                     {{ $t('Subtotal') }}
                     <span class="nowrap">({{ cart.num_items }} {{ $tc('items', cart.num_items) }})</span>:
                 </span>
-                <span class="cartItemCell tar fwb">{{ subtotal }}</span>
+                <span class="cartItemCell tar fwb">{{ $n(cart.sub_total, 'currency') }}</span>
+                <span class="cartItemCell"></span>
+            </div>
+
+            <!-- shipping -->
+            <div class="cartItem" v-if="showShippingCost">
+                <span class="cartItemCell"></span>
+                <span class="cartItemCell tar fwb">{{ $t('Shipping') }}:</span>
+                <span class="cartItemCell tar fwb">{{ $n(shippingCost, 'currency') }}</span>
+                <span class="cartItemCell"></span>
+            </div>
+
+            <!-- sales tax -->
+            <div class="cartItem" v-if="showSalesTax">
+                <span class="cartItemCell"></span>
+                <span class="cartItemCell tar fwb">{{ $t('Tax') }}:</span>
+                <span class="cartItemCell tar fwb">{{ $n(checkout.salesTax, 'currency') }}</span>
+                <span class="cartItemCell"></span>
+            </div>
+
+            <!-- order total -->
+            <div class="cartItem" v-if="showShippingCost && showSalesTax">
+                <span class="cartItemCell"></span>
+                <span class="cartItemCell tar fwb fs20 colorGreen">{{ $t('Order total') }}:</span>
+                <span class="cartItemCell tar fwb fs20 colorGreen">{{ orderTotal }}</span>
                 <span class="cartItemCell"></span>
             </div>
         </div>
@@ -101,7 +117,17 @@
             allowEdit: {
                 type: Boolean,
                 default: true
-            }
+            },
+
+            showShippingCost: {
+                type: Boolean,
+                default: false
+            },
+
+            showSalesTax: {
+                type: Boolean,
+                default: false
+            },
         },
 
         data() {
@@ -120,11 +146,21 @@
         computed: {
             ...mapGetters([
                 'cart',
+                'checkout',
                 'appInfo'
             ]),
 
-            subtotal() {
-                return accounting.formatMoney(this.cart.sub_total)
+            // subtotal() {
+                // return accounting.formatMoney(this.cart.sub_total)
+            // },
+            shippingCost: function() {
+                return this.appInfo.shipping.flatCost || 0.00;
+            },
+
+            orderTotal: function() {
+                let shippingCost = this.appInfo.shipping.flatCost || 3.00;
+                let total = accounting.toFixed( (parseFloat(this.cart.sub_total) + parseFloat(this.shippingCost) + parseFloat(this.checkout.salesTax)), 2);
+                return this.$n(total, 'currency')
             }
         },
 

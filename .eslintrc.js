@@ -14,8 +14,11 @@ module.exports = {
     'arrow-parens': OFF,
     'brace-style': [ERROR, 'stroustrup'],
     'indent': [ERROR, 4, { 'SwitchCase': 1 }],
+    'keyword-spacing': OFF,
     'no-debugger': process.env.NODE_ENV === 'production' ? ERROR : OFF,
     'no-multiple-empty-lines': OFF,
+    'no-trailing-spaces': OFF,
+    'padded-blocks': OFF,
     'semi': OFF,
     // Turned off spaces before pern because of broken Beautify formating for JS inside script tag
     'space-before-function-paren': OFF,

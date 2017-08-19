@@ -59,17 +59,17 @@ export default {
     },
 
     CHECKOUT_SHIPPING_ATTRIBUTE: ({ commit }, config) => {
-        if(isObject(config)
-            && config.hasOwnProperty('attribute')
-            && config.hasOwnProperty('value')) {
+        if(isObject(config) && 
+            config.hasOwnProperty('attribute') && 
+            config.hasOwnProperty('value')) {
             commit('CHECKOUT_SHIPPING_ATTRIBUTE', config)
         }
     },
 
     CHECKOUT_BILLING_ATTRIBUTE: ({ commit }, config) => {
-        if(isObject(config)
-            && config.hasOwnProperty('attribute')
-            && config.hasOwnProperty('value')) {
+        if(isObject(config) && 
+            config.hasOwnProperty('attribute') && 
+            config.hasOwnProperty('value')) {
             commit('CHECKOUT_BILLING_ATTRIBUTE', config)
         }
     },
@@ -80,5 +80,9 @@ export default {
 
     CHECKOUT_SHIPPING_METHODS: ({ commit }, data) => {
         commit('CHECKOUT_SHIPPING_METHODS', data)
+    },
+
+    CHECKOUT_SALES_TAX: ({ commit }, salesTaxAmount) => {
+        commit('CHECKOUT_SALES_TAX', salesTaxAmount);
     }
 }
