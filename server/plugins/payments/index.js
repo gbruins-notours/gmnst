@@ -4,8 +4,6 @@ const Boom = require('boom');
 const braintree = require('braintree');
 const Promise = require('bluebird');
 const isObject = require('lodash.isobject');
-const forEach = require('lodash.foreach');
-const winston = require('winston');
 
 
 let internals = {};
@@ -39,8 +37,8 @@ internals.after = function (server, next) {
      * @returns {Promise}
      */
     internals.getClientToken = () => {
-        let p = new Promise( (resolve, reject) => {
-            internals.braintreeGateway.clientToken.generate({},(err, response) => {
+        let p = new Promise((resolve, reject) => {
+            internals.braintreeGateway.clientToken.generate({}, (err, response) => {
                 if(err || !response.clientToken) {
                     return reject(err);
                 }
@@ -66,7 +64,7 @@ internals.after = function (server, next) {
      * @returns {Promise}
      */
     internals.savePayment = (cart_id, transactionJson) => {
-        return new Promise( (resolve, reject) => {
+        return new Promise((resolve, reject) => {
             if(!isObject(transactionJson) || !isObject(transactionJson.transaction)) {
                 return reject('An error occurred while processing the transaction.');
             }
@@ -102,21 +100,21 @@ internals.after = function (server, next) {
      */
     internals.runPayment = (opts) => {
         return new Promise((resolve, reject) => {
-             let schema = Joi.object().keys({
-                 paymentMethodNonce: Joi.string().trim().required(),
-                 amount: Joi.number().precision(2).positive().required(),
-                 shipping: Joi.object().unknown().required(),
-                 customer: Joi.object().unknown(),
-                 billing: Joi.object().unknown(),
-                 options: Joi.object().unknown()
-             });
+            let schema = Joi.object().keys({
+                paymentMethodNonce: Joi.string().trim().required(),
+                amount: Joi.number().precision(2).positive().required(),
+                shipping: Joi.object().unknown().required(),
+                customer: Joi.object().unknown(),
+                billing: Joi.object().unknown(),
+                options: Joi.object().unknown()
+            });
 
-             const validateResult = schema.validate(opts);
-             if (validateResult.error) {
-                 return reject( Boom.badData(validateResult.error) );
-             }
+            const validateResult = schema.validate(opts);
+            if (validateResult.error) {
+                return reject(Boom.badData(validateResult.error));
+            }
 
-             internals.braintreeGateway.transaction.sale(opts)
+            internals.braintreeGateway.transaction.sale(opts)
                 .then((result) => {
                     if (result.success) {
                         return resolve(result);

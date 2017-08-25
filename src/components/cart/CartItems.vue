@@ -72,7 +72,7 @@
             <div class="cartItem" v-if="showShippingCost">
                 <span class="cartItemCell"></span>
                 <span class="cartItemCell tar fwb">{{ $t('Shipping') }}:</span>
-                <span class="cartItemCell tar fwb">{{ $n(shippingCost, 'currency') }}</span>
+                <span class="cartItemCell tar fwb">{{ $n(cart.shipping_total, 'currency') }}</span>
                 <span class="cartItemCell"></span>
             </div>
 
@@ -80,7 +80,7 @@
             <div class="cartItem" v-if="showSalesTax">
                 <span class="cartItemCell"></span>
                 <span class="cartItemCell tar fwb">{{ $t('Tax') }}:</span>
-                <span class="cartItemCell tar fwb">{{ $n(checkout.salesTax, 'currency') }}</span>
+                <span class="cartItemCell tar fwb">{{ $n(cart.sales_tax, 'currency') }}</span>
                 <span class="cartItemCell"></span>
             </div>
 
@@ -88,9 +88,11 @@
             <div class="cartItem" v-if="showShippingCost && showSalesTax">
                 <span class="cartItemCell"></span>
                 <span class="cartItemCell tar fwb fs20 colorGreen">{{ $t('Order total') }}:</span>
-                <span class="cartItemCell tar fwb fs20 colorGreen">{{ orderTotal }}</span>
+                <span class="cartItemCell tar fwb fs20 colorGreen">{{ $n(cart.grand_total, 'currency') }}</span>
                 <span class="cartItemCell"></span>
             </div>
+
+            cart {{ cart }}
         </div>
     </div>
 </template>
@@ -146,22 +148,8 @@
         computed: {
             ...mapGetters([
                 'cart',
-                'checkout',
-                'appInfo'
-            ]),
-
-            // subtotal() {
-                // return accounting.formatMoney(this.cart.sub_total)
-            // },
-            shippingCost: function() {
-                return this.appInfo.shipping.flatCost || 0.00;
-            },
-
-            orderTotal: function() {
-                let shippingCost = this.appInfo.shipping.flatCost || 3.00;
-                let total = accounting.toFixed( (parseFloat(this.cart.sub_total) + parseFloat(this.shippingCost) + parseFloat(this.checkout.salesTax)), 2);
-                return this.$n(total, 'currency')
-            }
+                'app'
+            ])
         },
 
         methods: {
@@ -208,7 +196,7 @@
                   //TODO: get the type of the 'added_cart_item' product and
                   // send the user back to the list page for that type,
                   // else to home page (?)
-                  this.$router.push('/type/' + appInfo.seoUri[key]);
+                  this.$router.push('/type/' + app.seoUri[key]);
             }
         }
     }

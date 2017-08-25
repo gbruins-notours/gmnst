@@ -215,7 +215,22 @@ internals.after = function (server, next) {
 
 
     server.route([
-        //REFACTORED
+        {
+            method: 'GET',
+            path: '/cart/token/get',
+            config: {
+                description: 'Returns the Braintree client token',
+                handler: (request, reply) => {
+                    server.plugins['Payments'].getClientToken()
+                        .then((token) => {
+                            reply.apiSuccess(token);
+                        })
+                        .catch((err) => {
+                            reply(Boom.badData(err));
+                        });
+                }
+            }
+        },
         {
             method: 'GET',
             path: '/cart/get',
@@ -237,7 +252,29 @@ internals.after = function (server, next) {
                 }
             }
         },
-        //REFACTORED
+        {
+            method: 'POST',
+            path: '/cart/addresses',
+            config: {
+                description: 'Finds the cart for the given jwt user',
+                validate: {
+                    payload: Joi.object({
+                        id: Joi.string().uuid().required()
+                    })
+                },
+                handler: (request, reply) => {
+                    internals.shoppingCart.findOrCreate(request)
+                        .then((ShoppingCart) => {
+                            reply.apiSuccess(ShoppingCart);
+                        })
+                        .catch((err) => {
+                            HelperService.getBoomError(err, (error, result) => {
+                                reply(result);
+                            });
+                        });
+                }
+            }
+        },
         {
             method: 'POST',
             path: '/cart/item/add',
@@ -315,7 +352,6 @@ internals.after = function (server, next) {
                                 .then((ShoppingCartItem) => {
                                     if(!ShoppingCartItem) {
                                         throw new Error(`Unable to find a shopping cart item.`);
-                                        return;
                                     }
 
                                     return ShoppingCartItem.save(
@@ -380,9 +416,9 @@ internals.after = function (server, next) {
                         .then((ShoppingCart) => {
                             cart = ShoppingCart;
 
-                            let opts = {
+                            let paymentPromise = server.plugins.Payments.runPayment({
                                 paymentMethodNonce: request.payload.nonce,
-                                amount: ShoppingCart.get('grand_total'), //TODO
+                                amount: ShoppingCart.get('grand_total'),
                                 customer: {
                                     // NOTE: Braintree requires that this email has a '.' in the domain name (i.e test@test.com)
                                     // which technically isn't correct. This fails validation: test@test
@@ -413,9 +449,7 @@ internals.after = function (server, next) {
                                 options: {
                                     submitForSettlement: true
                                 }
-                            };
-
-                            let paymentPromise = server.plugins.Payments.runPayment(opts);
+                            });
 
                             updateCart(cart, {
                                 shipping: request.payload.shipping,
@@ -425,7 +459,7 @@ internals.after = function (server, next) {
                             return paymentPromise;
                         })
                         .then((transactionObj) => {
-                            console.log("BRAINTREE TRANSACTION RESULT", transactionObj)
+                            console.log('BRAINTREE TRANSACTION RESULT', transactionObj)
 
                             //TODO: appEvents is undefined
                             // request.server.appEvents.emit('gmnst-payment-success', cart);
@@ -440,7 +474,8 @@ internals.after = function (server, next) {
                             //
                             // Any failures that happen while saving the payment info do not affect the
                             // braintree transaction and thus should fail silently.
-                            server.plugins.Payments.savePayment(cart.get('id'), transactionObj)
+                            server.plugins.Payments
+                                .savePayment(cart.get('id'), transactionObj)
                                 .catch((err) => {
                                     winston.error(`ERROR SAVING PAYMENT INFO: ${err}`)
                                 })

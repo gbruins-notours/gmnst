@@ -1,11 +1,9 @@
 let api_clients = require('../initial-data/api_clients');
 let customers = require('../initial-data/customers');
-let payments = require('../initial-data/payments');
 let product_artists = require('../initial-data/product_artists');
 let product_pics = require('../initial-data/product_pics');
 let product_sizes = require('../initial-data/product_sizes');
 let products = require('../initial-data/products');
-let carts = require('../initial-data/carts');
 
 /**
  * Knex.js's seed functionality does not provide any order of execution guarantees,
@@ -18,21 +16,6 @@ let carts = require('../initial-data/carts');
 exports.seed = (knex, Promise) => {
     
     return customers.seed(knex, Promise)
-
-        /*
-         * No point to fake cart or payment data.  Commenting out for now
-         * 
-        // Shopping Carts
-        .then(() => {
-            return carts.seed(knex, Promise);
-        })
-        
-        // Payments
-        .then(() => {
-            return payments.seed(knex, Promise);
-        })
-        */
-
         // Product Artists
         .then(() => {
             return product_artists.seed(knex, Promise);

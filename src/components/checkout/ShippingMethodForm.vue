@@ -7,7 +7,7 @@
 
             <!-- <div class="fs16 fwb mbm">{{ $t('Choose a delivery option') }}:</div> -->
 
-            <div v-if="checkout.shippingMethods" v-for="rate in shippingRates">
+            <div v-if="cart.shippingMethods" v-for="rate in shippingRates">
                  <el-radio class="radio" v-model="seletedShippingRate" :label="rate.rate_id">
                      <span class="colorGreen fwb">delivery: {{ rate.estimated_delivery_date }} {{ shippingDateDisplay(rate.estimated_delivery_date) }}</span>
                      <div style="margin-left:25px">some other info</div>
@@ -59,22 +59,21 @@
 
         computed: {
             ...mapGetters([
-                'cart',
-                'checkout'
+                'cart'
             ]),
 
             isLoading: function() {
-                if(!this.checkout.shippingMethods) {
+                if(!this.cart.shippingMethods) {
                     return true;
                 }
                 else {
-                    let rates = isObject(this.checkout.shippingMethods.rate_response) ? this.checkout.shippingMethods.rate_response.rates : [];
+                    let rates = isObject(this.cart.shippingMethods.rate_response) ? this.cart.shippingMethods.rate_response.rates : [];
                     let shippingRates = [];
 
                     rates.forEach((rate) => {
                         
                     })
-                    this.shippingRates = isObject(this.checkout.shippingMethods.rate_response) ? this.checkout.shippingMethods.rate_response.rates : [];
+                    this.shippingRates = isObject(this.cart.shippingMethods.rate_response) ? this.cart.shippingMethods.rate_response.rates : [];
                     console.log("this.shippingRates", this.shippingRates)
                     return false;
                 }

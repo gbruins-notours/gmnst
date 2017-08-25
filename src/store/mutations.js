@@ -1,34 +1,5 @@
 import cloneDeep from 'lodash.clonedeep'
-import isObject from 'lodash.isobject'
-
-
-/**
- * Adds a little bit of decoration to the state for use in the UI
- * @param data
- */
-function decorateAppInfo(data) {
-    let appInfo = cloneDeep(data);
-
-    if (appInfo && appInfo.hasOwnProperty('product')) {
-        let seoUri = {};
-
-        if (appInfo.product.subTypes) {
-            Object.keys(appInfo.product.subTypes).forEach((subType) => {
-                let val = subType.replace('PRODUCT_SUBTYPE_', '').toLowerCase();
-
-                // pluralize the value if it doesn't already end in an 's'
-                seoUri[subType] = val.indexOf(val.length - 1) !== 's' ? val + 's' : val;
-            });
-        }
-
-        appInfo.seoUri = seoUri;
-    }
-
-    console.log('appInfo', appInfo);
-
-    return appInfo;
-}
-
+import forEach from 'lodash.forEach'
 
 export default {
     TOGGLE_SIDEBAR: (state, opened) => {
@@ -40,12 +11,37 @@ export default {
         state.app.device.isTablet = device === 'tablet';
     },
 
-    APP_INFO: (state, data) => {
-        state.appInfo = decorateAppInfo(data);
+    // APP_INFO: (state, data) => {
+    //     state.appInfo = decorateAppInfo(data);
+    // },
+
+    BRAINTREE_CLIENT_TOKEN: (state, token) => {
+        state.app.clientToken = token
     },
 
     JWT_KEY: (state, key) => {
-        state.jwtKey = key
+        state.app.jwtKey = key
+    },
+
+    PRODUCT_INFO: (state, data) => {
+        let productInfo = cloneDeep(data);
+        
+        if (productInfo) {
+            let seoUri = {};
+    
+            if (productInfo.subTypes) {
+                Object.keys(productInfo.subTypes).forEach((subType) => {
+                    let val = subType.replace('PRODUCT_SUBTYPE_', '').toLowerCase();
+    
+                    // pluralize the value if it doesn't already end in an 's'
+                    seoUri[subType] = val.indexOf(val.length - 1) !== 's' ? val + 's' : val;
+                });
+            }
+    
+            productInfo.seoUri = seoUri;
+        }
+        state.app.productInfo = productInfo;
+        console.log("PRODUCT INFO", state.app.productInfo);
     },
 
     IN_CHECKOUT_FLOW: (state, inCheckoutFlow) => {
@@ -57,32 +53,27 @@ export default {
     },
 
     CART_SET: (state, cartData) => {
-        state.cart = cartData;
+        forEach(cartData, (val, key) => {
+            state.cart[key] = val;   
+        });
     },
 
     /**
      * Updates an attribute in the checkout.shipping Object
      */
-    CHECKOUT_SHIPPING_ATTRIBUTE: (state, config) => {
-        state.checkout.shipping[config.attribute] = config.value;
+    CART_BILLING_ATTRIBUTE: (state, config) => {
+        state.cart[`billing_${config.attribute}`] = config.value;
     },
 
-    /**
-     * Updates an attribute in the checkout.shipping Object
-     */
-    CHECKOUT_BILLING_ATTRIBUTE: (state, config) => {
-        state.checkout.billing[config.attribute] = config.value;
+    CART_BILLING_SAME_AS_SHIPPING: (state, sameAsShipping) => {
+        state.cart.billingSameAsShipping = sameAsShipping;
     },
 
-    CHECKOUT_BILLING_SAME_AS_SHIPPING: (state, sameAsShipping) => {
-        state.checkout.billingSameAsShipping = sameAsShipping;
+    CART_SHIPPING_METHODS: (state, data) => {
+        state.cart.shippingMethods = data;
     },
 
-    CHECKOUT_SHIPPING_METHODS: (state, data) => {
-        state.checkout.shippingMethods = data;
-    },
-
-    CHECKOUT_SALES_TAX: (state, salesTax) => {
-        state.checkout.salesTax = salesTax;
+    CART_SALES_TAX: (state, salesTax) => {
+        state.cart.salesTax = salesTax;
     }
 }

@@ -6,10 +6,10 @@
                 {{ $t('EMAIL ADDRESS') }}:
             </label>
             <div class="checkout_form_value">
-                <el-input v-model.trim="email" @input="delayTouch($v.email)"></el-input>
-                <div role="alert" v-if="$v.email.$dirty">
-                    <p v-if="!$v.email.required">{{ $t('Required') }}</p>
-                    <p v-if="!$v.email.email">{{ $t('Please enter a valid email address.') }}</p>
+                <el-input v-model.trim="cart.shipping.email" @input="delayTouch($v.cart.shipping.email)"></el-input>
+                <div role="alert" v-if="$v.cart.shipping.email.$dirty">
+                    <p v-if="!$v.cart.shipping.email.required">{{ $t('Required') }}</p>
+                    <p v-if="!$v.cart.shipping.email.email">{{ $t('Please enter a valid email address.') }}</p>
                 </div>
             </div>
         </div>
@@ -20,11 +20,15 @@
                 {{ $t('COUNTRY') }}:
             </label>
             <div class="checkout_form_value">
-                <country-select v-model="country"
-                                :init-value="country"
+                <country-select v-model="cart.shipping.countryCodeAlpha2"
+                                :init-value="cart.shipping.countryCodeAlpha2"
                                 value-type="alpha2"
-                                @input="$v.country.$touch()"
-                                v-on:change="val => { country = val }"></country-select>
+                                @input="countryCodeChanged"></country-select>
+                <!-- <country-select v-model="cart.shipping.countryCodeAlpha2"
+                                :init-value="cart.shipping.countryCodeAlpha2"
+                                value-type="alpha2"
+                                @input="$v.cart.shipping.countryCodeAlpha2.$touch()"
+                                v-on:change="val => { cart.shipping.countryCodeAlpha2 = val }"></country-select> -->
             </div>
         </div>
 
@@ -34,8 +38,8 @@
                 {{ $t('FIRST NAME') }}:
             </label>
             <div class="checkout_form_value">
-                <el-input v-model.trim="firstName" @input="$v.firstName.$touch()"></el-input>
-                <p role="alert" v-if="$v.firstName.$dirty && !$v.firstName.required">{{ $t('Required') }}</p>
+                <el-input v-model.trim="cart.shipping.firstName" @input="$v.cart.shipping.firstName.$touch()"></el-input>
+                <p role="alert" v-if="$v.cart.shipping.firstName.$dirty && !$v.cart.shipping.firstName.required">{{ $t('Required') }}</p>
             </div>
         </div>
 
@@ -45,8 +49,8 @@
                 {{ $t('LAST NAME') }}:
             </label>
             <div class="checkout_form_value">
-                <el-input v-model.trim="lastName" @input="$v.lastName.$touch()"></el-input>
-                <p role="alert" v-if="$v.lastName.$dirty && !$v.lastName.required">{{ $t('Required') }}</p>
+                <el-input v-model.trim="cart.shipping.lastName" @input="$v.cart.shipping.lastName.$touch()"></el-input>
+                <p role="alert" v-if="$v.cart.shipping.lastName.$dirty && !$v.cart.shipping.lastName.required">{{ $t('Required') }}</p>
             </div>
         </div>
 
@@ -56,17 +60,17 @@
                 {{ $t('ADDRESS LINE 1') }}:
             </label>
             <div class="checkout_form_value">
-                <el-input v-model.trim="streetAddress" @input="$v.streetAddress.$touch()"></el-input>
-                <p role="alert" v-if="$v.streetAddress.$dirty && !$v.streetAddress.required">{{ $t('Required') }}</p>
+                <el-input v-model.trim="cart.shipping.streetAddress" @input="$v.cart.shipping.streetAddress.$touch()"></el-input>
+                <p role="alert" v-if="$v.cart.shipping.streetAddress.$dirty && !$v.cart.shipping.streetAddress.required">{{ $t('Required') }}</p>
             </div>
         </div>
 
         <!-- Extended Address -->
         <!-- This value may be returned by the paypal response, so only displaying it if it does -->
-        <div class="displayTableRow" v-if="extendedAddress">
+        <div class="displayTableRow" v-if="cart.shipping.extendedAddress">
             <label class="checkout_form_label">{{ $t('ADDRESS LINE 2') }}:</label>
             <div class="checkout_form_value">
-                <el-input v-model.trim="extendedAddress"></el-input>
+                <el-input v-model.trim="cart.shipping.extendedAddress"></el-input>
             </div>
         </div>
 
@@ -76,8 +80,8 @@
                 {{ $t('CITY') }}:
             </label>
             <div class="checkout_form_value">
-                <el-input v-model.trim="city" @input="$v.city.$touch()"></el-input>
-                <p role="alert" v-if="$v.city.$dirty && !$v.city.required">{{ $t('Required') }}</p>
+                <el-input v-model.trim="cart.shipping.city" @input="$v.cart.shipping.city.$touch()"></el-input>
+                <p role="alert" v-if="$v.cart.shipping.city.$dirty && !$v.cart.shipping.city.required">{{ $t('Required') }}</p>
             </div>
         </div>
 
@@ -88,12 +92,13 @@
             </label>
             <div class="checkout_form_value">
                 <!-- <el-input v-model.trim="state" @input="$v.state.$touch()"></el-input> -->
-                <state-province-select v-model.trim="state"
-                                       :init-value="state"
-                                       :country="country"
-                                       @input="$v.state.$touch()"
-                                       v-on:change="val => { state = val }"></state-province-select>
-                <p role="alert" v-if="$v.state.$dirty && !$v.state.required">{{ $t('Required') }}</p>
+                <state-province-select v-model.trim="cart.shipping.state"
+                                       :init-value="cart.shipping.state"
+                                       :country="cart.shipping.countryCodeAlpha2"
+                                       @input="$v.cart.shipping.state.$touch()"
+                                       v-on:change="val => { cart.shipping.state = val }"
+                                       :disabled="!stateSelectEnabled"></state-province-select>
+                <p role="alert" v-if="$v.cart.shipping.state.$dirty && !$v.cart.shipping.state.required">{{ $t('Required') }}</p>
             </div>
         </div>
 
@@ -103,8 +108,8 @@
                 {{ $t('POSTAL CODE') }}:
             </label>
             <div class="checkout_form_value">
-                <el-input v-model.trim="postalCode" @input="$v.postalCode.$touch()"></el-input>
-                <p role="alert" v-if="$v.postalCode.$dirty && !$v.postalCode.required">{{ $t('Required') }}</p>
+                <el-input v-model.trim="cart.shipping.postalCode" @input="$v.cart.shipping.postalCode.$touch()"></el-input>
+                <p role="alert" v-if="$v.cart.shipping.postalCode.$dirty && !$v.cart.shipping.postalCode.required">{{ $t('Required') }}</p>
             </div>
         </div>
 
@@ -115,7 +120,7 @@
                 <span class="colorGrayLighter">({{ $t('optional') }})</span>:
             </label>
             <div class="checkout_form_value">
-                <el-input v-model.trim="company"></el-input>
+                <el-input v-model.trim="cart.shipping.company"></el-input>
             </div>
         </div>
 
@@ -129,7 +134,7 @@
                         :disabled="submitButtonDisabled"
                         :loading="submitButtonLoading"
                         class="colorBlack">{{ $t('Continue') }}</el-button>
-            <div v-if="submitButtonDisabled" class="colorGreen">Please fill out the form completely before continuing. Thanks!</div>
+            <div v-if="submitButtonDisabled" class="colorGreen">{{ $t('fill_out_form_warning') }}</div>
         </div>
     </section>
 </template>
@@ -164,114 +169,32 @@
             StateProvinceSelect
         },
 
-        // render: function (createElement) {
-        //     console.log("RENDER");
-        //     h = createElement;
-        // },
-
         data: function() {
             return {
                 submitButtonLoading: false,
+                stateSelectEnabled: false
             }
         },
 
         computed: {
+            ...mapGetters([
+                'cart'
+            ]),
+
             submitButtonDisabled: function() {
                 return this.$v.$invalid;
-            },
+            }
+        },
 
-            firstName: {
-                get: function() {
-                    return this.getShippingAttribute('firstName');
-                },
-                set: function(newVal) {
-                    this.setShippingAttribute('firstName', newVal)
-                }
-            },
-            lastName: {
-                get: function() {
-                    return this.getShippingAttribute('lastName');
-                },
-                set: function(newVal) {
-                    this.setShippingAttribute('lastName', newVal)
-                }
-            },
-            streetAddress: {
-                get: function() {
-                    return this.getShippingAttribute('streetAddress');
-                },
-                set: function(newVal) {
-                    this.setShippingAttribute('streetAddress', newVal)
-                }
-            },
-            extendedAddress: {
-                get: function() {
-                    return this.getShippingAttribute('extendedAddress');
-                },
-                set: function(newVal) {
-                    this.setShippingAttribute('extendedAddress', newVal)
-                }
-            },
-            city: {
-                get: function() {
-                    return this.getShippingAttribute('city');
-                },
-                set: function(newVal) {
-                    this.setShippingAttribute('city', newVal)
-                }
-            },
-            state: {
-                get: function() {
-                    return this.getShippingAttribute('state');
-                },
-                set: function(newVal) {
-                    this.setShippingAttribute('state', newVal)
-                }
-            },
-            postalCode: {
-                get: function() {
-                    return this.getShippingAttribute('postalCode');
-                },
-                set: function(newVal) {
-                    this.setShippingAttribute('postalCode', newVal)
-                }
-            },
-            country: {
-                get: function() {
-                    return this.getShippingAttribute('countryCodeAlpha2');
-                },
-                set: function(newVal) {
-                    this.setShippingAttribute('countryCodeAlpha2', newVal)
-                }
-            },
-            company: {
-                get: function() {
-                    return this.getShippingAttribute('company');
-                },
-                set: function(newVal) {
-                    this.setShippingAttribute('company', newVal)
-                }
-            },
-            email: {
-                get: function() {
-                    return this.getShippingAttribute('email');
-                },
-                set: function(newVal) {
-                    this.setShippingAttribute('email', newVal)
-                }
-            },
+        created: function() {
+            this.stateSelectEnabled = (isObject(this.cart) && isObject(this.cart.shipping) && this.cart.shipping.countryCodeAlpha2)
         },
 
         methods: {
-            setShippingAttribute: function(attribute, value) {
-                this.$store.dispatch('CHECKOUT_SHIPPING_ATTRIBUTE', {
-                    attribute,
-                    value
-                });
-            },
-
-            getShippingAttribute: function(attribute) {
-                return this.$store.state.checkout.shipping[attribute];
+            countryCodeChanged: function(newVal) {
+                this.$v.cart.shipping.countryCodeAlpha2.$touch();
+                this.cart.shipping.countryCodeAlpha2 = newVal;
+                this.stateSelectEnabled = newVal ? true : false;
             },
 
             delayTouch: function($v) {
@@ -284,6 +207,7 @@
 
             submitForm: function() {
                 let self = this;
+                let c = this.cart;
 
                 if(currentNotification) {
                     currentNotification.close();
@@ -293,12 +217,12 @@
                     this.submitButtonLoading = true;
 
                     api.shoppingCart.validateAddress({
-                        company_name: this.company,
-                        address_line1: this.streetAddress,
-                        city_locality: this.city,
-                        state_province: this.state,
-                        postal_code: this.postalCode,
-                        country_code: this.country
+                        company_name: c.shipping.company,
+                        address_line1: c.shipping.streetAddress,
+                        city_locality: c.shipping.city,
+                        state_province: c.shipping.state,
+                        postal_code: c.shipping.postalCode,
+                        country_code: c.shipping.countryCodeAlpha2
                     })
                     .then((result) => {
                         let validation = Array.isArray(result) ? result[0] : result;
@@ -307,12 +231,12 @@
 
                         switch(validation.status) {
                             case 'verified':
-                                self.company = validation.matched_address.company
-                                self.streetAddress = validation.matched_address.address_line1
-                                self.city = validation.matched_address.city_locality
-                                self.state = validation.matched_address.state_province
-                                self.postalCode = validation.matched_address.postal_code
-                                self.country = validation.matched_address.country_code
+                                c.shipping.company = validation.matched_address.company
+                                c.shipping.streetAddress = validation.matched_address.address_line1
+                                c.shipping.city = validation.matched_address.city_locality
+                                c.shipping.state = validation.matched_address.state_province
+                                c.shipping.postalCode = validation.matched_address.postal_code
+                                c.shipping.countryCodeAlpha2 = validation.matched_address.country_code
 
                                 self.$emit('shipping_form_submit')
                                 return;
@@ -325,12 +249,12 @@
                             // ALSO NOTE: The 'matched_address' property is null when the status is 'unverified',
                             // so we need to get the values from the 'original_address' property
                             case 'unverified':
-                                self.company = validation.original_address.company
-                                self.streetAddress = validation.original_address.address_line1
-                                self.city = validation.original_address.city_locality
-                                self.state = validation.original_address.state_province
-                                self.postalCode = validation.original_address.postal_code
-                                self.country = validation.original_address.country_code
+                                c.shipping.company = validation.original_address.company
+                                c.shipping.streetAddress = validation.original_address.address_line1
+                                c.shipping.city = validation.original_address.city_locality
+                                c.shipping.state = validation.original_address.state_province
+                                c.shipping.postalCode = validation.original_address.postal_code
+                                c.shipping.countryCodeAlpha2 = validation.original_address.country_code
 
                                 self.$emit('shipping_form_submit')
                                 return;
@@ -370,9 +294,6 @@
                             msg = error.response.data.message;
                         }
 
-                        console.log("CATCH", error.response);
-                        console.log("CATCH MSG", msg);
-
                         this.$notify({
                             title: msg || "An internal server error occurred",
                             // message: errorMessage,
@@ -385,24 +306,22 @@
         },
 
         validations: {
-            email: { required, email },
-            country: { required },
-            firstName: { required },
-            lastName: { required },
-            streetAddress: { required },
-            city: { required },
-            state: { required },
-            postalCode: { required }
-
-            //testing only
-            // email: {  },
-            // country: {  },
-            // firstName: {  },
-            // lastName: {  },
-            // streetAddress: {  },
-            // city: {  },
-            // state: {  },
-            // postalCode: {  }
+            cart: {
+                shipping: {
+                    email: { required, email },
+                    countryCodeAlpha2: { required },
+                    firstName: { required },
+                    lastName: { required },
+                    streetAddress: { required },
+                    city: { required },
+                    state: { required },
+                    postalCode: { required }
+                }
+            },
+            // For some reason having another property on this 'validations'
+            // object enables the object nesting above to work.  Probably
+            // a bug in the library
+            foo: {}
         }
     }
 </script>

@@ -1,10 +1,6 @@
 export default {
-    jwtKey: (state) => {
-        return state.jwtKey;
-    },
-
-    appInfo: (state) => {
-        return state.appInfo;
+    app: (state) => {
+        return state.app;
     },
 
     inCheckoutFlow: (state) => {
@@ -17,10 +13,6 @@ export default {
 
     cart: (state) => {
         return state.cart;
-    },
-
-    checkout: (state) => {
-        return state.checkout;
     },
 
     numCartItems: (state) => {

@@ -3,8 +3,15 @@ module.exports = {
     development: {
         client: 'postgresql',
         connection: {
-            database: 'gmnst'
+            host: process.env.PG_HOST,
+            user: process.env.PG_USER,
+            password: process.env.PG_PASSWORD,
+            database: process.env.PG_DB_NAME,
+            charset: 'utf8'
         },
+        // connection: {
+        //     database: process.env.PG_DB_NAME
+        // },
         pool: {
             min: 2,
             max: 10

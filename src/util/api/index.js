@@ -1,26 +1,48 @@
-import { HTTP } from '../http-common';
+import axios from 'axios';
+import { getHttp } from '../http-common';
 import queryString from 'query-string'
 
 export default {
 
-    getToken() {
-        return HTTP.post('/api/v1/token/get', {
-            clientId: 'admin@gmnst.com',
-            clientSecret: 'G244.h"eSjV/'
-        });
+    getJwtToken() {
+        return getHttp()
+            .post('/api/v1/token/get', {
+                clientId: 'admin@gmnst.com',
+                clientSecret: 'G244.h"eSjV/'
+            })
+            .then((response) => {
+                return response.headers['x-authorization'];
+            });
     },
 
-    getInfo() {
-        return HTTP
-            .get('/api/v1/info')
+    getBraintreeClientToken() {
+        return getHttp()
+            .get('/api/v1/cart/token/get')
             .then((response) => {
                 return response.data.data;
             });
     },
 
+    getProductInfo() {
+        return getHttp()
+            .get('/api/v1/product/info')
+            .then((response) => {
+                return response.data.data;
+            });
+    },
+
+    //TODO check for existance of this
+    // getInfo() {
+    //     return getHttp()
+    //         .get('/api/v1/info')
+    //         .then((response) => {
+    //             return response.data.data;
+    //         });
+    // },
+
     logger(type, message) {
         if(message) {
-            return HTTP.post('/api/v1/logger', {
+            return getHttp().post('/api/v1/logger', {
                 type: type || 'error',
                 message: message
             });
@@ -28,7 +50,7 @@ export default {
     },
 
     getProductById(id) {
-        return HTTP
+        return getHttp()
             .get('/api/v1/product', {
                 params: {
                     id
@@ -40,7 +62,7 @@ export default {
     },
 
     getProductBySeoUri(str) {
-        return HTTP
+        return getHttp()
             .get('/api/v1/product/seo', {
                 params: {
                     id: str
@@ -54,7 +76,7 @@ export default {
     getProducts(params) {
         let paramString = queryString.stringify(params, {arrayFormat: 'bracket'});
 
-        return HTTP
+        return getHttp()
             .get(`/api/v1/products?${paramString}`) // TODO: is there a XSS issue here?
             .then((response) => {
                 return response.data.data;
@@ -64,7 +86,7 @@ export default {
 
     shoppingCart: {
         getCart() {
-            return HTTP
+            return getHttp()
                 .get('/api/v1/cart/get')
                 .then((response) => {
                     return response.data.data;
@@ -72,7 +94,7 @@ export default {
         },
 
         addItem(params) {
-            return HTTP
+            return getHttp()
                 .post('/api/v1/cart/item/add', params)
                 .then((response) => {
                     return response.data.data;
@@ -80,7 +102,7 @@ export default {
         },
 
         updateItemQty(params) {
-            return HTTP
+            return getHttp()
                 .post('/api/v1/cart/item/qty', params)
                 .then((response) => {
                     return response.data.data;
@@ -88,7 +110,7 @@ export default {
         },
 
         deleteItem(params) {
-            return HTTP
+            return getHttp()
                 .post('/api/v1/cart/item/remove', params)
                 .then((response) => {
                     return response.data.data;
@@ -96,7 +118,7 @@ export default {
         },
 
         validateAddress(address) {
-            return HTTP
+            return getHttp()
                 .post('/api/v1/shipping/validateAddress', address)
                 .then((response) => {
                     return response.data.data;
@@ -104,7 +126,7 @@ export default {
         },
 
         getShippingRates(params) {
-            return HTTP
+            return getHttp()
                 .post('/api/v1/shipping/rates', params)
                 .then((response) => {
                     return response.data.data;
@@ -112,7 +134,7 @@ export default {
         },
 
         checkout(params) {
-            return HTTP
+            return getHttp()
                 .post('/api/v1/cart/checkout', params)
                 .then((response) => {
                     return response.data.data;
@@ -122,12 +144,12 @@ export default {
 
     salesTax: {
         getSalesTaxAmount(params) {
-            return HTTP
+            return getHttp()
                 .post('/api/v1/salestax/get', params)
                 .then((response) => {
                     return response.data.data;
                 });
         }
     }
-    
+      
 };

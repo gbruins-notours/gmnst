@@ -1,6 +1,6 @@
 <template>
     <div id="app">
-        <navbar></navbar>
+        <navbar :ready="ready"></navbar>
         <main>
             <router-view></router-view>
         </main>
@@ -10,6 +10,7 @@
 
 <script>
 import Promise from 'bluebird';
+import { mapGetters } from 'vuex'
 import Navbar from '@/components/Navbar'
 import FooterBar from '@/components/FooterBar'
 import { mapActions } from 'vuex';
@@ -21,11 +22,27 @@ export default {
         FooterBar
     },
 
-    // data: function() {
-    //     return {
-    //         inCheckoutFlow: false
-    //     }
-    // }
+    computed: {
+        ...mapGetters([
+            'app'
+        ])
+    },
+
+    methods: {
+        ...mapActions([
+            'GET_BRAINTREE_CLIENT_TOKEN',
+            'GET_PRODUCT_INFO',
+            'JWT_KEY',
+            'CART_PULL',
+            'TOGGLE_DEVICE'
+        ])
+    },
+
+    data: function() {
+        return {
+            ready: false
+        }
+    },
 
     created () {
         const { body } = document
@@ -44,36 +61,25 @@ export default {
         window.addEventListener('DOMContentLoaded', handler)
         window.addEventListener('resize', handler)
 
-        if (!this.$store.state.jwtKey || !isObject(this.$store.state.appInfo)) {
+        if (!this.app.jwtKey) {
             this.JWT_KEY()
                 .then(() => {
-                    this.CART_SYNC();
-                    this.APP_INFO();
+                    Promise.all([
+                        this.CART_PULL(),
+                        this.GET_PRODUCT_INFO(),
+                        this.GET_BRAINTREE_CLIENT_TOKEN()    
+                    ]).then(() => {
+                        this.ready = true;
+                    })
                 })
                 .catch((error) => {
-                        console.log('GET JWT Error', error);
+                    console.log('GET JWT Error', error);
                 });
         }
-    },
-
-    methods: {
-        ...mapActions([
-            'APP_INFO',
-            'JWT_KEY',
-            'CART_SYNC',
-            'TOGGLE_DEVICE'
-        ])
+        else {
+            this.ready = true;
+        }
     }
-
-    // watch: {
-    //     '$route' (to, from) {
-    //         console.log("Navbar ROUTE watch", to)
-    //         // if(isObject(to) && to.name && to.name.indexOf('cart') === 0) {
-    //         //     console.log("IS CHECKOUT FLEO!")
-    //         //     this.inCheckoutFlow = true;
-    //         // }
-    //     }
-    // }
 }
 </script>
 

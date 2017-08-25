@@ -35,12 +35,12 @@ module.exports = function (baseModel, bookshelf, server) {
 
                     return accounting.toFixed(subtotal, 2);
                 },
-                // sales_tax: function() {
-                //     return server.plugins.ShoppingCart.getCartSalesTax( this.related('cart_data') );
-                // },
                 grand_total: function() {
-                    //TODO: add sales tax and shipping cost
-                    return this.get('sub_total')
+                    let subtotal = this.get('sub_total');
+                    let salesTax = parseFloat(this.related('sales_tax') || 0);
+                    let shipping = parseFloat(this.related('shipping_total') || 0);
+
+                    return accounting.toFixed((subtotal + salesTax + shipping), 2);
                 }
             },
 
@@ -113,10 +113,15 @@ module.exports = function (baseModel, bookshelf, server) {
             findOrCreateCart: function(request) {
                 let self = this;
 
+                // If the shipping rate is a flat cost then adding it to the model now
+                // so it will be readily available at checkout.  If we ever decide to 
+                // provide multiple shipping options in the future then this value can 
+                // be overridden by whatever option the user chooses at checkout.
                 return self.getCart(request)
                     .then((ShoppingCart) => {
                         return ShoppingCart || self.create({
-                            token: self.getCartToken(request)
+                            token: self.getCartToken(request),
+                            shipping_total: accounting.toFixed((process.env.SHIPPING_FLAT_COST || 0), 2)
                         });
                     })
             }

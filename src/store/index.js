@@ -21,42 +21,15 @@ export function createStore () {
                 },
                 pageHeader: {
                     inCheckoutFlow: false
-                }
+                },
+                clientToken: null,
+                jwtKey: null
             },
-            // appInfo: {
-            //     product: {
-            //         subTypes: []
-            //     }
-            // },
-            cart: {},
-            checkout: {
-                shipping: {
-                    firstName: null,
-                    lastName: null,
-                    streetAddress: null,
-                    extendedAddress: null,
-                    city: null,
-                    state: null,
-                    postalCode: null,
-                    countryCodeAlpha2: null,
-                    company: null,
-                    email: null
-                },
-                billing: {
-                    firstName: null,
-                    lastName: null,
-                    streetAddress: null,
-                    city: null,
-                    state: null,
-                    postalCode: null,
-                    countryCodeAlpha2: null,
-                    company: null
-                },
+            cart: {
                 billingSameAsShipping: true,
-                shippingMethods: null,
-                salesTax: null
+                shipping: {},
+                billing: {}
             }
-            // jwtKey: null
         },
         getters,
         mutations,

@@ -4,14 +4,20 @@ import isObject from 'lodash.isobject'
 
 export default {
     JWT_KEY: ({ commit }) => {
-        return api.getToken().then((response) => {
-            commit('JWT_KEY', response.headers['x-authorization'])
+        return api.getJwtToken().then((token) => {
+            commit('JWT_KEY', token)
         })
     },
 
-    APP_INFO: ({ commit }) => {
-        return api.getInfo().then((data) => {
-            commit('APP_INFO', data);
+    GET_BRAINTREE_CLIENT_TOKEN: ({ commit }) => {
+        return api.getBraintreeClientToken().then((response) => {
+            commit('BRAINTREE_CLIENT_TOKEN', response)
+        })
+    },
+
+    GET_PRODUCT_INFO: ({ commit }) => {
+        return api.getProductInfo().then((response) => {
+            commit('PRODUCT_INFO', response)
         })
     },
 
@@ -51,38 +57,38 @@ export default {
         })
     },
 
-    CART_SYNC: ({ commit }, data) => {
+    CART_PULL: ({ commit }) => {
         return api.shoppingCart.getCart().then((cartData) => {
-            console.log("CART", cartData);
             commit('CART_SET', cartData);
         })
     },
 
-    CHECKOUT_SHIPPING_ATTRIBUTE: ({ commit }, config) => {
+    /**
+     * Pushes the cart data in state to the server
+     */
+    CART_PUSH: ({ commit }) => {
+        return api.shoppingCart.getCart().then((cartData) => {
+            commit('CART_SET', cartData);
+        })
+    },
+
+    CART_BILLING_ATTRIBUTE: ({ commit }, config) => {
         if(isObject(config) && 
             config.hasOwnProperty('attribute') && 
             config.hasOwnProperty('value')) {
-            commit('CHECKOUT_SHIPPING_ATTRIBUTE', config)
+            commit('CART_BILLING_ATTRIBUTE', config)
         }
     },
 
-    CHECKOUT_BILLING_ATTRIBUTE: ({ commit }, config) => {
-        if(isObject(config) && 
-            config.hasOwnProperty('attribute') && 
-            config.hasOwnProperty('value')) {
-            commit('CHECKOUT_BILLING_ATTRIBUTE', config)
-        }
+    CART_BILLING_SAME_AS_SHIPPING: ({ commit }, sameAsShipping) => {
+        commit('CART_BILLING_SAME_AS_SHIPPING', sameAsShipping)
     },
 
-    CHECKOUT_BILLING_SAME_AS_SHIPPING: ({ commit }, sameAsShipping) => {
-        commit('CHECKOUT_BILLING_SAME_AS_SHIPPING', sameAsShipping)
+    CART_SHIPPING_METHODS: ({ commit }, data) => {
+        commit('CART_SHIPPING_METHODS', data)
     },
 
-    CHECKOUT_SHIPPING_METHODS: ({ commit }, data) => {
-        commit('CHECKOUT_SHIPPING_METHODS', data)
-    },
-
-    CHECKOUT_SALES_TAX: ({ commit }, salesTaxAmount) => {
-        commit('CHECKOUT_SALES_TAX', salesTaxAmount);
+    CART_SALES_TAX: ({ commit }, salesTaxAmount) => {
+        commit('CART_SALES_TAX', salesTaxAmount);
     }
 }

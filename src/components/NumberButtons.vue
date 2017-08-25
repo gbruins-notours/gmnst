@@ -66,7 +66,6 @@
         },
 
         created() {
-            console.log('CREATED INIT VAL', this.initValue)
             this.selectedVal = this.setInRange(this.initValue);
             // this.emitVal();
         },

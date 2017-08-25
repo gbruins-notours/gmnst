@@ -55,8 +55,6 @@
 
         created() {
             if(this.$route.params.id) {
-                console.log("CART", this.cart);
-
                 if(isObject(this.cart) && Array.isArray(this.cart.cart_items)) {
                     this.cart.cart_items.forEach((item) => {
                         if(item.product_id === this.$route.params.id) {

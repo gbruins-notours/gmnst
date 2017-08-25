@@ -36,6 +36,7 @@ const translations = {
     'EMAIL ADDRESS': 'EMAIL ADDRESS',
     'EXPIRES': 'EXPIRES',
 
+    'fill_out_form_warning': 'Please fill out the form completely before continuing. Thanks!',
     'Finding your security code': 'Finding your security code',
     'FIRST NAME': 'FIRST NAME',
 

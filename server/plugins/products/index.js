@@ -2,6 +2,7 @@ const Joi = require('joi');
 const Boom = require('boom');
 const HelperService = require('../../helpers.service');
 const forEach = require('lodash.foreach');
+const ProductService = require('./products.service');
 
 
 let internals = {};
@@ -180,6 +181,21 @@ internals.after = function (server, next) {
                                 reply(Boom.badRequest(err));
                             }
                         );
+                }
+            }
+        },
+        {
+            method: 'GET',
+            path: '/product/info',
+            config: {
+                description: 'Returns general info about products',
+                handler: (request, reply) => {
+                    reply.apiSuccess({
+                        types: ProductService.getProductTypes(),
+                        subTypes: ProductService.getProductSubTypes(),
+                        sizes: ProductService.getSizeTypes(),
+                        genders: ProductService.getGenderTypes()
+                    });
                 }
             }
         },

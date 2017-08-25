@@ -27,6 +27,8 @@ module.exports.up = (knex) => {
             t.string('shipping_postalCode').nullable();
             t.string('shipping_countryCodeAlpha2').nullable();
             t.string('shipping_email').nullable();
+            t.decimal('shipping_total').nullable();
+            t.decimal('sales_tax').nullable();
             t.string('status').nullable();
             t.dateTime('created_at').notNullable().defaultTo(knex.raw('now()'));
             t.dateTime('updated_at').nullable();

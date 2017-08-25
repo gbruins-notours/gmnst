@@ -1,16 +1,18 @@
 <template>
     <div>
         <div>{{ formattedName }}</div>
-        <div v-if="$store.state.checkout.shipping.company">{{ companyDisplay }}</div>
-        <div>{{ $store.state.checkout.shipping.streetAddress }}</div>
-        <div v-if="$store.state.checkout.shipping.extendedAddress">{{ $store.state.checkout.shipping.extendedAddress }}</div>
+        <div v-if="cart.shipping.company">{{ companyDisplay }}</div>
+        <div>{{ cart.shipping.streetAddress }}</div>
+        <div v-if="cart.shipping.extendedAddress">{{ cart.shipping.extendedAddress }}</div>
         <div>{{ formattedCityStateZip }}</div>
-        <div>{{ $store.state.checkout.shipping.countryCodeAlpha2 }}</div>
-        <div class="pts" v-if="showEmail">{{ $store.state.checkout.shipping.email }}</div>
+        <div>{{ cart.shipping.countryCodeAlpha2 }}</div>
+        <div class="pts" v-if="showEmail">{{ cart.shipping.email }}</div>
     </div>
 </template>
 
 <script>
+    import { mapGetters } from 'vuex'
+
     export default {
         props: {
             showEmail: {
@@ -20,17 +22,21 @@
         },
 
         computed: {
+            ...mapGetters([
+                'cart'
+            ]),
+
             formattedName: function() {
-                return `${this.$store.state.checkout.shipping.firstName} ${this.$store.state.checkout.shipping.lastName}`;
+                return `${this.cart.shipping.firstName} ${this.cart.shipping.lastName}`;
             },
 
             formattedCityStateZip: function() {
-                return `${this.$store.state.checkout.shipping.city}, ${this.$store.state.checkout.shipping.state} ${this.$store.state.checkout.shipping.postalCode}`;
+                return `${this.cart.shipping.city}, ${this.cart.shipping.state} ${this.cart.shipping.postalCode}`;
             },
 
             companyDisplay: function() {
-                if(this.$store.state.checkout.shipping.company) {
-                    return this.$store.state.checkout.shipping.company.toUpperCase()
+                if(this.cart.shipping.company) {
+                    return this.cart.shipping.company.toUpperCase()
                 }
                 return null;
             }

@@ -13,6 +13,7 @@ module.exports = {
   rules: {
     'arrow-parens': OFF,
     'brace-style': [ERROR, 'stroustrup'],
+    'camelcase': OFF,
     'indent': [ERROR, 4, { 'SwitchCase': 1 }],
     'keyword-spacing': OFF,
     'no-debugger': process.env.NODE_ENV === 'production' ? ERROR : OFF,

@@ -3,7 +3,8 @@
                filterable
                v-model="selectedState"
                :placeholder="placeholder"
-               v-on:change="updateValue">
+               v-on:change="updateValue"
+               :disabled="disabled">
         <el-option
                 v-for="(label, abbr) in stateOptions"
                 :key="abbr"
@@ -14,7 +15,8 @@
 
     <el-input v-else
             v-model.trim="selectedState"
-            v-on:change="updateValue"></el-input>
+            v-on:change="updateValue"
+            :disabled="disabled"></el-input>
 </template>
 
 
@@ -34,6 +36,11 @@
 
             country: {
                 type: String
+            },
+
+            disabled: {
+                type: Boolean,
+                default: false,
             },
 
             // this allows using the `value` prop for a different purpose

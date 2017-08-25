@@ -1,7 +1,7 @@
 <template>
     <section class="container ptl">
 
-        <div v-if="!this.cart.num_items" class="fs16 pal tac">
+        <div v-if="!cart.num_items" class="fs16 pal tac">
             {{ $t('Your shopping cart does not contain any items.') }}
         </div>
 
@@ -38,11 +38,13 @@
                             <div class="displayTableRow">
                                 <label class="checkout_form_label">{{ $t('CARD NUMBER') }}:</label>
                                 <div class="checkout_form_value">
-                                    <div id="card-number" class="el-input__inner displayTableCell"></div>
+                                    <div class="displayTableCell relative">
+                                        <div id="card-number" class="el-input__inner "></div>
+                                        <span class="card-icon" v-show="cardTypeIcon"><img :src="cardTypeIcon" /></span>
+                                    </div>
                                     <i v-show="inputClasses['card-number']"
                                         class="displayTableCell pls vam"
                                         :class="inputClasses['card-number']"></i>
-                                    <div class="card-icon" v-show="cardTypeIcon"><img :src="cardTypeIcon" /></div>
                                 </div>
                             </div>
 
@@ -279,9 +281,8 @@
         computed: {
             ...mapGetters([
                 'cart',
-                'checkout',
                 'numCartItems',
-                'appInfo'
+                'app'
             ]),
 
             checkoutButtonEnabled: function() {
@@ -298,10 +299,10 @@
 
             billingSameAsShipping: {
                 get: function() {
-                    return this.$store.state.checkout.billingSameAsShipping;
+                    return this.cart.billingSameAsShipping;
                 },
                 set: function(newVal) {
-                    this.$store.dispatch('CHECKOUT_BILLING_SAME_AS_SHIPPING', newVal);
+                    this.$store.dispatch('CART_BILLING_SAME_AS_SHIPPING', newVal);
                 }
             },
 
@@ -405,25 +406,55 @@
         },
 
         methods: {
-            checkoutStepChanged: function(newStep) {
-                if(newStep < this.currentStep) {
-                    this.currentStep = newStep;
-                }
-            },
-
-            shippingFormDone: function() {
-                this.currentStep = 1;
-
-                // get sales tax rate for the given shipping address
+            /**
+             * Get sales tax rate for the given shipping address
+             */
+            getSalesTax: function() {
                 api.salesTax.getSalesTaxAmount({
-                    city: this.checkout.shipping.city,
-                    state: this.checkout.shipping.state,
-                    countryCodeAlpha2: this.checkout.shipping.countryCodeAlpha2,
+                    city: this.cart.shipping.city,
+                    state: this.cart.shipping.state,
+                    countryCodeAlpha2: this.cart.shipping.countryCodeAlpha2,
                     subtotal: this.cart.sub_total,
-                    shipping: this.appInfo.shipping.flatCost
+                    shipping: this.cart.shipping.total
                 })
                 .then((result) => {
-                    this.$store.dispatch('CHECKOUT_SALES_TAX', result);
+                    this.$store.dispatch('CART_SALES_TAX', result);
+                })
+                .catch((result) => {
+                    currentNotification = this.$notify({
+                        title: this.$t('An error occurred'),
+                        message: 'We are unable to display the sales tax rate because of a server error.',
+                        duration: 0,
+                        type: 'error'
+                    });
+                });
+            },
+
+
+            getShippingRates: function() {
+                this.$store.dispatch('CART_SHIPPING_METHODS', null);
+
+                api.shoppingCart.getShippingRates({
+                    validate_address: 'no_validation',
+                    ship_to: {
+                        address_line1: this.cart.shipping.streetAddress,
+                        city_locality: this.cart.shipping.city,
+                        state_province: this.cart.shipping.state,
+                        postal_code: this.cart.shipping.postalCode,
+                        country_code: this.cart.shipping.countryCodeAlpha2
+                    },
+                    packages: [
+                        {
+                            weight: {
+                                value: '6.0',  //TODO
+                                unit: 'ounce'
+                            }
+                        }
+                    ]
+                })
+                .then((result) => {
+                    console.log("SHIP METHODS", result);
+                    this.$store.dispatch('CART_SHIPPING_METHODS', result);
                 })
                 .catch((result) => {
                     currentNotification = this.$notify({
@@ -433,39 +464,24 @@
                         type: 'error'
                     });
                 });
+            },
 
-                // this.$store.dispatch('CHECKOUT_SHIPPING_METHODS', null);
 
-                // api.shoppingCart.getShippingRates({
-                //     validate_address: 'no_validation',
-                //     ship_to: {
-                //         address_line1: this.checkout.shipping.streetAddress,
-                //         city_locality: this.checkout.shipping.city,
-                //         state_province: this.checkout.shipping.state,
-                //         postal_code: this.checkout.shipping.postalCode,
-                //         country_code: this.checkout.shipping.countryCodeAlpha2
-                //     },
-                //     packages: [
-                //         {
-                //             weight: {
-                //                 value: '6.0',  //TODO
-                //                 unit: 'ounce'
-                //             }
-                //         }
-                //     ]
-                // })
-                // .then((result) => {
-                //     console.log("SHIP METHODS", result);
-                //     this.$store.dispatch('CHECKOUT_SHIPPING_METHODS', result);
-                // })
-                // .catch((result) => {
-                //     currentNotification = this.$notify({
-                //         title: this.$t('An error occurred'),
-                //         message: 'We were unable to get shipping rates because of a server error.',
-                //         duration: 0,
-                //         type: 'error'
-                //     });
-                // });
+            checkoutStepChanged: function(newStep) {
+                if(newStep < this.currentStep) {
+                    this.currentStep = newStep;
+                }
+            },
+
+            /**
+             * Callback function called when the submit button clicked in the ShippingForm
+             * component.
+             */
+            shippingFormDone: function() {
+                this.currentStep = 1;
+
+                //TODO: send latest cart data to backend
+                // so sales_tax can be calculated.
             },
 
             shippingMethodDone: function() {
@@ -477,14 +493,14 @@
             },
 
             setBillingAttribute: function(attribute, value) {
-                this.$store.dispatch('CHECKOUT_BILLING_ATTRIBUTE', {
+                this.$store.dispatch('CART_BILLING_ATTRIBUTE', {
                     attribute,
                     value
                 });
             },
 
             getBillingAttribute: function(attribute) {
-                return this.$store.state.checkout.billing[attribute];
+                return this.$store.state.cart[`billing_${attribute}`];
             },
 
             getPaymentMonthYearClass: function(monthClasses, yearClasses) {
@@ -507,14 +523,14 @@
              */
             copyShippingDataToBillingData: function() {
                 if(this.billingSameAsShipping) {
-                    this.billingFirstName = this.$store.state.checkout.shipping.firstName;
-                    this.billingLastName = this.$store.state.checkout.shipping.lastName;
-                    this.billingStreetAddress = this.$store.state.checkout.shipping.streetAddress;
-                    this.billingCity = this.$store.state.checkout.shipping.city;
-                    this.billingState = this.$store.state.checkout.shipping.state;
-                    this.billingPostalCode = this.$store.state.checkout.shipping.postalCode;
-                    this.billingCountry = this.$store.state.checkout.shipping.countryCodeAlpha2;
-                    this.billingCompany = this.$store.state.checkout.shipping.company;
+                    this.billingFirstName = this.cart.shipping.firstName;
+                    this.billingLastName = this.cart.shipping.lastName;
+                    this.billingStreetAddress = this.cart.shipping.streetAddress;
+                    this.billingCity = this.cart.shipping.city;
+                    this.billingState = this.cart.shipping.state;
+                    this.billingPostalCode = this.cart.shipping.postalCode;
+                    this.billingCountry = this.cart.shipping.countryCodeAlpha2;
+                    this.billingCompany = this.cart.shipping.company;
                 }
             },
 
@@ -576,8 +592,8 @@
 
                     api.shoppingCart.checkout({
                         nonce: payload.nonce,
-                        shipping: this.$store.state.checkout.shipping,
-                        billing: this.$store.state.checkout.billing
+                        shipping: this.cart.shipping,
+                        billing: this.cart.billing
                     })
                     .then((result) => {
 
@@ -784,24 +800,26 @@
         },
 
         created() {
-            let client = require('braintree-web/client');
-            client.create(
-                { authorization: this.appInfo.clientToken },
-                (clientErr, clientInstance) => {
-                    if (clientErr) {
-                        Notification.error({
-                            title: this.$t('There was an error setting up the payment client!'),
-                            message: this.getBraintreeErrorMessage(clientErr),
-                            duration: 0
-                        });
+            if(this.cart.num_items) {
+                let client = require('braintree-web/client');
+                client.create(
+                    { authorization: this.app.clientToken },
+                    (clientErr, clientInstance) => {
+                        if (clientErr) {
+                            Notification.error({
+                                title: this.$t('There was an error setting up the payment client!'),
+                                message: this.getBraintreeErrorMessage(clientErr),
+                                duration: 0
+                            });
+                        }
+                        else {
+                        this.braintree.clientInstance = clientInstance
+                        this.createHostedFields(clientInstance);
+                        this.createPaypal(clientInstance);
+                        }
                     }
-                    else {
-                      this.braintree.clientInstance = clientInstance
-                      this.createHostedFields(clientInstance);
-                      this.createPaypal(clientInstance);
-                    }
-                }
-            );
+                );
+            }
         },
 
         mounted: function() {
@@ -858,8 +876,13 @@
     }
 
     .card-icon {
-        padding-top: 2px;
-        width: 50px;
+        position: absolute;
+        top: 1px;
+        right: 0px;
+
+        img {
+            width: 58px;
+        }
     }
 
     .hostedField60 {

@@ -1,20 +1,36 @@
 import isObject from 'lodash.isobject';
 import axios from 'axios';
 
-let internals = {};
 
-internals.getHeaders = () => {
-    let data = JSON.parse(window.localStorage.getItem('vuex'));
-    let headers = {};
+function getJwtKey() {
+    if(!getJwtKey.key) {
+        let data = JSON.parse(window.localStorage.getItem('vuex'));
 
-    if (isObject(data) && data.hasOwnProperty('jwtKey')) {
-        headers['Authorization'] = `Bearer ${data.jwtKey}`;
+        if (isObject(data) && isObject(data.app) && data.app.jwtKey) {
+            getJwtKey.key = data.app.jwtKey
+        } 
     }
 
-    return headers;
+    return getJwtKey.key;
 };
 
 
-export const HTTP = axios.create({
-    headers: internals.getHeaders()
-});
+export function getHttp() {
+    if(!getHttp.jwtKey) {
+        getHttp.jwtKey = getJwtKey();
+
+        if(getHttp.jwtKey) {
+            getHttp.axiosClient = axios.create({
+                headers: {
+                    'Authorization': `Bearer ${getHttp.jwtKey}`
+                }
+            });
+        }
+    }
+
+    if(!getHttp.axiosClient) {
+        getHttp.axiosClient = axios;
+    }
+
+    return getHttp.axiosClient;
+};

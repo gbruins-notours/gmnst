@@ -13,11 +13,11 @@
                     </a>
 
                     <nav class="Navigation">
-                        <ul class="Navigation-list">
-                            <router-link :to="'/type/' + appInfo.seoUri[key]"
+                        <ul class="Navigation-list" v-if="ready">
+                            <router-link :to="'/type/' + app.productInfo.seoUri[key]"
                                          tag="li"
                                          active-class="active"
-                                         v-for="(val, key) in appInfo.product.subTypes"
+                                         v-for="(val, key) in app.productInfo.subTypes"
                                          :key="key">{{ $tc(key, 2) }}</router-link>
                         </ul>
                     </nav>
@@ -58,7 +58,7 @@
 
 <script>
     import Vue from 'vue';
-    import { mapGetters } from 'vuex';
+    import { mapGetters, mapActions } from 'vuex';
     import isObject from 'lodash.isobject'
     import ProductPrice from './product/ProductPrice.vue'
     import { Popover, Button } from 'element-ui'
@@ -67,6 +67,13 @@
     Vue.use(Button);
 
     export default {
+        props: {
+            ready: {
+                type: Boolean,
+                default: false
+            },
+        },
+
         components: {
             ProductPrice
         },
@@ -80,13 +87,21 @@
 
         computed: {
             ...mapGetters([
-                'appInfo',
+                'app',
                 'numCartItems',
                 'inCheckoutFlow'
-            ])
+            ]),
+
+            productInfo: function() {
+                return this.app.productInfo || {}
+            }
         },
 
         methods: {
+            ...mapActions([
+                'GET_PRODUCT_INFO'
+            ]),
+
             handleResize() {
                 if (window.innerWidth > 480) {
                     this.showBigLogo = true

@@ -14,6 +14,7 @@
 import { mapGetters } from 'vuex'
 import ProductCard from '../../components/product/ProductCard.vue'
 import api from '../../util/api'
+import isObject from 'lodash.isobject';
 
 export default {
     props: ['id'],
@@ -31,20 +32,22 @@ export default {
 
     methods: {
         ...mapGetters([
-            'appInfo'
+            'app'
         ]),
 
         getIdByProductType(type) {
-            let info = this.appInfo();
+            let info = this.app();
             let id = 0;
             let subtype = null;
 
-            Object.keys(info.seoUri).forEach((key) => {
-                if (info.seoUri[key] === type && info.product.subTypes.hasOwnProperty(key)) {
-                    id = info.product.subTypes[key];
-                    subtype = key;
-                }
-            });
+            if(isObject(info) && isObject(info.productInfo)) {
+                Object.keys(info.productInfo.seoUri).forEach((key) => {
+                    if (info.productInfo.seoUri[key] === type && info.productInfo.subTypes.hasOwnProperty(key)) {
+                        id = info.productInfo.subTypes[key];
+                        subtype = key;
+                    }
+                });
+            }
 
             return {
                 productTypeId: id,
