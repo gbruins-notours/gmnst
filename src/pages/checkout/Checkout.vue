@@ -401,6 +401,27 @@
                         nonce: null,
                         payPalPayload: null
                     }
+                },
+                billingForm: {
+                    countryCodeAlpha2: null,
+                    firstName: null,
+                    lastName: null,
+                    streetAddress: null,
+                    city: null,
+                    state: null,
+                    postalCode: null,
+                    company: null,
+                },
+                //TODO - implement in UI:
+                greenChecks: {
+                    countryCodeAlpha2: false,
+                    firstName: false,
+                    lastName: false,
+                    streetAddress: false,
+                    city: false,
+                    state: false,
+                    postalCode: false,
+                    company: false, 
                 }
             }
         },
@@ -480,8 +501,11 @@
             shippingFormDone: function() {
                 this.currentStep = 1;
 
-                //TODO: send latest cart data to backend
-                // so sales_tax can be calculated.
+                // Setting some defaults in the billing form
+                this.billingForm.countryCodeAlpha2 = this.cart.shipping.countryCodeAlpha2;
+                this.billingForm.state = this.cart.shipping.state;
+
+                //TODO: send latest cart data to backend so sales_tax can be calculated.
             },
 
             shippingMethodDone: function() {

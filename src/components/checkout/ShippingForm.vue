@@ -6,12 +6,17 @@
                 {{ $t('EMAIL ADDRESS') }}:
             </label>
             <div class="checkout_form_value">
-                <el-input v-model.trim="cart.shipping.email" @input="delayTouch($v.cart.shipping.email)"></el-input>
-                <div role="alert" v-if="$v.cart.shipping.email.$dirty">
-                    <p v-if="!$v.cart.shipping.email.required">{{ $t('Required') }}</p>
-                    <p v-if="!$v.cart.shipping.email.email">{{ $t('Please enter a valid email address.') }}</p>
+                <el-input v-model.trim="shipping.email" 
+                          @input="onInputChange('email')"
+                          @blur="onInputBlur('email')"
+                          :class="{ 'inputError': $v.shipping.email.$error }"></el-input>
+                <div role="alert" v-show="canShowValidationMsg('email')">
+                    <p v-if="!$v.shipping.email.required">{{ $t('Required') }}</p>
+                    <p v-if="!$v.shipping.email.email">{{ $t('Please enter a valid email address.') }}</p>
                 </div>
             </div>
+            <i v-show="canShowGreenCheck('email')" 
+               class="displayTableCell plm el-icon-circle-check colorGreen vam"></i>
         </div>
 
         <!-- Country -->
@@ -20,16 +25,14 @@
                 {{ $t('COUNTRY') }}:
             </label>
             <div class="checkout_form_value">
-                <country-select v-model="cart.shipping.countryCodeAlpha2"
-                                :init-value="cart.shipping.countryCodeAlpha2"
+                <country-select v-model="shipping.countryCodeAlpha2"
+                                :init-value="shipping.countryCodeAlpha2"
                                 value-type="alpha2"
-                                @input="countryCodeChanged"></country-select>
-                <!-- <country-select v-model="cart.shipping.countryCodeAlpha2"
-                                :init-value="cart.shipping.countryCodeAlpha2"
-                                value-type="alpha2"
-                                @input="$v.cart.shipping.countryCodeAlpha2.$touch()"
-                                v-on:change="val => { cart.shipping.countryCodeAlpha2 = val }"></country-select> -->
+                                @change="countryCodeChanged"></country-select>
+                <p role="alert" v-show="canShowValidationMsg('countryCodeAlpha2')">{{ $t('Required') }}</p>
             </div>
+            <i v-show="canShowGreenCheck('countryCodeAlpha2')" 
+               class="displayTableCell plm el-icon-circle-check colorGreen vam"></i>
         </div>
 
         <!-- First Name -->
@@ -38,9 +41,14 @@
                 {{ $t('FIRST NAME') }}:
             </label>
             <div class="checkout_form_value">
-                <el-input v-model.trim="cart.shipping.firstName" @input="$v.cart.shipping.firstName.$touch()"></el-input>
-                <p role="alert" v-if="$v.cart.shipping.firstName.$dirty && !$v.cart.shipping.firstName.required">{{ $t('Required') }}</p>
+                <el-input v-model.trim="shipping.firstName" 
+                          @input="onInputChange('firstName')"
+                          @blur="onInputBlur('firstName')"
+                          :class="{ 'inputError': $v.shipping.firstName.$error }"></el-input>
+                <p role="alert" v-show="canShowValidationMsg('firstName')">{{ $t('Required') }}</p>
             </div>
+            <i v-show="canShowGreenCheck('firstName')" 
+               class="displayTableCell plm el-icon-circle-check colorGreen vam"></i>
         </div>
 
         <!-- Last Name -->
@@ -49,9 +57,14 @@
                 {{ $t('LAST NAME') }}:
             </label>
             <div class="checkout_form_value">
-                <el-input v-model.trim="cart.shipping.lastName" @input="$v.cart.shipping.lastName.$touch()"></el-input>
-                <p role="alert" v-if="$v.cart.shipping.lastName.$dirty && !$v.cart.shipping.lastName.required">{{ $t('Required') }}</p>
+                <el-input v-model.trim="shipping.lastName" 
+                          @input="onInputChange('lastName')"
+                          @blur="onInputBlur('lastName')"
+                          :class="{ 'inputError': $v.shipping.lastName.$error }"></el-input>
+                <p role="alert" v-show="canShowValidationMsg('lastName')">{{ $t('Required') }}</p>
             </div>
+            <i v-show="canShowGreenCheck('lastName')" 
+               class="displayTableCell plm el-icon-circle-check colorGreen vam"></i>
         </div>
 
         <!-- Street Address -->
@@ -60,17 +73,22 @@
                 {{ $t('ADDRESS LINE 1') }}:
             </label>
             <div class="checkout_form_value">
-                <el-input v-model.trim="cart.shipping.streetAddress" @input="$v.cart.shipping.streetAddress.$touch()"></el-input>
-                <p role="alert" v-if="$v.cart.shipping.streetAddress.$dirty && !$v.cart.shipping.streetAddress.required">{{ $t('Required') }}</p>
+                <el-input v-model.trim="shipping.streetAddress" 
+                          @input="onInputChange('streetAddress')"
+                          @blur="onInputBlur('streetAddress')"
+                          :class="{ 'inputError': $v.shipping.streetAddress.$error }"></el-input>
+                <p role="alert" v-show="canShowValidationMsg('streetAddress')">{{ $t('Required') }}</p>
             </div>
+            <i v-show="canShowGreenCheck('streetAddress')" 
+               class="displayTableCell plm el-icon-circle-check colorGreen vam"></i>
         </div>
 
         <!-- Extended Address -->
         <!-- This value may be returned by the paypal response, so only displaying it if it does -->
-        <div class="displayTableRow" v-if="cart.shipping.extendedAddress">
+        <div class="displayTableRow" v-if="shipping.extendedAddress">
             <label class="checkout_form_label">{{ $t('ADDRESS LINE 2') }}:</label>
             <div class="checkout_form_value">
-                <el-input v-model.trim="cart.shipping.extendedAddress"></el-input>
+                <el-input v-model.trim="shipping.extendedAddress"></el-input>
             </div>
         </div>
 
@@ -80,9 +98,14 @@
                 {{ $t('CITY') }}:
             </label>
             <div class="checkout_form_value">
-                <el-input v-model.trim="cart.shipping.city" @input="$v.cart.shipping.city.$touch()"></el-input>
-                <p role="alert" v-if="$v.cart.shipping.city.$dirty && !$v.cart.shipping.city.required">{{ $t('Required') }}</p>
+                <el-input v-model.trim="shipping.city" 
+                          @input="onInputChange('city')"
+                          @blur="onInputBlur('city')"
+                          :class="{ 'inputError': $v.shipping.city.$error }"></el-input>
+                <p role="alert" v-show="canShowValidationMsg('city')">{{ $t('Required') }}</p>
             </div>
+            <i v-show="canShowGreenCheck('city')" 
+               class="displayTableCell plm el-icon-circle-check colorGreen vam"></i>
         </div>
 
         <!-- State -->
@@ -91,15 +114,16 @@
                 {{ $t('STATE/PROVINCE/REGION') }}:
             </label>
             <div class="checkout_form_value">
-                <!-- <el-input v-model.trim="state" @input="$v.state.$touch()"></el-input> -->
-                <state-province-select v-model.trim="cart.shipping.state"
-                                       :init-value="cart.shipping.state"
-                                       :country="cart.shipping.countryCodeAlpha2"
-                                       @input="$v.cart.shipping.state.$touch()"
-                                       v-on:change="val => { cart.shipping.state = val }"
-                                       :disabled="!stateSelectEnabled"></state-province-select>
-                <p role="alert" v-if="$v.cart.shipping.state.$dirty && !$v.cart.shipping.state.required">{{ $t('Required') }}</p>
+                <state-province-select v-model.trim="shipping.state"
+                                       :init-value="shipping.state"
+                                       :country="shipping.countryCodeAlpha2"
+                                       @change="stateChanged"
+                                       :disabled="!stateSelectEnabled"
+                                       :class="{ 'inputError': $v.shipping.state.$error }"></state-province-select>
+                <p role="alert" v-show="canShowValidationMsg('state')">{{ $t('Required') }}</p>
             </div>
+            <i v-show="canShowGreenCheck('state')" 
+               class="displayTableCell plm el-icon-circle-check colorGreen vam"></i>
         </div>
 
         <!-- Postal Code -->
@@ -108,19 +132,24 @@
                 {{ $t('POSTAL CODE') }}:
             </label>
             <div class="checkout_form_value">
-                <el-input v-model.trim="cart.shipping.postalCode" @input="$v.cart.shipping.postalCode.$touch()"></el-input>
-                <p role="alert" v-if="$v.cart.shipping.postalCode.$dirty && !$v.cart.shipping.postalCode.required">{{ $t('Required') }}</p>
+                <el-input v-model.trim="shipping.postalCode" 
+                          @input="onInputChange('postalCode')"
+                          @blur="onInputBlur('postalCode')"
+                         :class="{ 'inputError': $v.shipping.postalCode.$error }"></el-input>
+                <p role="alert" v-show="canShowValidationMsg('postalCode')">{{ $t('Required') }}</p>
             </div>
+            <i v-show="canShowGreenCheck('postalCode')" 
+               class="displayTableCell plm el-icon-circle-check colorGreen vam"></i>
         </div>
 
         <!-- Company Name -->
         <div class="displayTableRow">
             <label class="checkout_form_label">
-                {{ $t('COMPANY NAME') }}&nbsp;
-                <span class="colorGrayLighter">({{ $t('optional') }})</span>:
+                {{ $t('COMPANY NAME') }}:
             </label>
             <div class="checkout_form_value">
-                <el-input v-model.trim="cart.shipping.company"></el-input>
+                <el-input v-model.trim="shipping.company"
+                :placeholder="'(' + $t('optional') + ')'"></el-input>
             </div>
         </div>
 
@@ -128,7 +157,7 @@
             <shipping-billing-help></shipping-billing-help>
         </div>
 
-        <div class="mtl">
+        <div class="mtl tac">
             <el-button type="warning"
                         @click="submitForm"
                         :disabled="submitButtonDisabled"
@@ -172,7 +201,32 @@
         data: function() {
             return {
                 submitButtonLoading: false,
-                stateSelectEnabled: false
+                stateSelectEnabled: false,
+
+                shipping: {
+                    email: this.$store.state.cart.shipping.email,
+                    countryCodeAlpha2: this.$store.state.cart.shipping.countryCodeAlpha2,
+                    firstName: this.$store.state.cart.shipping.firstName,
+                    lastName: this.$store.state.cart.shipping.lastName,
+                    streetAddress: this.$store.state.cart.shipping.streetAddress,
+                    extendedAddress: this.$store.state.cart.shipping.extendedAddress,
+                    company: this.$store.state.cart.shipping.company,
+                    city: this.$store.state.cart.shipping.city,
+                    state: this.$store.state.cart.shipping.state,
+                    postalCode: this.$store.state.cart.shipping.postalCode
+                },
+                greenChecks: {
+                    email: false,
+                    countryCodeAlpha2: false,
+                    firstName: false,
+                    lastName: false,
+                    streetAddress: false,
+                    extendedAddress: false,
+                    company: false,
+                    city: false,
+                    state: false,
+                    postalCode: false 
+                }
             }
         },
 
@@ -191,23 +245,96 @@
         },
 
         methods: {
-            countryCodeChanged: function(newVal) {
-                this.$v.cart.shipping.countryCodeAlpha2.$touch();
-                this.cart.shipping.countryCodeAlpha2 = newVal;
-                this.stateSelectEnabled = newVal ? true : false;
+            onSelectVisibleChange(attr, isOpen) {
+                if(!isOpen) {
+                    // determine whether or not to display the green check when 
+                    // the select menu is closed
+                    this.$v.shipping[attr].$touch();
+                    this.onInputBlur(attr);
+                }
             },
 
-            delayTouch: function($v) {
+            onInputChange(attr) {
+                switch(attr) {
+                    case 'email':
+                        this.delayTouch(this.$v.shipping.email, 1000);
+                        break;
+
+                    default:
+                        this.$v.shipping[attr].$touch();
+                }
+
+                // If the input value ever goes invalid then remove the green check
+                if(this.$v.shipping[attr].$invalid) {
+                    this.greenChecks[attr] = false;
+                }
+            },
+
+            onInputBlur(attr) {
+                // If the user types quickly, the onInputChange event may still be in progress
+                // because there is a 1 second timeout for email.  Therefore we call it again
+                // so that the old instance stops and the new one fires immediately.  Then we 
+                // can procede as normal.
+                if(attr === 'email') {
+                   this.delayTouch(this.$v.shipping.email, 0); 
+                }
+                this.greenChecks[attr] = this.$v.shipping[attr].$dirty && !this.$v.shipping[attr].$invalid;
+            },
+
+            /**
+             * Determine if the green checkmark should be displayed
+             */
+            canShowGreenCheck(attr) {
+                return this.greenChecks[attr] && !this.$v.shipping[attr].$error;
+            },
+
+            /**
+             * Determine if the validation error message should be displayed
+             */
+            canShowValidationMsg(attr) {
+                switch(attr) {
+                    case 'email':
+                        return this.$v.shipping.email.$dirty
+
+                    default:
+                        return this.$v.shipping[attr].$dirty && !this.$v.shipping[attr].required
+
+                }
+            },
+
+            countryCodeChanged: function(newVal) {
+                this.shipping.countryCodeAlpha2 = newVal;
+                this.stateSelectEnabled = newVal ? true : false;
+                this.onInputChange('countryCodeAlpha2');
+                this.onInputBlur('countryCodeAlpha2');
+            },
+
+            stateChanged: function(newVal) {
+                this.shipping.state = newVal;
+                this.onInputChange('state');
+                this.onInputBlur('state');
+            },
+
+            delayTouch: function($v, timeout) {
                 $v.$reset()
                 if (touchMap.has($v)) {
                     clearTimeout(touchMap.get($v))
                 }
-                touchMap.set($v, setTimeout($v.$touch, 1000))
+
+                if(timeout) {
+                    touchMap.set($v, setTimeout($v.$touch, timeout || 1000))
+                }
+                else {
+                   $v.$touch(); 
+                }
             },
 
+            /**
+             * Validates the shipping address
+             */
             submitForm: function() {
                 let self = this;
-                let c = this.cart;
+                let c = this.$store.state.cart.shipping;
 
                 if(currentNotification) {
                     currentNotification.close();
@@ -216,27 +343,37 @@
                 if(!this.submitButtonDisabled) {
                     this.submitButtonLoading = true;
 
+                    // Updating the state sttributes that won't be updated below
+                    c.email = this.shipping.email;
+                    c.firstName = this.shipping.firstName;
+                    c.lastName = this.shipping.lastName;
+                    c.extendedAddress = this.shipping.extendedAddress;
+                    c.company = this.shipping.company;
+
                     api.shoppingCart.validateAddress({
-                        company_name: c.shipping.company,
-                        address_line1: c.shipping.streetAddress,
-                        city_locality: c.shipping.city,
-                        state_province: c.shipping.state,
-                        postal_code: c.shipping.postalCode,
-                        country_code: c.shipping.countryCodeAlpha2
+                        company_name: this.shipping.company,
+                        address_line1: this.shipping.streetAddress,
+                        city_locality: this.shipping.city,
+                        state_province: this.shipping.state,
+                        postal_code: this.shipping.postalCode,
+                        country_code: this.shipping.countryCodeAlpha2
                     })
                     .then((result) => {
                         let validation = Array.isArray(result) ? result[0] : result;
 
                         self.submitButtonLoading = false;
 
+                        // Add the validated values to the state
                         switch(validation.status) {
                             case 'verified':
-                                c.shipping.company = validation.matched_address.company
-                                c.shipping.streetAddress = validation.matched_address.address_line1
-                                c.shipping.city = validation.matched_address.city_locality
-                                c.shipping.state = validation.matched_address.state_province
-                                c.shipping.postalCode = validation.matched_address.postal_code
-                                c.shipping.countryCodeAlpha2 = validation.matched_address.country_code
+                                c.company = validation.matched_address.company
+                                c.streetAddress = validation.matched_address.address_line1
+                                c.city = validation.matched_address.city_locality
+                                c.state = validation.matched_address.state_province
+                                c.postalCode = validation.matched_address.postal_code
+                                c.countryCodeAlpha2 = validation.matched_address.country_code
+
+                                console.log("VERIFIED!", c);
 
                                 self.$emit('shipping_form_submit')
                                 return;
@@ -249,12 +386,12 @@
                             // ALSO NOTE: The 'matched_address' property is null when the status is 'unverified',
                             // so we need to get the values from the 'original_address' property
                             case 'unverified':
-                                c.shipping.company = validation.original_address.company
-                                c.shipping.streetAddress = validation.original_address.address_line1
-                                c.shipping.city = validation.original_address.city_locality
-                                c.shipping.state = validation.original_address.state_province
-                                c.shipping.postalCode = validation.original_address.postal_code
-                                c.shipping.countryCodeAlpha2 = validation.original_address.country_code
+                                c.company = validation.original_address.company
+                                c.streetAddress = validation.original_address.address_line1
+                                c.city = validation.original_address.city_locality
+                                c.state = validation.original_address.state_province
+                                c.postalCode = validation.original_address.postal_code
+                                c.countryCodeAlpha2 = validation.original_address.country_code
 
                                 self.$emit('shipping_form_submit')
                                 return;
@@ -306,26 +443,26 @@
         },
 
         validations: {
-            cart: {
-                shipping: {
-                    email: { required, email },
-                    countryCodeAlpha2: { required },
-                    firstName: { required },
-                    lastName: { required },
-                    streetAddress: { required },
-                    city: { required },
-                    state: { required },
-                    postalCode: { required }
-                }
-            },
-            // For some reason having another property on this 'validations'
-            // object enables the object nesting above to work.  Probably
-            // a bug in the library
-            foo: {}
+            shipping: {
+                email: { required, email },
+                countryCodeAlpha2: { required },
+                firstName: { required },
+                lastName: { required },
+                streetAddress: { required },
+                city: { required },
+                state: { required },
+                postalCode: { required }
+            }
         }
     }
 </script>
 
 
-<style>
+<style lang="scss">
+    @import "../../assets/css/components/_variables.scss";
+
+    .inputError input,
+    .inputError select {
+        border-color: $colorRed !important
+    }
 </style>

@@ -3,7 +3,8 @@
                filterable
                :placeholder="placeholder"
                :no-match-text="$t('No matching values')"
-               v-on:change="updateValue">
+               @change="emitChange"
+               @visible-change="emitVisibleChange">
         <el-option
                 v-for="item in countryList"
                 :key="item.alpha2"
@@ -43,8 +44,12 @@
         },
 
         methods: {
-            updateValue(val) {
-                this.$emit('input', val)
+            emitChange(val) {
+                this.$emit('change', val)
+            },
+
+            emitVisibleChange(val) {
+               this.$emit('visible-change', val) 
             }
         },
 

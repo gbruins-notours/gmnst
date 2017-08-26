@@ -27,7 +27,21 @@
             ]),
 
             formattedName: function() {
-                return `${this.cart.shipping.firstName} ${this.cart.shipping.lastName}`;
+                let name = '';
+
+                if(this.cart.shipping.firstName) {
+                    name = this.cart.shipping.firstName;
+                }
+
+                if(this.cart.shipping.lastName) {
+                    if(name) {
+                        name += ' ';
+                    }
+
+                    name += this.cart.shipping.lastName;
+                }
+
+                return name;
             },
 
             formattedCityStateZip: function() {

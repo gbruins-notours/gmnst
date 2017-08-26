@@ -3,7 +3,8 @@
                filterable
                v-model="selectedState"
                :placeholder="placeholder"
-               v-on:change="updateValue"
+               @change="emitChange"
+               @visible-change="emitVisibleChange"
                :disabled="disabled">
         <el-option
                 v-for="(label, abbr) in stateOptions"
@@ -15,7 +16,7 @@
 
     <el-input v-else
             v-model.trim="selectedState"
-            v-on:change="updateValue"
+            @change="emitChange"
             :disabled="disabled"></el-input>
 </template>
 
@@ -54,8 +55,12 @@
         },
 
         methods: {
-            updateValue(val) {
-                this.$emit('input', val)
+            emitChange(val) {
+                this.$emit('change', val)
+            },
+
+            emitVisibleChange(val) {
+               this.$emit('visible-change', val) 
             }
         },
 
@@ -79,7 +84,7 @@
              */
             'country' (to, from) {
                 this.selectedState = null;
-                this.updateValue(null);
+                this.emitChange(null);
             }
         },
 
