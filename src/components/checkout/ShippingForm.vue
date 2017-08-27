@@ -149,8 +149,12 @@
             </label>
             <div class="checkout_form_value">
                 <el-input v-model.trim="shipping.company"
-                :placeholder="'(' + $t('optional') + ')'"></el-input>
+                          :placeholder="'(' + $t('optional') + ')'"
+                          @input="onInputChange('company')"
+                          @blur="onInputBlur('company')"></el-input>
             </div>
+            <i v-show="canShowGreenCheck('company')" 
+               class="displayTableCell plm el-icon-circle-check colorGreen vam"></i>
         </div>
 
         <div class="ptl">
@@ -159,6 +163,7 @@
 
         <div class="mtl tac">
             <el-button type="warning"
+                        size="large"
                         @click="submitForm"
                         :disabled="submitButtonDisabled"
                         :loading="submitButtonLoading"
@@ -210,10 +215,10 @@
                     lastName: this.$store.state.cart.shipping.lastName,
                     streetAddress: this.$store.state.cart.shipping.streetAddress,
                     extendedAddress: this.$store.state.cart.shipping.extendedAddress,
-                    company: this.$store.state.cart.shipping.company,
                     city: this.$store.state.cart.shipping.city,
                     state: this.$store.state.cart.shipping.state,
-                    postalCode: this.$store.state.cart.shipping.postalCode
+                    postalCode: this.$store.state.cart.shipping.postalCode,
+                    company: this.$store.state.cart.shipping.company,
                 },
                 greenChecks: {
                     email: false,
@@ -222,10 +227,10 @@
                     lastName: false,
                     streetAddress: false,
                     extendedAddress: false,
-                    company: false,
                     city: false,
                     state: false,
-                    postalCode: false 
+                    postalCode: false,
+                    company: false, 
                 }
             }
         },
@@ -451,7 +456,8 @@
                 streetAddress: { required },
                 city: { required },
                 state: { required },
-                postalCode: { required }
+                postalCode: { required },
+                company: {} // no validation needed
             }
         }
     }

@@ -62,7 +62,7 @@
 
                             Notification.success({
                                 title: this.$t('Cart updated!'),
-                                duration: 3000
+                                duration: 2000
                             });
                         }
                     });

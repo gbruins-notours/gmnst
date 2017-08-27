@@ -9,8 +9,8 @@ const translations = {
     'An error occurred': 'An error occurred',
     'Are you sure you want to return to your Shopping Cart?': 'Are you sure you want to return to your Shopping Cart?',
 
-    'Billing address': 'Billing address',
-    'BILLING ADDRESS SAME AS SHIPPING': 'BILLING ADDRESS SAME AS SHIPPING',
+    'BILLING ADDRESS': 'BILLING ADDRESS',
+
 
     'card_expiration_hint': 'MM/YY',
     'card_expiration_year_hint': 'YY',
@@ -22,6 +22,7 @@ const translations = {
     'Checkout': 'Checkout',
     'CHOOSE': 'CHOOSE',
     'Choose a delivery option': 'Choose a delivery option',
+    'Choose a payment method': 'Choose a payment method',
     'COMPANY NAME': 'COMPANY NAME',
     'Continue': 'Continue',
     'correct_address_statement': 'If the address contains typos or other errors, your package may be undeliverable.',
@@ -79,6 +80,7 @@ const translations = {
     'Required': 'Required',
     'Return to cart': 'Return to cart',
 
+    'SAME AS SHIPPING ADDRESS': 'SAME AS SHIPPING ADDRESS',
     'SECURITY CODE': 'SECURITY CODE',
     'Shipping': 'Shipping',
     'Shipping address': 'Shipping address',
