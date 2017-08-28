@@ -1,10 +1,12 @@
 <template>
     <div>
-        <section v-if="cart.num_items" class="wizard-container">
-            <checkout-wizard-bar :step="currentStep" @change="checkoutStepChanged"></checkout-wizard-bar>
+        <section v-if="cart.num_items" class="container-wizard">
+            <div class="container-skinny">
+                <checkout-wizard-bar :step="currentStep" @change="checkoutStepChanged"></checkout-wizard-bar>
+            </div>
         </section>
 
-        <section class="container ptl">
+        <section class="container-skinny pal">
             <div v-if="!cart.num_items" class="fs16 pal tac">
                 {{ $t('Your shopping cart does not contain any items.') }}
             </div>
@@ -87,8 +89,8 @@
 
                             <!-- Billing address -->
                             <div class="displayTableRow">
-                                <div class="displayTableCell ptl fwb">{{ $t('BILLING ADDRESS') }}:</div>
-                                <div class="displayTableCell ptl">
+                                <div class="checkout_form_label fwb">{{ $t('BILLING ADDRESS') }}:</div>
+                                <div class="checkout_form_value">
                                     <el-checkbox v-model="billingSameAsShipping">{{ $t('SAME AS SHIPPING ADDRESS') }}:</el-checkbox>
 
                                     <div class="pll mts" v-show="billingSameAsShipping">
@@ -865,7 +867,7 @@
         width:80px !important;
     }
 
-    .wizard-container {
+    .container-wizard {
         padding: 7px;
         background-color: #f1f1f1;
     }

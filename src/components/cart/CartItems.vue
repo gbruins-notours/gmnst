@@ -216,14 +216,11 @@
     // }
 }
 
-.cartItemCell {
-    border-top: 1px solid $borderColorGray;
-}
-
 .cartItemsHeader > span,
 .cartItemCell {
     display: table-cell;
     vertical-align: top;
     padding: 10px;
+    border-bottom: 1px solid $borderColorGray;
 }
 </style>

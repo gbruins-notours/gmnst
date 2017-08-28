@@ -87,15 +87,28 @@
     @import "../../assets/css/components/_mixins.scss";
 
     .checkout-wizard {
-        display: table;
-        margin: 0 auto;
+        width: 100%;
+        display: flex;
+        display: -webkit-flex; /* Safari */
+
+        align-items: center;
+
+        flex-direction: row;
+        -webkit-flex-direction: row; /* Safari */
+        
+        flex-wrap: nowrap;
+        -webkit-flex-wrap: nowrap; 
 
         .item,
         .spacer {
-            display: table-cell;
             text-align: center;
             color: $colorGrayLighter !important;
             vertical-align: middle;
+        }
+
+        .spacer {
+            padding: 0 15px;
+            flex-grow: 1;
         }
 
         .item {
@@ -103,7 +116,6 @@
             padding: 3px;
             @include border-radius(2px);
             line-height: 25px;
-            position: relative;
             border: 1px solid transparent;
 
             .fa {
@@ -131,15 +143,6 @@
                 &:hover {
                     border: 1px solid #c8e2c7;
                 }
-            }
-        }
-
-        .spacer {
-            padding: 0 15px;
-            width: 100px;
-            
-            hr {
-                width: 100%;
             }
         }
     }
