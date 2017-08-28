@@ -4,7 +4,8 @@
                :placeholder="placeholder"
                :no-match-text="$t('No matching values')"
                @change="emitChange"
-               @visible-change="emitVisibleChange">
+               @visible-change="emitVisibleChange"
+               class="widthAll">
         <el-option
                 v-for="item in countryList"
                 :key="item.alpha2"

@@ -81,6 +81,10 @@
                 color: $colorGrayLighter;
             }
 
+            &:hover {
+                border-color: $colorGreen;
+            }
+            
             &.selected {
                 border-color: $colorGreen;
                 background-color: #effbee;

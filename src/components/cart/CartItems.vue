@@ -3,96 +3,93 @@
         <div v-if="!this.cart.num_items" class="fs16 tac pal">
             {{ $t('Your shopping cart does not contain any items.') }}
         </div>
-        <div v-else class="cartItems" id="cartItems">
-            <div class="cartItemsHeader">
-                <span></span>
-                <span></span>
-                <span class="width100 tac">{{ $t('Price') }}</span>
-                <span class="width200 tar">{{ $t('Quantity') }}</span>
+        <div v-else>
+            <div class="cartItems" id="cartItems">
+                <div class="cartItemsHeader">
+                    <span></span>
+                    <span></span>
+                    <span class="width100 tar">{{ $t('Price') }}</span>
+                    <span class="width200 tar">{{ $t('Quantity') }}</span>
+                </div>
+
+                <article class="cartItem" v-for="item in this.cart.cart_items" :key="item.id">
+                    <figure class="cartItemCell image is-128x128">
+                        <img v-bind:src="productPic(item)">
+                    </figure>
+
+                    <div class="cartItemCell">
+                        <div class="fwb mbs fs16">{{ item.product.title }}</div>
+
+                        <!-- Variants -->
+                        <template v-if="item.variants && item.variants.size">
+                            <div class="displayTableRow">
+                                <div class="displayTableCell prm">{{ $t('Size') }}:</div>
+                                <div class="displayTableCell">{{ $t(item.variants.size) }}</div>
+                            </div>
+                        </template>
+
+                        <!-- <div><a class="colorGray" @click="removeItem(item.id)">{{ $t('Delete') }}</a></div> -->
+                        <div v-if="allowEdit" class="mtl">
+                            <el-button type="text" @click="removeItem(item.id)">{{ $t('Delete') }}</el-button>
+                        </div>
+                    </div>
+
+                    <!-- Price -->
+                    <div class="cartItemCell fwb tar">
+                        <product-price :product="item.product"></product-price>
+                    </div>
+
+                    <!-- Quantity -->
+                    <div class="cartItemCell tar">
+                        <div v-if="allowEdit" class="inlineBlock">
+                            <div class="displayTableCell prl fwb vam">{{ item.qty }}</div>
+                            <div class="displayTableCell">
+                                <number-buttons :step="1"
+                                                :min="1"
+                                                :max="item.product.inventory_count"
+                                                :init-value="item.qty"
+                                                size="small"
+                                                v-on:change="function(val) { updateCartItemQuantity(item, val) }"></number-buttons>
+                            </div>
+                        </div>
+                        <div v-else class="fwb">
+                            {{ item.qty }}
+                        </div>
+                    </div>
+                </article>
             </div>
 
-            <article class="cartItem" v-for="item in this.cart.cart_items" :key="item.id">
-                <figure class="cartItemCell image is-128x128">
-                    <img v-bind:src="productPic(item)">
-                </figure>
-
-                <div class="cartItemCell">
-                    <div class="fwb mbs fs16">{{ item.product.title }}</div>
-
-                    <!-- Variants -->
-                    <template v-if="item.variants && item.variants.size">
-                        <div class="displayTableRow">
-                            <div class="displayTableCell prm">{{ $t('Size') }}:</div>
-                            <div class="displayTableCell">{{ $t(item.variants.size) }}</div>
+            <div class="mtm clearfix">
+                <div class="floatRight">
+                    <!-- subtotal -->
+                    <div class="displayTableRow">
+                        <div class="displayTableCell prl fwb tar">
+                            {{ $t('Subtotal') }}
+                            <span class="nowrap">({{ cart.num_items }} {{ $tc('items', cart.num_items) }})</span>:
                         </div>
-                    </template>
+                        <div class="displayTableCell tar">{{ $n(cart.sub_total, 'currency') }}</div>
+                    </div>
 
-                    <!-- <div><a class="colorGray" @click="removeItem(item.id)">{{ $t('Delete') }}</a></div> -->
-                    <div v-if="allowEdit" class="mtl">
-                        <el-button type="text" @click="removeItem(item.id)">{{ $t('Delete') }}</el-button>
+                    <!-- shipping -->
+                    <div class="displayTableRow" v-if="showShippingCost">
+                        <div class="displayTableCell prl fwb tar">{{ $t('Shipping') }}:</div>
+                        <div class="displayTableCell tar">{{ $n(cart.shipping_total, 'currency') }}</div>
+                    </div>
+
+                    <!-- sales tax -->
+                    <div class="displayTableRow" v-if="showSalesTax">
+                        <div class="displayTableCell prl fwb tar">{{ $t('Tax') }}:</div>
+                        <div class="displayTableCell tar">{{ $n(cart.sales_tax, 'currency') }}</div>
+                    </div>
+
+                    <!-- order total -->
+                    <div class="displayTableRow" v-if="showShippingCost && showSalesTax">
+                        <div class="displayTableCell prl fwb tar colorGreen fs16">{{ $t('Order total') }}:</div>
+                        <div class="displayTableCell fwb tar colorGreen fs16">{{ $n(cart.grand_total, 'currency') }}</div>
                     </div>
                 </div>
-
-                <!-- Price -->
-                <div class="cartItemCell fwb tar">
-                    <product-price :product="item.product"></product-price>
-                </div>
-
-                <!-- Quantity -->
-                <div class="cartItemCell tar">
-                    <div v-if="allowEdit" class="inlineBlock">
-                        <div class="displayTableCell prl fwb vam">{{ item.qty }}</div>
-                        <div class="displayTableCell">
-                            <number-buttons :step="1"
-                                            :min="1"
-                                            :max="item.product.inventory_count"
-                                            :init-value="item.qty"
-                                            size="small"
-                                            v-on:change="function(val) { updateCartItemQuantity(item, val) }"></number-buttons>
-                        </div>
-                     </div>
-                     <div v-else class="fwb">
-                         {{ item.qty }}
-                     </div>
-                </div>
-            </article>
-
-            <!-- subtotal -->
-            <div class="cartItem">
-                <span class="cartItemCell"></span>
-                <span class="cartItemCell tar fwb">
-                    {{ $t('Subtotal') }}
-                    <span class="nowrap">({{ cart.num_items }} {{ $tc('items', cart.num_items) }})</span>:
-                </span>
-                <span class="cartItemCell tar fwb">{{ $n(cart.sub_total, 'currency') }}</span>
-                <span class="cartItemCell"></span>
             </div>
-
-            <!-- shipping -->
-            <div class="cartItem" v-if="showShippingCost">
-                <span class="cartItemCell"></span>
-                <span class="cartItemCell tar fwb">{{ $t('Shipping') }}:</span>
-                <span class="cartItemCell tar fwb">{{ $n(cart.shipping_total, 'currency') }}</span>
-                <span class="cartItemCell"></span>
-            </div>
-
-            <!-- sales tax -->
-            <div class="cartItem" v-if="showSalesTax">
-                <span class="cartItemCell"></span>
-                <span class="cartItemCell tar fwb">{{ $t('Tax') }}:</span>
-                <span class="cartItemCell tar fwb">{{ $n(cart.sales_tax, 'currency') }}</span>
-                <span class="cartItemCell"></span>
-            </div>
-
-            <!-- order total -->
-            <div class="cartItem" v-if="showShippingCost && showSalesTax">
-                <span class="cartItemCell"></span>
-                <span class="cartItemCell tar fwb fs20 colorGreen">{{ $t('Order total') }}:</span>
-                <span class="cartItemCell tar fwb fs20 colorGreen">{{ $n(cart.grand_total, 'currency') }}</span>
-                <span class="cartItemCell"></span>
-            </div>
-
-            cart {{ cart }}
+            
         </div>
     </div>
 </template>
@@ -209,10 +206,6 @@
     display: table;
     width: 100%;
 }
-
-// .cartItemsHeader {
-//     border-bottom: 1px solid #ccc;
-// }
 
 .cartItemsHeader,
 .cartItem {

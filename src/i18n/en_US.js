@@ -3,6 +3,7 @@ const translations = {
     'Add to cart': 'Add to cart',
     'Added to Cart': 'Added to Cart',
     'ADDRESS LINE 1': 'ADDRESS LINE 1',
+    'Address line 1': 'Address line 1',
     'ADDRESS LINE 2': 'ADDRESS LINE 2',
     'All other cards': 'All other cards',
     'American Express': 'American Express',
@@ -18,15 +19,18 @@ const translations = {
     'CARD NUMBER': 'CARD NUMBER',
     'Cart updated!': 'Cart updated!',
     'CITY': 'CITY',
+    'City': 'City',
     'Change': 'Change',
     'Checkout': 'Checkout',
     'CHOOSE': 'CHOOSE',
     'Choose a delivery option': 'Choose a delivery option',
     'Choose a payment method': 'Choose a payment method',
     'COMPANY NAME': 'COMPANY NAME',
+    'Company name': 'Company name',
     'Continue': 'Continue',
     'correct_address_statement': 'If the address contains typos or other errors, your package may be undeliverable.',
     'COUNTRY': 'COUNTRY',
+    'Country': 'Country',
     'CREDIT CARD': 'CREDIT CARD',
     'cvv_help_3_digit': 'The code is printed on the back of your card. It is the last 3 digits AFTER the credit card number in the signature area of the card.',
     'cvv_help_4_digit': 'The 4 digit code is printed on the front of your card, above the credit card number, on either the right or left side.',
@@ -40,6 +44,7 @@ const translations = {
     'fill_out_form_warning': 'Please fill out the form completely before continuing. Thanks!',
     'Finding your security code': 'Finding your security code',
     'FIRST NAME': 'FIRST NAME',
+    'First name': 'First name',
 
     'GENDER_TYPE_BOYS': 'Boys',
     'GENDER_TYPE_GIRLS': 'Girls',
@@ -49,6 +54,7 @@ const translations = {
     'items': 'item | items',
 
     'LAST NAME': 'LAST NAME',
+    'Last name': 'Last name',
 
     'Make sure your address is correct': 'Make sure your address is correct',
 
@@ -64,11 +70,11 @@ const translations = {
     'PAYPAL_FLOW_FAILED': 'Unable to initialize PayPal flow. Are your options correct?',
     'PayPal tokenization failed': 'PayPal tokenization failed',
     'Place your order': 'Place your order',
-    'Please choose a payment method': 'Please choose a payment method',
     'Please select a quantity': 'Please select a quantity',
     'Please select a size': 'Please select a size',
     'Please enter a valid email address.': 'Please enter a valid email address.',
     'POSTAL CODE': 'POSTAL CODE',
+    'Postal code': 'Postal code',
     'Price': 'Price',
     'Proceed to checkout': 'Proceed to checkout',
     'PRODUCT_SUBTYPE_HAT': 'Hat | Hats',
@@ -103,6 +109,7 @@ const translations = {
     'SIZE_YOUTH_L': 'Youth L',
     'SIZE_YOUTH_XL': 'Youth XL',
     'STATE/PROVINCE/REGION': 'STATE/PROVINCE/REGION',
+    'State/Province/Region': 'State/Province/Region',
     'Subtotal': 'Subtotal',
 
     'Stay in checkout': 'Stay in checkout',
@@ -123,11 +130,12 @@ const translations = {
 
     'Your billing info': 'Your billing info',
     'Your order': 'Your order',
+    'Your PayPal transaction will be completed on the next page.': 'Your PayPal transaction will be completed on the next page.',
     'Your shopping cart does not contain any items.': 'Your shopping cart does not contain any items.',
 
     'braintree': {
         'HOSTED_FIELDS_FIELDS_EMPTY': 'Please fill out the entire "Your billing info" section.',
-        'HOSTED_FIELDS_ATTRIBUTE_VALUE_NOT_ALLOWED': 'Your credit card info contains an invalid value',
+        'HOSTED_FIELDS_ATTRIBUTE_VALUE_NOT_ALLOWED': 'Your credit card info contains an invalid value'
     },
 
 

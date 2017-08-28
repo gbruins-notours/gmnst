@@ -55,6 +55,20 @@ label {
     }
 }
 
+/**
+ * Clearfix helper
+ * Used to contain floats: h5bp.com/q
+ */
+ .clearfix::before,
+ .clearfix::after {
+   content: "";
+   display: table; 
+}
+ 
+ .clearfix::after {
+   clear: both; 
+}
+
 ul.disc {
     list-style-type: disc;
     list-style-position: outside;
@@ -160,13 +174,23 @@ ul.disc {
 }
 
 .checkout_form_value {
-    display: block;
+    display: inline-block;
     margin-bottom: 15px;
+    position: relative;
+    width: 100%;
 
     .el-input__inner {
         font-size: 20px !important;
         color: $colorGray !important;
         min-width: 200px;
+    }
+
+    i.fa {
+        position: absolute;
+        top: -9px;
+        right: -8px;
+        color: $colorGreen;
+        font-size: 16px;
     }
 }
 
@@ -177,10 +201,10 @@ ul.disc {
         vertical-align: top;
     }
 
-    .checkout_form_value {
-        display: table-cell;
-        padding-bottom: 10px;
-    }
+    // .checkout_form_value {
+    //     display: table-cell;
+    //     padding-bottom: 10px;
+    // }
 }
 
 

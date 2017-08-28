@@ -5,7 +5,8 @@
                :placeholder="placeholder"
                @change="emitChange"
                @visible-change="emitVisibleChange"
-               :disabled="disabled">
+               :disabled="disabled"
+               class="widthAll">
         <el-option
                 v-for="(label, abbr) in stateOptions"
                 :key="abbr"

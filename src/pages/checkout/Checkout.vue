@@ -1,21 +1,35 @@
 <template>
-    <section class="container ptl">
+    <div>
+        <section v-if="cart.num_items" class="wizard-container">
+            <checkout-wizard-bar :step="currentStep" @change="checkoutStepChanged"></checkout-wizard-bar>
+        </section>
 
-        <div v-if="!cart.num_items" class="fs16 pal tac">
-            {{ $t('Your shopping cart does not contain any items.') }}
-        </div>
-
-        <template v-else>
-
-            <div class="wizard-container">
-                <checkout-wizard-bar :step="currentStep" @change="checkoutStepChanged"></checkout-wizard-bar>
+        <section class="container ptl">
+            <div v-if="!cart.num_items" class="fs16 pal tac">
+                {{ $t('Your shopping cart does not contain any items.') }}
             </div>
 
-            <div class="mtl">
+            <template v-else>
                 <!-- Shipping -->
-                <div v-show="currentStep === 0" class="displayTable" style="margin:20px auto">
+                <div v-show="currentStep === 0" class="displayTable" style="margin:0 auto">
                     <div class="step-title">{{ $t('Shipping address') }}:</div>
-                    <shipping-form v-on:shipping_form_submit="shippingFormDone"></shipping-form>
+                    <!-- <shipping-form v-on:shipping_form_submit="shippingFormDone"></shipping-form> -->
+                    <shipping-billing-form type="shipping" @valid="val => { shippingButtonEnabled = val }"></shipping-billing-form>
+
+                    <div class="ptl displayTable" style="margin:0 auto">
+                        <shipping-billing-help></shipping-billing-help>
+                    </div>
+
+                    <div class="ptl tac">
+                        <el-button type="warning"
+                                    class="colorBlack"
+                                    size="large"
+                                    @click="submitShippingForm"
+                                    :disabled="!shippingButtonEnabled"
+                                    :loading="shippingFormIsLoading">{{ $t('Continue') }}</el-button>
+
+                        <div class="mtm colorGreen" v-show="!shippingButtonEnabled">{{ $t('fill_out_form_warning') }}</div>
+                    </div>
                 </div>
 
                 <!-- Payment -->
@@ -29,13 +43,9 @@
                             <div class="displayTableRow">
                                 <label class="checkout_form_label fwb">{{ $t('CARD NUMBER') }}:</label>
                                 <div class="checkout_form_value">
-                                    <div class="displayTableCell relative">
-                                        <div id="card-number" class="el-input__inner "></div>
-                                        <span class="card-icon" v-show="cardTypeIcon"><img :src="cardTypeIcon" /></span>
-                                    </div>
-                                    <i v-show="inputClasses['card-number']"
-                                        class="displayTableCell pls vam"
-                                        :class="inputClasses['card-number']"></i>
+                                    <div id="card-number" class="el-input__inner "></div>
+                                    <span class="card-icon" v-show="cardTypeIcon"><img :src="cardTypeIcon" /></span>
+                                    <i v-show="inputClasses['card-number']" :class="inputClasses['card-number']"></i>
                                 </div>
                             </div>
 
@@ -43,17 +53,18 @@
                             <div class="displayTableRow">
                                 <label class="checkout_form_label fwb">{{ $t('EXPIRES') }}:</label>
                                 <div class="checkout_form_value">
-                                    <!-- month -->
-                                    <div id="expiration-month" class="el-input__inner hostedField60 displayTableCell"></div>
+                                    <div class="inlineBlock relative">
+                                        <!-- month -->
+                                        <div id="expiration-month" class="el-input__inner hostedField60 displayTableCell"></div>
 
-                                    <div class="displayTableCell colorGrayLighter phs vat" style="font-size:22px">/</div>
+                                        <div class="displayTableCell colorGrayLighter phs vat" style="font-size:22px">/</div>
 
-                                    <!-- year -->
-                                    <div id="expiration-year" class="el-input__inner hostedField60 displayTableCell"></div>
+                                        <!-- year -->
+                                        <div id="expiration-year" class="el-input__inner hostedField60 displayTableCell"></div>
 
-                                    <i v-show="inputClasses['expiration-month'] && inputClasses['expiration-year']"
-                                        class="displayTableCell pls vam"
+                                        <i v-show="inputClasses['expiration-month'] && inputClasses['expiration-year']"
                                         :class="getPaymentMonthYearClass(inputClasses['expiration-month'], inputClasses['expiration-year'])"></i>
+                                    </div>
                                 </div>
                             </div>
 
@@ -64,11 +75,11 @@
                                     <span class="colorGrayLighter">({{ securityCodeHint }})</span>:
                                 </label>
                                 <div class="checkout_form_value">
-                                    <div id="cvv" class="el-input__inner hostedField80 displayTableCell"></div>
-                                    <i v-show="inputClasses.cvv"
-                                        class="displayTableCell pls vam"
-                                        :class="inputClasses.cvv"></i>
-                                    <div>
+                                    <div class="displayTableCell relative">
+                                        <div id="cvv" class="el-input__inner hostedField80 displayTableCell"></div>
+                                        <i v-show="inputClasses.cvv" :class="inputClasses.cvv"></i>
+                                    </div>
+                                    <div class="displayTableCell plm vam">
                                         <span class="underlineDotted cursorPointer" @click="securityCodeModalShow = true">{{ $t("what's this?") }}</span>
                                     </div>
                                 </div>
@@ -78,112 +89,42 @@
                             <div class="displayTableRow">
                                 <div class="displayTableCell ptl fwb">{{ $t('BILLING ADDRESS') }}:</div>
                                 <div class="displayTableCell ptl">
-                                    <el-checkbox v-model="billingSameAsShipping">{{ $t('SAME AS SHIPPING ADDRESS') }}</el-checkbox>
+                                    <el-checkbox v-model="billingSameAsShipping">{{ $t('SAME AS SHIPPING ADDRESS') }}:</el-checkbox>
 
-                                    <div class="mts">
-                                        <shipping-view :show-details="true"
-                                                       :show-email="false"
-                                                       v-show="billingSameAsShipping"></shipping-view>
-
-                                        <div v-show="!billingSameAsShipping" class="mtl">
-                                            <div>
-                                                <label>{{ $t('First name') }}</label>
-                                                <div class="checkout_form_value">
-                                                    <el-input v-model="billingFirstName" @input="$v.billingFirstName.$touch()"></el-input>
-                                                    <p role="alert" v-if="$v.billingFirstName.$dirty && !$v.billingFirstName.required">{{ $t('Required') }}</p>
-                                                </div>
-                                            </div>
-
-                                            <div>
-                                                <label>{{ $t('Last name') }}</label>
-                                                <div class="checkout_form_value">
-                                                    <el-input v-model="billingLastName" @input="$v.billingLastName.$touch()"></el-input>
-                                                    <p role="alert" v-if="$v.billingLastName.$dirty && !$v.billingLastName.required">{{ $t('Required') }}</p>
-                                                </div>
-                                            </div>
-
-                                            <div>
-                                                <label>{{ $t('Steet address') }}</label>
-                                                <div class="checkout_form_value">
-                                                    <el-input v-model="billingStreetAddress" @input="$v.billingStreetAddress.$touch()"></el-input>
-                                                    <p role="alert" v-if="$v.billingStreetAddress.$dirty && !$v.billingStreetAddress.required">{{ $t('Required') }}</p>
-                                                </div>
-                                            </div>
-
-                                            <div>
-                                                <label>{{ $t('City') }}</label>
-                                                <div class="checkout_form_value">
-                                                    <el-input v-model="billingCity" @input="$v.billingCity.$touch()"></el-input>
-                                                    <p role="alert" v-if="$v.billingCity.$dirty && !$v.billingCity.required">{{ $t('Required') }}</p>
-                                                </div>
-                                            </div>
-
-                                            <div>
-                                                <label>{{ $t('State/Province/Region') }}</label>
-                                                <div class="checkout_form_value">
-                                                    <el-input v-model="billingState" @input="$v.billingState.$touch()"></el-input>
-                                                    <p role="alert" v-if="$v.billingState.$dirty && !$v.billingState.required">{{ $t('Required') }}</p>
-                                                </div>
-                                            </div>
-
-                                            <div>
-                                                <label>{{ $t('Postal code') }}</label>
-                                                <div class="checkout_form_value">
-                                                    <el-input v-model="billingPostalCode" @input="$v.billingPostalCode.$touch()"></el-input>
-                                                    <p role="alert" v-if="$v.billingPostalCode.$dirty && !$v.billingPostalCode.required">{{ $t('Required') }}</p>
-                                                </div>
-                                            </div>
-
-                                            <div>
-                                                <label>{{ $t('Country') }}</label>
-                                                <div class="checkout_form_value">
-                                                    <country-select v-model="billingCountry"
-                                                                    :init-value="billingCountry"
-                                                                    value-type="alpha2"
-                                                                    v-on:change="val => { billingCountry = val }"></country-select>
-                                                </div>
-                                            </div>
-
-                                            <div>
-                                                <label>{{ $t('Company name') }}</label>
-                                                <div class="checkout_form_value">
-                                                    <el-input v-model="billingCompany" :placeholder="'(' + $t('optional') + ')'"></el-input>
-                                                </div>
-                                            </div>
-                                        </div>
+                                    <div class="pll mts" v-show="billingSameAsShipping">
+                                        <shipping-view :show-details="true" :show-email="false"></shipping-view>
                                     </div>
+
+                                    <shipping-billing-form type="billing"
+                                                            v-show="!billingSameAsShipping" 
+                                                            class="mtl"></shipping-billing-form>
                                 </div>
                             </div>
-
-                            <!-- <div class="displayTableRow">
-                                <div class="displayTableCell"></div>
-                                <div class="displayTableCell ptl">
-                                    <el-button type="warning"
-                                               class="colorBlack"
-                                               size="large"
-                                               @click="checkoutStepChanged(2)"
-                                               :disabled="!checkoutButtonEnabled">{{ $t('Continue') }}</el-button>
-                                </div>
-                            </div> -->
                         </div>
 
                         <div class="ptl displayTable" style="margin:0 auto">
                             <shipping-billing-help></shipping-billing-help>
                         </div>
+                    </div>
+                    <div v-show="paymentMethod === 'PAYPAL'" class="colorGreen tac mtl">
+                        {{ $t('Your PayPal transaction will be completed on the next page.') }}
+                    </div> 
 
-                        <div class="ptl tac">
-                            <el-button type="warning"
-                                        class="colorBlack"
-                                        size="large"
-                                        @click="currentStep = 2"
-                                        :disabled="!checkoutButtonEnabled">{{ $t('Continue') }}</el-button>
+                    <div class="ptl tac">
+                        <el-button type="warning"
+                                    class="colorBlack"
+                                    size="large"
+                                    @click="currentStep = 2"
+                                    :disabled="!paymentMethodButtonEnabled">{{ $t('Continue') }}</el-button>
+
+                        <div v-show="!paymentMethodButtonEnabled" class="colorGreen tac mtm">
+                            {{ $t('fill_out_form_warning') }}
                         </div>
-
                     </div>
                 </div>
 
                 <!-- Review -->
-                <div v-show="currentStep === 2" class="displayTable" style="margin:20px auto">
+                <div v-show="currentStep === 2" class="displayTable" style="margin:0 auto">
                     <div class="step-title">{{ $t('Review your order') }}:</div>
                     <cart-items :allow-edit="false"
                                 :show-shipping-cost="true"
@@ -205,10 +146,6 @@
                                     size="large"
                                     @click="tokenizePaypal"
                                     :disabled="!checkoutButtonEnabled">{{ $t('Pay with PAYPAL') }}</el-button>
-
-                        <div v-show="!checkoutButtonEnabled && paymentMethod !== 'PAYPAL'" class="colorRed fs16">
-                            {{ $t('Please choose a payment method') }}
-                        </div>
                     </div>
                 </div>
 
@@ -237,10 +174,10 @@
                         </div>
                     </div>
                 </el-dialog>
-            </div>
-        </template>
+            </template>
 
-    </section>
+        </section>
+    </div>
 </template>
 
 <script>
@@ -248,12 +185,13 @@
     import { mapGetters } from 'vuex'
     import isObject from 'lodash.isobject'
     import forEach from 'lodash.forEach'
-    import { Checkbox, Input, Notification, RadioGroup, Radio, Tabs, TabPane, Dialog } from 'element-ui'
+    import { Checkbox, Input, Notification, RadioGroup, Radio, Tabs, TabPane, Dialog, Loading } from 'element-ui'
     import Validations from 'vuelidate'
     import { required } from 'vuelidate/lib/validators'
     import CheckoutWizardBar from '../../components/checkout/CheckoutWizardBar'
     import PaymentMethodChooser from '../../components/checkout/PaymentMethodChooser'
     import ShippingForm from '../../components/checkout/ShippingForm'
+    import ShippingBillingForm from '../../components/checkout/ShippingBillingForm'
     // import ShippingMethodForm from '../../components/checkout/ShippingMethodForm'
     import CountrySelect from '../../components/CountrySelect.vue'
     import CartItems from '../../components/cart/CartItems'
@@ -270,6 +208,9 @@
     Vue.use(Dialog)
     Vue.use(Validations)
 
+    Vue.prototype.$notify = Notification;
+
+    let currentNotification = null;
     let supportedCardIcons = ['american-express', 'diners-club', 'discover', 'jcb', 'maestro', 'master-card', 'visa'];
 
 
@@ -281,6 +222,7 @@
             ShippingView,
             // ShippingMethodForm,
             ShippingBillingHelp,
+            ShippingBillingForm,
             Checkbox,
             CountrySelect,
             CartItems
@@ -292,6 +234,23 @@
                 'numCartItems',
                 'app'
             ]),
+
+            paymentMethodButtonEnabled: function() {
+                if(this.paymentMethod === 'PAYPAL' ||
+                    (this.paymentMethod === 'CREDIT_CARD' &&
+                    this.inputClasses['card-number'] && 
+                    this.inputClasses['card-number'].indexOf('colorGreen') > -1 && 
+                    this.inputClasses['expiration-year'] && 
+                    this.inputClasses['expiration-year'].indexOf('colorGreen') > -1 && 
+                    this.inputClasses['expiration-month'] &&
+                    this.inputClasses['expiration-month'].indexOf('colorGreen') > -1 && 
+                    this.inputClasses['cvv'] && 
+                    this.inputClasses['cvv'].indexOf('colorGreen') > -1)) {
+                    return true;
+                }
+
+                return false;
+            },
 
             checkoutButtonEnabled: function() {
                 return true;
@@ -312,82 +271,14 @@
                 set: function(newVal) {
                     this.$store.dispatch('CART_BILLING_SAME_AS_SHIPPING', newVal);
                 }
-            },
-
-            billingFirstName: {
-                get: function() {
-                    return this.getBillingAttribute('firstName');
-                },
-                set: function(newVal) {
-                    this.setBillingAttribute('firstName', newVal)
-                }
-            },
-            billingLastName: {
-                get: function() {
-                    return this.getBillingAttribute('lastName');
-                },
-                set: function(newVal) {
-                    this.setBillingAttribute('lastName', newVal)
-                }
-            },
-            billingStreetAddress: {
-                get: function() {
-                    return this.getBillingAttribute('streetAddress');
-                },
-                set: function(newVal) {
-                    this.setBillingAttribute('streetAddress', newVal)
-                }
-            },
-            billingCity: {
-                get: function() {
-                    return this.getBillingAttribute('city');
-                },
-                set: function(newVal) {
-                    this.setBillingAttribute('city', newVal)
-                }
-            },
-            billingState: {
-                get: function() {
-                    return this.getBillingAttribute('state');
-                },
-                set: function(newVal) {
-                    this.setBillingAttribute('state', newVal)
-                }
-            },
-            billingPostalCode: {
-                get: function() {
-                    return this.getBillingAttribute('postalCode');
-                },
-                set: function(newVal) {
-                    this.setBillingAttribute('postalCode', newVal)
-                }
-            },
-            billingCountry: {
-                get: function() {
-                    return this.getBillingAttribute('countryCodeAlpha2');
-                },
-                set: function(newVal) {
-                    this.setBillingAttribute('countryCodeAlpha2', newVal)
-                }
-            },
-            billingCompany: {
-                get: function() {
-                    return this.getBillingAttribute('company');
-                },
-                set: function(newVal) {
-                    this.setBillingAttribute('company', newVal)
-                }
             }
         },
 
         data: function() {
             return {
-                steps: [
-                    { label: this.$t('Shipping address'), id: 'shipping_address' },
-                    // { label: this.$t('Shipping method'), id: 'shipping_method' },
-                    { label: this.$t('Place your order'), id: 'place_order' },
-                ],
                 currentStep: 0,
+                shippingFormIsLoading: false,
+                shippingButtonEnabled: false,
                 paymentMethod: 'CREDIT_CARD',
                 cardType: null,
                 securityCodeModalShow: false,
@@ -409,32 +300,139 @@
                         nonce: null,
                         payPalPayload: null
                     }
-                },
-                billingForm: {
-                    countryCodeAlpha2: null,
-                    firstName: null,
-                    lastName: null,
-                    streetAddress: null,
-                    city: null,
-                    state: null,
-                    postalCode: null,
-                    company: null,
-                },
-                //TODO - implement in UI:
-                greenChecks: {
-                    countryCodeAlpha2: false,
-                    firstName: false,
-                    lastName: false,
-                    streetAddress: false,
-                    city: false,
-                    state: false,
-                    postalCode: false,
-                    company: false, 
                 }
             }
         },
 
         methods: {
+            /**
+             * Validates the shipping address
+             */
+            submitShippingForm: function() {
+                let self = this;
+                let c = this.cart.shipping;
+
+                this.shippingFormIsLoading = true;
+
+                if(currentNotification) {
+                    currentNotification.close();
+                }
+
+                if(!this.submitButtonDisabled) {
+                    this.submitButtonLoading = true;
+
+                    api.shoppingCart.validateAddress({
+                        company_name: c.company,
+                        address_line1: c.streetAddress,
+                        city_locality: c.city,
+                        state_province: c.state,
+                        postal_code: c.postalCode,
+                        country_code: c.countryCodeAlpha2
+                    })
+                    .then((result) => {
+                        let validation = Array.isArray(result) ? result[0] : result;
+
+                        self.submitButtonLoading = false;
+
+                        // Add the validated values to the state
+                        switch(validation.status) {
+                            case 'verified':
+                                c.company = validation.matched_address.company
+                                c.streetAddress = validation.matched_address.address_line1
+                                c.city = validation.matched_address.city_locality
+                                c.state = validation.matched_address.state_province
+                                c.postalCode = validation.matched_address.postal_code
+                                c.countryCodeAlpha2 = validation.matched_address.country_code
+
+                                console.log("VERIFIED!", c);
+
+                                // self.$emit('shipping_form_submit')
+                                this.shippingFormDone();
+                                return;
+
+                            // NOTE: The 'unverified' case could still be a correct address.
+                            // This will most likely happen if the country value
+                            // is not supported (https://docs.shipengine.com/docs/address-validation).
+                            // In this case we should consider 'unverified' as valid so the transaction can continue.
+                            //
+                            // ALSO NOTE: The 'matched_address' property is null when the status is 'unverified',
+                            // so we need to get the values from the 'original_address' property
+                            case 'unverified':
+                                c.company = validation.original_address.company
+                                c.streetAddress = validation.original_address.address_line1
+                                c.city = validation.original_address.city_locality
+                                c.state = validation.original_address.state_province
+                                c.postalCode = validation.original_address.postal_code
+                                c.countryCodeAlpha2 = validation.original_address.country_code
+
+                                this.shippingFormDone();
+                                return;
+
+                            default:
+                                let message = this.$t('The address you provided does not seem to be a valid mailing adddress.');
+
+                                if(isObject(validation) && Array.isArray(validation.messages)) {
+                                    let messages = [];
+
+                                    // Skipping message code 'a1003', because it seems kind of useless.  It's message is
+                                    // "Some fields were modified while verifying the address.".  That will just confuse the user,
+                                    // so it's probably better to display the default message in this case.
+                                    let skipCodes = ['a1003'];
+
+                                    forEach(validation.messages, (msg) => {
+                                        if(skipCodes.indexOf(msg.code) < 0) {
+                                            messages.push(msg.message)
+                                        }
+                                    });
+                                    message = messages.join('\n\n');
+                                }
+
+                                currentNotification = this.$notify({
+                                    title: this.$t('Address validation error'),
+                                    message: message,
+                                    duration: 0,
+                                    type: 'error'
+                                });
+                                break;
+                        }
+
+                        this.shippingFormIsLoading = false;
+                    })
+                    .catch((error) => {
+                        let msg = error.message;
+
+                        if (error.response) {
+                            msg = error.response.data.message;
+                        }
+
+                        this.shippingFormIsLoading = false;
+
+                        this.$notify({
+                            title: msg || "An internal server error occurred",
+                            // message: errorMessage,
+                            duration: 0,
+                            type: 'error'
+                        });
+                    });
+                }
+            },
+
+
+            /**
+             * As a nice UI convenience, pre-populates the billing form 
+             * with some shipping form values if those values are empty
+             */
+            initBillingForm: function() {
+                if(!this.cart.billing.countryCodeAlpha2) {
+                    this.cart.billing.countryCodeAlpha2 = this.cart.shipping.countryCodeAlpha2;
+                }
+                if(!this.cart.billing.state) {
+                    this.cart.billing.state = this.cart.shipping.state;
+                }
+                console.log("INIT BILLING", this.cart.billing)
+            },
+
+
             /**
              * Get sales tax rate for the given shipping address
              */
@@ -507,11 +505,8 @@
              * component.
              */
             shippingFormDone: function() {
+                this.initBillingForm();
                 this.currentStep = 1;
-
-                // Setting some defaults in the billing form
-                this.billingForm.countryCodeAlpha2 = this.cart.shipping.countryCodeAlpha2;
-                this.billingForm.state = this.cart.shipping.state;
 
                 //TODO: send latest cart data to backend so sales_tax can be calculated.
             },
@@ -522,17 +517,6 @@
 
             shippingMethodGoBack: function() {
                 this.currentStep = 0;
-            },
-
-            setBillingAttribute: function(attribute, value) {
-                this.$store.dispatch('CART_BILLING_ATTRIBUTE', {
-                    attribute,
-                    value
-                });
-            },
-
-            getBillingAttribute: function(attribute) {
-                return this.$store.state.cart[`billing_${attribute}`];
             },
 
             getPaymentMonthYearClass: function(monthClasses, yearClasses) {
@@ -555,14 +539,15 @@
              */
             copyShippingDataToBillingData: function() {
                 if(this.billingSameAsShipping) {
-                    this.billingFirstName = this.cart.shipping.firstName;
-                    this.billingLastName = this.cart.shipping.lastName;
-                    this.billingStreetAddress = this.cart.shipping.streetAddress;
-                    this.billingCity = this.cart.shipping.city;
-                    this.billingState = this.cart.shipping.state;
-                    this.billingPostalCode = this.cart.shipping.postalCode;
-                    this.billingCountry = this.cart.shipping.countryCodeAlpha2;
-                    this.billingCompany = this.cart.shipping.company;
+                    // TODO: update state instead
+                    // this.billingFirstName = this.cart.shipping.firstName;
+                    // this.billingLastName = this.cart.shipping.lastName;
+                    // this.billingStreetAddress = this.cart.shipping.streetAddress;
+                    // this.billingCity = this.cart.shipping.city;
+                    // this.billingState = this.cart.shipping.state;
+                    // this.billingPostalCode = this.cart.shipping.postalCode;
+                    // this.billingCountry = this.cart.shipping.countryCodeAlpha2;
+                    // this.billingCompany = this.cart.shipping.company;
                 }
             },
 
@@ -703,8 +688,8 @@
                 hostedFieldsInstance.on('validityChange', (event) => {
                     let field = event.fields[event.emittedBy];
                     let id = getElementId(field);
-                    let classesSuccess = ['el-icon-circle-check', 'colorGreen'];
-                    let classesError = ['el-icon-circle-cross', 'colorRed'];
+                    let classesSuccess = ['fa', 'fa-check-circle', 'colorGreen'];
+                    let classesError = ['fa', 'fa-times-circle', 'colorRed'];
 
                     // console.log("ON VALIDITY CHANGE", field, id, event.isValid)
 
@@ -822,15 +807,6 @@
             }
         },
 
-        validations: {
-            billingFirstName: { required },
-            billingLastName: { required },
-            billingStreetAddress: { required },
-            billingCity: { required },
-            billingState: { required },
-            billingPostalCode: { required }
-        },
-
         created() {
             if(this.cart.num_items) {
                 let client = require('braintree-web/client');
@@ -890,8 +866,8 @@
     }
 
     .wizard-container {
-        padding: 0 10px 20px 10px;
-        border-bottom: 1px dotted #ddd;
+        padding: 7px;
+        background-color: #f1f1f1;
     }
 
     .step-title {
