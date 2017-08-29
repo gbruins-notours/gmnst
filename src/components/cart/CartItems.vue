@@ -5,11 +5,11 @@
         </div>
         <div v-else>
             <div class="cartItems" id="cartItems">
-                <div class="cartItemsHeader">
-                    <span></span>
-                    <span></span>
-                    <span class="width100 tar">{{ $t('Price') }}</span>
-                    <span class="width200 tar">{{ $t('Quantity') }}</span>
+                <div class="cartItem">
+                    <span class="cartItemCell"></span>
+                    <span class="cartItemCell"></span>
+                    <span class="cartItemCell min-cell tar">{{ $t('Price') }}</span>
+                    <span class="cartItemCell min-cell tar">{{ $t('Quantity') }}</span>
                 </div>
 
                 <article class="cartItem" v-for="item in this.cart.cart_items" :key="item.id">
@@ -35,14 +35,13 @@
                     </div>
 
                     <!-- Price -->
-                    <div class="cartItemCell fwb tar">
+                    <div class="cartItemCell fwb tar min-cell nowrap">
                         <product-price :product="item.product"></product-price>
                     </div>
 
                     <!-- Quantity -->
-                    <div class="cartItemCell tar">
+                    <div class="cartItemCell tar min-cell">
                         <div v-if="allowEdit" class="inlineBlock">
-                            <div class="displayTableCell prl fwb vam">{{ item.qty }}</div>
                             <div class="displayTableCell">
                                 <number-buttons :step="1"
                                                 :min="1"
@@ -51,6 +50,7 @@
                                                 size="small"
                                                 v-on:change="function(val) { updateCartItemQuantity(item, val) }"></number-buttons>
                             </div>
+                            <div class="displayTableCell pll fwb vam">{{ item.qty }}</div>
                         </div>
                         <div v-else class="fwb">
                             {{ item.qty }}
@@ -207,7 +207,6 @@
     width: 100%;
 }
 
-.cartItemsHeader,
 .cartItem {
     display: table-row;
 
@@ -216,11 +215,15 @@
     // }
 }
 
-.cartItemsHeader > span,
 .cartItemCell {
     display: table-cell;
     vertical-align: top;
     padding: 10px;
     border-bottom: 1px solid $borderColorGray;
 }
+
+.min-cell {
+    width: 20%;
+}
+
 </style>
