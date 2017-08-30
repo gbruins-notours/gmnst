@@ -3,61 +3,60 @@
         <div v-if="!this.cart.num_items" class="fs16 tac pal">
             {{ $t('Your shopping cart does not contain any items.') }}
         </div>
-        <div v-else>
-            <div class="cartItems" id="cartItems">
-                <div class="cartItem">
-                    <span class="cartItemCell"></span>
-                    <span class="cartItemCell"></span>
-                    <span class="cartItemCell min-cell tar">{{ $t('Price') }}</span>
-                    <span class="cartItemCell min-cell tar">{{ $t('Quantity') }}</span>
-                </div>
+        <div v-else class="ptl">
 
-                <article class="cartItem" v-for="item in this.cart.cart_items" :key="item.id">
-                    <figure class="cartItemCell image is-128x128">
+            <article v-for="item in this.cart.cart_items" :key="item.id" class="cartItem" :id="'cartItem' + item.id">
+                <div class="cartItemPic">
+                    <figure class="image is-128x128">
                         <img v-bind:src="productPic(item)">
                     </figure>
+                </div>
 
-                    <div class="cartItemCell">
-                        <div class="fwb mbs fs16">{{ item.product.title }}</div>
+                <div class="cartItemInfo">
+                    <div class="cartItemInfoContent">
+                        <div class="cartItemMain">
+                            <div class="fwb fs16">{{ item.product.title }}</div>
+
+                            <div v-if="allowEdit" class="mts">
+                                <el-button type="text" @click="removeItem(item.id)">{{ $t('Delete') }}</el-button>
+                            </div>
+                        </div>
 
                         <!-- Variants -->
-                        <template v-if="item.variants && item.variants.size">
-                            <div class="displayTableRow">
-                                <div class="displayTableCell prm">{{ $t('Size') }}:</div>
-                                <div class="displayTableCell">{{ $t(item.variants.size) }}</div>
+                        <div class="cartItemCol">
+                            <div v-if="item.variants && item.variants.size">
+                                <label class="itemLabel">{{ $t('Size') }}:</label>
+                                <div class="itemVal">{{ $t(item.variants.size) }}</div>
                             </div>
-                        </template>
-
-                        <!-- <div><a class="colorGray" @click="removeItem(item.id)">{{ $t('Delete') }}</a></div> -->
-                        <div v-if="allowEdit" class="mtl">
-                            <el-button type="text" @click="removeItem(item.id)">{{ $t('Delete') }}</el-button>
                         </div>
-                    </div>
+                        
+                        <!-- Price -->
+                        <div class="cartItemCol">
+                            <label class="itemLabel">{{ $t('Price' )}}:</label>
+                            <div class="itemVal"><product-price :product="item.product"></product-price></div>
+                        </div>
 
-                    <!-- Price -->
-                    <div class="cartItemCell fwb tar min-cell nowrap">
-                        <product-price :product="item.product"></product-price>
-                    </div>
-
-                    <!-- Quantity -->
-                    <div class="cartItemCell tar min-cell">
-                        <div v-if="allowEdit" class="inlineBlock">
-                            <div class="displayTableCell">
-                                <number-buttons :step="1"
-                                                :min="1"
-                                                :max="item.product.inventory_count"
-                                                :init-value="item.qty"
-                                                size="small"
-                                                v-on:change="function(val) { updateCartItemQuantity(item, val) }"></number-buttons>
+                        <!-- Quantity -->
+                        <div class="cartItemCol">
+                            <label class="itemLabel">{{ $t('Quantity' )}}:</label>
+                            <div v-if="allowEdit" class="itemVal">
+                                <div class="displayTableCell prl fwb vam">{{ item.qty }}</div>
+                                <div class="displayTableCell">
+                                    <number-buttons :step="1"
+                                                    :min="1"
+                                                    :max="item.product.inventory_count"
+                                                    :init-value="item.qty"
+                                                    size="small"
+                                                    v-on:change="function(val) { updateCartItemQuantity(item, val) }"></number-buttons>
+                                </div>
                             </div>
-                            <div class="displayTableCell pll fwb vam">{{ item.qty }}</div>
-                        </div>
-                        <div v-else class="fwb">
-                            {{ item.qty }}
+                            <div v-else class="itemVal">
+                                {{ item.qty }}
+                            </div>
                         </div>
                     </div>
-                </article>
-            </div>
+                </div>
+            </article>
 
             <div class="mtm clearfix">
                 <div class="floatRight">
@@ -159,7 +158,7 @@
 
             updateCartItemQuantity(item, qty) {
                 console.log('updateCartItemQuantity');
-                let loadingInstance = Loading.service({ target: '#cartItems' });
+                let loadingInstance = Loading.service({ target: '#cartItem' + item.id });
 
                 this.$store.dispatch('CART_ITEM_SET_QTY', {
                     id: item.id,
@@ -171,8 +170,12 @@
             },
 
             removeItem(id) {
+                let loadingInstance = Loading.service({ target: '#cartItem' + id });
+
                 this.$store.dispatch('CART_ITEM_DELETE', {
                     id
+                }).then(() => {
+                    loadingInstance.close();
                 });
             },
 
@@ -200,30 +203,87 @@
 </script>
 
 <style lang="scss">
-@import '../../assets/css/components/_variables.scss';
+    @import '../../assets/css/components/_variables.scss';
+    @import '../../assets/css/components/_mixins.scss';
 
-.cartItems {
-    display: table;
-    width: 100%;
+    .cartItem {
+        width: 100%;
+        margin-bottom: 20px;
+        @include box-shadow(0px, 1px, 2px, rgba(0,0,0,.1))
+    }
+
+    .cartItemPic {
+        display: table-cell;
+        overflow: hidden;
+        background-color: #000;
+    }
+
+    .cartItemInfo {
+        display: table-cell;
+        vertical-align: top;
+        width:100%;
+        background-color: #fff;
+    }
+
+    .cartItemInfoContent {
+        display: block;
+        padding: 5px 10px;
+    }
+
+    .cartItemMain {
+        flex-grow: 1;
+        padding-bottom: 5px;
+    }
+
+    .cartItemCol {
+        display: block;
+        margin-left: 0;
+
+        .itemLabel,
+        .itemVal {
+            display: table-cell;
+            padding: 0 10px 3px 0;
+        }
+        .itemLabel {
+            width: 80px;
+            word-wrap: break-word;
+            font-size: 11px;
+        }
+        .itemVal {
+            font-weight: bold;
+        }
+    }
+
+// @media all and (min-width: $small-screen-up) {
+@media #{$medium-and-up} {
+        .cartItemInfoContent {
+            padding: 10px 15px;
+
+            display: -webkit-flex; /* Safari */
+            display: flex;
+            -webkit-flex-direction: row; /* Safari */
+            flex-direction: row;
+
+            -webkit-flex-wrap: nowrap;
+            flex-wrap: nowrap;
+
+            -webkit-justify-content: flex-start;
+            justify-content: flex-start;
+        }
+
+        .cartItemMain {
+            flex-grow: 1;
+        }
+
+        .cartItemCol {
+            flex-grow: 0;
+            margin-left: 20px;
+
+            .itemLabel,
+            .itemVal {
+                display: block;
+                width: 100%;
+            }
+        }
 }
-
-.cartItem {
-    display: table-row;
-
-    // &:nth-child(even) {
-    //     background-color: $bgGrayZebra;
-    // }
-}
-
-.cartItemCell {
-    display: table-cell;
-    vertical-align: top;
-    padding: 10px;
-    border-bottom: 1px solid $borderColorGray;
-}
-
-.min-cell {
-    width: 20%;
-}
-
 </style>

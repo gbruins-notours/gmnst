@@ -126,7 +126,7 @@
                 </div>
 
                 <!-- Review -->
-                <div v-show="currentStep === 2" class="displayTable" style="margin:0 auto">
+                <div v-show="currentStep === 2">
                     <div class="step-title">{{ $t('Review your order') }}:</div>
                     <cart-items :allow-edit="false"
                                 :show-shipping-cost="true"
@@ -320,103 +320,96 @@
                     currentNotification.close();
                 }
 
-                if(!this.submitButtonDisabled) {
-                    this.submitButtonLoading = true;
+                api.shoppingCart.validateAddress({
+                    company_name: c.company,
+                    address_line1: c.streetAddress,
+                    city_locality: c.city,
+                    state_province: c.state,
+                    postal_code: c.postalCode,
+                    country_code: c.countryCodeAlpha2
+                })
+                .then((result) => {
+                    let validation = Array.isArray(result) ? result[0] : result;
+                    this.shippingFormIsLoading = false;
 
-                    api.shoppingCart.validateAddress({
-                        company_name: c.company,
-                        address_line1: c.streetAddress,
-                        city_locality: c.city,
-                        state_province: c.state,
-                        postal_code: c.postalCode,
-                        country_code: c.countryCodeAlpha2
-                    })
-                    .then((result) => {
-                        let validation = Array.isArray(result) ? result[0] : result;
+                    // Add the validated values to the state
+                    switch(validation.status) {
+                        case 'verified':
+                            c.company = validation.matched_address.company
+                            c.streetAddress = validation.matched_address.address_line1
+                            c.city = validation.matched_address.city_locality
+                            c.state = validation.matched_address.state_province
+                            c.postalCode = validation.matched_address.postal_code
+                            c.countryCodeAlpha2 = validation.matched_address.country_code
 
-                        self.submitButtonLoading = false;
+                            console.log("VERIFIED!", c);
 
-                        // Add the validated values to the state
-                        switch(validation.status) {
-                            case 'verified':
-                                c.company = validation.matched_address.company
-                                c.streetAddress = validation.matched_address.address_line1
-                                c.city = validation.matched_address.city_locality
-                                c.state = validation.matched_address.state_province
-                                c.postalCode = validation.matched_address.postal_code
-                                c.countryCodeAlpha2 = validation.matched_address.country_code
+                            // self.$emit('shipping_form_submit')
+                            this.shippingFormDone();
+                            return;
 
-                                console.log("VERIFIED!", c);
+                        // NOTE: The 'unverified' case could still be a correct address.
+                        // This will most likely happen if the country value
+                        // is not supported (https://docs.shipengine.com/docs/address-validation).
+                        // In this case we should consider 'unverified' as valid so the transaction can continue.
+                        //
+                        // ALSO NOTE: The 'matched_address' property is null when the status is 'unverified',
+                        // so we need to get the values from the 'original_address' property
+                        case 'unverified':
+                            c.company = validation.original_address.company
+                            c.streetAddress = validation.original_address.address_line1
+                            c.city = validation.original_address.city_locality
+                            c.state = validation.original_address.state_province
+                            c.postalCode = validation.original_address.postal_code
+                            c.countryCodeAlpha2 = validation.original_address.country_code
 
-                                // self.$emit('shipping_form_submit')
-                                this.shippingFormDone();
-                                return;
+                            this.shippingFormDone();
+                            return;
 
-                            // NOTE: The 'unverified' case could still be a correct address.
-                            // This will most likely happen if the country value
-                            // is not supported (https://docs.shipengine.com/docs/address-validation).
-                            // In this case we should consider 'unverified' as valid so the transaction can continue.
-                            //
-                            // ALSO NOTE: The 'matched_address' property is null when the status is 'unverified',
-                            // so we need to get the values from the 'original_address' property
-                            case 'unverified':
-                                c.company = validation.original_address.company
-                                c.streetAddress = validation.original_address.address_line1
-                                c.city = validation.original_address.city_locality
-                                c.state = validation.original_address.state_province
-                                c.postalCode = validation.original_address.postal_code
-                                c.countryCodeAlpha2 = validation.original_address.country_code
+                        default:
+                            let message = this.$t('The address you provided does not seem to be a valid mailing adddress.');
 
-                                this.shippingFormDone();
-                                return;
+                            if(isObject(validation) && Array.isArray(validation.messages)) {
+                                let messages = [];
 
-                            default:
-                                let message = this.$t('The address you provided does not seem to be a valid mailing adddress.');
+                                // Skipping message code 'a1003', because it seems kind of useless.  It's message is
+                                // "Some fields were modified while verifying the address.".  That will just confuse the user,
+                                // so it's probably better to display the default message in this case.
+                                let skipCodes = ['a1003'];
 
-                                if(isObject(validation) && Array.isArray(validation.messages)) {
-                                    let messages = [];
-
-                                    // Skipping message code 'a1003', because it seems kind of useless.  It's message is
-                                    // "Some fields were modified while verifying the address.".  That will just confuse the user,
-                                    // so it's probably better to display the default message in this case.
-                                    let skipCodes = ['a1003'];
-
-                                    forEach(validation.messages, (msg) => {
-                                        if(skipCodes.indexOf(msg.code) < 0) {
-                                            messages.push(msg.message)
-                                        }
-                                    });
-                                    message = messages.join('\n\n');
-                                }
-
-                                currentNotification = this.$notify({
-                                    title: this.$t('Address validation error'),
-                                    message: message,
-                                    duration: 0,
-                                    type: 'error'
+                                forEach(validation.messages, (msg) => {
+                                    if(skipCodes.indexOf(msg.code) < 0) {
+                                        messages.push(msg.message)
+                                    }
                                 });
-                                break;
-                        }
+                                message = messages.join('\n\n');
+                            }
 
-                        this.shippingFormIsLoading = false;
-                    })
-                    .catch((error) => {
-                        let msg = error.message;
+                            currentNotification = this.$notify({
+                                title: this.$t('Address validation error'),
+                                message: message,
+                                duration: 0,
+                                type: 'error'
+                            });
+                            break;
+                    }
+                })
+                .catch((error) => {
+                    let msg = error.message;
 
-                        if (error.response) {
-                            msg = error.response.data.message;
-                        }
+                    if (error.response) {
+                        msg = error.response.data.message;
+                    }
 
-                        this.shippingFormIsLoading = false;
+                    this.shippingFormIsLoading = false;
 
-                        this.$notify({
-                            title: msg || "An internal server error occurred",
-                            // message: errorMessage,
-                            duration: 0,
-                            type: 'error'
-                        });
+                    this.$notify({
+                        title: msg || "An internal server error occurred",
+                        // message: errorMessage,
+                        duration: 0,
+                        type: 'error'
                     });
-                }
+                });
             },
 
 

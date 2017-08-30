@@ -1,7 +1,7 @@
 <template>
-    <el-card :body-style="{ padding: '0px' }">
+    <el-card :body-style="{ padding: '0px' }" class="heightAll">
         <img :src="productPic" alt="Image" class="image">
-        <div style="padding: 14px;">
+        <div class="cardContent">
             <div class="fwb mbs">{{ product.title }}</div>
             <div>{{ product.description_short }}</div>
         </div>
@@ -27,3 +27,9 @@
         }
     }
 </script>
+
+<style>
+    .cardContent {
+        padding: 14px;
+    }
+</style>

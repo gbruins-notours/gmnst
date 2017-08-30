@@ -58,7 +58,10 @@
                     </div>
 
                     <div class="ptxl">
-                        <el-button type="warning" @click="addToCart" class="colorBlack">{{ $t('Add to cart') }}</el-button>
+                        <el-button type="warning" 
+                                   @click="addToCart" 
+                                   class="colorBlack"
+                                   :loading="isLoading">{{ $t('Add to cart') }}</el-button>
                     </div>
 
                 </div>
@@ -85,21 +88,22 @@ Vue.use(InputNumber);
 Vue.use(Button);
 
 export default {
+    components: {
+        ProductPrice,
+        NumberButtons,
+        Carousel,
+        Slide
+    },
+
     data() {
         return {
             product: {},
             sizeOptions: [],
             productPics: [],
             selectedSize: null,
-            selectedQty: 1
+            selectedQty: 1,
+            isLoading: false
         }
-    },
-
-    components: {
-        ProductPrice,
-        NumberButtons,
-        Carousel,
-        Slide
     },
 
     computed: {
@@ -126,7 +130,6 @@ export default {
 //            if (isObject(this.product) && !this.product.hasOwnProperty('__selectedOptions')) {
 //                this.product.__selectedOptions = {};
 //            }
-
             if (!this.selectedSize) {
                 Notification.error({
                     title: this.$t('Please select a size'),
@@ -142,6 +145,8 @@ export default {
                 });
             }
             else {
+                this.isLoading = true;
+
                 this.CART_ITEM_ADD({
                     id: this.product.id,
                     options: {
@@ -150,6 +155,7 @@ export default {
                     }
                 })
                 .then(() => {
+                    this.isLoading = false;
                     this.$router.push(`/cart/${this.product.id}`);
                 });
             }
