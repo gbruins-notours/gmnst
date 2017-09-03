@@ -6,9 +6,8 @@ services:
 image: node:6.11
 
 variables:
+  # Configure postgres service (https://hub.docker.com/_/postgres/)
   POSTGRES_DB: gmnst_test
-  POSTGRES_USER: gmnst_tester
-  POSTGRES_PASSWORD: ""
   DATABASE_URL: "postgres://postgres@postgres/gmnst_test"
 
 stages:
@@ -20,17 +19,25 @@ cache:
   paths:
   - node_modules/
 
-before_script:
-  - npm install
-  - npm run knex:migrate
-  - npm run knex:seed
+connect:
+  image: postgres
+  script:
+  # official way to provide password to psql: http://www.postgresql.org/docs/9.3/static/libpq-envars.html
+  - export PGPASSWORD=$POSTGRES_PASSWORD
+  - psql -h "postgres" -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "SELECT 'OK' AS status;"
 
 test_server:
   stage: test
   services:
     - postgres:9.6.2-alpine
+  variables:
+    DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/$POSTGRES_DB"
+
   script:
   #  - node ./specs/start.js ./specs/async.spec.js
+    - npm install
+    - npm run knex:migrate
+    - npm run knex:seed
     - npm run test:server
 
 # test_db:
