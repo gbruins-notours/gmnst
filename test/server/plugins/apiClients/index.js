@@ -1,7 +1,7 @@
 const Code = require('code');
 const Lab = require('lab');
-const ApiClients = require('../../../server/plugins/apiClients');
-// const CrumbCsrf = require('../../../server/plugins/crumbCsrf');
+const Hoek = require('hoek');
+const BookshelfOrm = require('../../../../server/plugins/bookshelf-orm');
 const testHelpers = require('../../testHelpers');
 const serverSetup = require('./_serverSetup');
 
@@ -14,24 +14,19 @@ const it = lab.test;
 
 describe('Testing ApiClients plugin', () => {
 
-    // it('errors on missing Info plugin', (done) => {
-    //     const manifest = Hoek.clone(serverSetup.manifest);
-    //     manifest.registrations.splice(2, 1);
-    //
-    //     Server.init(manifest, serverSetup.composeOptions, (err, server) => {
-    //         // expect(err).to.exist();
-    //         // expect(err.message).to.include('Plugin ' + Info.register.attributes.name + ' missing dependency ' + ApiClients.register.attributes.name);
-    //         expect('foo').to.exist();
-    //
-    //         testHelpers.destroyKnexAndStopServer(server, done);
-    //     });
-    // });
+    it('errors on missing BookshelfOrm plugin', (done) => {
+        const manifest = Hoek.clone(serverSetup.manifest);
+        testHelpers.spliceRegistrationFromManifest('./plugins/bookshelf-orm', manifest);
+        
+        testHelpers
+            .startServerAndGetHeaders(manifest, serverSetup.composeOptions)
+            .then(({err, server}) => {
+                expect(err).to.exist();
+                expect(err.message).to.include(`missing dependency ${BookshelfOrm.register.attributes.name}`);
 
-
-    /*
-     * ROUTE: POST /token/get
-     */
-    require('./routes/token-get');
+                testHelpers.destroyKnexAndStopServer(server, done);
+            });
+    });
 
 });
 

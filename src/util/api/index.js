@@ -1,14 +1,18 @@
-import axios from 'axios';
 import { getHttp } from '../http-common';
 import queryString from 'query-string'
 
 export default {
 
+    /**
+     * Gets the JWT token.
+     * Note the global "JWT_" variables used below are created
+     * from the webpack "DefinePlugin"
+     */
     getJwtToken() {
         return getHttp()
             .post('/api/v1/token/get', {
-                clientId: 'admin@gmnst.com',
-                clientSecret: 'G244.h"eSjV/'
+                clientId: JWT_CLIENT_ID,
+                clientSecret: JWT_CLIENT_SECRET
             })
             .then((response) => {
                 return response.headers['x-authorization'];

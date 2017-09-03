@@ -1,8 +1,8 @@
 const Code = require('code');
 const Lab = require('lab');
 const Hoek = require('hoek');
-const Payments = require('../../../server/plugins/payments');
-const BookshelfOrm = require('../../../server/plugins/bookshelf-orm');
+const Payments = require('../../../../server/plugins/payments');
+const BookshelfOrm = require('../../../../server/plugins/bookshelf-orm');
 const testHelpers = require('../../testHelpers');
 const serverSetup = require('./_serverSetup');
 
@@ -16,7 +16,7 @@ describe('Testing Payments plugin', () => {
 
     it('errors on missing BookshelfOrm plugin', (done) => {
         const manifest = Hoek.clone(serverSetup.manifest);
-        manifest.registrations.splice(2, 1);
+        testHelpers.spliceRegistrationFromManifest('./plugins/bookshelf-orm', manifest);
 
         testHelpers
             .startServerAndGetHeaders(manifest, serverSetup.composeOptions)
@@ -32,7 +32,11 @@ describe('Testing Payments plugin', () => {
 
     it('should fail to load with a bad merchantId option', (done) => {
         const manifest = Hoek.clone(serverSetup.manifest);
-        manifest.registrations[5].plugin.options.merchantId = null;
+        let index = testHelpers.getRegistrationIndexFromManifest('./plugins/payments', serverSetup.manifest);
+
+        if(index > -1) {
+            manifest.registrations[index].plugin.options.merchantId = null;
+        }
 
         testHelpers
             .startServerAndGetHeaders(manifest, serverSetup.composeOptions)
@@ -47,7 +51,11 @@ describe('Testing Payments plugin', () => {
 
     it('should fail to load with a bad publicKey option', (done) => {
         const manifest = Hoek.clone(serverSetup.manifest);
-        manifest.registrations[5].plugin.options.publicKey = null;
+        let index = testHelpers.getRegistrationIndexFromManifest('./plugins/payments', serverSetup.manifest);
+        
+        if(index > -1) {
+            manifest.registrations[index].plugin.options.publicKey = null;
+        }
 
         testHelpers
             .startServerAndGetHeaders(manifest, serverSetup.composeOptions)
@@ -62,7 +70,11 @@ describe('Testing Payments plugin', () => {
 
     it('should fail to load with a bad privateKey option', (done) => {
         const manifest = Hoek.clone(serverSetup.manifest);
-        manifest.registrations[5].plugin.options.privateKey = null;
+        let index = testHelpers.getRegistrationIndexFromManifest('./plugins/payments', serverSetup.manifest);
+        
+        if(index > -1) {
+            manifest.registrations[index].plugin.options.privateKey = null;
+        }
 
         testHelpers
             .startServerAndGetHeaders(manifest, serverSetup.composeOptions)

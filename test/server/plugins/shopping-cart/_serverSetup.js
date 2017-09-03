@@ -1,4 +1,4 @@
-require('../../../server/environment_config');
+require('dotenv/config');
 
 const Path = require('path');
 const testHelpers = require('../../testHelpers');
@@ -30,7 +30,8 @@ manifest.registrations.push(
 );
 
 let composeOptions = {
-    relativeTo: Path.resolve(__dirname, '../../../server')
+    // Relative to the real hapi server
+    relativeTo: Path.resolve(__dirname, '../../../../server')
 };
 
 

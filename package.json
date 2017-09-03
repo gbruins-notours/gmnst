@@ -19,7 +19,7 @@
     "unit": "cross-env BABEL_ENV=test karma start test/client/unit/karma.conf.js --single-run",
     "e2e": "node test/client/e2e/runner.js",
     "test:client": "npm run unit && npm run e2e",
-    "test:server": "lab -a code -t 100 -v",
+    "test:server": "lab -a code -t 100 -v test/server",
     "test2": "npm run test:client && npm run test:server",
     "knex:migrate": "node node_modules/knex/bin/cli.js migrate:latest",
     "knex:seed": "node node_modules/knex/bin/cli.js seed:run",

@@ -1,6 +1,6 @@
 const Promise = require('bluebird');
 const faker = require('faker');
-const InfoService = require('../../server/plugins/info/info.service');
+const CoreService = require('../../server/plugins/core/core.service');
 const ProductService = require('../../server/plugins/products/products.service');
 
 const productTypes = ProductService.getProductTypes();
@@ -14,30 +14,30 @@ function buildSampleGenderOptions() {
 
     // adding one option for each gender
     Object.keys(types).forEach((key) => {
-       opts.push(types[key]);
+        opts.push(types[key]);
     });
 
     // adding a few multi-gender options
-    opts.push( types.GENDER_TYPE_MENS | types.GENDER_TYPE_WOMENS );  // mens and womens
-    opts.push( types.GENDER_TYPE_MENS | types.GENDER_TYPE_BOYS );  // mens and boys
-    opts.push( types.GENDER_TYPE_WOMENS | types.GENDER_TYPE_GIRLS );  // womens and girls
-    opts.push( types.GENDER_TYPE_BOYS | types.GENDER_TYPE_GIRLS );  // boys and girls
+    opts.push(types.GENDER_TYPE_MENS | types.GENDER_TYPE_WOMENS);  // mens and womens
+    opts.push(types.GENDER_TYPE_MENS | types.GENDER_TYPE_BOYS);  // mens and boys
+    opts.push(types.GENDER_TYPE_WOMENS | types.GENDER_TYPE_GIRLS);  // womens and girls
+    opts.push(types.GENDER_TYPE_BOYS | types.GENDER_TYPE_GIRLS);  // boys and girls
 
     return opts;
 }
 
 
 function getRandomGenderOption() {
-    return fakeGenderOptions[Math.floor( Math.random() * fakeGenderOptions.length)];
+    return fakeGenderOptions[Math.floor(Math.random() * fakeGenderOptions.length)];
 }
 
 
 
 exports.seed = (knex) => {
-    return knex(InfoService.DB_TABLES.products)
+    return knex(CoreService.DB_TABLES.products)
         .del()
         // .then(() => {
-        //     return knex.raw(`ALTER SEQUENCE ${InfoService.DB_TABLES.products}_id_seq RESTART WITH 1`);
+        //     return knex.raw(`ALTER SEQUENCE ${CoreService.DB_TABLES.products}_id_seq RESTART WITH 1`);
         // })
         .then(() => {
             let promises = [];
@@ -58,7 +58,7 @@ exports.seed = (knex) => {
                 global.seedUuids.push(uuid);
 
                 promises.push(
-                    knex(InfoService.DB_TABLES.products)
+                    knex(CoreService.DB_TABLES.products)
                         .insert({
                             id: uuid,
                             title: 'Product Title ' + i,
@@ -70,8 +70,8 @@ exports.seed = (knex) => {
                             weight_oz: 5.3,
                             base_price: ((100 + i + cents).toFixed(2)),
                             sale_price: ((99 - i + cents).toFixed(2)),
-                            is_on_sale:  faker.random.boolean(),
-                            is_available:  faker.random.boolean(),
+                            is_on_sale: faker.random.boolean(),
+                            is_available: faker.random.boolean(),
                             tax_code: 20010,
                             featured_pic: 'sample-300-x-400.png',
                             video_url: 'https://www.youtube.com/watch?v=JUaY0AOLopU',

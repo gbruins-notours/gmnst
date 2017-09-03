@@ -14,6 +14,7 @@ module.exports = {
     'arrow-parens': OFF,
     'brace-style': [ERROR, 'stroustrup'],
     'camelcase': OFF,
+    'eol-last': OFF,
     'indent': [ERROR, 4, { 'SwitchCase': 1 }],
     'keyword-spacing': OFF,
     'no-debugger': process.env.NODE_ENV === 'production' ? ERROR : OFF,
@@ -23,6 +24,7 @@ module.exports = {
     'semi': OFF,
     // Turned off spaces before pern because of broken Beautify formating for JS inside script tag
     'space-before-function-paren': OFF,
+    'space-infix-ops': OFF,
     'spaced-comment': OFF
   }
 };

@@ -1,9 +1,7 @@
 const Joi = require('joi');
 const Boom = require('boom');
 const HelperService = require('../../helpers.service');
-const forEach = require('lodash.foreach');
 const ProductService = require('./products.service');
-
 
 let internals = {};
 
@@ -45,7 +43,6 @@ internals.after = function (server, next) {
     ];
 
 
-
     /**
      * Fetches data from a given product model
      *
@@ -58,7 +55,6 @@ internals.after = function (server, next) {
             .forge(forgeOptions)
             .fetch(fetchOptions);
     };
-
 
 
     /**
@@ -84,51 +80,6 @@ internals.after = function (server, next) {
     };
 
 
-
-    /**
-     * Uses the HTTP request data to retrieve product data
-     * from the DB
-     *
-     * @param request
-     * @returns {Promise}
-     */
-    internals.getProductJsonFromRequest = (request) => {
-        let p = new Promise( (resolve, reject) => {
-            let prod = request.payload.product;
-
-            // Joi validation:
-            let schema = Joi.object().keys({
-                id: Joi.number().required(),
-                __selectedOptions: Joi.object()
-            }).required();
-
-            let validateOptions = schema.validate(prod);
-            if(validateOptions.error) {
-                reject(validateOptions.error);
-                return;
-            }
-
-            internals
-                .getProductByAttribute('id', prod.id)
-                .then(
-                    (p) => {
-                        let productJson = p.toJSON();
-                        productJson.__selectedOptions = prod.__selectedOptions || {};
-
-                        resolve(productJson);
-                    }
-                )
-                .catch(
-                    (err) => {
-                        reject(err);
-                    }
-                );
-        });
-
-        return p;
-    };
-
-
     server.route([
         {
             method: 'GET',
@@ -137,23 +88,19 @@ internals.after = function (server, next) {
                 description: 'Finds a product by ID',
                 validate: {
                     query: {
-                        id: Joi.number().min(1)
+                        id: Joi.string().uuid()
                     }
                 },
                 handler: (request, reply) => {
                     internals
                         .getProductByAttribute('id', request.query.id)
-                        .then(
-                            (products) => {
-                                reply.apiSuccess(products);
-                            }
-                        )
-                        .catch(
-                            (err) => {
-                                request.server.log(['error'], err);
-                                reply(Boom.badRequest(err));
-                            }
-                        );
+                        .then((products) => {
+                            reply.apiSuccess(products);
+                        })
+                        .catch((err) => {
+                            request.server.log(['error'], err);
+                            reply(Boom.badRequest(err));
+                        });
                 }
             }
         },
@@ -170,17 +117,13 @@ internals.after = function (server, next) {
                 handler: (request, reply) => {
                     internals
                         .getProductByAttribute('seo_uri', request.query.id)
-                        .then(
-                            (products) => {
-                                reply.apiSuccess(products);
-                            }
-                        )
-                        .catch(
-                            (err) => {
-                                request.server.log(['error'], err);
-                                reply(Boom.badRequest(err));
-                            }
-                        );
+                        .then((products) => {
+                            reply.apiSuccess(products);
+                        })
+                        .catch((err) => {
+                            request.server.log(['error'], err);
+                            reply(Boom.badRequest(err));
+                        });
                 }
             }
         },
@@ -205,49 +148,15 @@ internals.after = function (server, next) {
             config: {
                 description: 'Gets a list of products',
                 handler: (request, reply) => {
-                    let queryData = HelperService.queryHelper(request);
-
-                    server.plugins.BookshelfOrm.bookshelf.model('Product')
-                        .query((qb) => {
-                            // qb.innerJoin('manufacturers', 'cars.manufacturer_id', 'manufacturers.id');
-                            // qb.groupBy('cars.id');
-
-                            if(queryData.where) {
-                                qb.where(queryData.where[0], queryData.where[1], queryData.where[2]);
-                            }
-
-                            if(queryData.whereRaw) {
-                                if(queryData.whereRaw.length === 1) {
-                                    qb.whereRaw(queryData.whereRaw);
-                                }
-                                else {
-                                    qb.whereRaw(queryData.whereRaw.shift(), queryData.whereRaw);
-                                }
-                            }
-
-                            if(queryData.andWhere) {
-                                forEach(queryData.andWhere, function(arr) {
-                                    qb.andWhere(arr[0], arr[1], arr[2]);
-                                });
-                            }
+                    HelperService
+                        .fetchPage(request, server.plugins.BookshelfOrm.bookshelf.model('Product'), internals.withRelated)
+                        .then((products) => {
+                            reply.apiSuccess(products, products.pagination);
                         })
-                        .orderBy(queryData.orderBy, queryData.orderDir)
-                        .fetchPage({
-                            pageSize: queryData.pageSize || 100,
-                            page: queryData.page || 1,
-                            withRelated: internals.withRelated
-                        })
-                        .then(
-                            (products) => {
-                                reply.apiSuccess(products, products.pagination);
-                            }
-                        )
-                        .catch(
-                            (err) => {
-                                request.server.log(['error'], err);
-                                reply(Boom.notFound(err));
-                            }
-                        );
+                        .catch((err) => {
+                            request.server.log(['error'], err);
+                            reply(Boom.notFound(err));
+                        });
                 }
             }
         }
@@ -280,7 +189,6 @@ internals.after = function (server, next) {
     );
 
 
-    // server.expose('getProductJsonFromRequest', internals.getProductJsonFromRequest);
     server.expose('getProductByAttribute', internals.getProductByAttribute);
 
     return next();

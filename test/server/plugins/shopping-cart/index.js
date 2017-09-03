@@ -1,10 +1,10 @@
 const Code = require('code');
 const Lab = require('lab');
 const Hoek = require('hoek');
-const Products = require('../../../server/plugins/products');
-const Payments = require('../../../server/plugins/payments');
-const ShoppingCart = require('../../../server/plugins/shopping-cart');
-const BookshelfOrm = require('../../../server/plugins/bookshelf-orm');
+const Products = require('../../../../server/plugins/products');
+const Payments = require('../../../../server/plugins/payments');
+const ShoppingCart = require('../../../../server/plugins/shopping-cart');
+const BookshelfOrm = require('../../../../server/plugins/bookshelf-orm');
 const testHelpers = require('../../testHelpers');
 const serverSetup = require('./_serverSetup');
 
@@ -16,24 +16,9 @@ const it = lab.test;
 
 describe('Testing ShoppingCart plugin', () => {
 
-    it('errors on missing yar plugin', (done) => {
-        const manifest = Hoek.clone(serverSetup.manifest);
-        manifest.registrations.splice(0, 1);
-
-        testHelpers
-            .startServerAndGetHeaders(manifest, serverSetup.composeOptions)
-            .then(({err, server}) => {
-                expect(err).to.exist();
-                expect(err.message).to.include('missing dependency yar');
-
-                testHelpers.destroyKnexAndStopServer(server, done);
-            });
-    });
-
-
     it('errors on missing BookshelfOrm plugin', (done) => {
         const manifest = Hoek.clone(serverSetup.manifest);
-        manifest.registrations.splice(2, 1);
+        testHelpers.spliceRegistrationFromManifest('./plugins/bookshelf-orm', manifest);
 
         testHelpers
             .startServerAndGetHeaders(manifest, serverSetup.composeOptions)
@@ -41,14 +26,14 @@ describe('Testing ShoppingCart plugin', () => {
                 expect(err).to.exist();
                 expect(err.message).to.include(`missing dependency ${BookshelfOrm.register.attributes.name}`);
 
-                server.stop(done);
+                testHelpers.destroyKnexAndStopServer(server, done);
             });
     });
 
 
     it('errors on missing Products plugin', (done) => {
         const manifest = Hoek.clone(serverSetup.manifest);
-        manifest.registrations.splice(5, 1);
+        testHelpers.spliceRegistrationFromManifest('./plugins/products', manifest);
 
         testHelpers
             .startServerAndGetHeaders(manifest, serverSetup.composeOptions)
@@ -63,7 +48,7 @@ describe('Testing ShoppingCart plugin', () => {
 
     it('errors on missing Payments plugin', (done) => {
         const manifest = Hoek.clone(serverSetup.manifest);
-        manifest.registrations.splice(6, 1);
+        testHelpers.spliceRegistrationFromManifest('./plugins/payments', manifest);
 
         testHelpers
             .startServerAndGetHeaders(manifest, serverSetup.composeOptions)
@@ -82,15 +67,7 @@ describe('Testing ShoppingCart plugin', () => {
             .then(({err, server}) => {
                 expect(err).not.to.exist();
                 expect(server.plugins.ShoppingCart.hasOwnProperty('schema')).to.be.true();
-                expect(server.plugins.ShoppingCart.hasOwnProperty('findOrCreateSessionCart')).to.be.true();
-                expect(server.plugins.ShoppingCart.hasOwnProperty('getCartItemPrice')).to.be.true();
-                expect(server.plugins.ShoppingCart.hasOwnProperty('getCartItemTotalPrice')).to.be.true();
-                expect(server.plugins.ShoppingCart.hasOwnProperty('getNumItemsInCart')).to.be.true();
-                expect(server.plugins.ShoppingCart.hasOwnProperty('getCartSalesTax')).to.be.true();
-                expect(server.plugins.ShoppingCart.hasOwnProperty('getCartSubTotal')).to.be.true();
-                expect(server.plugins.ShoppingCart.hasOwnProperty('getCartGrandTotal')).to.be.true();
-                expect(server.plugins.ShoppingCart.hasOwnProperty('STATUS_PAYMENT_SUCCESS')).to.be.true();
-                expect(server.plugins.ShoppingCart.hasOwnProperty('STATUS_PAYMENT_FAILED')).to.be.true();
+                expect(server.plugins.ShoppingCart.hasOwnProperty('findOrCreate')).to.be.true();
 
                 testHelpers.destroyKnexAndStopServer(server, done);
             });
@@ -108,39 +85,7 @@ describe('Testing ShoppingCart plugin', () => {
             });
     });
 
-
-    /*
-     * ROUTE: GET /cart/get
-     */
-     require('./routes/cart-get');
-
-    /*
-     * ROUTE: POST /cart/item/add
-     */
-     require('./routes/cart-item-add');
-
-    /*
-     * ROUTE: DELETE /cart/item/remove
-     */
-     require('./routes/cart-item-remove');
-
-    /*
-     * ROUTE: POST /cart/qty/update
-     */
-     require('./routes/cart-qty-update');
-
-    /*
-     * ROUTE: POST /cart/checkout
-     */
-     require('./routes/cart-checkout');
-
-     /*
-      * ROUTE: GET /cart/{param*}
-      */
-     require('./routes/cart-param');
-
-
-    // describe('Testing exposed method: findOrCreateSessionCart', () => {
+    // describe('Testing exposed method: findOrCreate', () => {
     //     //TODO
     // });
 

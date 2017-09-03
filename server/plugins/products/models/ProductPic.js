@@ -1,9 +1,9 @@
-const InfoService = require('../../info/info.service');
+const CoreService = require('../../core/core.service');
 
 
 module.exports = function (baseModel, bookshelf) {
     return baseModel.extend({
-        tableName: InfoService.DB_TABLES.product_pics,
+        tableName: CoreService.DB_TABLES.product_pics,
 
         hasTimestamps: true,
 

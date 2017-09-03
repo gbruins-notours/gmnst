@@ -15,7 +15,8 @@ function queryHelper(request) {
         orderDir: 'DESC',
         where: null,
         whereRaw: null,
-        andWhere: null
+        andWhere: null,
+        limit: null
     };
 
     let parsed = queryString.parse(request.url.search, {arrayFormat: 'bracket'});
@@ -26,7 +27,10 @@ function queryHelper(request) {
     if(parsed.page) {
         response.page = parseInt(parsed.page, 10) || null;
     }
-    if(parsed.orderDir == 'DESC' || parsed.orderDir == 'ASC') {
+    if(parsed.limit) {
+        response.limit = parseInt(parsed.limit, 10) || null;
+    }
+    if(parsed.orderDir === 'DESC' || parsed.orderDir === 'ASC') {
         response.orderDir = parsed.orderDir;
     }
     if(parsed.orderBy) {
@@ -64,6 +68,65 @@ function queryHelper(request) {
     }
 
     return response;
+}
+
+
+/**
+ * A helper method for querying Bookshelf models
+ * 
+ * http://bookshelfjs.org/#Model-instance-fetchPage
+ * 
+ * @param {*} request 
+ * @param {*} model 
+ * @param {*} withRelated 
+ */
+function fetchPage(request, model, withRelated) {
+    let queryData = queryHelper(request);
+    let fetchPage = {};
+
+    if(queryData.hasOwnProperty('limit') && queryData.limit) {
+        fetchPage.limit = queryData.limit;
+
+        if(queryData.hasOwnProperty('offset')) {
+            fetchPage.offset = queryData.offset;
+        }
+    }
+    else {
+        fetchPage = {
+            pageSize: queryData.pageSize || 100,
+            page: queryData.page || 1
+        } 
+    }
+
+    if(Array.isArray(withRelated) && withRelated.length) {
+        fetchPage.withRelated = withRelated;
+    }
+
+    return model.query((qb) => {
+        // qb.innerJoin('manufacturers', 'cars.manufacturer_id', 'manufacturers.id');
+        // qb.groupBy('cars.id');
+
+        if(queryData.where) {
+            qb.where(queryData.where[0], queryData.where[1], queryData.where[2]);
+        }
+
+        if(queryData.whereRaw) {
+            if(queryData.whereRaw.length === 1) {
+                qb.whereRaw(queryData.whereRaw);
+            }
+            else {
+                qb.whereRaw(queryData.whereRaw.shift(), queryData.whereRaw);
+            }
+        }
+
+        if(queryData.andWhere) {
+            forEach(queryData.andWhere, function(arr) {
+                qb.andWhere(arr[0], arr[1], arr[2]);
+            });
+        }
+    })
+    .orderBy(queryData.orderBy, queryData.orderDir)
+    .fetchPage(fetchPage);
 }
 
 
@@ -105,6 +168,7 @@ function logError(msg) {
 
 
 module.exports.queryHelper = queryHelper;
+module.exports.fetchPage = fetchPage;
 module.exports.getBoomError = getBoomError;
 module.exports.isDev = isDev;
 module.exports.makeArray = makeArray;

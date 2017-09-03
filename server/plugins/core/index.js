@@ -1,6 +1,7 @@
 const winston = require('winston');
 const path = require('path');
 const fs = require('fs');
+const Joi = require('joi');
 const isObject = require('lodash.isobject');
 
 
@@ -74,13 +75,39 @@ exports.register = function (server, options, next) {
             }
         },
         {
+            method: 'POST',
+            path: '/api/v1/logger',
+            config: {
+                description: 'Logs stuff',
+                validate: {
+                    payload: Joi.object({
+                        type: Joi.string(),
+                        message: Joi.string()
+                    })
+                },
+                handler: function (request, reply) {
+                    switch(request.payload.type) {
+                        // Only supportig the 'error' and 'info' types for now
+                        case 'error':
+                            winston.error(request.payload.message);
+                            break;
+
+                        default:
+                            winston.info(request.payload.message);
+                    }
+
+                    reply.apiSuccess();
+                }
+            }
+        },
+        {
             method: 'GET',
             path: '/{path*}',
             config: {
                 auth: false
             },
             handler: function (request, reply) {
-                reply.file( path.resolve(__dirname, '../../../dist/index.html') );
+                reply.file(path.resolve(__dirname, '../../../dist/index.html'));
 
                 // TODO: get CSRF token to add to template?
                 // return reply.view('index', {

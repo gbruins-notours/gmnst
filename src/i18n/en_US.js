@@ -64,6 +64,7 @@ const translations = {
     'Order total': 'Order total',
 
     'Pay with PAYPAL': 'Pay with PAYPAL',
+    'PAYMENT': 'PAYMENT',
     'Payment method error': 'Payment method error',
     'PAYPAL': 'PAYPAL',
     'PAYPAL_ACCOUNT_TOKENIZATION_FAILED': 'PayPal tokenization failed',
@@ -83,11 +84,14 @@ const translations = {
 
     'Quantity': 'Quantity',
 
+    'RECEIPT': 'RECEIPT',
     'Required': 'Required',
     'Return to cart': 'Return to cart',
+    'REVIEW': 'REVIEW',
 
     'SAME AS SHIPPING ADDRESS': 'SAME AS SHIPPING ADDRESS',
     'SECURITY CODE': 'SECURITY CODE',
+    'SHIPPING': 'SHIPPING',
     'Shipping': 'Shipping',
     'Shipping address': 'Shipping address',
     'Shipping method': 'Shipping method',

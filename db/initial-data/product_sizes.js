@@ -1,16 +1,16 @@
 const Promise = require('bluebird');
 const faker = require('faker');
-const InfoService = require('../../server/plugins/info/info.service');
+const CoreService = require('../../server/plugins/core/core.service');
 const ProductService = require('../../server/plugins/products/products.service');
 
 
 exports.seed = (knex) => {
     let sizeTypes = ProductService.getSizeTypes();
 
-    return knex(InfoService.DB_TABLES.product_sizes)
+    return knex(CoreService.DB_TABLES.product_sizes)
         .del()
         .then(() => {
-            return knex.raw(`ALTER SEQUENCE ${InfoService.DB_TABLES.product_sizes}_id_seq RESTART WITH 1`);
+            return knex.raw(`ALTER SEQUENCE ${CoreService.DB_TABLES.product_sizes}_id_seq RESTART WITH 1`);
         })
         .then( () => {
             let promises = [];
@@ -23,7 +23,7 @@ exports.seed = (knex) => {
                     sizeTypes.forEach((size) => {
                         if (faker.random.boolean()) {
                             promises.push(
-                                knex(InfoService.DB_TABLES.product_sizes)
+                                knex(CoreService.DB_TABLES.product_sizes)
                                     .insert({
                                         size: size,
                                         inventory_count: faker.random.number(25),

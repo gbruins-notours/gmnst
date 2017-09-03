@@ -32,7 +32,7 @@ describe('Testing route: GET /product/{id}', () => {
                     .then((Prod) => {
                         const request = {
                             method: 'GET',
-                            url: `/product/${Prod.attributes.id}`,
+                            url: `/product?id=${Prod.attributes.id}`,
                             headers
                         };
 
@@ -46,18 +46,16 @@ describe('Testing route: GET /product/{id}', () => {
                             });
 
                             // clean up
-                            Prod.destroy().finally(
-                                () => {
-                                    testHelpers.destroyKnexAndStopServer(server, done);
-                                }
-                            );
+                            Prod.destroy().finally(() => {
+                                testHelpers.destroyKnexAndStopServer(server, done);
+                            });
                         });
                     });
             });
     });
 
 
-    it('returns a 404 when not passed an ID', (done) => {
+    it('returns a 400 when not passed an ID', (done) => {
         testHelpers
             .startServerAndGetHeaders(serverSetup.manifest, serverSetup.composeOptions)
             .then(({err, server, headers}) => {
@@ -65,20 +63,19 @@ describe('Testing route: GET /product/{id}', () => {
 
                 const request = {
                     method: 'GET',
-                    url: `/product/`,
+                    url: '/product?id=',
                     headers
                 };
 
                 server.inject(request, (res) => {
-                    expect(res.statusCode, 'Status code').to.equal(404);
-
+                    expect(res.statusCode, 'Status code').to.equal(400);
                     testHelpers.destroyKnexAndStopServer(server, done);
                 });
             });
     });
 
 
-    it('returns a 400 (Bad Request) when ID is not a number', (done) => {
+    it('returns a 400 (Bad Request) when ID is a number', (done) => {
         testHelpers
             .startServerAndGetHeaders(serverSetup.manifest, serverSetup.composeOptions)
             .then(({err, server, headers}) => {
@@ -86,13 +83,32 @@ describe('Testing route: GET /product/{id}', () => {
 
                 const request = {
                     method: 'GET',
-                    url: `/product/foo`,
+                    url: '/product?id=123',
                     headers
                 };
 
                 server.inject(request, (res) => {
                     expect(res.statusCode, 'Status code').to.equal(400);
+                    testHelpers.destroyKnexAndStopServer(server, done);
+                });
+            });
+    });
 
+
+    it('returns a 400 (Bad Request) when ID is not a UUID', (done) => {
+        testHelpers
+            .startServerAndGetHeaders(serverSetup.manifest, serverSetup.composeOptions)
+            .then(({err, server, headers}) => {
+                expect(err).not.to.exist();
+
+                const request = {
+                    method: 'GET',
+                    url: '/product?id=abc',
+                    headers
+                };
+
+                server.inject(request, (res) => {
+                    expect(res.statusCode, 'Status code').to.equal(400);
                     testHelpers.destroyKnexAndStopServer(server, done);
                 });
             });
@@ -107,7 +123,7 @@ describe('Testing route: GET /product/{id}', () => {
                 
                 const request = {
                     method: 'GET',
-                    url: `/product/99999999`,
+                    url: `/product?id=2e8d31fd-dbde-4e65-8172-a7b7bbf1619e`,
                     headers
                 };
 

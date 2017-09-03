@@ -1,10 +1,20 @@
-const Server = require('../server');
+require('dotenv/config');
+
+const Server = require('../../server');
+const isObject = require('lodash.isobject');
+const forEach = require('lodash.foreach');
+const queryString = require('query-string');
 
 
 function destroyKnexAndStopServer(server, done) {
-    server.plugins.BookshelfOrm.knexObject.destroy(() => {
-       server.stop(done);
-    });
+    if(server.plugins.hasOwnProperty('BookshelfOrm')) {
+        server.plugins.BookshelfOrm.knexObject.destroy(() => {
+            server.stop(done);
+        });
+    }
+    else {
+        server.stop(done);
+    }
 }
 
 
@@ -75,12 +85,12 @@ function getBasicManifest() {
             }
         ],
         registrations: [
-            {
-                plugin: {
-                    register: './plugins/yar',
-                    options: {}
-                }
-            },
+            // {
+            //     plugin: {
+            //         register: './plugins/yar',
+            //         options: {}
+            //     }
+            // },
             // {
             //     plugin: {
             //         register: './plugins/crumbCsrf',
@@ -94,7 +104,15 @@ function getBasicManifest() {
             },
             {
                 plugin: {
-                    register: './plugins/bookshelf-orm'
+                    register: './plugins/bookshelf-orm',
+                    options: {
+                        knex: {
+                            debug: false
+                        },
+                        plugins: [
+                            require('bookshelf-uuid')
+                        ]
+                    }
                 }
             },
             {
@@ -138,6 +156,66 @@ function startServerAndGetHeaders(manifest, composeOptions) {
 
     return p;
 }
+
+
+function getRegistrationIndexFromManifest(path, manifest) {
+    let i = -1;
+
+    if(isObject(manifest) && Array.isArray(manifest.registrations)) {
+        forEach(manifest.registrations, (obj, index) => {
+            if(isObject(obj) && isObject(obj.plugin) && obj.plugin.register === path) {
+                i = index;
+            }
+        })
+    }
+
+    return i;
+}
+
+
+function spliceRegistrationFromManifest(path, manifest) {
+    let index = getRegistrationIndexFromManifest(path, manifest);
+
+    if(index > -1) {
+        manifest.registrations.splice(index, 1);
+    }
+}
+
+
+function getProduct(server, headers, paramString) {
+    let paramStringDefault = queryString.stringify(
+        {
+            where: ['is_available', '=', true],
+            limit: 1
+        }, 
+        { arrayFormat: 'bracket' }
+    );
+
+    return server.inject({
+        method: 'GET',
+        url: `/products?${paramString || paramStringDefault}`,
+        headers
+    })
+    .then((res) => {
+        let data = JSON.parse(JSON.stringify(res.result.data));
+        return data[0].id;
+    });
+}
+
+
+function addToCart(server, headers, productId, options) {
+    let opts = options || {qty: 1, size: 'SIZE_ADULT_3XL'};
+
+    return server.inject({
+        method: 'POST',
+        url: '/cart/item/add',
+        headers,
+        payload: {
+            id: productId,
+            options: opts
+        }
+    });
+}
         
 
 module.exports.destroyKnexAndStopServer = destroyKnexAndStopServer;
@@ -147,3 +225,7 @@ module.exports.getInfo = getInfo;
 module.exports.getJwtHeaders = getJwtHeaders;
 module.exports.getBasicManifest = getBasicManifest;
 module.exports.startServerAndGetHeaders = startServerAndGetHeaders;
+module.exports.getRegistrationIndexFromManifest = getRegistrationIndexFromManifest;
+module.exports.spliceRegistrationFromManifest = spliceRegistrationFromManifest;
+module.exports.getProduct = getProduct;
+module.exports.addToCart = addToCart;

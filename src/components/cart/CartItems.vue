@@ -40,7 +40,7 @@
                         <div class="cartItemCol">
                             <label class="itemLabel">{{ $t('Quantity' )}}:</label>
                             <div v-if="allowEdit" class="itemVal">
-                                <div class="displayTableCell prl fwb vam">{{ item.qty }}</div>
+                                <div class="displayTableCell prl fwb vat">{{ item.qty }}</div>
                                 <div class="displayTableCell">
                                     <number-buttons :step="1"
                                                     :min="1"

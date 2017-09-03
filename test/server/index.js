@@ -1,4 +1,4 @@
-'use strict';
+require('dotenv/config');
 
 const Hapi = require('hapi');
 const Code = require('code');
@@ -77,13 +77,10 @@ internals.manifest = {
             port: 0
         }
     ],
-    registrations: [
-        {
-            plugin: './plugins/version'
-        }
-    ]
+    registrations: []
 };
 
 internals.composeOptions = {
-    relativeTo: Path.resolve(__dirname, '../server')
+    // Relative to the real hapi server
+    relativeTo: Path.resolve(__dirname, '../../../server')
 };

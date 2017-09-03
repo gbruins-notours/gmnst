@@ -4,7 +4,7 @@
              :class="{'active': currentStep === 0, 'completed': currentStep > 0}"
              @click="changeStep(0)">
             <i class="fa fa-truck"></i>
-            <div class="item-desc">SHIPPING</div>
+            <div class="item-desc nowrap">1) {{ $t('SHIPPING') }}</div>
         </div>
 
         <div class="spacer">
@@ -15,7 +15,7 @@
              :class="{'active': currentStep === 1, 'completed': currentStep > 1}"
              @click="changeStep(1)">
             <i class="fa fa-handshake-o"></i>
-            <div class="item-desc">PAYMENT</div>
+            <div class="item-desc nowrap">2) {{ $t('PAYMENT') }}</div>
         </div>
 
         <div class="spacer">
@@ -26,7 +26,7 @@
              :class="{'active': currentStep === 2, 'completed': currentStep > 2}"
              @click="changeStep(2)">
             <i class="fa fa-shopping-cart"></i>
-            <div class="item-desc">REVIEW</div>
+            <div class="item-desc nowrap">3) {{ $t('REVIEW') }}</div>
         </div>
 
         <div class="spacer">
@@ -35,7 +35,7 @@
 
         <div class="item" :class="{'active': currentStep === 3, 'completed': currentStep > 3}">
             <i class="fa fa-file-text-o"></i>
-            <div class="item-desc">RECEIPT</div>
+            <div class="item-desc nowrap">4) {{ $t('RECEIPT') }}</div>
         </div>
     </div>
 </template>
@@ -90,12 +90,9 @@
         width: 100%;
         display: flex;
         display: -webkit-flex; /* Safari */
-
         align-items: center;
-
         flex-direction: row;
         -webkit-flex-direction: row; /* Safari */
-        
         flex-wrap: nowrap;
         -webkit-flex-wrap: nowrap; 
 
@@ -107,15 +104,15 @@
         }
 
         .spacer {
-            padding: 0 15px;
+            padding: 0 10px;
             flex-grow: 1;
         }
 
         .item {
-            font-size: 25px;
+            font-size: 20px;
             padding: 3px;
             @include border-radius(2px);
-            line-height: 25px;
+            line-height: 20px;
             border: 1px solid transparent;
 
             .fa {
@@ -123,11 +120,7 @@
             }
 
             .item-desc {
-                font-size: 12px;
-            }
-
-            .fa-check-circle {
-                font-size: 16px;
+                font-size: 11px;
             }
 
             &.active {
@@ -142,6 +135,23 @@
 
                 &:hover {
                     border: 1px solid #c8e2c7;
+                }
+            }
+        }
+    }
+        
+    @media #{$medium-and-up} {  
+        .checkout-wizard {
+            .spacer {
+                padding: 0 15px;
+            }
+
+            .item {
+                font-size: 25px;
+                line-height: 25px;
+
+                .item-desc {
+                    font-size: 12px;
                 }
             }
         }

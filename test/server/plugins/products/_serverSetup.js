@@ -13,7 +13,8 @@ manifest.registrations.push(
 
 
 let composeOptions = {
-    relativeTo: Path.resolve(__dirname, '../../../server')
+    // Relative to the real hapi server
+    relativeTo: Path.resolve(__dirname, '../../../../server')
 };
 
 

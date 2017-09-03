@@ -1,9 +1,9 @@
-const InfoService = require('../../server/plugins/info/info.service');
+const CoreService = require('../../server/plugins/core/core.service');
 
 
 module.exports.up = (knex) => {
     return knex.schema.createTable(
-        InfoService.DB_TABLES.customers,
+        CoreService.DB_TABLES.customers,
         (t) => {
             t.increments('id');
             t.string('first_name');
@@ -25,5 +25,5 @@ module.exports.up = (knex) => {
 
 
 module.exports.down = (knex) => {
-    return knex.schema.dropTableIfExists(InfoService.DB_TABLES.customers);
+    return knex.schema.dropTableIfExists(CoreService.DB_TABLES.customers);
 };

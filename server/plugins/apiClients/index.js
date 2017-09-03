@@ -11,9 +11,11 @@ const ApiClientsService = require('./apiClients.service');
 let internals = {};
 
 
-exports.register = (server, options, next) => {
 
-    /**
+
+internals.after = function (server, next) {
+
+        /**
      * Performs additional validation on the decoded JWT token
      *
      * @param decoded
@@ -203,6 +205,13 @@ exports.register = (server, options, next) => {
         require('./models/ApiClients')(baseModel, bookshelf, server)
     );
 
+    return next();
+
+}
+
+
+exports.register = (server, options, next) => {
+    server.dependency('BookshelfOrm', internals.after);
     return next();
 };
 

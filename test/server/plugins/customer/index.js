@@ -1,8 +1,7 @@
 const Code = require('code');
 const Lab = require('lab');
 const Hoek = require('hoek');
-const Customer = require('../../../server/plugins/customer');
-const BookshelfOrm = require('../../../server/plugins/bookshelf-orm');
+const BookshelfOrm = require('../../../../server/plugins/bookshelf-orm');
 const testHelpers = require('../../testHelpers');
 const serverSetup = require('./_serverSetup');
 
@@ -16,7 +15,7 @@ describe('Testing Customer plugin', () => {
 
     it('errors on missing BookshelfOrm plugin', (done) => {
         const manifest = Hoek.clone(serverSetup.manifest);
-        manifest.registrations.splice(2, 1);
+        testHelpers.spliceRegistrationFromManifest('./plugins/bookshelf-orm', manifest);
 
         testHelpers
             .startServerAndGetHeaders(manifest, serverSetup.composeOptions)
@@ -24,7 +23,7 @@ describe('Testing Customer plugin', () => {
                 expect(err).to.exist();
                 expect(err.message).to.include(`missing dependency ${BookshelfOrm.register.attributes.name}`);
 
-                server.stop(done);
+                testHelpers.destroyKnexAndStopServer(server, done);
             });
     });
 

@@ -95,7 +95,7 @@ internals.after = function (server, next) {
      * @returns {Promise}
      */
     internals.shoppingCartItem.add = (request) => {
-        return new Promise( (resolve, reject) => {
+        return new Promise((resolve, reject) => {
             Promise
                 .all([
                     server.plugins.Products.getProductByAttribute('id', request.payload.id),
@@ -242,7 +242,7 @@ internals.after = function (server, next) {
                 handler: (request, reply) => {
                     internals.shoppingCart.findOrCreate(request)
                         .then((ShoppingCart) => {
-                            reply.apiSuccess(ShoppingCart);
+                            reply.apiSuccess(ShoppingCart.toJSON());
                         })
                         .catch((err) => {
                             HelperService.getBoomError(err, (error, result) => {
@@ -265,7 +265,7 @@ internals.after = function (server, next) {
                 handler: (request, reply) => {
                     internals.shoppingCart.findOrCreate(request)
                         .then((ShoppingCart) => {
-                            reply.apiSuccess(ShoppingCart);
+                            reply.apiSuccess(ShoppingCart.toJSON());
                         })
                         .catch((err) => {
                             HelperService.getBoomError(err, (error, result) => {
@@ -296,7 +296,8 @@ internals.after = function (server, next) {
                             return server.plugins.BookshelfOrm.bookshelf.model('ShoppingCart').getCart(request);
                         })
                         .then((ShoppingCart) => {
-                            reply.apiSuccess(ShoppingCart);
+                            // reply.apiSuccess(ShoppingCart);
+                            reply.apiSuccess(ShoppingCart.toJSON());
                         })
                         .catch((err) => {
                             winston.error(err);
@@ -324,7 +325,7 @@ internals.after = function (server, next) {
                             return internals.shoppingCart.get(request);
                         })
                         .then((ShoppingCart) => {
-                            reply.apiSuccess(ShoppingCart);
+                            reply.apiSuccess(ShoppingCart.toJSON());
                         })
                         .catch((err) => {
                             winston.error(err);
@@ -363,7 +364,7 @@ internals.after = function (server, next) {
                                     return internals.shoppingCart.get(request)
                                 })
                                 .then((ShoppingCart) => {
-                                    reply.apiSuccess(ShoppingCart);
+                                    reply.apiSuccess(ShoppingCart.toJSON());
                                 });
                         })
                         .catch((err) => {

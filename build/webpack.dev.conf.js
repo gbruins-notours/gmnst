@@ -18,10 +18,13 @@ let webpackConfig = merge(baseConfig, {
     },
     plugins: [
         // http://vue-loader.vuejs.org/en/workflow/production.html
+        // The DefinePlugin allows you to create global constants which can be configured at compile time.
         new webpack.DefinePlugin({
             'process.env': {
                 NODE_ENV: '"development"'
             },
+            JWT_CLIENT_ID: JSON.stringify(process.env.JWT_CLIENT_ID),
+            JWT_CLIENT_SECRET: JSON.stringify(process.env.JWT_CLIENT_SECRET)
         }),
 
         // https://github.com/glenjamin/webpack-hot-middleware#installation--usage

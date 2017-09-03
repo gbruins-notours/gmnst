@@ -1,13 +1,13 @@
 const Promise = require('bluebird');
 const faker = require('faker');
-const InfoService = require('../../server/plugins/info/info.service');
+const CoreService = require('../../server/plugins/core/core.service');
 
 
 exports.seed = (knex) => {
-    return knex(InfoService.DB_TABLES.product_artists)
+    return knex(CoreService.DB_TABLES.product_artists)
         .del()
         .then(() => {
-            return knex.raw(`ALTER SEQUENCE ${InfoService.DB_TABLES.product_artists}_id_seq RESTART WITH 1`);
+            return knex.raw(`ALTER SEQUENCE ${CoreService.DB_TABLES.product_artists}_id_seq RESTART WITH 1`);
         })
         .then(
             () => {
@@ -16,7 +16,7 @@ exports.seed = (knex) => {
 
                 for(let i=1; i<6; i++) {
                     promises.push(
-                        knex(InfoService.DB_TABLES.product_artists).insert({
+                        knex(CoreService.DB_TABLES.product_artists).insert({
                             description_short: 'Product artist ' + i + ' - ' + faker.lorem.sentence(),
                             description_long: 'Product artist ' + i + ' - ' + faker.lorem.paragraph(),
                             icon: 'sample_artist_icon.jpg',

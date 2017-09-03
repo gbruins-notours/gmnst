@@ -74,17 +74,6 @@ internals.manifest = {
         },
         {
             plugin: {
-                register: './plugins/info'
-            },
-            options: {
-                select: ['api'],
-                routes: {
-                    prefix: '/api/v1'
-                }
-            }
-        },
-        {
-            plugin: {
                 register: './plugins/products'
             },
             options: {

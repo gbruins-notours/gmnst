@@ -1,5 +1,5 @@
 const Promise = require('bluebird');
-const InfoService = require('../../server/plugins/info/info.service');
+const CoreService = require('../../server/plugins/core/core.service');
 const ApiClientsService = require('../../server/plugins/apiClients/apiClients.service');
 
 
@@ -10,17 +10,17 @@ exports.seed = (knex) => {
         .cryptPassword('G244.h"eSjV/')
         .then((pwd) => {
             hashedPassword = pwd;
-            return knex(InfoService.DB_TABLES.api_clients).del()
+            return knex(CoreService.DB_TABLES.api_clients).del()
         })
         .then(() => {
-            return knex.raw(`ALTER SEQUENCE ${InfoService.DB_TABLES.api_clients}_id_seq RESTART WITH 1`);
+            return knex.raw(`ALTER SEQUENCE ${CoreService.DB_TABLES.api_clients}_id_seq RESTART WITH 1`);
         })
         .then(() => {
             let promises = [];
             let d = new Date();
 
             promises.push(
-                knex(InfoService.DB_TABLES.api_clients)
+                knex(CoreService.DB_TABLES.api_clients)
                     .insert({
                         client_id: 'admin@gmnst.com',
                         client_secret: hashedPassword,

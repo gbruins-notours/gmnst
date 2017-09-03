@@ -1,4 +1,4 @@
-require('../../../server/environment_config');
+require('dotenv/config');
 
 const Path = require('path');
 const testHelpers = require('../../testHelpers');
@@ -26,17 +26,13 @@ manifest.registrations.push(
                 privateKey: process.env.BRAINTREE_PRIVATE_KEY
             }
         }
-    },
-    {
-        plugin: {
-            register: './plugins/info'
-        }
     }
 );
 
 
 let composeOptions = {
-    relativeTo: Path.resolve(__dirname, '../../../server')
+    // Relative to the real hapi server
+    relativeTo: Path.resolve(__dirname, '../../../../server')
 };
 
 

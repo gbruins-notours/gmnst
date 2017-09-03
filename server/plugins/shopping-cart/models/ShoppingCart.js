@@ -1,13 +1,13 @@
 const jwt = require('jsonwebtoken');
 const accounting = require('accounting');
-const InfoService = require('../../info/info.service');
+const CoreService = require('../../core/core.service');
 
 
 module.exports = function (baseModel, bookshelf, server) {
 
     return baseModel.extend(
         {
-            tableName: InfoService.DB_TABLES.carts,
+            tableName: CoreService.DB_TABLES.carts,
 
             uuid: true,
 
@@ -85,21 +85,21 @@ module.exports = function (baseModel, bookshelf, server) {
              */
             getCart: function(request) {
                 return this.query((qb) => {
-                        qb.where('token', '=', this.getCartToken(request));
-                        qb.whereNull('closed_at');
-                        qb.whereNull('status');
-                    })
-                    .orderBy('created_at', 'DESC')
-                    .fetch({
-                        withRelated: [
-                            'cart_items.product', // https://stackoverflow.com/questions/35679855/always-fetch-from-related-models-in-bookshelf-js#35841710
-                            {
-                                cart_items: (query) => {
-                                    query.orderBy('created_at', 'DESC');
-                                }
+                    qb.where('token', '=', this.getCartToken(request));
+                    qb.whereNull('closed_at');
+                    qb.whereNull('status');
+                })
+                .orderBy('created_at', 'DESC')
+                .fetch({
+                    withRelated: [
+                        'cart_items.product', // https://stackoverflow.com/questions/35679855/always-fetch-from-related-models-in-bookshelf-js#35841710
+                        {
+                            cart_items: (query) => {
+                                query.orderBy('created_at', 'DESC');
                             }
-                        ]
-                    })
+                        }
+                    ]
+                })
             },
 
 

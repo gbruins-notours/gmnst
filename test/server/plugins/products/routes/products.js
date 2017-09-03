@@ -1,6 +1,7 @@
 const Lab = require('lab');
 const Code = require('code');
 const _ = require('lodash');
+const queryString = require('query-string');
 const testHelpers = require('../../../testHelpers');
 const serverSetup = require('../_serverSetup');
 
@@ -17,31 +18,28 @@ describe('Testing route: GET /products', () => {
             .startServerAndGetHeaders(serverSetup.manifest, serverSetup.composeOptions)
             .then(({err, server, headers}) => {
                 expect(err).not.to.exist();
-                
-                //TODO
-                // params.where = ['is_available', '=', true];
-                // params.andWhere = [
-                //     ['product_type_id', '=', parseInt(productType)],
-                //     ['inventory_count', '>', 0]
-                // ];
-                // params.orderBy = 'updated_at';
-                // params.orderDir = 'DESC';
 
+                let paramString = queryString.stringify(
+                    {
+                        where: ['is_available', '=', true],
+                        whereRaw: ['sub_type & ? > 0', [2]],
+                        andWhere: [
+                            ['inventory_count', '>', 0]
+                        ],
+                        orderBy: 'updated_at',
+                        orderDir: 'DESC'
+                    }, 
+                    { arrayFormat: 'bracket' }
+                );
 
                 const request = {
                     method: 'GET',
-                    url: '/products?where=["id", "=", "999"]',
+                    url: `/products?${paramString}`,
                     headers
                 };
 
-                // request.params.is_available = true;
-                // request.payload.where = ['id', '=', 999];
-
                 server.inject(request, (res) => {
-                    // console.log('res.result.data', JSON.parse(JSON.stringify(res.result.data)));
-
                     expect(res.statusCode, 'Status code').to.equal(200);
-
                     testHelpers.destroyKnexAndStopServer(server, done);
                 });
             });
@@ -54,125 +52,35 @@ describe('Testing route: GET /products', () => {
             .then(({err, server, headers}) => {
                 expect(err).not.to.exist();
 
+                let paramString = queryString.stringify(
+                    {
+                        where: ['is_available', '=', true],
+                        limit: 1
+                    }, 
+                    { arrayFormat: 'bracket' }
+                );
+
                 const request = {
                     method: 'GET',
-                    url: '/products?where=["id", "=", "1"]',
+                    url: `/products?${paramString}`,
                     headers
                 };
 
                 server.inject(request, (res) => {
                     let data = JSON.parse(JSON.stringify(res.result.data));
+                    let prod = data[0];
 
                     expect(res.statusCode, 'Status code').to.equal(200);
-                    expect(data[0].hasOwnProperty('sizes'), 'Related info: sizes').to.equal(true);
-                    expect(data[0].hasOwnProperty('genders'), 'Related info: genders').to.equal(true);
-                    expect(data[0].hasOwnProperty('pics'), 'Related info: pics').to.equal(true);
-                    expect(data[0].hasOwnProperty('artist'), 'Related info: artist').to.equal(true);
-                    expect(data[0].hasOwnProperty('type'), 'Related info: type').to.equal(true);
-                    expect(data[0].hasOwnProperty('category'), 'Related info: category').to.equal(true);
+
+                    expect(prod.hasOwnProperty('sizes'), 'Related info: sizes').to.equal(true);
+                    expect(prod.hasOwnProperty('artist'), 'Related info: artist').to.equal(true);
+                    expect(prod.hasOwnProperty('pics'), 'Related info: pics').to.equal(true);
+                    expect(prod.hasOwnProperty('type'), 'Related info: type').to.equal(true);
+                    expect(prod.hasOwnProperty('sub_type'), 'Related info: sub_type').to.equal(true);
+                    expect(prod.hasOwnProperty('gender'), 'Related info: gender').to.equal(true);
 
                     testHelpers.destroyKnexAndStopServer(server, done);
                 });
-            });
-    });
-
-
-    it('should get one product when searching by id using "where" URL param', (done) => {
-        testHelpers
-            .startServerAndGetHeaders(serverSetup.manifest, serverSetup.composeOptions)
-            .then(({err, server, headers}) => {
-                expect(err).not.to.exist();
-
-                const Product = server.plugins.BookshelfOrm.bookshelf.model('Product');
-
-                const attributes = {
-                    title: 'title',
-                    description_short: 'description_short',
-                    description_long: 'description_long',
-                    sku: 'sku'
-                };
-
-                Product
-                    .forge()
-                    .save(attributes)
-                    .then(
-                        (Prod) => {
-                            const productId = Prod.attributes.id;
-                            const request = {
-                                method: 'GET',
-                                url: `/products?where=["id", "=", "${productId}"]`,
-                                headers
-                            };
-
-                            server.inject(request, (res) => {
-                                let data = JSON.parse(JSON.stringify(res.result.data));
-
-                                expect(res.statusCode, 'Status code').to.equal(200);
-                                expect(data.length).to.equal(1);
-                                expect(data[0]['id']).to.equal(productId);
-
-                                _.forEach(attributes, (val, key) => {
-                                    expect(data[0][key]).to.equal(val);
-                                });
-
-                                // clean up
-                                Prod.destroy().finally(
-                                    () => {
-                                        testHelpers.destroyKnexAndStopServer(server, done);
-                                    }
-                                );
-                            });
-                        }
-                    );
-            });
-    });
-
-
-    it('should get one product when searching by id using "andWhere" URL param', (done) => {
-        testHelpers
-            .startServerAndGetHeaders(serverSetup.manifest, serverSetup.composeOptions)
-            .then(({err, server, headers}) => {
-                expect(err).not.to.exist();
-                
-                const Product = server.plugins.BookshelfOrm.bookshelf.model('Product');
-
-                const attributes = {
-                    title: 'title',
-                    sku: 'sku'
-                };
-
-                Product
-                    .forge()
-                    .save(attributes)
-                    .then(
-                        (Prod) => {
-                            const productId = Prod.attributes.id;
-                            const request = {
-                                method: 'GET',
-                                url: `/products?where=["id", "=", "${productId}"]&andWhere=[["title", "=", "title"],["sku", "=", "sku"]]`,
-                                headers
-                            };
-
-                            server.inject(request, (res) => {
-                                let data = JSON.parse(JSON.stringify(res.result.data));
-
-                                expect(res.statusCode, 'Status code').to.equal(200);
-                                expect(data.length).to.equal(1);
-                                expect(data[0]['id']).to.equal(productId);
-
-                                _.forEach(attributes, (val, key) => {
-                                    expect(data[0][key]).to.equal(val);
-                                });
-
-                                // clean up
-                                Prod.destroy().finally(
-                                    () => {
-                                        testHelpers.destroyKnexAndStopServer(server, done);
-                                    }
-                                );
-                            });
-                        }
-                    );
             });
     });
 
