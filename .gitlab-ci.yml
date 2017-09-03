@@ -1,7 +1,15 @@
-# This file is a template, and might need editing before it works on your project.
-# Official framework image. Look for the different tagged releases at:
+# https://hub.docker.com/r/library/postgres/tags/
+services:
+  - postgres:9.6.2-alpine
+
 # https://hub.docker.com/r/library/node/tags/
-image: node:latest
+image: node:6.11
+
+variables:
+  POSTGRES_DB: gmnst_test
+  POSTGRES_USER: gmnst_tester
+  POSTGRES_PASSWORD: ""
+  DATABASE_URL: "postgres://postgres@postgres/gmnst_test"
 
 stages:
   - test
@@ -12,16 +20,18 @@ cache:
   paths:
   - node_modules/
 
-test_async:
+before_script:
+  - npm install
+  - npm run knex:migrate
+  - npm run knex:seed
+
+test_server:
   stage: test
+  services:
+    - postgres:9.6.2-alpine
   script:
-   - npm install
-   - npm run knex:migrate
-   - npm run knex:seed
   #  - node ./specs/start.js ./specs/async.spec.js
-   - npm run unit
-  tags:
-    - docker
+    - npm run test:server
 
 # test_db:
 #   stage: test
