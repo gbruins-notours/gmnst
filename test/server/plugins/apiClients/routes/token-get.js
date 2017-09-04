@@ -59,6 +59,8 @@ describe('Testing route: POST /token/get', () => {
                 })
                 .then((res) => {
                     console.log("RESPONSE HEADERS", res.headers)
+                    console.log("ENV JWT_CLIENT_ID", process.env.JWT_CLIENT_ID)
+                    console.log("ENV JWT_CLIENT_SECRET", process.env.JWT_CLIENT_SECRET)
                     expect(res.statusCode, 'Status code').to.equal(200);
                     expect(res.headers.hasOwnProperty('x-authorization')).to.equal(true);
 
