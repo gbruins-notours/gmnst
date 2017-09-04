@@ -40,8 +40,12 @@ test_server:
   # image: node:6.11
   # services:
     # - postgres:9.6.2-alpine
-  # variables:
-  #   DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/$POSTGRES_DB"
+  variables:
+    PG_HOST: postgresql
+    PG_USER: $POSTGRES_USER
+    PG_PASSWORD: $POSTGRES_PASSWORD
+    PG_PORT: 5432
+    DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/$POSTGRES_DB"
   script:
     # - export PGPASSWORD=$POSTGRES_PASSWORD
     # - psql -h "postgres" -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "SELECT 'OK' AS status;"
