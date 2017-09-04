@@ -52,10 +52,9 @@ test_server:
   services:
     - postgres:9.6.2-alpine
   variables:
-    # DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/$POSTGRES_DB"
     DATABASE_URL: "postgres://postgres@postgres/$POSTGRES_DB"
   script:
-  - npm run test:server
+    - npm run test:server
 
 # test_db:
 #   stage: test

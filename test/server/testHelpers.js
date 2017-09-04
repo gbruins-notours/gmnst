@@ -107,7 +107,7 @@ function getBasicManifest() {
                     register: './plugins/bookshelf-orm',
                     options: {
                         knex: {
-                            debug: false
+                            debug: true
                         },
                         plugins: [
                             require('bookshelf-uuid')

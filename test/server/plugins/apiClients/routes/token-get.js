@@ -53,8 +53,10 @@ describe('Testing route: POST /token/get', () => {
                     url: '/token/get',
                     headers,
                     payload: {
-                        clientId: 'admin@gmnst.com',
-                        clientSecret: 'G244.h"eSjV/'
+                        // clientId: 'admin@gmnst.com',
+                        // clientSecret: 'G244.h"eSjV/'
+                        clientId: process.env.JWT_CLIENT_ID,
+                        clientSecret: process.env.JWT_CLIENT_SECRET
                     }
                 };
 
