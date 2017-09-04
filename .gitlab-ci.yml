@@ -44,8 +44,8 @@ test_server:
   stage: test
   services:
     - postgres:9.6.2-alpine
-  variables:
-    DATABASE_URL: "postgres://postgres@postgres/$POSTGRES_DB"
+  # variables:
+  #   DATABASE_URL: "postgres://postgres@postgres/$POSTGRES_DB"
   script:
     - npm run test:server
 
