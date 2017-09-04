@@ -32,7 +32,7 @@ test_server:
   stage: test
   # services:
   #   - postgres:9.6.2-alpine
-  image: postgres:9.6.2-alpine
+  # image: postgres:9.6.2-alpine
   variables:
     DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/$POSTGRES_DB"
   script:
