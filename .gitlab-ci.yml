@@ -33,9 +33,6 @@ test_server:
   # services:
   #   - postgres:9.6.2-alpine
   # image: node:6.11
-  services:
-    - node:6.11
-  image: postgres:9.6.2-alpine
   variables:
     DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/$POSTGRES_DB"
   script:
