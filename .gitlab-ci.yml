@@ -22,33 +22,33 @@ variables:
 #   paths:
 #   - node_modules/
 
-connect:
-  # image: postgres:9.6.2-alpine
+# connect:
+#   # image: postgres:9.6.2-alpine
+#   # image: node:6.11
+#   # services:
+#   #   - postgres:9.6.2-alpine
+#   # image: postgres:9.6.2-alpine
+#   # services:
+#   # - node:6.11
+#   script:
+#   # official way to provide password to psql: http://www.postgresql.org/docs/9.3/static/libpq-envars.html
+#   - export PGPASSWORD=$POSTGRES_PASSWORD
+#   - psql -h "postgres" -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "SELECT 'OK' AS status;"
+
+test_server:
+  # stage: test
   # image: node:6.11
   # services:
-  #   - postgres:9.6.2-alpine
-  # image: postgres:9.6.2-alpine
-  # services:
-  # - node:6.11
+    # - postgres:9.6.2-alpine
+  # variables:
+  #   DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/$POSTGRES_DB"
   script:
-  # official way to provide password to psql: http://www.postgresql.org/docs/9.3/static/libpq-envars.html
-  - export PGPASSWORD=$POSTGRES_PASSWORD
-  - psql -h "postgres" -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "SELECT 'OK' AS status;"
-
-# test_server:
-#   stage: test
-#   image: node:6.11
-#   services:
-#     - postgres:9.6.2-alpine
-#   # variables:
-#   #   DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/$POSTGRES_DB"
-#   script:
-#     # - export PGPASSWORD=$POSTGRES_PASSWORD
-#     # - psql -h "postgres" -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "SELECT 'OK' AS status;"
-#     - npm install --quiet
-#     - npm run knex:migrate
-#     - npm run knex:seed
-#     - npm run test:server
+    # - export PGPASSWORD=$POSTGRES_PASSWORD
+    # - psql -h "postgres" -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "SELECT 'OK' AS status;"
+    - npm install --quiet
+    - npm run knex:migrate
+    - npm run knex:seed
+    - npm run test:server
 
 # test_db:
 #   stage: test
