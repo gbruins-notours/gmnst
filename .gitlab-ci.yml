@@ -36,9 +36,9 @@ test_server:
   variables:
     DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/$POSTGRES_DB"
   script:
-  #  - node ./specs/start.js ./specs/async.spec.js
-    - export PGPASSWORD=$POSTGRES_PASSWORD
-    - psql -h "postgres" -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "SELECT 'OK' AS status;"
+    #- node ./specs/start.js ./specs/async.spec.js
+    #- export PGPASSWORD=$POSTGRES_PASSWORD
+    #- psql -h "postgres" -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "SELECT 'OK' AS status;"
     - npm install
     - npm run knex:migrate
     - npm run knex:seed
