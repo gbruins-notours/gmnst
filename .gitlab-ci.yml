@@ -8,6 +8,8 @@ image: node:6.11
 variables:
   # Configure postgres service (https://hub.docker.com/_/postgres/)
   POSTGRES_DB: gmnst_test
+  POSTGRES_USER: gmnst_test
+  POSTGRES_PASSWORD: gmnst_test
   DATABASE_URL: "postgres://postgres@postgres/gmnst_test"
 
 stages:
