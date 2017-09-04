@@ -15,7 +15,7 @@ variables:
 
 stages:
   - build
-  # - test
+  - test
 
 # This folder is cached between builds
 # http://docs.gitlab.com/ce/ci/yaml/README.html#cache
@@ -37,12 +37,12 @@ build:
     - npm install --quiet
     - npm run knex:migrate
     - npm run knex:seed
-    - npm run test:server
+    # - npm run test:server
 
-# test_server:
-#   stage: test
-#   script:
-#     - npm run test:server
+test_server:
+  stage: test
+  script:
+    - npm run test:server
 
 # test_db:
 #   stage: test
