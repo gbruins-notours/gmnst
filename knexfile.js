@@ -3,10 +3,11 @@ module.exports = {
     development: {
         client: 'postgresql',
         connection: {
-            host: process.env.PG_HOST,
-            user: process.env.PG_USER,
-            password: process.env.PG_PASSWORD,
-            database: process.env.PG_DB_NAME,
+            // host: process.env.PG_HOST,
+            // user: process.env.PG_USER,
+            // password: process.env.PG_PASSWORD,
+            // database: process.env.PG_DB_NAME,
+            connection: process.env.DATABASE_URL,
             charset: 'utf8'
         },
         // connection: {
