@@ -8,8 +8,8 @@ image: node:6.11
 variables:
   # Configure postgres service (https://hub.docker.com/_/postgres/)
   POSTGRES_DB: gmnst_test
-  POSTGRES_USER: gmnst_test
-  POSTGRES_PASSWORD: gmnst_test
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: postgres
   DATABASE_URL: "postgres://postgres@postgres/gmnst_test"
 
 stages:
@@ -38,7 +38,7 @@ test_server:
   script:
     #- node ./specs/start.js ./specs/async.spec.js
     #- export PGPASSWORD=$POSTGRES_PASSWORD
-    #- psql -h "postgres" -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "SELECT 'OK' AS status;"
+    - psql -h "postgres" -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "SELECT 'OK' AS status;"
     - npm install --quiet
     - npm run knex:migrate
     - npm run knex:seed

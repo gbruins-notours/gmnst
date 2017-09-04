@@ -21,8 +21,8 @@
     "test:client": "npm run unit && npm run e2e",
     "test:server": "lab -a code -t 100 -v test/server",
     "test2": "npm run test:client && npm run test:server",
-    "knex:migrate": "node node_modules/knex/bin/cli.js migrate:latest",
-    "knex:seed": "node node_modules/knex/bin/cli.js seed:run",
+    "knex:migrate": "node ./node_modules/knex/bin/cli.js migrate:latest",
+    "knex:seed": "node ./node_modules/knex/bin/cli.js seed:run",
     "knex:migrate:dev": "node --require dotenv/config node_modules/knex/bin/cli.js migrate:latest",
     "knex:seed:dev": "node --require dotenv/config node_modules/knex/bin/cli.js seed:run",
     "heroku-postbuild": "npm run build"
