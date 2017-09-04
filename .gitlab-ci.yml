@@ -50,8 +50,8 @@ test_server:
     # - export PGPASSWORD=$POSTGRES_PASSWORD
     # - psql -h "postgres" -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "SELECT 'OK' AS status;"
     - npm install --quiet
-    - npm run knex:migrate
-    - npm run knex:seed
+    # - npm run knex:migrate
+    # - npm run knex:seed
     - npm run test:server
 
 # test_db:
