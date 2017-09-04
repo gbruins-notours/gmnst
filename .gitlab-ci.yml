@@ -16,12 +16,21 @@ variables:
 stages:
   - build
   - test
+  - deploy
 
 # This folder is cached between builds
 # http://docs.gitlab.com/ce/ci/yaml/README.html#cache
 cache:
   paths:
   - node_modules/
+
+before_script:
+  - echo "deb http://packages.cloud.google.com/apt cloud-sdk-jessie main" | tee /etc/apt/sources.list.d/google-cloud-sdk.list
+  - curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+  - apt-get update && apt-get install google-cloud-sdk
+
+after_script:
+  - rm /tmp/$CI_PIPELINE_ID.json
 
 # connect:
 #   stage: connect
@@ -42,6 +51,18 @@ test_server:
     - npm run knex:migrate
     - npm run knex:seed
     - npm run test:server
+
+deploy_production:
+  stage: deploy
+  environment: Production
+  only:
+    - master
+  variables:
+    DATABASE_URL: $DATABASE_URL_PROD
+  script:
+    - echo $DEPLOY_KEY_FILE_PRODUCTION > /tmp/$CI_PIPELINE_ID.json
+    - gcloud auth activate-service-account --key-file /tmp/$CI_PIPELINE_ID.json
+    - gcloud --quiet --project $PROJECT_ID_PRODUCTION app deploy
 
 # test_db:
 #   stage: test

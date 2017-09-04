@@ -11,9 +11,6 @@ module.exports = {
         //     charset: 'utf8'
         // },
         connection: process.env.DATABASE_URL,
-        // connection: {
-        //     database: process.env.PG_DB_NAME
-        // },
         pool: {
             min: 2,
             max: 10
