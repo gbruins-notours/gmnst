@@ -34,7 +34,7 @@ cache:
 build:
   stage: build
   services:
-    - postgres:9.5.0
+    - postgres:9.6.2-alpine
   script:
     - npm install --quiet
     - npm run knex:migrate
