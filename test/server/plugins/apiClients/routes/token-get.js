@@ -53,8 +53,6 @@ describe('Testing route: POST /token/get', () => {
                     url: '/token/get',
                     headers,
                     payload: {
-                        // clientId: 'admin@gmnst.com',
-                        // clientSecret: 'G244.h"eSjV/'
                         clientId: process.env.JWT_CLIENT_ID,
                         clientSecret: process.env.JWT_CLIENT_SECRET
                     }
@@ -63,6 +61,7 @@ describe('Testing route: POST /token/get', () => {
                 server.inject(request, (res) => {
                     expect(res.statusCode, 'Status code').to.equal(200);
                     expect(res.headers.hasOwnProperty('x-authorization')).to.equal(true);
+                    console.log("RESPONSE HEADERS", res.headers)
 
                     let decoded = jwt.decode(res.headers['x-authorization']);
                     expect(decoded.clientId).to.equal(request.payload.clientId);
