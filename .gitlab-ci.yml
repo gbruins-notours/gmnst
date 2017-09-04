@@ -10,11 +10,12 @@ variables:
   POSTGRES_DB: gmnst_test
   POSTGRES_USER: postgres
   POSTGRES_PASSWORD: postgres
+  # DATABASE_URL: "postgres://postgres@postgres/gmnst_test"
   DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/$POSTGRES_DB"
 
 stages:
   - build
-  - test
+  # - test
 
 # This folder is cached between builds
 # http://docs.gitlab.com/ce/ci/yaml/README.html#cache
@@ -36,11 +37,12 @@ build:
     - npm install --quiet
     - npm run knex:migrate
     - npm run knex:seed
-
-test_server:
-  stage: test
-  script:
     - npm run test:server
+
+# test_server:
+#   stage: test
+#   script:
+#     - npm run test:server
 
 # test_db:
 #   stage: test
