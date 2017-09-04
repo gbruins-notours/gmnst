@@ -30,11 +30,11 @@ cache:
 
 test_server:
   stage: test
-  services:
-    - postgres:9.6.2-alpine
+  # services:
+  #   - postgres:9.6.2-alpine
+  image: postgres:9.6.2-alpine
   variables:
     DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/$POSTGRES_DB"
-
   script:
   #  - node ./specs/start.js ./specs/async.spec.js
     - export PGPASSWORD=$POSTGRES_PASSWORD
@@ -53,8 +53,3 @@ test_server:
 #    - node ./specs/start.js ./specs/db-postgres.spec.js
 #   tags:
 #     - docker
-
-#test_db:
-#  script:
-#   - npm install
-#   - node ./specs/start.js ./specs/db-postgres.spec.js
