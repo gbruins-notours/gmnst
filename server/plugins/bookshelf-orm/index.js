@@ -17,8 +17,7 @@ internals.schema = Joi.object().keys({
 internals.defaults = {
     knex: {
         client: 'pg',
-        // connection: process.env.DATABASE_URL,
-        connection: process.env.DATABASE_URL || `postgresql://${process.env.PG_USER}:${process.env.PG_PASSWORD}@${process.env.PG_HOST}:${process.env.PG_PORT}/${process.env.PG_DB_NAME}`,
+        connection: process.env.DATABASE_URL,
         // connection: {
         //     database: process.env.PG_DB_NAME,
         //     user:     process.env.PG_USER,
@@ -31,7 +30,6 @@ internals.defaults = {
 
 
 exports.register = (server, options, next) => {
-
     let knex;
     let bookshelf = null;
     let requiredPlugins = ['registry', 'virtuals', 'visibility', 'pagination'];
@@ -60,7 +58,8 @@ exports.register = (server, options, next) => {
 
     if (settings.namespace) {
         server.expose(settings.namespace, bookshelf);
-    } else {
+    } 
+    else {
         // server.expose(bookshelf);
         server.expose('bookshelf', bookshelf);
     }

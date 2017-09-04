@@ -48,7 +48,7 @@ describe('Testing route: POST /token/get', () => {
             .then(({err, server, headers}) => {
                 expect(err).not.to.exist();
 
-                const request = {
+                server.inject({
                     method: 'POST',
                     url: '/token/get',
                     headers,
@@ -56,19 +56,18 @@ describe('Testing route: POST /token/get', () => {
                         clientId: process.env.JWT_CLIENT_ID,
                         clientSecret: process.env.JWT_CLIENT_SECRET
                     }
-                };
-
-                server.inject(request, (res) => {
+                })
+                .then((res) => {
+                    console.log("RESPONSE HEADERS", res.headers)
                     expect(res.statusCode, 'Status code').to.equal(200);
                     expect(res.headers.hasOwnProperty('x-authorization')).to.equal(true);
-                    console.log("RESPONSE HEADERS", res.headers)
 
                     let decoded = jwt.decode(res.headers['x-authorization']);
-                    expect(decoded.clientId).to.equal(request.payload.clientId);
+                    expect(decoded.clientId).to.equal(process.env.JWT_CLIENT_ID);
                     expect(decoded.hasOwnProperty('jti')).to.equal(true);
 
                     testHelpers.destroyKnexAndStopServer(server, done);
-                });
+                })
             });
     });
 
@@ -79,20 +78,19 @@ describe('Testing route: POST /token/get', () => {
             .then(({err, server, headers}) => {
                 expect(err).not.to.exist();
 
-                const request = {
+                server.inject({
                     method: 'POST',
                     url: '/token/get',
                     headers,
                     payload: {
                         clientId: 'foo',
-                        clientSecret: 'G244.h"eSjV/'
+                        clientSecret: process.env.JWT_CLIENT_SECRET
                     }
-                };
-
-                server.inject(request, (res) => {
+                })
+                .then((res) => {
                     expect(res.statusCode, 'Status code').to.equal(401);
                     testHelpers.destroyKnexAndStopServer(server, done);
-                });
+                })
             });
     });
 
@@ -103,20 +101,19 @@ describe('Testing route: POST /token/get', () => {
             .then(({err, server, headers}) => {
                 expect(err).not.to.exist();
 
-                const request = {
+                server.inject({
                     method: 'POST',
                     url: '/token/get',
                     headers,
                     payload: {
-                        clientId: 'admin@gmnst.com',
+                        clientId: process.env.JWT_CLIENT_ID,
                         clientSecret: 'foo'
                     }
-                };
-
-                server.inject(request, (res) => {
+                })
+                .then((res) => {
                     expect(res.statusCode, 'Status code').to.equal(401);
                     testHelpers.destroyKnexAndStopServer(server, done);
-                });
+                })
             });
     });
 
@@ -127,19 +124,18 @@ describe('Testing route: POST /token/get', () => {
             .then(({err, server, headers}) => {
                 expect(err).not.to.exist();
 
-                const request = {
+                server.inject({
                     method: 'POST',
                     url: '/token/get',
                     headers,
                     payload: {
                         clientSecret: 'foo'
                     }
-                };
-
-                server.inject(request, (res) => {
+                })
+                .then((res) => {
                     expect(res.statusCode, 'Status code').to.equal(400);
                     testHelpers.destroyKnexAndStopServer(server, done);
-                });
+                })
             });
     });
 
@@ -150,19 +146,18 @@ describe('Testing route: POST /token/get', () => {
             .then(({err, server, headers}) => {
                 expect(err).not.to.exist();
                 
-                const request = {
+                server.inject({
                     method: 'POST',
                     url: '/token/get',
                     headers,
                     payload: {
-                        clientId: 'admin@gmnst.com'
+                        clientId: process.env.JWT_CLIENT_ID
                     }
-                };
-
-                server.inject(request, (res) => {
+                })
+                .then((res) => {
                     expect(res.statusCode, 'Status code').to.equal(400);
                     testHelpers.destroyKnexAndStopServer(server, done);
-                });
+                })
             });
     });
 
