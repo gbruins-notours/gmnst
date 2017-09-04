@@ -10,8 +10,8 @@ variables:
   POSTGRES_DB: gmnst_test
   POSTGRES_USER: postgres
   POSTGRES_PASSWORD: postgres
-  # DATABASE_URL: "postgres://postgres@postgres/gmnst_test"
-  DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/$POSTGRES_DB"
+  # DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/$POSTGRES_DB"
+  DATABASE_URL: "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@postgres:5432/$POSTGRES_DB"
 
 stages:
   - build
@@ -35,9 +35,6 @@ build:
   stage: build
   script:
     - npm install --quiet
-    # - npm run knex:migrate
-    # - npm run knex:seed
-    # - npm run test:server
 
 test_server:
   stage: test
