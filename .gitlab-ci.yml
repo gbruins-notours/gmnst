@@ -8,10 +8,9 @@ services:
 variables:
   # Configure postgres service (https://hub.docker.com/_/postgres/)
   POSTGRES_DB: gmnst_test
-  POSTGRES_USER: postgres
-  POSTGRES_PASSWORD: postgres
-  # DATABASE_URL: "postgres://postgres@postgres/gmnst_test"
-  DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/$POSTGRES_DB"
+  POSTGRES_USER: runner
+  POSTGRES_PASSWORD: runner
+  DATABASE_URL: "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@postgres:5432/$POSTGRES_DB"
 
 stages:
   - build
@@ -33,18 +32,13 @@ cache:
 
 build:
   stage: build
-  # services:
-  #   - postgres:9.6.2-alpine
   script:
     - npm install --quiet
     - npm run knex:migrate
     - npm run knex:seed
-    - npm run test:server
 
 test_server:
   stage: test
-  # services:
-  #   - postgres:9.6.2-alpine
   script:
     - npm run test:server
 
