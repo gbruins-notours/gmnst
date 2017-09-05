@@ -1,4 +1,4 @@
-require('dotenv/config');
+require('../../../../yaml_env');
 
 const Path = require('path');
 const testHelpers = require('../../testHelpers');

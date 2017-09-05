@@ -1,4 +1,4 @@
-require('dotenv/config');
+require('../../yaml_env');
 
 const Server = require('../../server');
 const isObject = require('lodash.isobject');

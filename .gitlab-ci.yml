@@ -4,6 +4,7 @@ image: node:6.11
 # https://hub.docker.com/r/library/postgres/tags/
 services:
   - postgres:9.6.2-alpine
+  - python:2.7 # needed to install Google Cloud SDK - https://cloud.google.com/sdk/docs/quickstart-mac-os-x
 
 variables:
   # Configure postgres service (https://hub.docker.com/_/postgres/)

@@ -11,9 +11,9 @@
     "url": "https://github.com/notoursllc/gmnst"
   },
   "scripts": {
-    "start:dev": "NODE_ENV=development node --require dotenv/config server/start.js",
-    "start:stage": "NODE_ENV=staging node --require dotenv/config server/start.js",
-    "start:localprod": "NODE_ENV=production node --require dotenv/config server/start.js",
+    "start:dev": "NODE_ENV=development node --require ./yaml_env server/start.js",
+    "start:stage": "NODE_ENV=staging node --require ./yaml_env server/start.js",
+    "start:localprod": "NODE_ENV=production node --require ./yaml_env server/start.js",
     "start": "NODE_ENV=production node server/start.js",
     "build": "node build/build.js",
     "unit": "cross-env BABEL_ENV=test karma start test/client/unit/karma.conf.js --single-run",
@@ -23,8 +23,8 @@
     "test2": "npm run test:client && npm run test:server",
     "knex:migrate": "node ./node_modules/knex/bin/cli.js migrate:latest",
     "knex:seed": "node ./node_modules/knex/bin/cli.js seed:run",
-    "knex:migrate:dev": "node --require dotenv/config node_modules/knex/bin/cli.js migrate:latest",
-    "knex:seed:dev": "node --require dotenv/config node_modules/knex/bin/cli.js seed:run",
+    "knex:migrate:dev": "node --require ./yaml_env node_modules/knex/bin/cli.js migrate:latest",
+    "knex:seed:dev": "node --require ./yaml_env node_modules/knex/bin/cli.js seed:run",
     "heroku-postbuild": "npm run build"
   },
   "dependencies": {
@@ -83,6 +83,7 @@
     "inert": "4.2.0",
     "inject-loader": "2.0.1",
     "joi": "10.4.1",
+    "js-yaml": "3.9.1",
     "jsonwebtoken": "7.4.0",
     "knex": "0.12.6",
     "lodash.clonedeep": "4.5.0",

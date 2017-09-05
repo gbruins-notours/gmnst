@@ -3,6 +3,7 @@ dist/
 test/client/unit/coverage
 test/client/e2e/reports
 *.env
+app.yaml
 
 .DS_Store
 .idea
