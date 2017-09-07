@@ -1,10 +1,11 @@
 process.env.NODE_ENV = 'production';
 
+require('../yaml_env');
+
 const rimraf = require('rimraf');
 const path = require('path');
 const webpack = require('webpack');
-const webpackConfig = require('./webpack.prod.conf');
-
+const webpackConfig = require('./webpack.prod.conf'); 
 
 console.log('Building for production');
 
