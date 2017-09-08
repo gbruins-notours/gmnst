@@ -154,12 +154,7 @@
     "sinon-stub-promise": "4.0.0",
     "webpack-dev-middleware": "1.10.2",
     "webpack-hot-middleware": "2.18.0"
-  },
-  "engines": {
-    "node": "7.2.1",
-    "npm": "3.10.10"
-  },
-  "main": "server/start.js",
+  }
   "browserslist": [
     "> 1%",
     "last 2 versions",
