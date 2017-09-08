@@ -4,18 +4,18 @@
   "description": "gmnst.com",
   "author": "gbruins@not-ours.com",
   "bugs": {
-    "url": "https://github.com/notoursllc/gmnst/issues"
+    "url": "https://gitlab.com/notoursllc/gmnst/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/notoursllc/gmnst"
+    "url": "https://gitlab.com/notoursllc/gmnst"
   },
   "scripts": {
     "start:dev": "NODE_ENV=development node --require ./yaml_env server/start.js",
     "start:stage": "NODE_ENV=staging node --require ./yaml_env server/start.js",
     "start:localprod": "NODE_ENV=production node --require ./yaml_env server/start.js",
     "start": "NODE_ENV=production node --require ./yaml_env server/start.js",
-    "build": "node --require ./yaml_env build/build.js",
+    "build": "node build/build.js",
     "unit": "cross-env BABEL_ENV=test karma start test/client/unit/karma.conf.js --single-run",
     "e2e": "node test/client/e2e/runner.js",
     "test:client": "npm run unit && npm run e2e",
@@ -25,8 +25,7 @@
     "knex:migrate": "node ./node_modules/knex/bin/cli.js migrate:latest",
     "knex:seed": "node ./node_modules/knex/bin/cli.js seed:run",
     "knex:migrate:dev": "node --require ./yaml_env node_modules/knex/bin/cli.js migrate:latest",
-    "knex:seed:dev": "node --require ./yaml_env node_modules/knex/bin/cli.js seed:run",
-    "heroku-postbuild": "npm run build"
+    "knex:seed:dev": "node --require ./yaml_env node_modules/knex/bin/cli.js seed:run"
   },
   "dependencies": {
     "accounting": "0.4.1",
@@ -154,7 +153,7 @@
     "sinon-stub-promise": "4.0.0",
     "webpack-dev-middleware": "1.10.2",
     "webpack-hot-middleware": "2.18.0"
-  }
+  },
   "browserslist": [
     "> 1%",
     "last 2 versions",
