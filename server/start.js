@@ -1,5 +1,3 @@
-require('../yaml_env')
-
 const Hoek = require('hoek');
 const Config = require('./config');
 const Server = require('./index');

@@ -11,11 +11,11 @@
     "url": "https://github.com/notoursllc/gmnst"
   },
   "scripts": {
-    "start:dev": "NODE_ENV=development node server/start.js",
-    "start:stage": "NODE_ENV=staging node server/start.js",
-    "start:localprod": "NODE_ENV=production node server/start.js",
-    "start": "NODE_ENV=production node server/start.js",
-    "build": "node build/build.js",
+    "start:dev": "NODE_ENV=development node --require ./yaml_env server/start.js",
+    "start:stage": "NODE_ENV=staging node --require ./yaml_env server/start.js",
+    "start:localprod": "NODE_ENV=production node --require ./yaml_env server/start.js",
+    "start": "NODE_ENV=production node --require ./yaml_env server/start.js",
+    "build": "node --require ./yaml_env build/build.js",
     "unit": "cross-env BABEL_ENV=test karma start test/client/unit/karma.conf.js --single-run",
     "e2e": "node test/client/e2e/runner.js",
     "test:client": "npm run unit && npm run e2e",

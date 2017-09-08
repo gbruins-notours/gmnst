@@ -1,7 +1,5 @@
 process.env.NODE_ENV = 'production';
 
-require('../yaml_env');
-
 const rimraf = require('rimraf');
 const path = require('path');
 const webpack = require('webpack');
