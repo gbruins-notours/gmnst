@@ -138,7 +138,7 @@
     import { mapGetters } from 'vuex'
     import { Input } from 'element-ui'
     import isObject from 'lodash.isobject'
-    import forEach from 'lodash.forEach'
+    import forEach from 'lodash.foreach'
     import CountrySelect from '../CountrySelect.vue'
     import StateProvinceSelect from '../StateProvinceSelect.vue'
     import Validations from 'vuelidate'

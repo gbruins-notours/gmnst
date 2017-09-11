@@ -79,7 +79,7 @@ import api from '../../util/api'
 import ProductPrice from '../../components/product/ProductPrice.vue'
 import NumberButtons from '../../components/NumberButtons.vue'
 import { mapActions } from 'vuex'
-import _forEach from 'lodash.forEach';
+import _forEach from 'lodash.foreach';
 import { Carousel, Slide } from 'vue-carousel';
 
 Vue.use(Select);

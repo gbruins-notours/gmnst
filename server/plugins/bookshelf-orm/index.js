@@ -1,5 +1,7 @@
 const Joi = require('joi');
 const Hoek = require('hoek');
+const knexfile = require('../../../knexfile');
+const connection = process.env.NODE_ENV === 'production' ? knexfile.production.connection : knexfile.development.connection;
 
 let internals = {};
 
@@ -17,12 +19,7 @@ internals.schema = Joi.object().keys({
 internals.defaults = {
     knex: {
         client: 'pg',
-        connection: process.env.DATABASE_URL,
-        // connection: {
-        //     database: process.env.PG_DB_NAME,
-        //     user:     process.env.PG_USER,
-        //     password: process.env.PG_PASSWORD
-        // },
+        connection: connection,
         debug: false
     }
 };

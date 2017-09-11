@@ -186,7 +186,7 @@
     import Vue from 'vue'
     import { mapGetters } from 'vuex'
     import isObject from 'lodash.isobject'
-    import forEach from 'lodash.forEach'
+    import forEach from 'lodash.foreach'
     import { Checkbox, Input, Notification, RadioGroup, Radio, Tabs, TabPane, Dialog, Loading } from 'element-ui'
     import Validations from 'vuelidate'
     import { required } from 'vuelidate/lib/validators'

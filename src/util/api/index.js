@@ -9,6 +9,7 @@ export default {
      * from the webpack "DefinePlugin"
      */
     getJwtToken() {
+        console.log("JWT_CLIENT_ID", JWT_CLIENT_ID)
         return getHttp()
             .post('/api/v1/token/get', {
                 clientId: JWT_CLIENT_ID,

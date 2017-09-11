@@ -26,7 +26,13 @@ module.exports = {
 
     production: {
         client: 'postgresql',
-        connection: process.env.DATABASE_URL,
+        // connection: process.env.DATABASE_URL,
+        connection: {
+            socketPath : `/cloudsql/${process.env.POSTGRES_INSTANCE_CONNECTION_NAME}`,
+            user : process.env.POSTGRES_USER,
+            password : process.env.POSTGRES_PASSWORD,
+            database : process.env.POSTGRES_DB
+        },
         pool: {
             min: 2,
             max: 10
