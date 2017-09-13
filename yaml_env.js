@@ -1,12 +1,16 @@
 (function () {
     const yaml = require('js-yaml');
     const fs = require('fs');
-    const isObject = require('lodash.isobject')
+    const isObject = require('lodash.isobject');
+    const file = fs.readFileSync('app.yaml', 'utf8');
+    let doc;
 
-    var doc = yaml.safeLoad(
-        fs.readFileSync('app.yaml', 'utf8'), 
-        { json: true }
-    );
+    if(file) {
+        doc = yaml.safeLoad(
+            file, 
+            { json: true }
+        );
+    }
 
     // The .env file will take precedence over the settings the app.yaml file
     if(process.env.NODE_ENV !== 'production') {

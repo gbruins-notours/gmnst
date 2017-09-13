@@ -1,5 +1,5 @@
 const Promise = require('bluebird');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 
 
 /**
@@ -20,7 +20,7 @@ function cryptPassword(password) {
                     return reject(err);
                 }
 
-                return resolve(hash);
+                return resolve(hash); 
             });
         });
     });
@@ -30,8 +30,8 @@ function cryptPassword(password) {
 /**
  * Compares a password against the hashed password for a match
  *
- * @param password
- * @param userPassword
+ * @param password      Clear password
+ * @param userPassword  Hashed password
  * @returns {Promise}
  */
 function comparePassword(password, userPassword) {
@@ -45,7 +45,6 @@ function comparePassword(password, userPassword) {
         });
     });
 }
-
 
 
 module.exports.cryptPassword = cryptPassword;

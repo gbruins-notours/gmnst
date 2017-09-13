@@ -68,7 +68,6 @@ internals.after = function (server, next) {
             internals
                 .getApiUser(request.payload.clientId)
                 .then((ApiUserModel) => {
-
                     if (ApiUserModel) {
                         if (!ApiUserModel.get('is_active')) {
                             throw new Error('Invalid API user');
