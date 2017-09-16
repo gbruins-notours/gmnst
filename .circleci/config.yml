@@ -6,38 +6,30 @@ version: 2
 jobs:
   build:
     docker:
-      # specify the version you desire here
       - image: circleci/node:6.10.3
-      
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
       - image: circleci/postgres:9.6.2-alpine
         environment:
-          - POSTGRES_USER_LOCAL=ubuntu
-          - POSTGRES_DB_LOCAL=circle_test
-          - POSTGRES_HOST_LOCAL=127.0.0.1
-          - DATABASE_URL=postgres://ubuntu@127.0.0.1:5432/circle_test
-
-    working_directory: ~/repo
-
+        - POSTGRES_HOST=localhost
+        - POSTGRES_USER=ubuntu
+        - POSTGRES_DB=circle_test
     steps:
       - checkout
-        environment:
-          - POSTGRES_USER_LOCAL=ubuntu
-          - POSTGRES_DB_LOCAL=circle_test
-          - POSTGRES_HOST_LOCAL=127.0.0.1
-      # Download and cache dependencies:
       - restore_cache:
           keys:
-          - v1-dependencies-{{ checksum "package.json" }}
-          # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
-      - run: npm install
-
+            - v1-dependencies-{{ checksum "package.json" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
+      - name: Install Dependencies
+        run: npm install
       - save_cache:
-          paths:
-            - node_modules
-          key: v1-dependencies-{{ checksum "package.json" }}
-      - run: npm run knex:migrate && npm run knex:seed
-      - run: npm run test:server
+        paths:
+          - node_modules
+        key: v1-dependencies-{{ checksum "package.json" }}
+      - name: Set up DB
+        run: npm run knex:migrate && npm run knex:seed
+        environment:
+          POSTGRES_USER_LOCAL: ubuntu
+          POSTGRES_DB_LOCAL: circle_test
+          POSTGRES_HOST_LOCAL: "127.0.0.1"
+      - name: Start the tests
+        run: npm run test:server 
