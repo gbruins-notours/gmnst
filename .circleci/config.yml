@@ -22,8 +22,7 @@ jobs:
 
     steps:
       - checkout
-
-      # Download and cache dependencies
+      # Download and cache dependencies:
       - restore_cache:
           keys:
           - v1-dependencies-{{ checksum "package.json" }}
@@ -31,10 +30,10 @@ jobs:
           - v1-dependencies-
       - run: npm install
         environment:
-          POSTGRES_USER_LOCAL: ubuntu
-          POSTGRES_DB_LOCAL: circle_test
-          POSTGRES_HOST_LOCAL: 127.0.0.1
-          DATABASE_URL: "postgres://ubuntu@127.0.0.1:5432/circle_test"
+        - POSTGRES_USER_LOCAL=ubuntu
+        - POSTGRES_DB_LOCAL=circle_test
+        - POSTGRES_HOST_LOCAL=127.0.0.1
+        - DATABASE_URL=postgres://ubuntu@127.0.0.1:5432/circle_test
       - save_cache:
           paths:
             - node_modules
