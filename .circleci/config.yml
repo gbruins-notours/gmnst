@@ -45,5 +45,5 @@ jobs:
             if [ "${CIRCLE_BRANCH}" == "master" ];
               then ./scripts/publish.sh production;
             else
-              echo "Not master branch so not deploying"
+              echo "Not on master branch so not deploying"
             fi
