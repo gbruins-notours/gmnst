@@ -17,7 +17,13 @@ let common = {
 };
 
 let dev = cloneDeep(common);
-dev.connection = process.env.DATABASE_URL;
+// dev.connection = process.env.DATABASE_URL;
+dev.connection = {
+    host: process.env.POSTGRES_HOST_LOCAL,
+    user: process.env.POSTGRES_USER_LOCAL,
+    password: process.env.POSTGRES_PASSWORD_LOCAL,
+    database: process.env.POSTGRES_DB_LOCAL
+};
 
 let prod = cloneDeep(common);
 prod.connection = {

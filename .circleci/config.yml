@@ -13,6 +13,10 @@ jobs:
       # CircleCI maintains a library of pre-built images
       # documented at https://circleci.com/docs/2.0/circleci-images/
       - image: circleci/postgres:9.6.2-alpine
+        environment:
+        - POSTGRES_USER_LOCAL=ubuntu
+        - POSTGRES_DB_LOCAL=circle_test
+        - POSTGRES_HOST_LOCAL=127.0.0.1
 
     working_directory: ~/repo
 
@@ -25,16 +29,15 @@ jobs:
           - v1-dependencies-{{ checksum "package.json" }}
           # fallback to using the latest cache if no exact match is found
           - v1-dependencies-
-
       - run: npm install
-
+        environment:
+          POSTGRES_USER_LOCAL: ubuntu
+          POSTGRES_DB_LOCAL: circle_test
+          POSTGRES_HOST_LOCAL: 127.0.0.1
+          DATABASE_URL: "postgres://ubuntu@127.0.0.1:5432/circle_test"
       - save_cache:
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
-        
-      - run: npm run knex:migrate
-      - run: npm run knex:seed
-
-      # run tests!
+      - run: npm run knex:migrate && npm run knex:seed
       - run: npm run test:server
