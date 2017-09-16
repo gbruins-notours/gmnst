@@ -14,9 +14,9 @@ jobs:
       # documented at https://circleci.com/docs/2.0/circleci-images/
       - image: circleci/postgres:9.6.2-alpine
         environment:
-        - POSTGRES_USER_LOCAL: ubuntu
-        - POSTGRES_DB_LOCAL: circle_test
-        - POSTGRES_HOST_LOCAL: 127.0.0.1
+          POSTGRES_USER_LOCAL: ubuntu
+          POSTGRES_DB_LOCAL: circle_test
+          POSTGRES_HOST_LOCAL: 127.0.0.1
 
     working_directory: ~/repo
 
@@ -30,10 +30,10 @@ jobs:
           - v1-dependencies-
       - run: npm install
         environment:
-        - POSTGRES_USER_LOCAL: ubuntu
-        - POSTGRES_DB_LOCAL: circle_test
-        - POSTGRES_HOST_LOCAL: 127.0.0.1
-        - DATABASE_URL: postgres://ubuntu@127.0.0.1:5432/circle_test
+          POSTGRES_USER_LOCAL: ubuntu
+          POSTGRES_DB_LOCAL: circle_test
+          POSTGRES_HOST_LOCAL: 127.0.0.1
+          DATABASE_URL: postgres://ubuntu@127.0.0.1:5432/circle_test
       - save_cache:
           paths:
             - node_modules
