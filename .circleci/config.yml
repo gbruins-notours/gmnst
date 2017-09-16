@@ -14,13 +14,14 @@ jobs:
         - POSTGRES_HOST=localhost
         - POSTGRES_USER=ubuntu
         - POSTGRES_DB=circle_test
-        
+
     steps:
       - add-ssh-keys:
           fingerprints:
             - "bd:ed:31:6f:b6:ef:a8:b2:13:74:94:62:f8:d7:a1:d8"
 
       - checkout
+
       - restore_cache:
           key: dependency-cache-{{ checksum "package.json" }}
 
