@@ -102,19 +102,12 @@ echo Handling node.js deployment.
 # 1. Select node version
 selectNodeVersion
 
-# 2. Install npm packages
+# 2. Install npm packages & build
 if [ -e "$DEPLOYMENT_SOURCE/package.json" ]; then
   cd "$DEPLOYMENT_SOURCE"
-  eval $NPM_CMD install
+  eval $NPM_CMD install && $NPM_CMD run build
   exitWithMessageOnError "npm failed"
   cd - > /dev/null
-fi
-
-# 3. KuduSync
-if [[ "$IN_PLACE_DEPLOYMENT" -ne "1" ]]; then
-  "$KUDU_SYNC_CMD" -v 50 -f "$DEPLOYMENT_SOURCE/dist" -t "$DEPLOYMENT_TARGET" -n "$NEXT_MANIFEST_PATH" -p "$PREVIOUS_MANIFEST_PATH" -i ".git;.hg;.deployment;deploy.sh"
-  cp "$DEPLOYMENT_SOURCE/web.config" "$DEPLOYMENT_TARGET/web.config"
-  exitWithMessageOnError "Kudu Sync failed"
 fi
 
 ##################################################################################################################################
