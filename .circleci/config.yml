@@ -18,7 +18,7 @@ jobs:
     steps:
       - add-ssh-keys:
           fingerprints:
-            - "SO:ME:FIN:G:ER:PR:IN:T"
+            - "bd:ed:31:6f:b6:ef:a8:b2:13:74:94:62:f8:d7:a1:d8"
 
       - checkout
 
@@ -49,7 +49,7 @@ jobs:
           name: Deploy to Azure if tests pass and branch is Master
           command: |
             if [ "${CIRCLE_BRANCH}" == "master" ];
-              then ./scripts/publish.sh production;
+              then ../scripts/publish.sh production;
             else
               echo "Not on master branch so not deploying"
             fi
