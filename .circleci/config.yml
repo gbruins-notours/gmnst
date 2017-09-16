@@ -5,7 +5,8 @@
 version: 2
 jobs:
   build:
-    working_directory: ~/gmnst
+    working_directory: ~/azure-appservice-static
+
     docker:
       - image: circleci/node:6.10.3
       - image: circleci/postgres:9.6.2-alpine
@@ -13,13 +14,20 @@ jobs:
         - POSTGRES_HOST=localhost
         - POSTGRES_USER=ubuntu
         - POSTGRES_DB=circle_test
+        
     steps:
+      - add-ssh-keys:
+          fingerprints:
+            - "bd:ed:31:6f:b6:ef:a8:b2:13:74:94:62:f8:d7:a1:d8"
+
       - checkout
       - restore_cache:
           key: dependency-cache-{{ checksum "package.json" }}
+
       - run:
           name: Install Dependencies
           command: npm install --quiet
+
       - save_cache:
           key: dependency-cache-{{ checksum "package.json" }}
           paths:
@@ -34,9 +42,6 @@ jobs:
       - run:
           name: test
           command: npm run test:server 
-      - add-ssh-keys:
-          fingerprints:
-            - "bd:ed:31:6f:b6:ef:a8:b2:13:74:94:62:f8:d7:a1:d8"
 
       # Deploy production
       - deploy:
