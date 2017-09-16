@@ -5,7 +5,7 @@ COPY . /app/
 WORKDIR /app
 
 #test
-RUN npm install -g node-gyp
+#RUN npm install -g node-gyp
 
 # You have to specify "--unsafe-perm" with npm install
 # when running as root. Failing to do this can cause
@@ -19,10 +19,10 @@ RUN npm install --unsafe-perm || \
       cat npm-debug.log; \
     fi) && false)
 
-#testing for now but probably dont want to do this in practice
-RUN npm run knex:migrate && npm run knex:seed
+RUN npm run build
+RUN npm run knex:migrate-seed
 
 # Expose the node.js port to the Docker host.
 EXPOSE 8000
 
-CMD npm run build && npm run start
+CMD npm run start

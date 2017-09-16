@@ -1,4 +1,4 @@
-require('../../yaml_env');
+require('dotenv').config();
 
 const Hapi = require('hapi');
 const Code = require('code');

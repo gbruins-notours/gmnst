@@ -1,48 +1,36 @@
-module.exports = {
+const cloneDeep = require('lodash.clonedeep');
+const env = process.env.NODE_ENV === 'production' ? 'production' : 'development';
 
-    development: {
-        client: 'postgresql',
-        // connection: {
-        //     host: process.env.PG_HOST,
-        //     user: process.env.PG_USER,
-        //     password: process.env.PG_PASSWORD,
-        //     database: process.env.PG_DB_NAME,
-        //     connection: process.env.DATABASE_URL,
-        //     charset: 'utf8'
-        // },
-        connection: process.env.DATABASE_URL,
-        pool: {
-            min: 2,
-            max: 10
-        },
-        migrations: {
-            directory: './db/migrations',
-            tableName: 'knex_migrations'
-        },
-        seeds: {
-            directory: './db/seeds'
-        }
+let common = {
+    client: 'pg',
+    pool: {
+        min: 2,
+        max: 10
     },
-
-    production: {
-        client: 'postgresql',
-        connection: {
-            socketPath: `/cloudsql/${process.env.POSTGRES_INSTANCE_CONNECTION_NAME}`,
-            user: process.env.POSTGRES_USER,
-            password: process.env.POSTGRES_PASSWORD,
-            database: process.env.POSTGRES_DB
-        },
-        pool: {
-            min: 2,
-            max: 10
-        },
-        migrations: {
-            directory: './db/migrations',
-            tableName: 'knex_migrations'
-        },
-        seeds: {
-            directory: './db/seeds'
-        }
+    migrations: {
+        directory: './db/migrations',
+        tableName: 'knex_migrations'
+    },
+    seeds: {
+        directory: './db/seeds'
     }
-
 };
+
+let dev = cloneDeep(common);
+dev.connection = process.env.DATABASE_URL;
+
+let prod = cloneDeep(common);
+prod.connection = {
+    host: process.env.POSTGRES_HOST,
+    user: process.env.POSTGRES_USER,
+    password: process.env.POSTGRES_PASSWORD,
+    database: process.env.POSTGRES_DB,
+    ssl: true
+};
+
+let config = {
+    development: dev,
+    production: prod
+};
+
+module.exports = config[env];

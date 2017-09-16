@@ -1,7 +1,6 @@
 const Joi = require('joi');
 const Hoek = require('hoek');
-const knexfile = require('../../../knexfile');
-const connection = process.env.NODE_ENV === 'production' ? knexfile.production.connection : knexfile.development.connection;
+const knexConfig = require('../../../knexfile');
 
 let internals = {};
 
@@ -17,13 +16,8 @@ internals.schema = Joi.object().keys({
 });
 
 internals.defaults = {
-    knex: {
-        client: 'pg',
-        connection: connection,
-        debug: false
-    }
+    knex: knexConfig
 };
-
 
 
 exports.register = (server, options, next) => {
