@@ -5,6 +5,7 @@
 version: 2
 jobs:
   build:
+    working_directory: ~/gmnst
     docker:
       - image: circleci/node:6.10.3
       - image: circleci/postgres:9.6.2-alpine
@@ -14,22 +15,25 @@ jobs:
         - POSTGRES_DB=circle_test
     steps:
       - checkout
+      - run:
+          name: update-npm
+          command: 'sudo npm install -g npm@latest'
       - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "package.json" }}
-            # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
-      - name: Install Dependencies
-        run: npm install
+          key: dependency-cache-{{ checksum "package.json" }}
+      - run:
+          name: Install Dependencies
+          command: npm install --quiet
       - save_cache:
-        paths:
-          - node_modules
-        key: v1-dependencies-{{ checksum "package.json" }}
-      - name: Set up DB
-        run: npm run knex:migrate && npm run knex:seed
-        environment:
-          POSTGRES_USER_LOCAL: ubuntu
-          POSTGRES_DB_LOCAL: circle_test
-          POSTGRES_HOST_LOCAL: "127.0.0.1"
-      - name: Start the tests
-        run: npm run test:server 
+          key: dependency-cache-{{ checksum "package.json" }}
+          paths:
+            - ./node_modules
+      - run:
+          name: Set up DB
+          command: npm run knex:migrate && npm run knex:seed
+          environment:
+            POSTGRES_USER_LOCAL: ubuntu
+            POSTGRES_DB_LOCAL: circle_test
+            POSTGRES_HOST_LOCAL: "127.0.0.1"
+      - run:
+          name: test
+          command: npm run test:server 
