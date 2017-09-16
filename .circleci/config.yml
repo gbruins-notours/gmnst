@@ -17,11 +17,16 @@ jobs:
           - POSTGRES_USER_LOCAL=ubuntu
           - POSTGRES_DB_LOCAL=circle_test
           - POSTGRES_HOST_LOCAL=127.0.0.1
+          - DATABASE_URL=postgres://ubuntu@127.0.0.1:5432/circle_test
 
     working_directory: ~/repo
 
     steps:
       - checkout
+        environment:
+          - POSTGRES_USER_LOCAL=ubuntu
+          - POSTGRES_DB_LOCAL=circle_test
+          - POSTGRES_HOST_LOCAL=127.0.0.1
       # Download and cache dependencies:
       - restore_cache:
           keys:
@@ -29,11 +34,7 @@ jobs:
           # fallback to using the latest cache if no exact match is found
           - v1-dependencies-
       - run: npm install
-        environment:
-          POSTGRES_USER_LOCAL: ubuntu
-          POSTGRES_DB_LOCAL: circle_test
-          POSTGRES_HOST_LOCAL: 127.0.0.1
-          DATABASE_URL: postgres://ubuntu@127.0.0.1:5432/circle_test
+
       - save_cache:
           paths:
             - node_modules
