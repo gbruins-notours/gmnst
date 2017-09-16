@@ -100,12 +100,13 @@ selectNodeVersion () {
 
 echo Handling node.js deployment.
 # 1. Select node version
-selectNodeVersion
+#selectNodeVersion
 
 # 2. Install npm packages & build
 if [ -e "$DEPLOYMENT_SOURCE/package.json" ]; then
   cd "$DEPLOYMENT_SOURCE"
-  eval $NPM_CMD install && $NPM_CMD run build
+  #eval $NPM_CMD install && $NPM_CMD run build
+  eval $NPM_CMD run build
   exitWithMessageOnError "npm failed"
   cd - > /dev/null
 fi
