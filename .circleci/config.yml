@@ -32,7 +32,7 @@ jobs:
       - save_cache:
           key: dependency-cache-{{ checksum "package.json" }}
           paths:
-            - ./node_modules
+            - ../node_modules
       - run:
           name: Set up DB
           command: npm run knex:migrate && npm run knex:seed
