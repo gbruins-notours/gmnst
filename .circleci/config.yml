@@ -33,6 +33,7 @@ jobs:
           key: dependency-cache-{{ checksum "package.json" }}
           paths:
             - ./node_modules
+            
       - run:
           name: Set up DB
           command: npm run knex:migrate && npm run knex:seed
@@ -40,15 +41,18 @@ jobs:
             POSTGRES_USER_LOCAL: ubuntu
             POSTGRES_DB_LOCAL: circle_test
             POSTGRES_HOST_LOCAL: "127.0.0.1"
+
       - run:
           name: test
           command: npm run test:server 
 
       - run:
+          name: Make publish script executable
+          command: chmod +x ./scripts/publish.sh
+
+      - run:
           name: Make deployment script executable
-          command: 
-            - chmod +x ./scripts/publish.sh
-            - chmod +x ./scripts/deploy.sh
+          command: chmod +x ./scripts/deploy.sh
 
       # Deploy production
       - deploy:
