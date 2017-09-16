@@ -5,7 +5,7 @@
 version: 2
 jobs:
   build:
-    working_directory: ~/azure-appservice-static
+    working_directory: ~/gmnst
 
     docker:
       - image: circleci/node:6.10.3
