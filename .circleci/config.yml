@@ -52,7 +52,7 @@ jobs:
 
       # Deploy production
       - deploy:
-          name: Deploy to Azure if tests pass and branch is Master
+          name: Deploy to Azure if tests pass and the branch is Master
           command: |
             if [ "${CIRCLE_BRANCH}" == "master" ];
               then ./scripts/publish.sh production;
