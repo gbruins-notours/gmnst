@@ -1,7 +1,7 @@
 <template>
     <div class="payment-methods">
         <div class="item">
-            <div class="payment-type-button" 
+            <div class="payment-type-button grow" 
                     :class="{'selected': paymentMethod === 'CREDIT_CARD'}"
                     @click="changeMethod('CREDIT_CARD')">
                 <i class="fa fa-credit-card payment-type"></i>
@@ -11,7 +11,7 @@
         </div>
 
         <div class="item">
-            <div class="payment-type-button"
+            <div class="payment-type-button grow"
                     :class="{'selected': paymentMethod === 'PAYPAL'}"
                     @click="changeMethod('PAYPAL')">
                 <i class="fa fa-paypal payment-type"></i>

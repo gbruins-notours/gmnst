@@ -19,11 +19,11 @@
                 </div>
 
                 <div class="column is-5 is-offset-1">
-                    <div class="title is-2">{{ product.title }}</div>
+                    <div class="fs30 mbm">{{ product.title }}</div>
 
-                    <div class="pbl">{{ product.description_long }}</div>
+                    <div class="pbl fs16">{{ product.description_long }}</div>
 
-                    <div class="title is-3">
+                    <div class="fs20">
                         <product-price :product="product"></product-price>
                     </div>
 
