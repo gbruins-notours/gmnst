@@ -33,7 +33,7 @@ jobs:
           key: dependency-cache-{{ checksum "package.json" }}
           paths:
             - ./node_modules
-            
+
       - run:
           name: Set up DB
           command: npm run knex:migrate && npm run knex:seed
@@ -52,7 +52,7 @@ jobs:
 
       - run:
           name: Make deployment script executable
-          command: chmod +x ./scripts/deploy.sh
+          command: chmod +x ./deploy.sh
 
       # Deploy production
       - deploy:
