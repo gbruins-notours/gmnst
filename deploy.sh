@@ -36,6 +36,7 @@ if [[ ! -n "$DEPLOYMENT_SOURCE" ]]; then
 fi
 
 if [[ ! -n "$NEXT_MANIFEST_PATH" ]]; then
+  mkdir $ARTIFACTS/manifest; #gregtest
   NEXT_MANIFEST_PATH=$ARTIFACTS/manifest
 
   if [[ ! -n "$PREVIOUS_MANIFEST_PATH" ]]; then
