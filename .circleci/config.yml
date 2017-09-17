@@ -50,9 +50,9 @@ jobs:
           name: Make publish script executable
           command: chmod +x ./scripts/publish.sh
 
-      - run:
-          name: Make deployment script executable
-          command: chmod +x ./deploy.sh
+      # - run:
+      #     name: Make deployment script executable
+      #     command: chmod +x ./deploy.sh
 
       # Deploy production
       - deploy:
