@@ -33,12 +33,14 @@ module.exports = function (baseModel, bookshelf, server) {
                         subtotal += parseFloat(model.get('total_item_price') || 0);
                     });
 
-                    return accounting.toFixed(subtotal, 2);
+                    // NOTE: accounting.toFixed() returns a string!
+                    // http://openexchangerates.github.io/accounting.js/
+                    return parseFloat(accounting.toFixed(subtotal, 2));
                 },
                 grand_total: function() {
                     let subtotal = this.get('sub_total');
-                    let salesTax = parseFloat(this.related('sales_tax') || 0);
-                    let shipping = parseFloat(this.related('shipping_total') || 0);
+                    let salesTax = parseFloat(this.get('sales_tax') || 0);
+                    let shipping = parseFloat(this.get('shipping_total') || 0);
 
                     return accounting.toFixed((subtotal + salesTax + shipping), 2);
                 }

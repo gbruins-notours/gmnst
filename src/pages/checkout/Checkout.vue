@@ -342,8 +342,6 @@
                             c.postalCode = validation.matched_address.postal_code
                             c.countryCodeAlpha2 = validation.matched_address.country_code
 
-                            console.log("VERIFIED!", c);
-
                             // self.$emit('shipping_form_submit')
                             this.shippingFormDone();
                             return;
@@ -424,32 +422,6 @@
                 if(!this.cart.billing.state) {
                     this.cart.billing.state = this.cart.shipping.state;
                 }
-                console.log("INIT BILLING", this.cart.billing)
-            },
-
-
-            /**
-             * Get sales tax rate for the given shipping address
-             */
-            getSalesTax: function() {
-                api.salesTax.getSalesTaxAmount({
-                    city: this.cart.shipping.city,
-                    state: this.cart.shipping.state,
-                    countryCodeAlpha2: this.cart.shipping.countryCodeAlpha2,
-                    subtotal: this.cart.sub_total,
-                    shipping: this.cart.shipping.total
-                })
-                .then((result) => {
-                    this.$store.dispatch('CART_SALES_TAX', result);
-                })
-                .catch((result) => {
-                    currentNotification = this.$notify({
-                        title: this.$t('An error occurred'),
-                        message: 'We are unable to display the sales tax rate because of a server error.',
-                        duration: 0,
-                        type: 'error'
-                    });
-                });
             },
 
 
@@ -488,22 +460,30 @@
                 });
             },
 
-
             checkoutStepChanged: function(newStep) {
                 if(newStep < this.currentStep) {
                     this.currentStep = newStep;
                 }
             },
 
-            /**
-             * Callback function called when the submit button clicked in the ShippingForm
-             * component.
-             */
             shippingFormDone: function() {
                 this.initBillingForm();
                 this.currentStep = 1;
 
-                //TODO: send latest cart data to backend so sales_tax can be calculated.
+                api.shoppingCart
+                    .setShippingAddress(this.cart.shipping)
+                    .then((result) => {
+                        console.log('SET SHOIING ADDRESS RESULT', result)
+                        this.$store.dispatch('CART_SET', result);
+                    })
+                    .catch((result) => {
+                        // currentNotification = this.$notify({
+                        //     title: this.$t('An error occurred'),
+                        //     message: 'We were unable to get shipping rates because of a server error.',
+                        //     duration: 0,
+                        //     type: 'error'
+                        // });
+                    });
             },
 
             shippingMethodDone: function() {

@@ -159,7 +159,7 @@ internals.after = function (server, next) {
 
 
     internals.shoppingCartItem.get = (id) => {
-        return new Promise( (resolve, reject) => {
+        return new Promise((resolve, reject) => {
             server.plugins.BookshelfOrm.bookshelf.model('ShoppingCartItem')
                 .findById(id)
                 .then((ShoppingCartItem) => {
@@ -376,6 +376,48 @@ internals.after = function (server, next) {
         },
         {
             method: 'POST',
+            path: '/cart/shipping/setaddress',
+            config: {
+                description: 'Sets the shipping address for the cart and calculates the sales tax',
+                validate: {
+                    payload: Joi.reach(internals.schema, 'shipping')
+                },
+                handler: (request, reply) => {
+                    internals.shoppingCart.get(request)
+                        .then((ShoppingCart) => {
+                            let salesTaxParams = cloneDeep(request.payload);
+                            salesTaxParams.sub_total = ShoppingCart.sub_total
+
+                            return server.plugins['SalesTax'].getSalesTaxAmount(salesTaxParams).then((salesTax) => {
+                                // Save the shipping params and the sales tax value in the model
+                                let shippingParams = {};
+                                shippingParams.sales_tax = salesTax;
+
+                                // TODO:  need to be a bit more defensive here in case
+                                // user hacks some additional params
+                                // check a whitelist of params before setting
+                                forEach(request.payload, (val, key) => {
+                                    shippingParams[`shipping_${key}`] = val;
+                                });
+
+                                return ShoppingCart.save(
+                                    shippingParams,
+                                    { method: 'update', patch: true }
+                                );
+                            });
+                        })
+                        .then((ShoppingCart) => {
+                            reply.apiSuccess(ShoppingCart.toJSON());
+                        })
+                        .catch((err) => {
+                            winston.error(err);
+                            reply(Boom.badData(err));
+                        });
+                }
+            }
+        },
+        {
+            method: 'POST',
             path: '/cart/checkout',
             config: {
                 description: 'Braintree nonce received by the client. Complete the transaction',
@@ -534,7 +576,7 @@ internals.after = function (server, next) {
 
 
 exports.register = (server, options, next) => {
-    server.dependency(['BookshelfOrm', 'Core', 'Products', 'Payments'], internals.after);
+    server.dependency(['BookshelfOrm', 'Core', 'Products', 'Payments', 'SalesTax'], internals.after);
     return next();
 };
 

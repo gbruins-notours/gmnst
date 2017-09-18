@@ -72,6 +72,10 @@ export default {
         })
     },
 
+    CART_SET: ({ commit }, cartData) => {
+        commit('CART_SET', cartData);
+    },
+
     CART_BILLING_ATTRIBUTE: ({ commit }, config) => {
         if(isObject(config) && 
             config.hasOwnProperty('attribute') && 

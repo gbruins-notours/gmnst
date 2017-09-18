@@ -121,6 +121,14 @@ export default {
                 });
         },
 
+        setShippingAddress(address) {
+            return getHttp()
+                .post('/api/v1/cart/shipping/setaddress', address)
+                .then((response) => {
+                    return response.data.data;
+                });
+        },
+
         validateAddress(address) {
             return getHttp()
                 .post('/api/v1/shipping/validateAddress', address)
@@ -144,16 +152,16 @@ export default {
                     return response.data.data;
                 });
         }
-    },
-
-    salesTax: {
-        getSalesTaxAmount(params) {
-            return getHttp()
-                .post('/api/v1/salestax/get', params)
-                .then((response) => {
-                    return response.data.data;
-                });
-        }
     }
+
+    // salesTax: {
+    //     getSalesTaxAmount(params) {
+    //         return getHttp()
+    //             .post('/api/v1/salestax/get', params)
+    //             .then((response) => {
+    //                 return response.data.data;
+    //             });
+    //     }
+    // }
       
 };

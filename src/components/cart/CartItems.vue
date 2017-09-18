@@ -66,25 +66,25 @@
                             {{ $t('Subtotal') }}
                             <span class="nowrap">({{ cart.num_items }} {{ $tc('items', cart.num_items) }})</span>:
                         </div>
-                        <div class="displayTableCell tar">{{ $n(cart.sub_total, 'currency') }}</div>
+                        <div class="displayTableCell tar mono">{{ cart.sub_total }}</div>
                     </div>
 
                     <!-- shipping -->
                     <div class="displayTableRow" v-if="showShippingCost">
                         <div class="displayTableCell prl fwb tar">{{ $t('Shipping') }}:</div>
-                        <div class="displayTableCell tar">{{ $n(cart.shipping_total, 'currency') }}</div>
+                        <div class="displayTableCell tar mono">{{ cart.shipping_total }}</div>
                     </div>
 
                     <!-- sales tax -->
                     <div class="displayTableRow" v-if="showSalesTax">
                         <div class="displayTableCell prl fwb tar">{{ $t('Tax') }}:</div>
-                        <div class="displayTableCell tar">{{ $n(cart.sales_tax, 'currency') }}</div>
+                        <div class="displayTableCell tar mono">{{ cart.sales_tax }}</div>
                     </div>
 
                     <!-- order total -->
                     <div class="displayTableRow" v-if="showShippingCost && showSalesTax">
                         <div class="displayTableCell prl fwb tar colorGreen fs16">{{ $t('Order total') }}:</div>
-                        <div class="displayTableCell fwb tar colorGreen fs16">{{ $n(cart.grand_total, 'currency') }}</div>
+                        <div class="displayTableCell fwb tar colorGreen fs16 mono">{{ $n(cart.grand_total, 'currency') }}</div>
                     </div>
                 </div>
             </div>
@@ -157,7 +157,6 @@
             },
 
             updateCartItemQuantity(item, qty) {
-                console.log('updateCartItemQuantity');
                 let loadingInstance = Loading.service({ target: '#cartItem' + item.id });
 
                 this.$store.dispatch('CART_ITEM_SET_QTY', {

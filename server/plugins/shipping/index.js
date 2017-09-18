@@ -1,5 +1,4 @@
 const apiKey = process.env.NODE_ENV === 'development' ? process.env.SHIPENGINE_API_KEY_TEST : process.env.SHIPENGINE_API_KEY_PROD;
-const isObject = require('lodash.isobject');
 const Joi = require('joi');
 const Boom = require('boom');
 const Wreck = require('wreck');
