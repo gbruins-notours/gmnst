@@ -26,6 +26,11 @@ manifest.registrations.push(
         plugin: {
             register: './plugins/shopping-cart'
         }
+    },
+    {
+        plugin: {
+            register: './plugins/sales-tax'
+        }
     }
 );
 

@@ -35,15 +35,6 @@ export default {
             });
     },
 
-    //TODO check for existance of this
-    // getInfo() {
-    //     return getHttp()
-    //         .get('/api/v1/info')
-    //         .then((response) => {
-    //             return response.data.data;
-    //         });
-    // },
-
     logger(type, message) {
         if(message) {
             return getHttp().post('/api/v1/logger', {
@@ -153,15 +144,4 @@ export default {
                 });
         }
     }
-
-    // salesTax: {
-    //     getSalesTaxAmount(params) {
-    //         return getHttp()
-    //             .post('/api/v1/salestax/get', params)
-    //             .then((response) => {
-    //                 return response.data.data;
-    //             });
-    //     }
-    // }
-      
 };

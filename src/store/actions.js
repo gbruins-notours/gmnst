@@ -90,9 +90,5 @@ export default {
 
     CART_SHIPPING_METHODS: ({ commit }, data) => {
         commit('CART_SHIPPING_METHODS', data)
-    },
-
-    CART_SALES_TAX: ({ commit }, salesTaxAmount) => {
-        commit('CART_SALES_TAX', salesTaxAmount);
     }
 }

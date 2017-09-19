@@ -71,9 +71,5 @@ export default {
 
     CART_SHIPPING_METHODS: (state, data) => {
         state.cart.shippingMethods = data;
-    },
-
-    CART_SALES_TAX: (state, salesTax) => {
-        state.cart.salesTax = salesTax;
     }
 }

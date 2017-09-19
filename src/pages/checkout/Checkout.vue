@@ -424,7 +424,6 @@
                 }
             },
 
-
             getShippingRates: function() {
                 this.$store.dispatch('CART_SHIPPING_METHODS', null);
 
@@ -466,14 +465,19 @@
                 }
             },
 
+
             shippingFormDone: function() {
                 this.initBillingForm();
                 this.currentStep = 1;
 
+                // Setting the shipping address will also calculate the
+                // sales tax for the cart because sales tax calculation requires
+                // knowledge of the destination.  Sales tax needs to be set so
+                // the API can return the shipping/tax/grand total amounts for the 'review'
+                // checkout step
                 api.shoppingCart
                     .setShippingAddress(this.cart.shipping)
                     .then((result) => {
-                        console.log('SET SHOIING ADDRESS RESULT', result)
                         this.$store.dispatch('CART_SET', result);
                     })
                     .catch((result) => {

@@ -13,6 +13,20 @@ const jwt = require('jsonwebtoken');
 let internals = {};
 
 
+internals.shippingAttributes = {
+    firstName: Joi.string().trim().max(255).required(),
+    lastName: Joi.string().trim().max(255).required(),
+    company: Joi.string().trim().max(255),
+    streetAddress: Joi.string().trim().max(255).required(),
+    extendedAddress: Joi.string().trim().max(255).empty(null),
+    city: Joi.string().trim().max(255).required(),
+    state: Joi.string().trim().max(255).required(),
+    postalCode: Joi.string().trim().max(10).required(),
+    countryCodeAlpha2: Joi.string().trim().max(2).required(),  // alpha2 is required by PayPal:  https://developers.braintreepayments.com/reference/request/transaction/sale/node#billing.country_code_alpha2
+    email: Joi.string().email().max(50).label('Shipping: Email').required()
+}
+
+
 /**
  * Joi definitions for the ShoppingCart model
  *
@@ -36,18 +50,7 @@ internals.schema = Joi.object().keys({
         phone: Joi.string().trim().max(30)
     }),
 
-    shipping: Joi.object().keys({
-        firstName: Joi.string().trim().max(255).required(),
-        lastName: Joi.string().trim().max(255).required(),
-        company: Joi.string().trim().max(255),
-        streetAddress: Joi.string().trim().max(255).required(),
-        extendedAddress: Joi.string().trim().max(255).empty(null),
-        city: Joi.string().trim().max(255).required(),
-        state: Joi.string().trim().max(255).required(),
-        postalCode: Joi.string().trim().max(10).required(),
-        countryCodeAlpha2: Joi.string().trim().max(2).required(),  // alpha2 is required by PayPal:  https://developers.braintreepayments.com/reference/request/transaction/sale/node#billing.country_code_alpha2
-        email: Joi.string().email().max(50).label('Shipping: Email').required()
-    })
+    shipping: Joi.object().keys(internals.shippingAttributes)
 });
 
 
@@ -390,18 +393,19 @@ internals.after = function (server, next) {
 
                             return server.plugins['SalesTax'].getSalesTaxAmount(salesTaxParams).then((salesTax) => {
                                 // Save the shipping params and the sales tax value in the model
-                                let shippingParams = {};
-                                shippingParams.sales_tax = salesTax;
+                                let updateParams = {};
+                                updateParams.sales_tax = salesTax;
 
-                                // TODO:  need to be a bit more defensive here in case
-                                // user hacks some additional params
-                                // check a whitelist of params before setting
+                                // Making sure only valid shipping params are being set
+                                let whitelist = Object.keys(internals.shippingAttributes);
                                 forEach(request.payload, (val, key) => {
-                                    shippingParams[`shipping_${key}`] = val;
+                                    if(whitelist.indexOf(key) > -1) {
+                                        updateParams[`shipping_${key}`] = val;
+                                    }
                                 });
 
                                 return ShoppingCart.save(
-                                    shippingParams,
+                                    updateParams,
                                     { method: 'update', patch: true }
                                 );
                             });
