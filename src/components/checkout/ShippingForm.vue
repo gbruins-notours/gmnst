@@ -2,158 +2,140 @@
     <section class="container">
         <!-- Email -->
         <div class="displayTableRow">
-            <label class="checkout_form_label">
-                {{ $t('EMAIL ADDRESS') }}:
-            </label>
+            <label class="checkout_form_label">{{ $t('EMAIL ADDRESS') }}:</label>
             <div class="checkout_form_value">
-                <el-input v-model.trim="shipping.email" 
-                          @input="onInputChange('email')"
-                          @blur="onInputBlur('email')"
-                          :class="{ 'inputError': $v.shipping.email.$error }"></el-input>
-                <div role="alert" v-show="canShowValidationMsg('email')">
-                    <p v-if="!$v.shipping.email.required">{{ $t('Required') }}</p>
-                    <p v-if="!$v.shipping.email.email">{{ $t('Please enter a valid email address.') }}</p>
+                <el-input v-model.trim="shipping_email" 
+                          @input="onInputChange('shipping_email')"
+                          @blur="onInputBlur('shipping_email')"
+                          :class="{ 'inputError': $v.shipping_email.$error }"></el-input>
+                <div role="alert" v-show="canShowValidationMsg('shipping_email')">
+                    <p v-if="!$v.shipping_email.required">{{ $t('Required') }}</p>
+                    <p v-if="!$v.shipping_email.email">{{ $t('Please enter a valid email address.') }}</p>
                 </div>
             </div>
-            <i v-show="canShowGreenCheck('email')" 
+            <i v-show="canShowGreenCheck('shipping_email')" 
                class="displayTableCell plm el-icon-circle-check colorGreen vam"></i>
         </div>
 
         <!-- Country -->
         <div class="displayTableRow">
-            <label class="checkout_form_label">
-                {{ $t('COUNTRY') }}:
-            </label>
+            <label class="checkout_form_label">{{ $t('COUNTRY') }}:</label>
             <div class="checkout_form_value">
-                <country-select v-model="shipping.countryCodeAlpha2"
-                                :init-value="shipping.countryCodeAlpha2"
+                <country-select v-model="shipping_countryCodeAlpha2"
+                                :init-value="shipping_countryCodeAlpha2"
                                 value-type="alpha2"
                                 @change="countryCodeChanged"></country-select>
-                <p role="alert" v-show="canShowValidationMsg('countryCodeAlpha2')">{{ $t('Required') }}</p>
+                <p role="alert" v-show="canShowValidationMsg('shipping_countryCodeAlpha2')">{{ $t('Required') }}</p>
             </div>
-            <i v-show="canShowGreenCheck('countryCodeAlpha2')" 
+            <i v-show="canShowGreenCheck('shipping_countryCodeAlpha2')" 
                class="displayTableCell plm el-icon-circle-check colorGreen vam"></i>
         </div>
 
         <!-- First Name -->
         <div class="displayTableRow">
-            <label class="checkout_form_label">
-                {{ $t('FIRST NAME') }}:
-            </label>
+            <label class="checkout_form_label">{{ $t('FIRST NAME') }}:</label>
             <div class="checkout_form_value">
-                <el-input v-model.trim="shipping.firstName" 
-                          @input="onInputChange('firstName')"
-                          @blur="onInputBlur('firstName')"
-                          :class="{ 'inputError': $v.shipping.firstName.$error }"></el-input>
-                <p role="alert" v-show="canShowValidationMsg('firstName')">{{ $t('Required') }}</p>
+                <el-input v-model.trim="shipping_firstName" 
+                          @input="onInputChange('shipping_firstName')"
+                          @blur="onInputBlur('shipping_firstName')"
+                          :class="{ 'inputError': $v.shipping_firstName.$error }"></el-input>
+                <p role="alert" v-show="canShowValidationMsg('shipping_firstName')">{{ $t('Required') }}</p>
             </div>
-            <i v-show="canShowGreenCheck('firstName')" 
+            <i v-show="canShowGreenCheck('shipping_firstName')" 
                class="displayTableCell plm el-icon-circle-check colorGreen vam"></i>
         </div>
 
         <!-- Last Name -->
         <div class="displayTableRow">
-            <label class="checkout_form_label">
-                {{ $t('LAST NAME') }}:
-            </label>
+            <label class="checkout_form_label">{{ $t('LAST NAME') }}:</label>
             <div class="checkout_form_value">
-                <el-input v-model.trim="shipping.lastName" 
-                          @input="onInputChange('lastName')"
-                          @blur="onInputBlur('lastName')"
-                          :class="{ 'inputError': $v.shipping.lastName.$error }"></el-input>
-                <p role="alert" v-show="canShowValidationMsg('lastName')">{{ $t('Required') }}</p>
+                <el-input v-model.trim="shipping_lastName" 
+                          @input="onInputChange('shipping_lastName')"
+                          @blur="onInputBlur('shipping_lastName')"
+                          :class="{ 'inputError': $v.shipping_lastName.$error }"></el-input>
+                <p role="alert" v-show="canShowValidationMsg('shipping_lastName')">{{ $t('Required') }}</p>
             </div>
-            <i v-show="canShowGreenCheck('lastName')" 
+            <i v-show="canShowGreenCheck('shipping_lastName')" 
                class="displayTableCell plm el-icon-circle-check colorGreen vam"></i>
         </div>
 
         <!-- Street Address -->
         <div class="displayTableRow">
-            <label class="checkout_form_label">
-                {{ $t('ADDRESS LINE 1') }}:
-            </label>
+            <label class="checkout_form_label">{{ $t('ADDRESS LINE 1') }}:</label>
             <div class="checkout_form_value">
-                <el-input v-model.trim="shipping.streetAddress" 
-                          @input="onInputChange('streetAddress')"
-                          @blur="onInputBlur('streetAddress')"
-                          :class="{ 'inputError': $v.shipping.streetAddress.$error }"></el-input>
-                <p role="alert" v-show="canShowValidationMsg('streetAddress')">{{ $t('Required') }}</p>
+                <el-input v-model.trim="shipping_streetAddress" 
+                          @input="onInputChange('shipping_streetAddress')"
+                          @blur="onInputBlur('shipping_streetAddress')"
+                          :class="{ 'inputError': $v.shipping_streetAddress.$error }"></el-input>
+                <p role="alert" v-show="canShowValidationMsg('shipping_streetAddress')">{{ $t('Required') }}</p>
             </div>
-            <i v-show="canShowGreenCheck('streetAddress')" 
+            <i v-show="canShowGreenCheck('shipping_streetAddress')" 
                class="displayTableCell plm el-icon-circle-check colorGreen vam"></i>
         </div>
 
         <!-- Extended Address -->
         <!-- This value may be returned by the paypal response, so only displaying it if it does -->
-        <div class="displayTableRow" v-if="shipping.extendedAddress">
+        <div class="displayTableRow" v-if="shipping_extendedAddress">
             <label class="checkout_form_label">{{ $t('ADDRESS LINE 2') }}:</label>
             <div class="checkout_form_value">
-                <el-input v-model.trim="shipping.extendedAddress"></el-input>
+                <el-input v-model.trim="shipping_extendedAddress"></el-input>
             </div>
         </div>
 
         <!-- City -->
         <div class="displayTableRow">
-            <label class="checkout_form_label">
-                {{ $t('CITY') }}:
-            </label>
+            <label class="checkout_form_label">{{ $t('CITY') }}:</label>
             <div class="checkout_form_value">
-                <el-input v-model.trim="shipping.city" 
-                          @input="onInputChange('city')"
-                          @blur="onInputBlur('city')"
-                          :class="{ 'inputError': $v.shipping.city.$error }"></el-input>
-                <p role="alert" v-show="canShowValidationMsg('city')">{{ $t('Required') }}</p>
+                <el-input v-model.trim="shipping_city" 
+                          @input="onInputChange('shipping_city')"
+                          @blur="onInputBlur('shipping_city')"
+                          :class="{ 'inputError': $v.shipping_city.$error }"></el-input>
+                <p role="alert" v-show="canShowValidationMsg('shipping_city')">{{ $t('Required') }}</p>
             </div>
-            <i v-show="canShowGreenCheck('city')" 
+            <i v-show="canShowGreenCheck('shipping_city')" 
                class="displayTableCell plm el-icon-circle-check colorGreen vam"></i>
         </div>
 
         <!-- State -->
         <div class="displayTableRow">
-            <label class="checkout_form_label">
-                {{ $t('STATE/PROVINCE/REGION') }}:
-            </label>
+            <label class="checkout_form_label">{{ $t('STATE/PROVINCE/REGION') }}:</label>
             <div class="checkout_form_value">
-                <state-province-select v-model.trim="shipping.state"
-                                       :init-value="shipping.state"
-                                       :country="shipping.countryCodeAlpha2"
+                <state-province-select v-model.trim="shipping_state"
+                                       :init-value="shipping_state"
+                                       :country="shipping_countryCodeAlpha2"
                                        @change="stateChanged"
                                        :disabled="!stateSelectEnabled"
-                                       :class="{ 'inputError': $v.shipping.state.$error }"></state-province-select>
-                <p role="alert" v-show="canShowValidationMsg('state')">{{ $t('Required') }}</p>
+                                       :class="{ 'inputError': $v.shipping_state.$error }"></state-province-select>
+                <p role="alert" v-show="canShowValidationMsg('shipping_state')">{{ $t('Required') }}</p>
             </div>
-            <i v-show="canShowGreenCheck('state')" 
+            <i v-show="canShowGreenCheck('shipping_state')" 
                class="displayTableCell plm el-icon-circle-check colorGreen vam"></i>
         </div>
 
         <!-- Postal Code -->
         <div class="displayTableRow">
-            <label class="checkout_form_label">
-                {{ $t('POSTAL CODE') }}:
-            </label>
+            <label class="checkout_form_label">{{ $t('POSTAL CODE') }}:</label>
             <div class="checkout_form_value">
-                <el-input v-model.trim="shipping.postalCode" 
-                          @input="onInputChange('postalCode')"
-                          @blur="onInputBlur('postalCode')"
-                         :class="{ 'inputError': $v.shipping.postalCode.$error }"></el-input>
-                <p role="alert" v-show="canShowValidationMsg('postalCode')">{{ $t('Required') }}</p>
+                <el-input v-model.trim="shipping_postalCode" 
+                          @input="onInputChange('shipping_postalCode')"
+                          @blur="onInputBlur('shipping_postalCode')"
+                         :class="{ 'inputError': $v.shipping_postalCode.$error }"></el-input>
+                <p role="alert" v-show="canShowValidationMsg('shipping_postalCode')">{{ $t('Required') }}</p>
             </div>
-            <i v-show="canShowGreenCheck('postalCode')" 
+            <i v-show="canShowGreenCheck('shipping_postalCode')" 
                class="displayTableCell plm el-icon-circle-check colorGreen vam"></i>
         </div>
 
         <!-- Company Name -->
         <div class="displayTableRow">
-            <label class="checkout_form_label">
-                {{ $t('COMPANY NAME') }}:
-            </label>
+            <label class="checkout_form_label">{{ $t('COMPANY NAME') }}:</label>
             <div class="checkout_form_value">
-                <el-input v-model.trim="shipping.company"
+                <el-input v-model.trim="shipping_company"
                           :placeholder="'(' + $t('optional') + ')'"
-                          @input="onInputChange('company')"
-                          @blur="onInputBlur('company')"></el-input>
+                          @input="onInputChange('shipping_company')"
+                          @blur="onInputBlur('shipping_company')"></el-input>
             </div>
-            <i v-show="canShowGreenCheck('company')" 
+            <i v-show="canShowGreenCheck('shipping_company')" 
                class="displayTableCell plm el-icon-circle-check colorGreen vam"></i>
         </div>
 
@@ -208,29 +190,28 @@
                 submitButtonLoading: false,
                 stateSelectEnabled: false,
 
-                shipping: {
-                    email: this.$store.state.cart.shipping.email,
-                    countryCodeAlpha2: this.$store.state.cart.shipping.countryCodeAlpha2,
-                    firstName: this.$store.state.cart.shipping.firstName,
-                    lastName: this.$store.state.cart.shipping.lastName,
-                    streetAddress: this.$store.state.cart.shipping.streetAddress,
-                    extendedAddress: this.$store.state.cart.shipping.extendedAddress,
-                    city: this.$store.state.cart.shipping.city,
-                    state: this.$store.state.cart.shipping.state,
-                    postalCode: this.$store.state.cart.shipping.postalCode,
-                    company: this.$store.state.cart.shipping.company,
-                },
+                shipping_email: this.$store.state.cart.shipping_email,
+                shipping_countryCodeAlpha2: this.$store.state.cart.shipping_countryCodeAlpha2,
+                shipping_firstName: this.$store.state.cart.shipping_firstName,
+                shipping_lastName: this.$store.state.cart.shipping_lastName,
+                shipping_streetAddress: this.$store.state.cart.shipping_streetAddress,
+                shipping_extendedAddress: this.$store.state.cart.shipping_extendedAddress,
+                shipping_city: this.$store.state.cart.shipping_city,
+                shipping_state: this.$store.state.cart.shipping_state,
+                shipping_postalCode: this.$store.state.cart.shipping_postalCode,
+                shipping_company: this.$store.state.cart.shipping_company,
+
                 greenChecks: {
-                    email: false,
-                    countryCodeAlpha2: false,
-                    firstName: false,
-                    lastName: false,
-                    streetAddress: false,
-                    extendedAddress: false,
-                    city: false,
-                    state: false,
-                    postalCode: false,
-                    company: false, 
+                    shipping_email: false,
+                    shipping_countryCodeAlpha2: false,
+                    shipping_firstName: false,
+                    shipping_lastName: false,
+                    shipping_streetAddress: false,
+                    shipping_extendedAddress: false,
+                    shipping_city: false,
+                    shipping_state: false,
+                    shipping_postalCode: false,
+                    shipping_company: false, 
                 }
             }
         },
@@ -246,7 +227,7 @@
         },
 
         created: function() {
-            this.stateSelectEnabled = (isObject(this.cart) && isObject(this.cart.shipping) && this.cart.shipping.countryCodeAlpha2)
+            this.stateSelectEnabled = (isObject(this.cart) && this.cart.shipping_countryCodeAlpha2)
         },
 
         methods: {
@@ -254,23 +235,23 @@
                 if(!isOpen) {
                     // determine whether or not to display the green check when 
                     // the select menu is closed
-                    this.$v.shipping[attr].$touch();
+                    this.$v[attr].$touch();
                     this.onInputBlur(attr);
                 }
             },
 
             onInputChange(attr) {
                 switch(attr) {
-                    case 'email':
-                        this.delayTouch(this.$v.shipping.email, 1000);
+                    case 'shipping_email':
+                        this.delayTouch(this.$v.shipping_email, 1000);
                         break;
 
                     default:
-                        this.$v.shipping[attr].$touch();
+                        this.$v[attr].$touch();
                 }
 
                 // If the input value ever goes invalid then remove the green check
-                if(this.$v.shipping[attr].$invalid) {
+                if(this.$v[attr].$invalid) {
                     this.greenChecks[attr] = false;
                 }
             },
@@ -280,17 +261,17 @@
                 // because there is a 1 second timeout for email.  Therefore we call it again
                 // so that the old instance stops and the new one fires immediately.  Then we 
                 // can procede as normal.
-                if(attr === 'email') {
-                   this.delayTouch(this.$v.shipping.email, 0); 
+                if(attr === 'shipping_email') {
+                   this.delayTouch(this.$v.shipping_email, 0); 
                 }
-                this.greenChecks[attr] = this.$v.shipping[attr].$dirty && !this.$v.shipping[attr].$invalid;
+                this.greenChecks[attr] = this.$v[attr].$dirty && !this.$v[attr].$invalid;
             },
 
             /**
              * Determine if the green checkmark should be displayed
              */
             canShowGreenCheck(attr) {
-                return this.greenChecks[attr] && !this.$v.shipping[attr].$error;
+                return this.greenChecks[attr] && !this.$v[attr].$error;
             },
 
             /**
@@ -298,26 +279,26 @@
              */
             canShowValidationMsg(attr) {
                 switch(attr) {
-                    case 'email':
-                        return this.$v.shipping.email.$dirty
+                    case 'shipping_email':
+                        return this.$v[attr].$dirty
 
                     default:
-                        return this.$v.shipping[attr].$dirty && !this.$v.shipping[attr].required
+                        return this.$v[attr].$dirty && !this.$v[attr].required
 
                 }
             },
 
             countryCodeChanged: function(newVal) {
-                this.shipping.countryCodeAlpha2 = newVal;
+                this.shipping_countryCodeAlpha2 = newVal;
                 this.stateSelectEnabled = newVal ? true : false;
-                this.onInputChange('countryCodeAlpha2');
-                this.onInputBlur('countryCodeAlpha2');
+                this.onInputChange('shipping_countryCodeAlpha2');
+                this.onInputBlur('shipping_countryCodeAlpha2');
             },
 
             stateChanged: function(newVal) {
-                this.shipping.state = newVal;
-                this.onInputChange('state');
-                this.onInputBlur('state');
+                this.shipping_state = newVal;
+                this.onInputChange('shipping_state');
+                this.onInputBlur('shipping_state');
             },
 
             delayTouch: function($v, timeout) {
@@ -339,7 +320,7 @@
              */
             submitForm: function() {
                 let self = this;
-                let c = this.$store.state.cart.shipping;
+                let c = this.$store.state.cart;
 
                 if(currentNotification) {
                     currentNotification.close();
@@ -349,19 +330,19 @@
                     this.submitButtonLoading = true;
 
                     // Updating the state sttributes that won't be updated below
-                    c.email = this.shipping.email;
-                    c.firstName = this.shipping.firstName;
-                    c.lastName = this.shipping.lastName;
-                    c.extendedAddress = this.shipping.extendedAddress;
-                    c.company = this.shipping.company;
+                    c.shipping_email = this.shipping_email;
+                    c.shipping_firstName = this.shipping_firstName;
+                    c.shipping_lastName = this.shipping_lastName;
+                    c.shipping_extendedAddress = this.shipping_extendedAddress;
+                    c.shipping_company = this.shipping_company;
 
                     api.shoppingCart.validateAddress({
-                        company_name: this.shipping.company,
-                        address_line1: this.shipping.streetAddress,
-                        city_locality: this.shipping.city,
-                        state_province: this.shipping.state,
-                        postal_code: this.shipping.postalCode,
-                        country_code: this.shipping.countryCodeAlpha2
+                        company_name: this.shipping_company,
+                        address_line1: this.shipping_streetAddress,
+                        city_locality: this.shipping_city,
+                        state_province: this.shipping_state,
+                        postal_code: this.shipping_postalCode,
+                        country_code: this.shipping_countryCodeAlpha2
                     })
                     .then((result) => {
                         let validation = Array.isArray(result) ? result[0] : result;
@@ -371,14 +352,12 @@
                         // Add the validated values to the state
                         switch(validation.status) {
                             case 'verified':
-                                c.company = validation.matched_address.company
-                                c.streetAddress = validation.matched_address.address_line1
-                                c.city = validation.matched_address.city_locality
-                                c.state = validation.matched_address.state_province
-                                c.postalCode = validation.matched_address.postal_code
-                                c.countryCodeAlpha2 = validation.matched_address.country_code
-
-                                console.log("VERIFIED!", c);
+                                c.shipping_company = validation.matched_address.company
+                                c.shipping_streetAddress = validation.matched_address.address_line1
+                                c.shipping_city = validation.matched_address.city_locality
+                                c.shipping_state = validation.matched_address.state_province
+                                c.shipping_postalCode = validation.matched_address.postal_code
+                                c.shipping_countryCodeAlpha2 = validation.matched_address.country_code
 
                                 self.$emit('shipping_form_submit')
                                 return;
@@ -391,12 +370,12 @@
                             // ALSO NOTE: The 'matched_address' property is null when the status is 'unverified',
                             // so we need to get the values from the 'original_address' property
                             case 'unverified':
-                                c.company = validation.original_address.company
-                                c.streetAddress = validation.original_address.address_line1
-                                c.city = validation.original_address.city_locality
-                                c.state = validation.original_address.state_province
-                                c.postalCode = validation.original_address.postal_code
-                                c.countryCodeAlpha2 = validation.original_address.country_code
+                                c.shipping_company = validation.original_address.company
+                                c.shipping_streetAddress = validation.original_address.address_line1
+                                c.shipping_city = validation.original_address.city_locality
+                                c.shipping_state = validation.original_address.state_province
+                                c.shipping_postalCode = validation.original_address.postal_code
+                                c.shipping_countryCodeAlpha2 = validation.original_address.country_code
 
                                 self.$emit('shipping_form_submit')
                                 return;
@@ -448,17 +427,15 @@
         },
 
         validations: {
-            shipping: {
-                email: { required, email },
-                countryCodeAlpha2: { required },
-                firstName: { required },
-                lastName: { required },
-                streetAddress: { required },
-                city: { required },
-                state: { required },
-                postalCode: { required },
-                company: {} // no validation needed
-            }
+            shipping_email: { required, email },
+            shipping_countryCodeAlpha2: { required },
+            shipping_firstName: { required },
+            shipping_lastName: { required },
+            shipping_streetAddress: { required },
+            shipping_city: { required },
+            shipping_state: { required },
+            shipping_postalCode: { required },
+            shipping_company: {} // no validation needed
         }
     }
 </script>

@@ -9,21 +9,20 @@ const isString = require('lodash.isstring');
 const cloneDeep = require('lodash.clonedeep');
 const jwt = require('jsonwebtoken');
 
-
 let internals = {};
 
 
 internals.shippingAttributes = {
-    firstName: Joi.string().trim().max(255).required(),
-    lastName: Joi.string().trim().max(255).required(),
-    company: Joi.string().trim().max(255),
-    streetAddress: Joi.string().trim().max(255).required(),
-    extendedAddress: Joi.string().trim().max(255).empty(null),
-    city: Joi.string().trim().max(255).required(),
-    state: Joi.string().trim().max(255).required(),
-    postalCode: Joi.string().trim().max(10).required(),
-    countryCodeAlpha2: Joi.string().trim().max(2).required(),  // alpha2 is required by PayPal:  https://developers.braintreepayments.com/reference/request/transaction/sale/node#billing.country_code_alpha2
-    email: Joi.string().email().max(50).label('Shipping: Email').required()
+    shipping_firstName: Joi.string().trim().max(255).required(),
+    shipping_lastName: Joi.string().trim().max(255).required(),
+    shipping_company: Joi.string().trim().max(255).empty(null),
+    shipping_streetAddress: Joi.string().trim().max(255).required(),
+    shipping_extendedAddress: Joi.string().trim().max(255).empty(null),
+    shipping_city: Joi.string().trim().max(255).required(),
+    shipping_state: Joi.string().trim().max(255).required(),
+    shipping_postalCode: Joi.string().trim().max(10).required(),
+    shipping_countryCodeAlpha2: Joi.string().trim().max(2).required(),  // alpha2 is required by PayPal:  https://developers.braintreepayments.com/reference/request/transaction/sale/node#billing.country_code_alpha2
+    shipping_email: Joi.string().email().max(50).label('Shipping: Email').required()
 }
 
 
@@ -38,16 +37,16 @@ internals.schema = Joi.object().keys({
     token: Joi.string().trim().max(100).required(),
 
     billing: Joi.object().keys({
-        firstName: Joi.string().trim().max(255),
-        lastName: Joi.string().trim().max(255),
-        company: Joi.string().trim().max(255),
-        streetAddress: Joi.string().trim().max(255),
-        extendedAddress: Joi.string().trim().max(255).empty(null),
-        city: Joi.string().trim().max(255),
-        state: Joi.string().trim().max(255),
-        postalCode: Joi.string().trim().max(10),
-        countryCodeAlpha2: Joi.string().trim().max(2),
-        phone: Joi.string().trim().max(30)
+        billing_firstName: Joi.string().trim().max(255),
+        billing_lastName: Joi.string().trim().max(255),
+        billing_company: Joi.string().trim().max(255),
+        billing_streetAddress: Joi.string().trim().max(255),
+        billing_extendedAddress: Joi.string().trim().max(255).empty(null),
+        billing_city: Joi.string().trim().max(255),
+        billing_state: Joi.string().trim().max(255),
+        billing_postalCode: Joi.string().trim().max(10),
+        billing_countryCodeAlpha2: Joi.string().trim().max(2),
+        billing_phone: Joi.string().trim().max(30)
     }),
 
     shipping: Joi.object().keys(internals.shippingAttributes)
@@ -393,16 +392,8 @@ internals.after = function (server, next) {
 
                             return server.plugins['SalesTax'].getSalesTaxAmount(salesTaxParams).then((salesTax) => {
                                 // Save the shipping params and the sales tax value in the model
-                                let updateParams = {};
+                                let updateParams = request.payload;
                                 updateParams.sales_tax = salesTax;
-
-                                // Making sure only valid shipping params are being set
-                                let whitelist = Object.keys(internals.shippingAttributes);
-                                forEach(request.payload, (val, key) => {
-                                    if(whitelist.indexOf(key) > -1) {
-                                        updateParams[`shipping_${key}`] = val;
-                                    }
-                                });
 
                                 return ShoppingCart.save(
                                     updateParams,

@@ -38,7 +38,7 @@ const translations = {
     'Delete': 'Delete',
     'digits_text': 'digit | digits',
 
-    'EMAIL ADDRESS': 'EMAIL ADDRESS',
+    'Email address': 'Email address',
     'EXPIRES': 'EXPIRES',
 
     'fill_out_form_warning': 'Please fill out the form completely before continuing. Thanks!',
@@ -88,6 +88,7 @@ const translations = {
     'Required': 'Required',
     'Return to cart': 'Return to cart',
     'REVIEW': 'REVIEW',
+    'Review your order': 'Review your order',
 
     'SAME AS SHIPPING ADDRESS': 'SAME AS SHIPPING ADDRESS',
     'SECURITY CODE': 'SECURITY CODE',

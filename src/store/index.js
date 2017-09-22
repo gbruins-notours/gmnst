@@ -26,9 +26,7 @@ export function createStore () {
                 jwtKey: null
             },
             cart: {
-                billingSameAsShipping: true,
-                shipping: {},
-                billing: {}
+                billingSameAsShipping: true
             }
         },
         getters,

@@ -13,6 +13,11 @@ manifest.registrations.push(
     },
     {
         plugin: {
+            register: './plugins/sales-tax'
+        }
+    },
+    {
+        plugin: {
             register: './plugins/products'
         }
     },

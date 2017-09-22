@@ -197,16 +197,19 @@
         },
 
         created: function() {
-            let state = this.$store.state.cart[this.type];
             let blacklist = [];
 
             if(this.type === 'billing') {
                 blacklist.push('email');
             }
 
-            forEach(state, (val, key) => {
+            console.log("IN CREATED", this.type);
+            console.log("CART", this.$store.state.cart);
+
+            Object.keys(this.form).forEach((key) => {
+                // Pre-populate the form values with the respective state values
                 if(blacklist.indexOf(key) === -1) {
-                    this.form[key] = val;
+                    this.form[key] = this.$store.state.cart[`${this.type}_${key}`];
 
                     if(!this.$v.form[key].$invalid) {
                         this.greenChecks[key] = true;
@@ -214,7 +217,7 @@
                 }
             });
 
-            this.stateSelectEnabled = (isObject(this.cart) && isObject(this.cart[this.type]) && this.cart[this.type].countryCodeAlpha2)
+            this.stateSelectEnabled = (isObject(this.cart) && this.cart[`${this.type}_countryCodeAlpha2`])
         },
 
         methods: {
@@ -234,7 +237,7 @@
                 }
                 else {
                     // updating state with the valid value:
-                    this.$store.state.cart[this.type][attr] = this.form[attr];
+                    this.$store.state.cart[`${this.type}_${attr}`] = this.form[attr];
                 }
             },
 
@@ -299,7 +302,7 @@
 
         watch: {
             '$v.$invalid': function (to, from) {
-                console.log("INVALID WATCH", to, this.$v);
+                // console.log("INVALID WATCH", to, this.$v);
                 this.$emit('valid', !to)
             }
         },

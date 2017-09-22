@@ -3,7 +3,6 @@ const Lab = require('lab');
 const Hoek = require('hoek');
 const Products = require('../../../../server/plugins/products');
 const Payments = require('../../../../server/plugins/payments');
-const ShoppingCart = require('../../../../server/plugins/shopping-cart');
 const BookshelfOrm = require('../../../../server/plugins/bookshelf-orm');
 const SalesTax = require('../../../../server/plugins/sales-tax');
 const testHelpers = require('../../testHelpers');

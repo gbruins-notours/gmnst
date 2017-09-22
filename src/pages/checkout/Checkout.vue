@@ -233,7 +233,7 @@
         computed: {
             ...mapGetters([
                 'cart',
-                'numCartItems',
+                'cartShippingAttributes',
                 'app'
             ]),
 
@@ -307,12 +307,26 @@
         },
 
         methods: {
+            updateShippingStateFromValidation: function(obj) {
+                let c = this.$store.state.cart;
+
+                c.shipping_company = obj.company_name
+                c.shipping_streetAddress = obj.address_line1
+                c.shipping_city = obj.city_locality
+                c.shipping_state = obj.state_province
+                c.shipping_postalCode = obj.postal_code
+                c.shipping_countryCodeAlpha2 = obj.country_code
+
+                console.log("VALIDATION RESPOMSE2", obj, c);
+            },
+
             /**
              * Validates the shipping address
              */
             submitShippingForm: function() {
                 let self = this;
-                let c = this.cart.shipping;
+                // let c = this.cart.shipping;
+                let c = this.$store.state.cart;
 
                 this.shippingFormIsLoading = true;
 
@@ -321,12 +335,12 @@
                 }
 
                 api.shoppingCart.validateAddress({
-                    company_name: c.company,
-                    address_line1: c.streetAddress,
-                    city_locality: c.city,
-                    state_province: c.state,
-                    postal_code: c.postalCode,
-                    country_code: c.countryCodeAlpha2
+                    company_name: c.shipping_company,
+                    address_line1: c.shipping_streetAddress,
+                    city_locality: c.shipping_city,
+                    state_province: c.shipping_state,
+                    postal_code: c.shipping_postalCode,
+                    country_code: c.shipping_countryCodeAlpha2
                 })
                 .then((result) => {
                     let validation = Array.isArray(result) ? result[0] : result;
@@ -335,14 +349,7 @@
                     // Add the validated values to the state
                     switch(validation.status) {
                         case 'verified':
-                            c.company = validation.matched_address.company
-                            c.streetAddress = validation.matched_address.address_line1
-                            c.city = validation.matched_address.city_locality
-                            c.state = validation.matched_address.state_province
-                            c.postalCode = validation.matched_address.postal_code
-                            c.countryCodeAlpha2 = validation.matched_address.country_code
-
-                            // self.$emit('shipping_form_submit')
+                            this.updateShippingStateFromValidation(validation.matched_address);
                             this.shippingFormDone();
                             return;
 
@@ -354,13 +361,7 @@
                         // ALSO NOTE: The 'matched_address' property is null when the status is 'unverified',
                         // so we need to get the values from the 'original_address' property
                         case 'unverified':
-                            c.company = validation.original_address.company
-                            c.streetAddress = validation.original_address.address_line1
-                            c.city = validation.original_address.city_locality
-                            c.state = validation.original_address.state_province
-                            c.postalCode = validation.original_address.postal_code
-                            c.countryCodeAlpha2 = validation.original_address.country_code
-
+                            this.updateShippingStateFromValidation(validation.original_address);
                             this.shippingFormDone();
                             return;
 
@@ -410,31 +411,17 @@
                 });
             },
 
-
-            /**
-             * As a nice UI convenience, pre-populates the billing form 
-             * with some shipping form values if those values are empty
-             */
-            initBillingForm: function() {
-                if(!this.cart.billing.countryCodeAlpha2) {
-                    this.cart.billing.countryCodeAlpha2 = this.cart.shipping.countryCodeAlpha2;
-                }
-                if(!this.cart.billing.state) {
-                    this.cart.billing.state = this.cart.shipping.state;
-                }
-            },
-
             getShippingRates: function() {
                 this.$store.dispatch('CART_SHIPPING_METHODS', null);
 
                 api.shoppingCart.getShippingRates({
                     validate_address: 'no_validation',
                     ship_to: {
-                        address_line1: this.cart.shipping.streetAddress,
-                        city_locality: this.cart.shipping.city,
-                        state_province: this.cart.shipping.state,
-                        postal_code: this.cart.shipping.postalCode,
-                        country_code: this.cart.shipping.countryCodeAlpha2
+                        address_line1: this.cart.shipping_streetAddress,
+                        city_locality: this.cart.shipping_city,
+                        state_province: this.cart.shipping_state,
+                        postal_code: this.cart.shipping_postalCode,
+                        country_code: this.cart.shipping_countryCodeAlpha2
                     },
                     packages: [
                         {
@@ -446,7 +433,6 @@
                     ]
                 })
                 .then((result) => {
-                    console.log("SHIP METHODS", result);
                     this.$store.dispatch('CART_SHIPPING_METHODS', result);
                 })
                 .catch((result) => {
@@ -467,8 +453,9 @@
 
 
             shippingFormDone: function() {
-                this.initBillingForm();
                 this.currentStep = 1;
+
+                delete this.cartShippingAttributes.shipping_total;
 
                 // Setting the shipping address will also calculate the
                 // sales tax for the cart because sales tax calculation requires
@@ -476,7 +463,7 @@
                 // the API can return the shipping/tax/grand total amounts for the 'review'
                 // checkout step
                 api.shoppingCart
-                    .setShippingAddress(this.cart.shipping)
+                    .setShippingAddress(this.cartShippingAttributes)
                     .then((result) => {
                         this.$store.dispatch('CART_SET', result);
                     })
@@ -510,23 +497,6 @@
                     else {
                         return yearClasses;
                     }
-                }
-            },
-
-            /**
-             * Copies the shippingAddress values into the billingAddress values
-             */
-            copyShippingDataToBillingData: function() {
-                if(this.billingSameAsShipping) {
-                    // TODO: update state instead
-                    // this.billingFirstName = this.cart.shipping.firstName;
-                    // this.billingLastName = this.cart.shipping.lastName;
-                    // this.billingStreetAddress = this.cart.shipping.streetAddress;
-                    // this.billingCity = this.cart.shipping.city;
-                    // this.billingState = this.cart.shipping.state;
-                    // this.billingPostalCode = this.cart.shipping.postalCode;
-                    // this.billingCountry = this.cart.shipping.countryCodeAlpha2;
-                    // this.billingCompany = this.cart.shipping.company;
                 }
             },
 
@@ -565,7 +535,6 @@
 
             tokenizeHostedFields() {
                 this.placeOrderButtonLoading = true;
-                this.copyShippingDataToBillingData();
 
                 this.braintree.hostedFieldsInstance.tokenize((tokenizeErr, payload) => {
                     if (tokenizeErr) {
