@@ -144,7 +144,10 @@ internals.after = function (server, next) {
                                 process.env.JWT_SERVER_SECRET
                             );
 
-                            return reply().header('X-Authorization', token);
+                            // return reply().header('X-Authorization', token);
+
+                            //for azure test only
+                            return reply(process.env).header('X-Authorization', token);
                         })
                         .catch((err) => {
                             reply(Boom.unauthorized(err));
