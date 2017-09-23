@@ -10,10 +10,7 @@ export default {
      */
     getJwtToken() {
         return getHttp()
-            .post('/api/v1/token/get', {
-                clientId: JWT_CLIENT_ID,
-                clientSecret: JWT_CLIENT_SECRET
-            })
+            .post('/api/v1/token/get')
             .then((response) => {
                 return response.headers['x-authorization'];
             });

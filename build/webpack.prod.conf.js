@@ -23,9 +23,7 @@ let webpackConfig = merge(baseConfig, {
         new webpack.DefinePlugin({
             'process.env': {
                 NODE_ENV: '"production"'
-            },
-            JWT_CLIENT_ID: JSON.stringify(process.env.JWT_CLIENT_ID),
-            JWT_CLIENT_SECRET: JSON.stringify(process.env.JWT_CLIENT_SECRET)         
+            }
         }),
 
         new webpack.optimize.UglifyJsPlugin({

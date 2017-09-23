@@ -63,10 +63,10 @@ internals.after = function (server, next) {
     };
 
 
-    internals.validateApiUser = (request) => {
+    internals.validateApiUser = () => {
         return new Promise((resolve, reject) => {
             internals
-                .getApiUser(request.payload.clientId)
+                .getApiUser(process.env.JWT_CLIENT_ID)
                 .then((ApiUserModel) => {
                     if (ApiUserModel) {
                         if (!ApiUserModel.get('is_active')) {
@@ -74,7 +74,7 @@ internals.after = function (server, next) {
                         }
 
                         ApiClientsService
-                            .comparePassword(request.payload.clientSecret, ApiUserModel.get('client_secret'))
+                            .comparePassword(process.env.JWT_CLIENT_SECRET, ApiUserModel.get('client_secret'))
                             .then((isPasswordMatch) => {
                                 if (isPasswordMatch) {
                                     return resolve(ApiUserModel.toJSON());
@@ -120,12 +120,6 @@ internals.after = function (server, next) {
             config: {
                 auth: false,
                 description: 'Gets a JWT token',
-                validate: {
-                    payload: Joi.object({
-                        clientId: Joi.string().required(),
-                        clientSecret: Joi.string().required()
-                    })
-                },
                 handler: (request, reply) => {
                     let uuid = uuidV4();
 
@@ -133,7 +127,7 @@ internals.after = function (server, next) {
                     // - Create a shopping cart token
                     Promise
                         .all([
-                            internals.validateApiUser(request),
+                            internals.validateApiUser(),
                             ApiClientsService.cryptPassword(process.env.CART_TOKEN_SECRET + uuid)
                         ])
                         .then((results) => {
