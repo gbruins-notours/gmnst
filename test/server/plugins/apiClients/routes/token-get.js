@@ -42,7 +42,7 @@ describe('Testing route: POST /token/get', () => {
     */
 
 
-    it('should get a token when sent a valid clientId and clientSecret', (done) => {
+    it('should get a token', (done) => {
         testHelpers
             .startServerAndGetHeaders(serverSetup.manifest, serverSetup.composeOptions)
             .then(({err, server, headers}) => {
@@ -51,14 +51,9 @@ describe('Testing route: POST /token/get', () => {
                 server.inject({
                     method: 'POST',
                     url: '/token/get',
-                    headers,
-                    payload: {
-                        clientId: process.env.JWT_CLIENT_ID,
-                        clientSecret: process.env.JWT_CLIENT_SECRET
-                    }
+                    headers
                 })
                 .then((res) => {
-                    console.log("ENV DATABASE_URL", process.env.DATABASE_URL)
                     expect(res.statusCode, 'Status code').to.equal(200);
                     expect(res.headers.hasOwnProperty('x-authorization')).to.equal(true);
 
@@ -66,96 +61,6 @@ describe('Testing route: POST /token/get', () => {
                     expect(decoded.clientId).to.equal(process.env.JWT_CLIENT_ID);
                     expect(decoded.hasOwnProperty('jti')).to.equal(true);
 
-                    testHelpers.destroyKnexAndStopServer(server, done);
-                })
-            });
-    });
-
-
-    it('should get 401 (Unauthorized) error when clientId is incorrect', (done) => {
-        testHelpers
-            .startServerAndGetHeaders(serverSetup.manifest, serverSetup.composeOptions)
-            .then(({err, server, headers}) => {
-                expect(err).not.to.exist();
-
-                server.inject({
-                    method: 'POST',
-                    url: '/token/get',
-                    headers,
-                    payload: {
-                        clientId: 'foo',
-                        clientSecret: process.env.JWT_CLIENT_SECRET
-                    }
-                })
-                .then((res) => {
-                    expect(res.statusCode, 'Status code').to.equal(401);
-                    testHelpers.destroyKnexAndStopServer(server, done);
-                })
-            });
-    });
-
-
-    it('should get 401 (Unauthorized) error when clientSecret is incorrect', (done) => {
-        testHelpers
-            .startServerAndGetHeaders(serverSetup.manifest, serverSetup.composeOptions)
-            .then(({err, server, headers}) => {
-                expect(err).not.to.exist();
-
-                server.inject({
-                    method: 'POST',
-                    url: '/token/get',
-                    headers,
-                    payload: {
-                        clientId: process.env.JWT_CLIENT_ID,
-                        clientSecret: 'foo'
-                    }
-                })
-                .then((res) => {
-                    expect(res.statusCode, 'Status code').to.equal(401);
-                    testHelpers.destroyKnexAndStopServer(server, done);
-                })
-            });
-    });
-
-
-    it('should get 400 (Bad request) error when clientId is not sent', (done) => {
-        testHelpers
-            .startServerAndGetHeaders(serverSetup.manifest, serverSetup.composeOptions)
-            .then(({err, server, headers}) => {
-                expect(err).not.to.exist();
-
-                server.inject({
-                    method: 'POST',
-                    url: '/token/get',
-                    headers,
-                    payload: {
-                        clientSecret: 'foo'
-                    }
-                })
-                .then((res) => {
-                    expect(res.statusCode, 'Status code').to.equal(400);
-                    testHelpers.destroyKnexAndStopServer(server, done);
-                })
-            });
-    });
-
-
-    it('should get 400 (Bad request) error when clientSecret is not sent', (done) => {
-        testHelpers
-            .startServerAndGetHeaders(serverSetup.manifest, serverSetup.composeOptions)
-            .then(({err, server, headers}) => {
-                expect(err).not.to.exist();
-                
-                server.inject({
-                    method: 'POST',
-                    url: '/token/get',
-                    headers,
-                    payload: {
-                        clientId: process.env.JWT_CLIENT_ID
-                    }
-                })
-                .then((res) => {
-                    expect(res.statusCode, 'Status code').to.equal(400);
                     testHelpers.destroyKnexAndStopServer(server, done);
                 })
             });
