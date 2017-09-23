@@ -3,7 +3,7 @@
         <div class="container">
             <div class="columns">
                 <div class="column">
-                    <h2 class="title is-3 inline">{{ title }}</h2>
+                    <h2 class="is-3 inline">{{ title }}</h2>
                     <slot></slot>
                 </div>
             </div>
@@ -21,7 +21,11 @@
     @import "../assets/css/components/_variables.scss";
 
     .page-header {
-        background-color: #e4e4e4;
         padding: 10px 10px;
+
+        h2 {
+            font-size: 24px;
+            font-weight: 400;
+        }
     }
 </style>

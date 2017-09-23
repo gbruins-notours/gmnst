@@ -1,12 +1,15 @@
 <template>
     <section>
-        <page-header :title="$t('Shopping Cart')">
-            <span class="is-8 pll" v-if="this.cart.num_items">
-                <el-button type="warning" @click="goToCheckout" class="colorBlack">{{ $t('Proceed to checkout') }}</el-button>
-            </span>
-        </page-header>
+        <page-header :title="$t('Shopping Cart')"></page-header>
 
         <div class="container">
+            <div class="tac ptl" v-if="this.cart.num_items > 2">
+                <el-button type="warning"
+                           class="colorBlack"
+                           size="large"
+                           @click="goToCheckout">{{ $t('Proceed to checkout') }}</el-button>
+            </div>
+
             <div class="pam">
                 <cart-items></cart-items>
             </div>
