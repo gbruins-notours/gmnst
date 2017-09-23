@@ -131,9 +131,9 @@ internals.after = function (server, next) {
                             ApiClientsService.cryptPassword(process.env.CART_TOKEN_SECRET + uuid)
                         ])
                         .then((results) => {
-                            // if(!isObject(results[0]) || !results[0].client_id || !results[1]) {
+                            if(!isObject(results[0]) || !results[0].client_id || !results[1]) {
                                 throw new Error('Invalid API user');
-                            // }
+                            }
 
                             let token = jwt.sign(
                                 {
@@ -147,8 +147,7 @@ internals.after = function (server, next) {
                             return reply().header('X-Authorization', token);
                         })
                         .catch((err) => {
-                            // reply(Boom.unauthorized(err));
-                            reply(process.env);
+                            reply(Boom.unauthorized(err));
                         });
                 }
             }

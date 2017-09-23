@@ -27,10 +27,10 @@ dev.connection = {
 
 let prod = cloneDeep(common);
 prod.connection = {
-    host: process.env.POSTGRES_HOST,
-    user: process.env.POSTGRES_USER,
-    password: process.env.POSTGRES_PASSWORD,
-    database: process.env.POSTGRES_DB,
+    host: process.env.POSTGRESQLCONNSTR_POSTGRES_HOST,
+    user: process.env.POSTGRESQLCONNSTR_POSTGRES_USER,
+    password: process.env.POSTGRESQLCONNSTR_POSTGRES_PASSWORD,
+    database: process.env.POSTGRESQLCONNSTR_POSTGRES_DB,
     ssl: true
 };
 
