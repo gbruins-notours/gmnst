@@ -114,6 +114,48 @@ internals.after = function (server, next) {
 
 
     server.route([
+        // {
+        //     method: 'POST',
+        //     path: '/token/get',
+        //     config: {
+        //         auth: false,
+        //         description: 'Gets a JWT token',
+        //         handler: (request, reply) => {
+        //             let uuid = uuidV4();
+
+        //             // - Validate the API user
+        //             // - Create a shopping cart token
+        //             Promise
+        //                 .all([
+        //                     internals.validateApiUser(),
+        //                     ApiClientsService.cryptPassword(process.env.CART_TOKEN_SECRET + uuid)
+        //                 ])
+        //                 .then((results) => {
+        //                     if(!isObject(results[0]) || !results[0].client_id) {
+        //                         throw new Error('Invalid API user');
+        //                     }
+
+        //                     if(!results[1]) {
+        //                         throw new Error('Error creating cart token');
+        //                     }
+
+        //                     let token = jwt.sign(
+        //                         {
+        //                             jti: uuid,
+        //                             clientId: results[0].client_id,
+        //                             ct: results[1]  // cart token
+        //                         },
+        //                         process.env.JWT_SERVER_SECRET
+        //                     );
+
+        //                     return reply().header('X-Authorization', token);
+        //                 })
+        //                 .catch((err) => {
+        //                     reply(Boom.unauthorized(err));
+        //                 });
+        //         }
+        //     }
+        // },
         {
             method: 'POST',
             path: '/token/get',
@@ -127,19 +169,21 @@ internals.after = function (server, next) {
                     // - Create a shopping cart token
                     Promise
                         .all([
-                            internals.validateApiUser(),
                             ApiClientsService.cryptPassword(process.env.CART_TOKEN_SECRET + uuid)
                         ])
                         .then((results) => {
-                            if(!isObject(results[0]) || !results[0].client_id || !results[1]) {
+                            if(!process.env.JWT_CLIENT_ID) {
                                 throw new Error('Invalid API user');
+                            }
+                            if(!results[0]) {
+                                throw new Error('Error creating cart token');
                             }
 
                             let token = jwt.sign(
                                 {
                                     jti: uuid,
-                                    clientId: results[0].client_id,
-                                    ct: results[1]  // cart token
+                                    clientId: process.env.JWT_CLIENT_ID,
+                                    ct: results[0]  // cart token
                                 },
                                 process.env.JWT_SERVER_SECRET
                             );
