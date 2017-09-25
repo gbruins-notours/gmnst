@@ -57,11 +57,8 @@ export default {
         });
     },
 
-    /**
-     * Updates an attribute in the checkout.shipping Object
-     */
-    CART_BILLING_ATTRIBUTE: (state, config) => {
-        state.cart[`billing_${config.attribute}`] = config.value;
+    CART_ATTRIBUTE_SET: (state, config) => {
+        state.cart[`${config.attribute}`] = config.value;
     },
 
     CART_BILLING_SAME_AS_SHIPPING: (state, sameAsShipping) => {
@@ -78,7 +75,7 @@ export default {
             'postalCode',
             'countryCodeAlpha2',
             'email'
-        ]
+        ];
 
         shippingKeys.forEach((item) => {
             let billing_key = `billing_${item}`;

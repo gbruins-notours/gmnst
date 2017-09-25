@@ -203,13 +203,10 @@
                 blacklist.push('email');
             }
 
-            console.log("IN CREATED", this.type);
-            console.log("CART", this.$store.state.cart);
-
             Object.keys(this.form).forEach((key) => {
                 // Pre-populate the form values with the respective state values
                 if(blacklist.indexOf(key) === -1) {
-                    this.form[key] = this.$store.state.cart[`${this.type}_${key}`];
+                    this.form[key] = this.cart[`${this.type}_${key}`];
 
                     if(!this.$v.form[key].$invalid) {
                         this.greenChecks[key] = true;
@@ -236,8 +233,10 @@
                     this.greenChecks[attr] = false;
                 }
                 else {
-                    // updating state with the valid value:
-                    this.$store.state.cart[`${this.type}_${attr}`] = this.form[attr];
+                    this.$store.dispatch('CART_ATTRIBUTE_SET', {
+                        attribute: `${this.type}_${attr}`,
+                        value: this.form[attr]
+                    });
                 }
             },
 

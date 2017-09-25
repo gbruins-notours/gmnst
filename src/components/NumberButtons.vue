@@ -126,7 +126,6 @@
             },
 
             emitVal() {
-                console.log("EMIT", this.selectedVal);
                 this.$emit('change', this.selectedVal)
                 // this.$emit('input', this.selectedVal)
             }

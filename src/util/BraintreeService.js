@@ -86,7 +86,6 @@ export default class BraintreeService {
     tokenizeHostedFields() {
         return this.hostedFieldsInstance.tokenize((tokenizeErr, payload) => {
             if (tokenizeErr) {
-                console.log("TOKENIZED ERROR", tokenizeErr);
                 throw new Error(tokenizeErr);
             }
 

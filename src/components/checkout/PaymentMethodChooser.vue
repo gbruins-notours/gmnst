@@ -60,7 +60,7 @@
             display: block;
             cursor: pointer;
             padding: 20px;
-            @include box-shadow(0px, 1px, 5px, rgba(0,0,0,.3));
+            @include box-shadow(0px, 1px, 5px, rgba(0,0,0,.2));
             @include border-radius(2px);
             border: 3px solid #fff;
             background-color: #f3f3f3;
@@ -86,8 +86,9 @@
             }
             
             &.selected {
-                border-color: $colorGreen;
+                // border-color: $colorGreen;
                 background-color: #effbee;
+                @include box-shadow(0px, 1px, 5px, rgba(110,167,107,1));
 
                 .fa-check-circle {
                     visibility: visible;

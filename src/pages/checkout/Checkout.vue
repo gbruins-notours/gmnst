@@ -308,7 +308,7 @@
 
         methods: {
             updateShippingStateFromValidation: function(obj) {
-                let c = this.$store.state.cart;
+                let c = this.cart;
 
                 c.shipping_company = obj.company_name
                 c.shipping_streetAddress = obj.address_line1
@@ -316,8 +316,6 @@
                 c.shipping_state = obj.state_province
                 c.shipping_postalCode = obj.postal_code
                 c.shipping_countryCodeAlpha2 = obj.country_code
-
-                console.log("VALIDATION RESPOMSE2", obj, c);
             },
 
             /**
@@ -325,8 +323,7 @@
              */
             submitShippingForm: function() {
                 let self = this;
-                // let c = this.cart.shipping;
-                let c = this.$store.state.cart;
+                let c = this.cart;
 
                 this.shippingFormIsLoading = true;
 
@@ -551,8 +548,8 @@
                     // Not sure why this is needed.  Commenting out for now:
                     // this.braintree.tokenizePayload = payload;
                     // this.braintree.paymentMethodNonce = payload.nonce;
-                    console.log("TOKENIZED PAYLOAD", payload)
-                    console.log("NONCE", payload.nonce)
+                    // console.log("TOKENIZED PAYLOAD", payload)
+                    // console.log("NONCE", payload.nonce)
                     // return;
 
                     api.shoppingCart.checkout({
@@ -619,7 +616,7 @@
                         else {
                             this.braintree.transaction.nonce = paypalPayload.paymentMethodNonce;
                             this.braintree.transaction.payPalPayload = paypalPayload;
-                            console.log("PAYPAL NONCE", paypalPayload.paymentMethodNonce)
+                            // console.log("PAYPAL NONCE", paypalPayload.paymentMethodNonce)
                         }
                     }
                 );
