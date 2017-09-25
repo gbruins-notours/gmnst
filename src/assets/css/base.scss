@@ -257,6 +257,12 @@ ul.disc {
     @include growHover()
 }
 
+@media #{$small-and-down} {  
+    .el-notification {
+        right: auto;
+    }
+}
+
 .grow {
    @include grow()
 }

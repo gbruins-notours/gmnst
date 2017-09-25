@@ -15,7 +15,7 @@
                 <div class="cartItemInfo">
                     <div class="cartItemInfoContent">
                         <div class="cartItemMain">
-                            <div class="fwb fs16">{{ item.product.title }}</div>
+                            <div class="itemTitle">{{ item.product.title }}</div>
 
                             <div v-if="allowEdit" class="mts">
                                 <el-button type="text" @click="removeItem(item.id)">{{ $t('Delete') }}</el-button>
@@ -232,6 +232,11 @@
     .cartItemMain {
         flex-grow: 1;
         padding-bottom: 5px;
+
+        .itemTitle {
+            font-weight: bold;
+            font-size: 14px
+        }
     }
 
     .cartItemCol {
@@ -244,12 +249,14 @@
             padding: 0 10px 3px 0;
         }
         .itemLabel {
-            width: 80px;
+            width: 60px;
             word-wrap: break-word;
             font-size: 11px;
+            vertical-align: top;
         }
         .itemVal {
             font-weight: bold;
+            font-size: 14px;
         }
     }
 
@@ -272,6 +279,10 @@
 
         .cartItemMain {
             flex-grow: 1;
+
+            .itemTitle {
+                font-size: 16px
+            }
         }
 
         .cartItemCol {
@@ -281,7 +292,14 @@
             .itemLabel,
             .itemVal {
                 display: block;
-                width: 100%;
+            }
+
+            .itemLabel {
+                width: 80px;
+            }
+
+            .itemVal {
+                font-size: 16px;
             }
         }
 }

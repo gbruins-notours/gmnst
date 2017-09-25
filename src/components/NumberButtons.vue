@@ -1,5 +1,5 @@
 <template>
-    <div class="inlineBlock">
+    <div class="inlineBlock numberButtons">
         <el-button-group>
           <el-button icon="plus" @click="up" :size="buttonSize" :disabled="plusDisabled"></el-button>
           <el-button icon="minus" @click="down" :size="buttonSize" :disabled="minusDisabled"></el-button>
@@ -146,4 +146,7 @@
 </script>
 
 <style>
+    .numberButtons .el-button {
+        border-radius: 0 !important;
+    }
 </style>

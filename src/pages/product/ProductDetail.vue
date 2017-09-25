@@ -30,8 +30,8 @@
                     <div class="pvl"><hr></div>
 
                     <!-- Size -->
-                    <div class="inlineBlock vat" style="padding-right:40px;">
-                        <div class="fwb mbs">{{ $t('Size') }}</div>
+                    <div class="inlineBlock vat mbl" style="padding-right:40px;">
+                        <div class="fwb">{{ $t('Size') }}</div>
                         <el-select v-model="selectedSize" placeholder="Select" class="width125">
                             <el-option
                                     v-for="size in sizeOptions"
@@ -43,8 +43,8 @@
                     </div>
 
                     <!-- quantity -->
-                    <div class="inlineBlock vat">
-                        <div class="fwb mbs">{{ $t('Quantity') }}</div>
+                    <div class="inlineBlock vat mbl">
+                        <div class="fwb">{{ $t('Quantity') }}</div>
                         <div>
                             <div class="displayTableCell prl fs20 vam colorGreen fw600">{{ selectedQty }}</div>
                             <div class="displayTableCell">
@@ -57,7 +57,7 @@
                         </div>
                     </div>
 
-                    <div class="ptxl">
+                    <div class="ptl">
                         <el-button type="warning" 
                                    @click="addToCart" 
                                    class="colorBlack"
@@ -134,7 +134,8 @@ export default {
                 Notification.error({
                     title: this.$t('Please select a size'),
                     message: this.$t('We want to make sure it fits!'),
-                    duration: 4500
+                    // duration: 4500
+                    duration: 0
                 });
             }
             else if (!this.selectedQty) {

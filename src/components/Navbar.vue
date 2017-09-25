@@ -40,9 +40,9 @@
                                 offset="100"
                                 v-model="headerPopoverVisible">
                                 <div>
-                                    <div class="fs14 mbm">{{ $t('Are you sure you want to return to your Shopping Cart?') }}</div>
-                                    <el-button :plain="true" type="info" @click="headerPopoverVisible = false" class="mbs">{{ $t('Stay in checkout') }}</el-button>
-                                    <el-button type="warning" @click="headerPopoverVisible = false; goToCart()" class="mbs colorBlack">{{ $t('Return to cart') }}</el-button>
+                                    <div class="fs14">{{ $t('Are you sure you want to return to your Shopping Cart?') }}</div>
+                                    <el-button :plain="true" type="info" @click="headerPopoverVisible = false" class="mtm">{{ $t('Stay in checkout') }}</el-button>
+                                    <el-button type="warning" @click="headerPopoverVisible = false; goToCart()" class="mtm colorBlack">{{ $t('Return to cart') }}</el-button>
                                 </div>
                             </el-popover>
                         </div>
@@ -161,6 +161,12 @@
         padding: 0 5px;
         height: 73px;
         font-size: 22px;
+
+        // Center the popover
+        .el-popover {
+            left: 50%;
+            transform: translate(-50%, 10%);
+        }
     }
 
     .Header-container {
@@ -278,6 +284,8 @@
         box-shadow: 0 0 1px 1px rgba(10, 10, 10, 0.1);
     }
 
+
+
     @media all and (min-width: 42em) {
         .Header {
             height: 50px;
@@ -351,22 +359,17 @@
         .Header-checkout,
         .Header-checkout-cell {
             height: 50px;
-            font-size: 18px;
+            font-size: 16px;
 
             .Header-image {
                 width: 140px;
             }
         }
-    }
 
-    // @media all and (min-width: 42em) {
-    //     .Header-checkout,
-    //     .Header-checkout-cell {
-    //         height: 50px;
-    //
-    //         .Header-image {
-    //             width: 180px;
-    //         }
-    //     }
-    // }
+        // overriding a weird element UI setting:
+        .el-button+.el-button {
+            margin-left: 5px;
+            margin-right: 5px;
+        }
+    }
 </style>

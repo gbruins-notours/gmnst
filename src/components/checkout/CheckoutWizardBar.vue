@@ -104,15 +104,15 @@
         }
 
         .spacer {
-            padding: 0 10px;
+            padding: 0 8px;
             flex-grow: 1;
         }
 
         .item {
-            font-size: 20px;
+            font-size: 18px;
             padding: 3px;
             @include border-radius(2px);
-            line-height: 20px;
+            line-height: 18px;
             border: 1px solid transparent;
 
             .fa {
@@ -120,7 +120,7 @@
             }
 
             .item-desc {
-                font-size: 11px;
+                font-size: 10px;
             }
 
             &.active {
