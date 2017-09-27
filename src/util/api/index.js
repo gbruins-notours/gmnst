@@ -3,11 +3,6 @@ import queryString from 'query-string'
 
 export default {
 
-    /**
-     * Gets the JWT token.
-     * Note the global "JWT_" variables used below are created
-     * from the webpack "DefinePlugin"
-     */
     getJwtToken() {
         return getHttp()
             .post('/api/v1/token/get')
