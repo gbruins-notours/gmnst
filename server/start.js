@@ -47,11 +47,6 @@ internals.manifest = {
         //         register: './plugins/crumbCsrf'
         //     }
         // },
-        // {
-        //     plugin: {
-        //         register: './plugins/good'
-        //     }
-        // },
         {
             plugin: {
                 register: './plugins/bookshelf-orm',

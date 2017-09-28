@@ -8,11 +8,11 @@ const isObject = require('lodash.isobject');
 
 exports.register = function (server, options, next) {
 
-    winston.handleExceptions(new winston.transports.File({
-        filename: path.resolve(__dirname, '../../logs/exceptions.log'),
-        handleExceptions: true,
-        humanReadableUnhandledException: true
-    }));
+    // winston.handleExceptions(new winston.transports.File({
+    //     filename: path.resolve(__dirname, '../../logs/exceptions.log'),
+    //     handleExceptions: true,
+    //     humanReadableUnhandledException: true
+    // }));
 
 
     server.decorate('reply', 'apiSuccess', function (responseData, paginationObj) {
