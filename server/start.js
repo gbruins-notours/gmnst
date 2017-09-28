@@ -4,8 +4,13 @@ const Server = require('./index');
 
 // Azure application insights:
 const appInsights = require('applicationinsights');
-appInsights.setup(process.env.APPINSIGHTS_INSTRUMENTATIONKEY);
-appInsights.start();
+appInsights.setup(process.env.APPINSIGHTS_INSTRUMENTATIONKEY)
+    .setAutoDependencyCorrelation(true)
+    .setAutoCollectRequests(true)
+    .setAutoCollectPerformance(true)
+    .setAutoCollectExceptions(true)
+    .setAutoCollectDependencies(true)
+    .start();
 
 
 const internals = {};
@@ -42,11 +47,11 @@ internals.manifest = {
         //         register: './plugins/crumbCsrf'
         //     }
         // },
-        {
-            plugin: {
-                register: './plugins/good'
-            }
-        },
+        // {
+        //     plugin: {
+        //         register: './plugins/good'
+        //     }
+        // },
         {
             plugin: {
                 register: './plugins/bookshelf-orm',
