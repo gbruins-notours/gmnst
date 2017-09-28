@@ -1,7 +1,6 @@
 const Joi = require('joi');
 const Boom = require('boom');
 const Promise = require('bluebird');
-const winston = require('winston');
 const HelperService = require('../../helpers.service');
 const forEach = require('lodash.foreach');
 const isObject = require('lodash.isobject');
@@ -302,7 +301,6 @@ internals.after = function (server, next) {
                             reply.apiSuccess(ShoppingCart.toJSON());
                         })
                         .catch((err) => {
-                            winston.error(err);
                             reply(Boom.badData(err));
                         });
                 }
@@ -330,7 +328,6 @@ internals.after = function (server, next) {
                             reply.apiSuccess(ShoppingCart.toJSON());
                         })
                         .catch((err) => {
-                            winston.error(err);
                             reply(Boom.badData(err));
                         });
                 }
@@ -370,7 +367,6 @@ internals.after = function (server, next) {
                                 });
                         })
                         .catch((err) => {
-                            request.server.log(['error'], err);
                             reply(Boom.badData(err));
                         });
                 }
@@ -405,7 +401,6 @@ internals.after = function (server, next) {
                             reply.apiSuccess(ShoppingCart.toJSON());
                         })
                         .catch((err) => {
-                            winston.error(err);
                             reply(Boom.badData(err));
                         });
                 }
@@ -446,7 +441,7 @@ internals.after = function (server, next) {
                             { method: 'update', patch: true }
                         )
                         .catch((err) => {
-                            winston.error(err);
+                            logger.error(err);
                         });
                     }
 
@@ -515,18 +510,17 @@ internals.after = function (server, next) {
                             server.plugins.Payments
                                 .savePayment(cart.get('id'), transactionObj)
                                 .catch((err) => {
-                                    winston.error(`ERROR SAVING PAYMENT INFO: ${err}`)
+                                    logger.error(`ERROR SAVING PAYMENT INFO: ${err}`)
                                 })
                                 .finally(() => {
                                     if (!transactionObj.success) {
-                                        winston.error(transactionObj.message || 'An error occurred when saving the Payment transaction data.')
+                                        logger.error(transactionObj.message || 'An error occurred when saving the Payment transaction data.')
                                     }
                                 });
 
                             reply.apiSuccess(cart);
                         })
                         .catch((err) => {
-                            winston.error(err);
                             HelperService.getBoomError(err, (error, result) => {
                                 reply(result);
                             });

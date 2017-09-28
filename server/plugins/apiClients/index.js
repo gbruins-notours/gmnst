@@ -8,6 +8,9 @@ const HelperService = require('../../helpers.service');
 const uuidV4 = require('uuid/v4');
 const ApiClientsService = require('./apiClients.service');
 
+let appInsights = require("applicationinsights");
+let client = appInsights.defaultClient;
+
 let internals = {};
 
 
@@ -191,6 +194,10 @@ internals.after = function (server, next) {
                             return reply().header('X-Authorization', token);
                         })
                         .catch((err) => {
+                            appInsightsClient.trackException({
+                                exception: err
+                            });
+                            
                             reply(Boom.unauthorized(err));
                         });
                 }

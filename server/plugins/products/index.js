@@ -98,7 +98,6 @@ internals.after = function (server, next) {
                             reply.apiSuccess(products);
                         })
                         .catch((err) => {
-                            request.server.log(['error'], err);
                             reply(Boom.badRequest(err));
                         });
                 }
@@ -121,7 +120,6 @@ internals.after = function (server, next) {
                             reply.apiSuccess(products);
                         })
                         .catch((err) => {
-                            request.server.log(['error'], err);
                             reply(Boom.badRequest(err));
                         });
                 }
@@ -154,7 +152,6 @@ internals.after = function (server, next) {
                             reply.apiSuccess(products, products.pagination);
                         })
                         .catch((err) => {
-                            request.server.log(['error'], err);
                             reply(Boom.notFound(err));
                         });
                 }

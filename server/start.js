@@ -2,19 +2,7 @@ const Hoek = require('hoek');
 const Config = require('./config');
 const Server = require('./index');
 
-// Azure application insights:
-const appInsights = require('applicationinsights');
-appInsights.setup(process.env.APPINSIGHTS_INSTRUMENTATIONKEY)
-    .setAutoDependencyCorrelation(true)
-    .setAutoCollectRequests(true)
-    .setAutoCollectPerformance(true)
-    .setAutoCollectExceptions(true)
-    .setAutoCollectDependencies(true)
-    .start();
-
-
-const internals = {};
-
+let internals = {};
 
 internals.manifest = {
     connections: [
@@ -47,6 +35,11 @@ internals.manifest = {
         //         register: './plugins/crumbCsrf'
         //     }
         // },
+        {
+            plugin: {
+                register: './plugins/logger'
+            }
+        },
         {
             plugin: {
                 register: './plugins/bookshelf-orm',
@@ -185,7 +178,7 @@ internals.composeOptions = {
 
 Server.init(internals.manifest, internals.composeOptions, (err, server) => {
     if (err) {
-        server.log('error', err)
+        logger.error(err);
     }
     Hoek.assert(!err, err);
 

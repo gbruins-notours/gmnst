@@ -27,7 +27,7 @@ exports.register = (server, options, next) => {
 
     const validateOptions = internals.schema.validate(options);
     if (validateOptions.error) {
-        server.log('error', validateOptions.error);
+        logger.error(validateOptions.error);
         return next(validateOptions.error);
     }
 

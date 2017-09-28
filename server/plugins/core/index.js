@@ -1,19 +1,10 @@
-const winston = require('winston');
 const path = require('path');
 const fs = require('fs');
 const Joi = require('joi');
 const isObject = require('lodash.isobject');
 
 
-
 exports.register = function (server, options, next) {
-
-    // winston.handleExceptions(new winston.transports.File({
-    //     filename: path.resolve(__dirname, '../../logs/exceptions.log'),
-    //     handleExceptions: true,
-    //     humanReadableUnhandledException: true
-    // }));
-
 
     server.decorate('reply', 'apiSuccess', function (responseData, paginationObj) {
         let response = {};
@@ -30,7 +21,12 @@ exports.register = function (server, options, next) {
     // Handle Boom errors
     server.ext('onPreResponse', function (request, reply) {
         if (request.response.isBoom) {
-            server.log('error', request.response);
+            logger.error(request.response)
+
+            // Note: It's best not to track Azure application insights
+            // events (client.trackException()) here because it wont report 
+            // the file and line number of where the error actually occurred.
+
             // if(request.response.output.statusCode === 404) {
             //     server.log('error', request.response);
             // }
@@ -89,11 +85,11 @@ exports.register = function (server, options, next) {
                     switch(request.payload.type) {
                         // Only supportig the 'error' and 'info' types for now
                         case 'error':
-                            winston.error(request.payload.message);
+                            logger.error(request.payload.message);
                             break;
 
                         default:
-                            winston.info(request.payload.message);
+                            logger.info(request.payload.message);
                     }
 
                     reply.apiSuccess();
