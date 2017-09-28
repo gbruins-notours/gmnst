@@ -4,7 +4,7 @@ const Server = require('./index');
 
 // Azure application insights:
 const appInsights = require('applicationinsights');
-appInsights.setup();
+appInsights.setup(process.env.APPINSIGHTS_INSTRUMENTATIONKEY);
 appInsights.start();
 
 
