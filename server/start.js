@@ -2,6 +2,11 @@ const Hoek = require('hoek');
 const Config = require('./config');
 const Server = require('./index');
 
+// Azure application insights:
+const appInsights = require('applicationinsights');
+appInsights.setup();
+appInsights.start();
+
 
 const internals = {};
 
