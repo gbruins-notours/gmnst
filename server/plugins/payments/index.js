@@ -70,22 +70,23 @@ internals.after = function (server, next) {
             }
 
             server.plugins.BookshelfOrm.bookshelf.model('Payment').forge()
-                .save(
-                    {
-                        cart_id: cart_id,
-                        transaction_id: transactionJson.transaction.id,
-                        processor_response_code: transactionJson.transaction.processorResponseCode || null,
-                        amount: transactionJson.transaction.amount || null,
-                        payment_type: transactionJson.transaction.paymentInstrumentType || null,
-                        currency_iso_code: transactionJson.transaction.currencyIsoCode || null,
-                        success: transactionJson.success || null
-                    },
-                    { method: 'insert'}
-                )
+                .save({
+                    cart_id: cart_id,
+                    transaction_id: transactionJson.transaction.id,
+                    processor_response_code: transactionJson.transaction.processorResponseCode || null,
+                    amount: transactionJson.transaction.amount || null,
+                    payment_type: transactionJson.transaction.paymentInstrumentType || null,
+                    currency_iso_code: transactionJson.transaction.currencyIsoCode || null,
+                    success: transactionJson.success || null
+                }, {method: 'insert'})
                 .then((Payment) => {
                     resolve(Payment);
                 })
                 .catch((err) => {
+                    appInsightsClient.trackException({
+                        exception: err
+                    });
+
                     reject(err);
                 });
         });
@@ -122,6 +123,9 @@ internals.after = function (server, next) {
                     return reject(result.message);
                 })
                 .catch((err) => {
+                    appInsightsClient.trackException({
+                        exception: err
+                    });
                     return reject(err);
                 });
         });

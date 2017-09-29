@@ -94,6 +94,9 @@ internals.after = function (server, next) {
                     }
                 })
                 .catch((err) => {
+                    appInsightsClient.trackException({
+                        exception: err
+                    });
                     reject('Invalid API user');
                 });
         });

@@ -68,80 +68,77 @@ internals.send = (config) => {
 
 function emailPurchaseReceiptToBuyer(ShoppingCart) {
     var p = new Promise( (resolve, reject) => {
+        let template = new EmailTemplate(internals.dirPurchaseReceipt);
+        let cartData = ShoppingCart.get('cart_data');
+        let templateData = {
+            cart_items: []
+        };
 
-            let template = new EmailTemplate(internals.dirPurchaseReceipt);
-            let cartData = ShoppingCart.get('cart_data');
-            let templateData = {
-                cart_items: []
-            };
+        forEach(cartData, (obj) => {
+            templateData.cart_items.push({
+                qty: obj.qty,
+                title: obj.product.title,
+                // price: ShoppingCartService.getCartItemPrice(obj), //TODO
+                // totalPrice: ShoppingCartService.getCartItemTotalPrice(obj) //TODO
+            });
+        });
 
-            forEach(cartData, (obj) => {
-                templateData.cart_items.push({
-                    qty: obj.qty,
-                    title: obj.product.title,
-                    // price: ShoppingCartService.getCartItemPrice(obj), //TODO
-                    // totalPrice: ShoppingCartService.getCartItemTotalPrice(obj) //TODO
+        // var locals = {
+        //     email: 'mamma.mia@spaghetti.com',
+        //     name: {first: 'Mamma', last: 'Mia'}
+        // };
+
+        Handlebars.registerHelper('productList', (items, options) => {
+            let html = [];
+            html.push('<table class="invoice-items" cellpadding="0" cellspacing="0" style="font-family: \'Helvetica Neue\',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; width: 100%; margin: 0;">');
+
+            for(var i=0, l=items.length; i<l; i++) {
+                console.log('options.fn(items[i]) ', options.fn(items[i]) );
+
+                html.push('<tr style="font-family: \'Helvetica Neue\',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">');
+
+                // product title
+                html.push('<td style="font-family: \'Helvetica Neue\',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; border-top-width: 1px; border-top-color: #eee; border-top-style: solid; margin: 0; padding: 5px 0;" valign="top">' + options.fn(items[i]) + '</td>');
+
+                // qty
+                // html.push('<td class="alignright" style="font-family: \'Helvetica Neue\',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; text-align: right; border-top-width: 1px; border-top-color: #eee; border-top-style: solid; margin: 0; padding: 5px 0;" align="right" valign="top">' + options.fn(items[i]) + '</td>');
+                html.push('</tr>');
+                // out = out + "<li>" + options.fn(items[i]) + "</li>";
+            }
+
+            html.push('</table>');
+
+            return html.join('');
+        });
+
+        // Handlebars.registerHelper('capitalize', function capitalize (context) {
+        //     return context.toUpperCase()
+        // });
+        //
+        // Handlebars.registerPartial('name',
+        //     '{{ capitalize name.first }} {{ capitalize name.last }}'
+        // );
+
+        template
+            .render(templateData)
+            .then((results) => {
+                resolve(results);
+
+                return internals.send({
+                    to: ShoppingCart.get('shipping_email'),
+                    subject: results.subject,
+                    text: results.text,
+                    html: results.html
+                });
+            })
+            .catch((error) => {
+                // server.appEvents.emit('email-template-error', error);
+                reject('TEMPLATE RENDER ERROR: ' + error);
+                appInsightsClient.trackException({
+                    exception: new Error('TEMPLATE RENDER ERROR: ' + error)
                 });
             });
-
-            // var locals = {
-            //     email: 'mamma.mia@spaghetti.com',
-            //     name: {first: 'Mamma', last: 'Mia'}
-            // };
-
-            Handlebars.registerHelper('productList', (items, options) => {
-                let html = [];
-                html.push('<table class="invoice-items" cellpadding="0" cellspacing="0" style="font-family: \'Helvetica Neue\',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; width: 100%; margin: 0;">');
-
-                for(var i=0, l=items.length; i<l; i++) {
-                    console.log('options.fn(items[i]) ', options.fn(items[i]) );
-
-                    html.push('<tr style="font-family: \'Helvetica Neue\',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">');
-
-                    // product title
-                    html.push('<td style="font-family: \'Helvetica Neue\',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; border-top-width: 1px; border-top-color: #eee; border-top-style: solid; margin: 0; padding: 5px 0;" valign="top">' + options.fn(items[i]) + '</td>');
-
-                    // qty
-                    // html.push('<td class="alignright" style="font-family: \'Helvetica Neue\',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; text-align: right; border-top-width: 1px; border-top-color: #eee; border-top-style: solid; margin: 0; padding: 5px 0;" align="right" valign="top">' + options.fn(items[i]) + '</td>');
-                    html.push('</tr>');
-                    // out = out + "<li>" + options.fn(items[i]) + "</li>";
-                }
-
-                html.push('</table>');
-
-                return html.join('');
-            });
-
-            // Handlebars.registerHelper('capitalize', function capitalize (context) {
-            //     return context.toUpperCase()
-            // });
-            //
-            // Handlebars.registerPartial('name',
-            //     '{{ capitalize name.first }} {{ capitalize name.last }}'
-            // );
-
-            template
-                .render(templateData)
-                .then(
-                    (results) => {
-                        resolve(results);
-
-                        return internals.send({
-                            to: ShoppingCart.get('shipping_email'),
-                            subject: results.subject,
-                            text: results.text,
-                            html: results.html
-                        });
-                    }
-                )
-                .catch(
-                    (error) => {
-                        // server.appEvents.emit('email-template-error', error);
-                        reject('TEMPLATE RENDER ERROR: ' + error);
-                    }
-                );
-        }
-    );
+    });
 
     return p;
 }
