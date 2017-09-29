@@ -15,7 +15,7 @@ var webpackConfig = merge(baseConfig, {
         // The DefinePlugin allows you to create global constants which can be configured at compile time.
         new webpack.DefinePlugin({
             'process.env': {
-                NODE_ENV: '"testing"'
+                NODE_ENV: '"test"'
             }
         }),
     ]

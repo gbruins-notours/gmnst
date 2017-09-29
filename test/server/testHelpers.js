@@ -104,6 +104,11 @@ function getBasicManifest() {
             },
             {
                 plugin: {
+                    register: './plugins/logger'
+                }
+            },
+            {
+                plugin: {
                     register: './plugins/bookshelf-orm',
                     options: {
                         knex: {

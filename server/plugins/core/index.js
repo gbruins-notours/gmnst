@@ -21,7 +21,10 @@ exports.register = function (server, options, next) {
     // Handle Boom errors
     server.ext('onPreResponse', function (request, reply) {
         if (request.response.isBoom) {
-            logger.error(request.response)
+
+            if(process.env.NODE_ENV !== 'test') {
+                logger.error(request.response)
+            }
 
             // Note: It's best not to track Azure application insights
             // events (client.trackException()) here because it wont report 

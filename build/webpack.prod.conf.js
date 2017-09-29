@@ -53,7 +53,7 @@ let webpackConfig = merge(baseConfig, {
         // you can customize output by editing /index.html
         // see https://github.com/ampedandwired/html-webpack-plugin
         new HtmlWebpackPlugin({
-            filename: process.env.NODE_ENV === 'testing' ? 'index.html' :  path.resolve(__dirname, '../dist/index.html'),
+            filename: process.env.NODE_ENV === 'test' ? 'index.html' :  path.resolve(__dirname, '../dist/index.html'),
             template: path.join(__dirname, '../server/views/index.html'),
             inject: true,
             minify: {

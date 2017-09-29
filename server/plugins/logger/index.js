@@ -6,13 +6,15 @@ const appInsights = require('applicationinsights');
 exports.register = (server, options, next) => {
      
     // Azure application insights setup:
-    appInsights.setup(process.env.APPINSIGHTS_INSTRUMENTATIONKEY)
-    .setAutoDependencyCorrelation(true)
-    .setAutoCollectRequests(true)
-    .setAutoCollectPerformance(true)
-    .setAutoCollectExceptions(true)
-    .setAutoCollectDependencies(true)
-    .start();
+    let key = process.env.NODE_ENV === 'test' ? 'fakekey' : process.env.APPINSIGHTS_INSTRUMENTATIONKEY;
+
+    appInsights.setup(key)
+        .setAutoDependencyCorrelation(true)
+        .setAutoCollectRequests(true)
+        .setAutoCollectPerformance(true)
+        .setAutoCollectExceptions(true)
+        .setAutoCollectDependencies(true)
+        .start();
 
     global.appInsightsClient = appInsights.defaultClient;
 
