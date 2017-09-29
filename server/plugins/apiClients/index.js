@@ -94,9 +94,9 @@ internals.after = function (server, next) {
                     }
                 })
                 .catch((err) => {
-                    appInsightsClient.trackException({
-                        exception: err
-                    });
+                    // appInsightsClient.trackException({
+                    //     exception: err
+                    // });
                     reject('Invalid API user');
                 });
         });
@@ -197,9 +197,9 @@ internals.after = function (server, next) {
                             return reply().header('X-Authorization', token);
                         })
                         .catch((err) => {
-                            appInsightsClient.trackException({
-                                exception: err
-                            });
+                            // appInsightsClient.trackException({
+                            //     exception: err
+                            // });
                             
                             reply(Boom.unauthorized(err));
                         });

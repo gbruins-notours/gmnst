@@ -178,7 +178,7 @@ internals.composeOptions = {
 
 Server.init(internals.manifest, internals.composeOptions, (err, server) => {
     if (err) {
-        logger.error(err);
+        // logger.error(err);
     }
     Hoek.assert(!err, err);
 
