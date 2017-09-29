@@ -12,13 +12,13 @@ exports.register = (server, options, next) => {
         appInsights.setup('fakeKey').start();
     }
     else {
-        appInsights.setup(process.env.APPINSIGHTS_INSTRUMENTATIONKEY)
-            .setAutoDependencyCorrelation(true)
-            .setAutoCollectRequests(true)
-            .setAutoCollectPerformance(true)
-            .setAutoCollectExceptions(true)
-            .setAutoCollectDependencies(true)
-            .start();
+        // appInsights.setup(process.env.APPINSIGHTS_INSTRUMENTATIONKEY)
+        //     .setAutoDependencyCorrelation(true)
+        //     .setAutoCollectRequests(true)
+        //     .setAutoCollectPerformance(true)
+        //     .setAutoCollectExceptions(true)
+        //     .setAutoCollectDependencies(true)
+        //     .start();
     }
 
     // global.appInsightsClient = appInsights.defaultClient;
