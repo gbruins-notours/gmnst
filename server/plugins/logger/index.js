@@ -9,16 +9,15 @@ exports.register = (server, options, next) => {
     // let key = process.env.NODE_ENV === 'test' ? 'fakekey' : process.env.APPINSIGHTS_INSTRUMENTATIONKEY;
 
     if(process.env.NODE_ENV === 'test') {
-        appInsights.setup('fakekey')
+        appInsights.setup('fakekey').start();
+    }
+    else {
+        appInsights.setup(process.env.APPINSIGHTS_INSTRUMENTATIONKEY)
             .setAutoDependencyCorrelation(true)
             .setAutoCollectRequests(true)
             .setAutoCollectPerformance(true)
             .setAutoCollectExceptions(true)
             .setAutoCollectDependencies(true)
-            .start();
-    }
-    else {
-        appInsights.setup(process.env.APPINSIGHTS_INSTRUMENTATIONKEY)
             .start();
     }
 
