@@ -1,6 +1,6 @@
 const winston = require('winston');
 const moment = require('moment');
-// const appInsights = require('applicationinsights');
+const appInsights = require('applicationinsights');
 
 
 exports.register = (server, options, next) => {
