@@ -153,9 +153,9 @@ internals.after = function (server, next) {
                 })
                 .then(resolve)
                 .catch((err) => {
-                    // appInsightsClient.trackException({
-                    //     exception: err
-                    // });
+                    appInsightsClient.trackException({
+                        exception: err
+                    });
                     reject(err);
                 });
         });
@@ -230,9 +230,9 @@ internals.after = function (server, next) {
                             reply.apiSuccess(token);
                         })
                         .catch((err) => {
-                            // appInsightsClient.trackException({
-                            //     exception: err
-                            // });
+                            appInsightsClient.trackException({
+                                exception: err
+                            });
                             reply(Boom.badData(err));
                         });
                 }
@@ -252,9 +252,9 @@ internals.after = function (server, next) {
                             reply.apiSuccess(ShoppingCart.toJSON());
                         })
                         .catch((err) => {
-                            // appInsightsClient.trackException({
-                            //     exception: err
-                            // });
+                            appInsightsClient.trackException({
+                                exception: err
+                            });
 
                             HelperService.getBoomError(err, (error, result) => {
                                 reply(result);
@@ -279,9 +279,9 @@ internals.after = function (server, next) {
                             reply.apiSuccess(ShoppingCart.toJSON());
                         })
                         .catch((err) => {
-                            // appInsightsClient.trackException({
-                            //     exception: err
-                            // });
+                            appInsightsClient.trackException({
+                                exception: err
+                            });
 
                             HelperService.getBoomError(err, (error, result) => {
                                 reply(result);
@@ -315,9 +315,9 @@ internals.after = function (server, next) {
                             reply.apiSuccess(ShoppingCart.toJSON());
                         })
                         .catch((err) => {
-                            // appInsightsClient.trackException({
-                            //     exception: err
-                            // });
+                            appInsightsClient.trackException({
+                                exception: err
+                            });
                             reply(Boom.badData(err));
                         });
                 }
@@ -345,9 +345,9 @@ internals.after = function (server, next) {
                             reply.apiSuccess(ShoppingCart.toJSON());
                         })
                         .catch((err) => {
-                            // appInsightsClient.trackException({
-                            //     exception: err
-                            // });
+                            appInsightsClient.trackException({
+                                exception: err
+                            });
                             reply(Boom.badData(err));
                         });
                 }
@@ -387,9 +387,9 @@ internals.after = function (server, next) {
                                 });
                         })
                         .catch((err) => {
-                            // appInsightsClient.trackException({
-                            //     exception: err
-                            // });
+                            appInsightsClient.trackException({
+                                exception: err
+                            });
                             reply(Boom.badData(err));
                         });
                 }
@@ -424,9 +424,9 @@ internals.after = function (server, next) {
                             reply.apiSuccess(ShoppingCart.toJSON());
                         })
                         .catch((err) => {
-                            // appInsightsClient.trackException({
-                            //     exception: err
-                            // });
+                            appInsightsClient.trackException({
+                                exception: err
+                            });
                             reply(Boom.badData(err));
                         });
                 }
@@ -467,11 +467,11 @@ internals.after = function (server, next) {
                             { method: 'update', patch: true }
                         )
                         .catch((err) => {
-                            // logger.error(err);
+                            logger.error(err);
 
-                            // appInsightsClient.trackException({
-                            //     exception: err
-                            // });
+                            appInsightsClient.trackException({
+                                exception: err
+                            });
                         });
                     }
 
@@ -540,29 +540,29 @@ internals.after = function (server, next) {
                             server.plugins.Payments
                                 .savePayment(cart.get('id'), transactionObj)
                                 .catch((err) => {
-                                    // logger.error(`ERROR SAVING PAYMENT INFO: ${err}`)
+                                    logger.error(`ERROR SAVING PAYMENT INFO: ${err}`)
 
-                                    // appInsightsClient.trackException({
-                                    //     exception: err
-                                    // });
+                                    appInsightsClient.trackException({
+                                        exception: err
+                                    });
                                 })
                                 .finally(() => {
                                     if (!transactionObj.success) {
                                         let msg = transactionObj.message || 'An error occurred when saving the Payment transaction data.';
-                                        // logger.error(msg)
+                                        logger.error(msg)
 
-                                        // appInsightsClient.trackException({
-                                        //     exception: new Error(msg)
-                                        // });
+                                        appInsightsClient.trackException({
+                                            exception: new Error(msg)
+                                        });
                                     }
                                 });
 
                             reply.apiSuccess(cart);
                         })
                         .catch((err) => {
-                            // appInsightsClient.trackException({
-                            //     exception: err
-                            // });
+                            appInsightsClient.trackException({
+                                exception: err
+                            });
                             
                             HelperService.getBoomError(err, (error, result) => {
                                 reply(result);

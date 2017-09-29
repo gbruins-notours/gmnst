@@ -83,9 +83,9 @@ internals.after = function (server, next) {
                     resolve(Payment);
                 })
                 .catch((err) => {
-                    // appInsightsClient.trackException({
-                    //     exception: err
-                    // });
+                    appInsightsClient.trackException({
+                        exception: err
+                    });
 
                     reject(err);
                 });
@@ -123,9 +123,9 @@ internals.after = function (server, next) {
                     return reject(result.message);
                 })
                 .catch((err) => {
-                    // appInsightsClient.trackException({
-                    //     exception: err
-                    // });
+                    appInsightsClient.trackException({
+                        exception: err
+                    });
                     return reject(err);
                 });
         });

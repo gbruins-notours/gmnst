@@ -88,11 +88,11 @@ exports.register = function (server, options, next) {
                     switch(request.payload.type) {
                         // Only supportig the 'error' and 'info' types for now
                         case 'error':
-                            // logger.error(request.payload.message);
+                            logger.error(request.payload.message);
                             break;
 
                         default:
-                            // logger.info(request.payload.message);
+                            logger.info(request.payload.message);
                     }
 
                     reply.apiSuccess();

@@ -46,7 +46,6 @@ describe('Testing route: POST /token/get', () => {
         testHelpers
             .startServerAndGetHeaders(serverSetup.manifest, serverSetup.composeOptions)
             .then(({err, server, headers}) => {
-                console.log("NODE_ENV ====================", process.env.NODE_ENV)
                 expect(err).not.to.exist();
 
                 server.inject({
