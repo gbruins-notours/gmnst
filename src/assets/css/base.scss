@@ -249,6 +249,9 @@ ul.disc {
     top:-2px;
     left:0;
 }
+.el-dialog--small {
+    width: 80%;
+}
 
 .el-button {
     @include grow()

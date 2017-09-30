@@ -151,28 +151,27 @@
                     </div>
                 </div>
 
-
                 <!-- CVV Modal -->
-                <el-dialog :title="$t('Finding your security code')"
-                            :visible.sync="securityCodeModalShow"
-                            :modal-append-to-body="false">
-                    <div class="g-spec">
-                        <div class="g-spec-label nowrap">{{ $t('American Express') }}</div>
-                        <div class="g-spec-content">
-                            <div class="inlineBlock prl">
-                                <img src="/static/images/creditcards/card_back_cvv_4.png">
-                            </div>
-                            <div class="inlineBlock vat plm">{{ $t('cvv_help_4_digit') }}</div>
+                <el-dialog :title="$t('Finding your security code')" 
+                        :modal-append-to-body="false"
+                        :visible.sync="securityCodeModalShow">
+                    <div class="cvvCard">
+                        <div class="cvvCardPic">
+                            <img src="/static/images/creditcards/card_back_cvv_4.png">
+                        </div>
+                        <div class="cvvCardContent">
+                            <div class="fwb">{{ $t('American Express') }}</div>
+                            <div>{{ $t('cvv_help_4_digit') }}</div>
                         </div>
                     </div>
 
-                    <div class="g-spec">
-                        <div class="g-spec-label nowrap">{{ $t('All other cards') }}</div>
-                        <div class="g-spec-content">
-                            <div class="inlineBlock prl">
-                                <img src="/static/images/creditcards/card_back_cvv_3.png">
-                            </div>
-                            <div class="inlineBlock vat plm">{{ $t('cvv_help_3_digit') }}</div>
+                    <div class="cvvCard">
+                        <div class="cvvCardPic">
+                            <img src="/static/images/creditcards/card_back_cvv_3.png">
+                        </div>
+                        <div class="cvvCardContent">
+                            <div class="fwb">{{ $t('All other cards') }}</div>
+                            <div>{{ $t('cvv_help_3_digit') }}</div>
                         </div>
                     </div>
                 </el-dialog>
@@ -187,7 +186,7 @@
     import { mapGetters } from 'vuex'
     import isObject from 'lodash.isobject'
     import forEach from 'lodash.foreach'
-    import { Checkbox, Input, Notification, RadioGroup, Radio, Tabs, TabPane, Dialog, Loading } from 'element-ui'
+    import { Checkbox, Input, Notification, RadioGroup, Radio, Tabs, TabPane, Loading, Dialog } from 'element-ui'
     import Validations from 'vuelidate'
     import { required } from 'vuelidate/lib/validators'
     import CheckoutWizardBar from '../../components/checkout/CheckoutWizardBar'
@@ -207,8 +206,8 @@
     Vue.use(TabPane)
     Vue.use(RadioGroup)
     Vue.use(Radio)
-    Vue.use(Dialog)
     Vue.use(Validations)
+    Vue.use(Dialog)
 
     Vue.prototype.$notify = Notification;
 
@@ -820,5 +819,32 @@
         font-weight: 500;
         margin-bottom: 20px;
         text-align: center;
+    }
+
+    .cvvCard {
+        width: 100%;
+        margin-bottom: 30px;
+    }
+    .cvvCardPic {
+        display: block;
+        width: auto;
+    }
+    .cvvCardContent {
+        display: block;
+        padding: 3px 0 0;
+        font-size: 12px;
+    }
+
+    @media #{$medium-and-up} {
+        .cvvCardPic {
+            display: table-cell;
+            width: 150px;
+        }
+        .cvvCardContent {
+            display: table-cell;
+            vertical-align: top;
+            padding-left: 20px;
+            font-size: 14px;
+        }
     }
 </style>
