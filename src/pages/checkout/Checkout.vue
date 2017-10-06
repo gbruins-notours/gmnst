@@ -68,7 +68,7 @@
                                         <div id="expiration-year" class="el-input__inner hostedField60 displayTableCell"></div>
 
                                         <i v-show="inputClasses['expiration-month'] && inputClasses['expiration-year']"
-                                        :class="getPaymentMonthYearClass(inputClasses['expiration-month'], inputClasses['expiration-year'])"></i>
+                                           :class="getPaymentMonthYearClass(inputClasses['expiration-month'], inputClasses['expiration-year'])"></i>
                                     </div>
                                 </div>
                             </div>
@@ -524,7 +524,7 @@
                     if (tokenizeErr) {
                         Notification.error({
                             title: this.$t('Payment method error') + ':',
-                            message: checkoutService.getBraintreeErrorMessage(tokenizeErr, this),
+                            message: checkoutService.getBraintreeErrorMessage.call(this, tokenizeErr),
                             duration: 0
                         });
 

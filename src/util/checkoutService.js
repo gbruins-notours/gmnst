@@ -5,11 +5,11 @@ export default {
 
     getPaymentMonthYearClass: function(monthClasses, yearClasses) {
         if(Array.isArray(monthClasses) && Array.isArray(yearClasses)) {
-            if(monthClasses[0] === yearClasses[0]) {
+            if(monthClasses[1] === yearClasses[1]) {
                 return monthClasses;
             }
             // find which set has the error classes and return those;
-            else if(monthClasses[0] === 'el-icon-circle-cross') {
+            else if(monthClasses[1] === 'fa-times-circle') {
                 return monthClasses;
             }
             else {
@@ -42,7 +42,7 @@ export default {
         })
     },
 
-    getBraintreeErrorMessage: function(clientErr, scope) {
+    getBraintreeErrorMessage: function(clientErr) {
         let errorMessage = clientErr;
 
         if(isObject(clientErr) && clientErr.hasOwnProperty('code')) {
@@ -52,11 +52,11 @@ export default {
             // Not translating all errors, just the ones that could be caused by the user
             switch(clientErr.code) {
                 case 'HOSTED_FIELDS_FIELDS_EMPTY':
-                    errorMessage = scope.$t('braintree.HOSTED_FIELDS_FIELDS_EMPTY');
+                    errorMessage = this.$t('braintree.HOSTED_FIELDS_FIELDS_EMPTY');
                     break;
 
                 case 'HOSTED_FIELDS_ATTRIBUTE_VALUE_NOT_ALLOWED':
-                    errorMessage = scope.$t('braintree.HOSTED_FIELDS_ATTRIBUTE_VALUE_NOT_ALLOWED');
+                    errorMessage = this.$t('braintree.HOSTED_FIELDS_ATTRIBUTE_VALUE_NOT_ALLOWED');
                     break;
 
                 default:
@@ -73,6 +73,6 @@ export default {
         }
 
         return errorMessage;
-    },
+    }
 
 }
