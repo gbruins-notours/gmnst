@@ -39,6 +39,7 @@ const translations = {
     'digits_text': 'digit | digits',
 
     'Email address': 'Email address',
+    'Error placing order': 'Error placing order',
     'EXPIRES': 'EXPIRES',
 
     'fill_out_form_warning': 'Please fill out the form completely before continuing. Thanks!',

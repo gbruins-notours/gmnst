@@ -13,7 +13,7 @@
 
             <template v-else>
                 <!-- Shipping -->
-                <div v-show="currentStep === 0" class="displayTable" style="margin:0 auto">
+                <div v-show="currentStep === 0">
                     <div class="step-title">{{ $t('Shipping address') }}:</div>
                     <!-- <shipping-form v-on:shipping_form_submit="shippingFormDone"></shipping-form> -->
                     <shipping-billing-form type="shipping" @valid="val => { shippingButtonEnabled = val }"></shipping-billing-form>
@@ -23,14 +23,17 @@
                     </div>
 
                     <div class="ptl tac">
-                        <el-button type="warning"
-                                    class="colorBlack"
-                                    size="large"
-                                    @click="submitShippingForm"
-                                    :disabled="!shippingButtonEnabled"
-                                    :loading="shippingFormIsLoading">{{ $t('Continue') }}</el-button>
+                        <div class="inlineBlock">
+                            <el-button type="warning"
+                                        class="colorBlack"
+                                        size="large"
+                                        @click="submitShippingForm"
+                                        :disabled="!shippingButtonEnabled"
+                                        :loading="shippingFormIsLoading">{{ $t('Continue') }}</el-button>
 
-                        <div class="mtm colorGreen" v-show="!shippingButtonEnabled">{{ $t('fill_out_form_warning') }}</div>
+                            <bottom-popover width="200px"
+                                            v-show="!shippingButtonEnabled" >{{ $t('fill_out_form_warning') }}</bottom-popover>
+                        </div>
                     </div>
                 </div>
 
@@ -39,8 +42,8 @@
                     <div class="step-title">{{ $t('Choose a payment method') }}:</div>
                     <payment-method-chooser @change="val => { paymentMethod = val }"></payment-method-chooser>
 
-                    <div v-show="paymentMethod === 'CREDIT_CARD'" class="mtl" style="margin:20px auto 0 auto">
-                        <div class="displayTable" style="margin:0 auto">
+                    <div v-show="paymentMethod === 'CREDIT_CARD'" class="mtl">
+                        <div class="displayTable widthAll">
                             <!-- Card Number -->
                             <div class="displayTableRow">
                                 <label class="checkout_form_label fwb">{{ $t('CARD NUMBER') }}:</label>
@@ -98,8 +101,8 @@
                                     </div>
 
                                     <shipping-billing-form type="billing"
-                                                            v-show="!billingSameAsShipping" 
-                                                            class="mtl"></shipping-billing-form>
+                                                           v-show="!billingSameAsShipping" 
+                                                           class="mtl"></shipping-billing-form>
                                 </div>
                             </div>
                         </div>
@@ -113,14 +116,16 @@
                     </div> 
 
                     <div class="ptl tac">
-                        <el-button type="warning"
-                                    class="colorBlack"
-                                    size="large"
-                                    @click="currentStep = 2"
-                                    :disabled="!paymentMethodButtonEnabled">{{ $t('Continue') }}</el-button>
+                        <div class="inlineBlock">
+                            <el-button type="warning"
+                                class="colorBlack"
+                                size="large"
+                                @click="submitPaymentForm"
+                                :disabled="!paymentMethodButtonEnabled"
+                                slot="reference">{{ $t('Continue') }}</el-button>
 
-                        <div v-show="!paymentMethodButtonEnabled" class="colorGreen tac mtm">
-                            {{ $t('fill_out_form_warning') }}
+                            <bottom-popover width="200px"
+                                            v-show="!paymentMethodButtonEnabled" >{{ $t('fill_out_form_warning') }}</bottom-popover>
                         </div>
                     </div>
                 </div>
@@ -198,7 +203,9 @@
     import CartItems from '../../components/cart/CartItems'
     import ShippingView from '../../components/checkout/ShippingView.vue'
     import ShippingBillingHelp from '../../components/checkout/ShippingBillingHelp.vue'
+    import BottomPopover from '../../components/BottomPopover.vue'
     import api from '../../util/api'
+    import checkoutService from '../../util/checkoutService'
 
     Vue.use(Checkbox)
     Vue.use(Input)
@@ -226,13 +233,15 @@
             ShippingBillingForm,
             Checkbox,
             CountrySelect,
-            CartItems
+            CartItems,
+            BottomPopover
         },
 
         computed: {
             ...mapGetters([
                 'cart',
                 'cartShippingAttributes',
+                'cartBillingAttributes',
                 'app'
             ]),
 
@@ -270,7 +279,11 @@
                     return this.cart.billingSameAsShipping;
                 },
                 set: function(newVal) {
-                    this.$store.dispatch('CART_BILLING_SAME_AS_SHIPPING', newVal);
+                    // this.$store.dispatch('CART_BILLING_SAME_AS_SHIPPING', newVal);
+                    this.$store.dispatch('CART_ATTRIBUTE_SET', {
+                        attribute: 'billingSameAsShipping',
+                        value: newVal
+                    });
                 }
             }
         },
@@ -407,6 +420,15 @@
                 });
             },
 
+
+            submitPaymentForm: function() {
+                if(this.cart.billingSameAsShipping) {
+                    checkoutService.copyShippingStateToBillingState(this.cart);
+                }
+                this.currentStep = 2
+            },
+
+
             getShippingRates: function() {
                 this.$store.dispatch('CART_SHIPPING_METHODS', null);
 
@@ -447,10 +469,8 @@
                 }
             },
 
-
             shippingFormDone: function() {
-                this.currentStep = 1;
-
+                let updatedCart = null;
                 delete this.cartShippingAttributes.shipping_total;
 
                 // Setting the shipping address will also calculate the
@@ -461,7 +481,28 @@
                 api.shoppingCart
                     .setShippingAddress(this.cartShippingAttributes)
                     .then((result) => {
-                        this.$store.dispatch('CART_SET', result);
+                        updatedCart = result;
+                        return this.$store.dispatch('CART_SET', result);
+                    })
+                    .then(() => { 
+                        console.log("CART SET DONE AFTER SET SHIPPING ADDRESS") 
+
+                        // As a convenience to the user keeping the Country and State
+                        // values the same as the shipping values, as they are likely the same
+                        if(!updatedCart.billing_countryCodeAlpha2) {
+                            this.$store.dispatch('CART_ATTRIBUTE_SET', {
+                                attribute: 'billing_countryCodeAlpha2',
+                                value: updatedCart.shipping_countryCodeAlpha2
+                            });
+                        }
+                        if(!updatedCart.billing_state) {
+                            this.$store.dispatch('CART_ATTRIBUTE_SET', {
+                                attribute: 'billing_state',
+                                value: updatedCart.shipping_state
+                            });
+                        }
+
+                        this.currentStep = 1;
                     })
                     .catch((result) => {
                         // currentNotification = this.$notify({
@@ -473,61 +514,8 @@
                     });
             },
 
-            shippingMethodDone: function() {
-                this.currentStep = 2;
-            },
 
-            shippingMethodGoBack: function() {
-                this.currentStep = 0;
-            },
-
-            getPaymentMonthYearClass: function(monthClasses, yearClasses) {
-                if(Array.isArray(monthClasses) && Array.isArray(yearClasses)) {
-                    if(monthClasses[0] === yearClasses[0]) {
-                        return monthClasses;
-                    }
-                    // find which set has the error classes and return those;
-                    else if(monthClasses[0] === 'el-icon-circle-cross') {
-                        return monthClasses;
-                    }
-                    else {
-                        return yearClasses;
-                    }
-                }
-            },
-
-            getBraintreeErrorMessage: function(clientErr) {
-                let errorMessage = clientErr;
-
-                if(isObject(clientErr) && clientErr.hasOwnProperty('code')) {
-                    api.logger('error', clientErr.code);
-
-                    // https://github.com/braintree/braintree-web/blob/3beb6d43b1c453e3c97f01129fa07a89234b2003/src/hosted-fields/shared/errors.js
-                    // Not translating all errors, just the ones that could be caused by the user
-                    switch(clientErr.code) {
-                        case 'HOSTED_FIELDS_FIELDS_EMPTY':
-                            errorMessage = this.$t('braintree.HOSTED_FIELDS_FIELDS_EMPTY');
-                            break;
-
-                        case 'HOSTED_FIELDS_ATTRIBUTE_VALUE_NOT_ALLOWED':
-                            errorMessage = this.$t('braintree.HOSTED_FIELDS_ATTRIBUTE_VALUE_NOT_ALLOWED');
-                            break;
-
-                        default:
-                            if(clientErr.hasOwnProperty('message')) {
-                                errorMessage = clientErr.message;
-                            }
-                            else {
-                                errorMessage = clientErr.code;
-                            }
-                    }
-                }
-                else {
-                    api.logger('error', clientErr);
-                }
-
-                return errorMessage;
-            },
+            getPaymentMonthYearClass: checkoutService.getPaymentMonthYearClass,
 
             tokenizeHostedFields() {
                 this.placeOrderButtonLoading = true;
@@ -536,7 +524,7 @@
                     if (tokenizeErr) {
                         Notification.error({
                             title: this.$t('Payment method error') + ':',
-                            message: this.getBraintreeErrorMessage(tokenizeErr),
+                            message: checkoutService.getBraintreeErrorMessage(tokenizeErr, this),
                             duration: 0
                         });
 
@@ -553,28 +541,34 @@
 
                     api.shoppingCart.checkout({
                         nonce: payload.nonce,
-                        shipping: this.cart.shipping,
-                        billing: this.cart.billing
+                        ...this.cartBillingAttributes
                     })
                     .then((result) => {
+                        console.log("CART SUCCESS RESPONSE", result)
+                        //TODO: clear the cart from local storage
 
-                    })
-                    .catch((err) => {
-
-                    })
-                    .finally(() => {
                         // teardown HF and present payment information
                         this.braintree.hostedFieldsInstance.teardown((teardownErr) => {
                             if (teardownErr) {
                                 console.log('There was an error tearing it down!', teardownErr.message);
-                                this.getBraintreeErrorMessage(teardownErr);
+                                checkoutService.getBraintreeErrorMessage(teardownErr, this);
                             }
                             else {
                                 console.log("hosted fields teardown done")
                             }
-
-                            this.placeOrderButtonLoading = false;
                         });
+
+                        return this.$router.push({ name: 'checkout_receipt' });
+                    })
+                    .catch((error) => {
+                        Notification.error({
+                            title: `${ this.$t('Error placing order') }:`,
+                            message: api.getApiErrorMessage(error),
+                            duration: 0
+                        });
+                    })
+                    .finally(() => {
+                        this.placeOrderButtonLoading = false;
                     })
                 });
             },
@@ -650,7 +644,7 @@
                     }
                 });
 
-//TODO
+
                 hostedFieldsInstance.on('cardTypeChange', (event) => {
                     // console.log('cardTypeChange', event);
                     let isPotentiallyValid = (isObject(event.fields) && isObject(event.fields.number) && !event.fields.number.isPotentiallyValid);
@@ -663,7 +657,7 @@
                     if (event.cards.length === 1) {
                         // Change the CVV length for AmericanExpress cards
                         if (event.cards[0].code.size === 4) {
-                            hostedFieldsInstance.setPlaceholder('cvv', '••••');
+                            // hostedFieldsInstance.setPlaceholder('cvv', '••••');
                             this.securityCodeHint = `4 ${this.$tc('digits_text', 4)}`;
                         }
 
@@ -672,7 +666,7 @@
                         }
                     }
                     else {
-                        hostedFieldsInstance.setPlaceholder('cvv', '•••');
+                        // hostedFieldsInstance.setPlaceholder('cvv', '•••');
                         this.securityCodeHint = `3 ${this.$tc('digits_text', 3)}`;
 
                         if(!isPotentiallyValid) {
@@ -699,12 +693,12 @@
                     },
                     fields: {
                         number: {
-                            selector: '#card-number',
-                            placeholder: '•••• •••• •••• ••••'
+                            selector: '#card-number'
+                            // placeholder: '•••• •••• •••• ••••'
                         },
                         cvv: {
-                            selector: '#cvv',
-                            placeholder: '•••'
+                            selector: '#cvv'
+                            // placeholder: '•••'
                         },
                         expirationMonth: {
                             selector: '#expiration-month',
@@ -719,7 +713,7 @@
                     if (hostedFieldsErr) {
                         Notification.error({
                             title: this.$t('Payment method error') + ':',
-                            message: this.getBraintreeErrorMessage(hostedFieldsErr),
+                            message: checkoutService.getBraintreeErrorMessage(hostedFieldsErr, this),
                             duration: 0
                         });
                         return;
@@ -760,14 +754,14 @@
                         if (clientErr) {
                             Notification.error({
                                 title: this.$t('There was an error setting up the payment client!'),
-                                message: this.getBraintreeErrorMessage(clientErr),
+                                message: checkoutService.getBraintreeErrorMessage(clientErr, this),
                                 duration: 0
                             });
                         }
                         else {
-                        this.braintree.clientInstance = clientInstance
-                        this.createHostedFields(clientInstance);
-                        this.createPaypal(clientInstance);
+                            this.braintree.clientInstance = clientInstance
+                            this.createHostedFields(clientInstance);
+                            this.createPaypal(clientInstance);
                         }
                     }
                 );

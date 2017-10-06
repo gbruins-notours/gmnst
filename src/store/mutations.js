@@ -58,47 +58,7 @@ export default {
     },
 
     CART_ATTRIBUTE_SET: (state, config) => {
-        state.cart[`${config.attribute}`] = config.value;
-    },
-
-    CART_BILLING_SAME_AS_SHIPPING: (state, sameAsShipping) => {
-        state.cart.billingSameAsShipping = sameAsShipping;
-
-        let shippingKeys = [
-            'firstName',
-            'lastName',
-            'streetAddress',
-            'extendedAddress',
-            'company',
-            'city',
-            'state',
-            'postalCode',
-            'countryCodeAlpha2',
-            'email'
-        ];
-
-        shippingKeys.forEach((item) => {
-            let billing_key = `billing_${item}`;
-            let shipping_key = `shipping_${item}`;
-
-            if(sameAsShipping) {
-                if(item !== 'email') {
-                    state.cart[billing_key] = state.cart[shipping_key]
-                }  
-            }
-            else {
-                // As a convenience to the user keeping the Country and State
-                // values the same as the shipping values, as they are likely the same
-                if(item === 'countryCodeAlpha2' || item === 'state') {
-                    if(!state.cart[billing_key]) {
-                        state.cart[billing_key] = state.cart[shipping_key]
-                    }
-                }
-                else {
-                    state.cart[billing_key] = null;
-                }
-            }
-        })
+        state.cart[config.attribute] = config.value || null;
     },
 
     CART_SHIPPING_METHODS: (state, data) => {

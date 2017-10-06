@@ -1,3 +1,5 @@
+'use strict';
+
 const Joi = require('joi');
 const Boom = require('boom');
 const Promise = require('bluebird');
@@ -24,6 +26,19 @@ internals.shippingAttributes = {
     shipping_email: Joi.string().email().max(50).label('Shipping: Email').required()
 }
 
+internals.billingAttributes = {
+    billing_firstName: Joi.string().trim().max(255),
+    billing_lastName: Joi.string().trim().max(255),
+    billing_company: Joi.string().trim().max(255).empty(null),
+    billing_streetAddress: Joi.string().trim().max(255),
+    billing_extendedAddress: Joi.string().trim().max(255).empty(null),
+    billing_city: Joi.string().trim().max(255),
+    billing_state: Joi.string().trim().max(255),
+    billing_postalCode: Joi.string().trim().max(10),
+    billing_countryCodeAlpha2: Joi.string().trim().max(2),
+    billing_phone: Joi.string().trim().max(30).empty(null)
+}
+
 
 /**
  * Joi definitions for the ShoppingCart model
@@ -34,20 +49,7 @@ internals.shippingAttributes = {
  */
 internals.schema = Joi.object().keys({
     token: Joi.string().trim().max(100).required(),
-
-    billing: Joi.object().keys({
-        billing_firstName: Joi.string().trim().max(255),
-        billing_lastName: Joi.string().trim().max(255),
-        billing_company: Joi.string().trim().max(255),
-        billing_streetAddress: Joi.string().trim().max(255),
-        billing_extendedAddress: Joi.string().trim().max(255).empty(null),
-        billing_city: Joi.string().trim().max(255),
-        billing_state: Joi.string().trim().max(255),
-        billing_postalCode: Joi.string().trim().max(10),
-        billing_countryCodeAlpha2: Joi.string().trim().max(2),
-        billing_phone: Joi.string().trim().max(30)
-    }),
-
+    billing: Joi.object().keys(internals.billingAttributes),
     shipping: Joi.object().keys(internals.shippingAttributes)
 });
 
@@ -438,46 +440,22 @@ internals.after = function (server, next) {
             config: {
                 description: 'Braintree nonce received by the client. Complete the transaction',
                 validate: {
-                    payload: {
-                        nonce: Joi.string().trim().required(),
-                        shipping: Joi.reach(internals.schema, 'shipping').required(),
-                        billing: Joi.reach(internals.schema, 'billing')
-                    }
+                    // NOTE: shipping is not required here because the 'cart/shipping/setaddress' route
+                    // should have been called before this route, which persists the shipping info.
+                    payload: Object.assign(
+                        {}, 
+                        { nonce: Joi.string().trim().required() }, 
+                        internals.billingAttributes
+                    )
                 },
                 handler: (request, reply) => {
                     var cart;
 
-                    // update the cart"
-                    // Any failures that happen while saving the cart do not affect the
-                    // braintree transaction and thus should fail silently.
-                    function updateCart(ShoppingCart, opts) {
-                        let cartUpdateData = {};
-
-                        forEach(opts.shipping, (val, key) => {
-                            cartUpdateData['shipping_' + key] = val;
-                        });
-
-                        // billing
-                        forEach(opts.billing, (val, key) => {
-                            cartUpdateData['billing_' + key] = val;
-                        });
-
-                        ShoppingCart.save(
-                            cartUpdateData,
-                            { method: 'update', patch: true }
-                        )
-                        .catch((err) => {
-                            logger.error(err);
-
-                            appInsightsClient.trackException({
-                                exception: err
-                            });
-                        });
-                    }
-
                     internals.shoppingCart.get(request)
                         .then((ShoppingCart) => {
                             cart = ShoppingCart;
+
+                            let cartJson = ShoppingCart.toJSON();
 
                             let paymentPromise = server.plugins.Payments.runPayment({
                                 paymentMethodNonce: request.payload.nonce,
@@ -485,38 +463,50 @@ internals.after = function (server, next) {
                                 customer: {
                                     // NOTE: Braintree requires that this email has a '.' in the domain name (i.e test@test.com)
                                     // which technically isn't correct. This fails validation: test@test
-                                    email: request.payload.shipping.email
+                                    email: cartJson.shipping_email
                                 },
                                 shipping: {
-                                    company: request.payload.shipping.company,
-                                    countryCodeAlpha2: request.payload.shipping.countryCodeAlpha2,
-                                    extendedAddress: request.payload.shipping.extendedAddress || null,
-                                    firstName: request.payload.shipping.firstName,
-                                    lastName: request.payload.shipping.lastName,
-                                    locality: request.payload.shipping.city,
-                                    postalCode: request.payload.shipping.postalCode,
-                                    region: request.payload.shipping.state,
-                                    streetAddress: request.payload.shipping.streetAddress
+                                    company: cartJson.shipping_company,
+                                    countryCodeAlpha2: cartJson.shipping_countryCodeAlpha2,
+                                    extendedAddress: cartJson.shipping_extendedAddress || null,
+                                    firstName: cartJson.shipping_firstName,
+                                    lastName: cartJson.shipping_lastName,
+                                    locality: cartJson.shipping_city,
+                                    postalCode: cartJson.shipping_postalCode,
+                                    region: cartJson.shipping_state,
+                                    streetAddress: cartJson.shipping_streetAddress
                                 },
                                 billing: {
-                                    company: request.payload.billing.company,
-                                    countryCodeAlpha2: request.payload.billing.countryCodeAlpha2,
-                                    extendedAddress: request.payload.billing.extendedAddress || null,
-                                    firstName: request.payload.billing.firstName,
-                                    lastName: request.payload.billing.lastName,
-                                    locality: request.payload.billing.city,
-                                    postalCode: request.payload.billing.postalCode,
-                                    region: request.payload.billing.state,
-                                    streetAddress: request.payload.billing.streetAddress
+                                    company: request.payload.billing_company,
+                                    countryCodeAlpha2: request.payload.billing_countryCodeAlpha2,
+                                    extendedAddress: request.payload.billing_extendedAddress || null,
+                                    firstName: request.payload.billing_firstName,
+                                    lastName: request.payload.billing_lastName,
+                                    locality: request.payload.billing_city,
+                                    postalCode: request.payload.billing_postalCode,
+                                    region: request.payload.billing_state,
+                                    streetAddress: request.payload.billing_streetAddress
                                 },
                                 options: {
                                     submitForSettlement: true
                                 }
                             });
 
-                            updateCart(cart, {
-                                shipping: request.payload.shipping,
-                                billing: request.payload.billing
+                            let billingParams = cloneDeep(request.payload);
+                            delete billingParams.nonce;
+
+                            // update the cart
+                            // Any failures that happen while saving the cart do not affect the
+                            // braintree transaction and thus should fail silently.
+                            ShoppingCart.save(
+                                billingParams,
+                                { method: 'update', patch: true }
+                            )
+                            .catch((err) => {
+                                logger.error(err);
+                                appInsightsClient.trackException({
+                                    exception: err
+                                });
                             });
 
                             return paymentPromise;
@@ -541,7 +531,6 @@ internals.after = function (server, next) {
                                 .savePayment(cart.get('id'), transactionObj)
                                 .catch((err) => {
                                     logger.error(`ERROR SAVING PAYMENT INFO: ${err}`)
-
                                     appInsightsClient.trackException({
                                         exception: err
                                     });
@@ -550,14 +539,13 @@ internals.after = function (server, next) {
                                     if (!transactionObj.success) {
                                         let msg = transactionObj.message || 'An error occurred when saving the Payment transaction data.';
                                         logger.error(msg)
-
                                         appInsightsClient.trackException({
                                             exception: new Error(msg)
                                         });
                                     }
                                 });
 
-                            reply.apiSuccess(cart);
+                            reply.apiSuccess(cart.toJSON());
                         })
                         .catch((err) => {
                             appInsightsClient.trackException({

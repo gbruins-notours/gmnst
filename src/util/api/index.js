@@ -135,5 +135,18 @@ export default {
                     return response.data.data;
                 });
         }
+    },
+
+    
+    // Utility methods:
+
+    getApiErrorMessage(error) {
+        let msg = error.message;
+        
+        if (error.response) {
+            msg = error.response.data.message;
+        }
+
+        return msg;
     }
 };

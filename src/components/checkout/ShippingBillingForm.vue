@@ -4,10 +4,8 @@
         <div v-if="type === 'shipping'">
             <div>{{ $t('Email address') }}</div>
             <div class="checkout_form_value">
-                <el-input v-model.trim="form.email" 
-                        @input="onInputChange('email')"
-                        @blur="onInputBlur('email')"
-                        :class="{ 'inputError': $v.form.email.$error }"></el-input>
+                <el-input v-model.trim="email" 
+                          :class="{ 'inputError': $v.form.email.$error }"></el-input>
                 <div role="alert" v-show="canShowValidationMsg('email')">
                     <p v-if="!$v.form.email.required">{{ $t('Required') }}</p>
                     <p v-if="!$v.form.email.email">{{ $t('Please enter a valid email address.') }}</p>
@@ -20,10 +18,10 @@
         <div>
             <div>{{ $t('Country') }}</div>
             <div class="checkout_form_value">
-                <country-select v-model="form.countryCodeAlpha2"
-                                :init-value="form.countryCodeAlpha2"
+                <country-select v-model="countryCodeAlpha2"
+                                :init-value="countryCodeAlpha2"
                                 value-type="alpha2"
-                                @change="countryCodeChanged"></country-select>
+                                @change="newVal => countryCodeAlpha2 = newVal"></country-select>
                 <p role="alert" v-show="canShowValidationMsg('countryCodeAlpha2')">{{ $t('Required') }}</p>
                 <i v-show="canShowGreenCheck('countryCodeAlpha2')" class="fa fa-check-circle"></i>
             </div>
@@ -33,10 +31,8 @@
         <div>
             <div>{{ $t('First name') }}</div>
             <div class="checkout_form_value">
-                <el-input v-model.trim="form.firstName" 
-                        @input="onInputChange('firstName')"
-                        @blur="onInputBlur('firstName')"
-                        :class="{ 'inputError': $v.form.firstName.$error }"></el-input>
+                <el-input v-model.trim="firstName"
+                          :class="{ 'inputError': $v.form.firstName.$error }"></el-input>
                 <p role="alert" v-show="canShowValidationMsg('firstName')">{{ $t('Required') }}</p>
                 <i v-show="canShowGreenCheck('firstName')" class="fa fa-check-circle"></i>
             </div>
@@ -46,10 +42,8 @@
         <div>
             <div>{{ $t('Last name') }}</div>
             <div class="checkout_form_value">
-                <el-input v-model.trim="form.lastName" 
-                        @input="onInputChange('lastName')"
-                        @blur="onInputBlur('lastName')"
-                        :class="{ 'inputError': $v.form.lastName.$error }"></el-input>
+                <el-input v-model.trim="lastName" 
+                          :class="{ 'inputError': $v.form.lastName.$error }"></el-input>
                 <p role="alert" v-show="canShowValidationMsg('lastName')">{{ $t('Required') }}</p>
                 <i v-show="canShowGreenCheck('lastName')" class="fa fa-check-circle"></i>
             </div>
@@ -59,10 +53,8 @@
         <div>
             <div>{{ $t('Address line 1') }}</div>
             <div class="checkout_form_value">
-                <el-input v-model.trim="form.streetAddress" 
-                        @input="onInputChange('streetAddress')"
-                        @blur="onInputBlur('streetAddress')"
-                        :class="{ 'inputError': $v.form.streetAddress.$error }"></el-input>
+                <el-input v-model.trim="streetAddress" 
+                          :class="{ 'inputError': $v.form.streetAddress.$error }"></el-input>
                 <p role="alert" v-show="canShowValidationMsg('streetAddress')">{{ $t('Required') }}</p>
                 <i v-show="canShowGreenCheck('streetAddress')" class="fa fa-check-circle"></i>
             </div>
@@ -73,7 +65,7 @@
         <div v-if="form.extendedAddress">
             <div>{{ $t('Address line 2') }}:</div>
             <div class="checkout_form_value">
-                <el-input v-model.trim="form.extendedAddress"></el-input>
+                <el-input v-model.trim="extendedAddress"></el-input>
             </div>
         </div>
 
@@ -81,10 +73,8 @@
         <div>
             <div>{{ $t('City') }}</div>
             <div class="checkout_form_value">
-                <el-input v-model.trim="form.city" 
-                        @input="onInputChange('city')"
-                        @blur="onInputBlur('city')"
-                        :class="{ 'inputError': $v.form.city.$error }"></el-input>
+                <el-input v-model.trim="city" 
+                          :class="{ 'inputError': $v.form.city.$error }"></el-input>
                 <p role="alert" v-show="canShowValidationMsg('city')">{{ $t('Required') }}</p>
                 <i v-show="canShowGreenCheck('city')" class="fa fa-check-circle"></i>
             </div>
@@ -94,11 +84,11 @@
         <div>
             <div>{{ $t('State/Province/Region') }}</div>
             <div class="checkout_form_value">
-                <state-province-select v-model.trim="form.state"
-                                    :init-value="form.state"
-                                    :country="form.countryCodeAlpha2"
-                                    @change="stateChanged"
+                <state-province-select v-model.trim="state"
+                                    :init-value="state"
+                                    :country="countryCodeAlpha2"
                                     :disabled="!stateSelectEnabled"
+                                    @change="newVal => state = newVal"
                                     :class="{ 'inputError': $v.form.state.$error }"></state-province-select>
                 <p role="alert" v-show="canShowValidationMsg('state')">{{ $t('Required') }}</p>
                 <i v-show="canShowGreenCheck('state')" class="fa fa-check-circle"></i>
@@ -109,9 +99,7 @@
         <div>
             <div>{{ $t('Postal code') }}</div>
             <div class="checkout_form_value">
-                <el-input v-model.trim="form.postalCode" 
-                        @input="onInputChange('postalCode')"
-                        @blur="onInputBlur('postalCode')"
+                <el-input v-model.trim="postalCode" 
                         :class="{ 'inputError': $v.form.postalCode.$error }"></el-input>
                 <p role="alert" v-show="canShowValidationMsg('postalCode')">{{ $t('Required') }}</p>
                 <i v-show="canShowGreenCheck('postalCode')" class="fa fa-check-circle"></i>
@@ -122,10 +110,8 @@
         <div>
             <div>{{ $t('Company name') }}</div>
             <div class="checkout_form_value">
-                <el-input v-model.trim="form.company"
-                        :placeholder="'(' + $t('optional') + ')'"
-                        @input="onInputChange('company')"
-                        @blur="onInputBlur('company')"></el-input>
+                <el-input v-model.trim="company"
+                          :placeholder="'(' + $t('optional') + ')'"></el-input>
                 <i v-show="canShowGreenCheck('company')" class="fa fa-check-circle"></i>
             </div>
         </div>
@@ -149,6 +135,38 @@
 
     const touchMap = new WeakMap();
 
+    function getSetMaker(attr) {
+        return {
+            get: function() {
+                return this.cart[`${this.type}_${attr}`];
+            },
+            set: function(newVal) {
+                this.$store.dispatch('CART_ATTRIBUTE_SET', {
+                    attribute: `${this.type}_${attr}`,
+                    value: newVal
+                });
+
+                this.form[attr] = this.cart[`${this.type}_${attr}`];
+                this.greenChecks[attr] = !this.$v.form[attr].$invalid;
+
+                switch(attr) {
+                    case 'email':
+                        this.delayTouch(this.$v.form.email, 1000);
+                        break;
+
+                    case 'countryCodeAlpha2':
+                        this.stateSelectEnabled = (isObject(this.cart) && this.cart[`${this.type}_${attr}`]);
+                        this.$v.form[attr].$touch();
+                        break;
+
+                    default:
+                        this.$v.form[attr].$touch();
+                }
+            }
+        }
+    }
+
+
     export default {
         components: {
             CountrySelect,
@@ -166,26 +184,28 @@
             return {
                 stateSelectEnabled: false,
                 form: {
-                    email: null,
                     countryCodeAlpha2: null,
                     firstName: null,
                     lastName: null,
                     streetAddress: null,
+                    extendedAddress: null,
                     city: null,
                     state: null,
                     postalCode: null,
-                    company: null
+                    company: null,
+                    email: null
                 },
                 greenChecks: {
-                    email: false,
                     countryCodeAlpha2: false,
                     firstName: false,
                     lastName: false,
                     streetAddress: false,
+                    extendedAddress: false,
                     city: false,
                     state: false,
                     postalCode: false,
-                    company: false
+                    company: false,
+                    email: false,
                 }
             }
         },
@@ -193,7 +213,56 @@
         computed: {
             ...mapGetters([
                 'cart'
-            ])
+            ]),
+
+            email: getSetMaker.call(this, 'email'),
+            countryCodeAlpha2: getSetMaker.call(this, 'countryCodeAlpha2'),
+            firstName: getSetMaker.call(this, 'firstName'),
+            lastName: getSetMaker.call(this, 'lastName'),
+            streetAddress: getSetMaker.call(this, 'streetAddress'),
+            extendedAddress: getSetMaker.call(this, 'extendedAddress'),
+            city: getSetMaker.call(this, 'city'),
+            state: getSetMaker.call(this, 'state'),
+            postalCode: getSetMaker.call(this, 'postalCode'),
+            company: getSetMaker.call(this, 'company')
+        },
+
+
+        methods: {
+            /**
+             * Determine if the green checkmark should be displayed
+             */
+            canShowGreenCheck(attr) {
+                return this.greenChecks[attr] && !this.$v.form[attr].$error;
+            },
+
+            /**
+             * Determine if the validation error message should be displayed
+             */
+            canShowValidationMsg(attr) {
+                switch(attr) {
+                    case 'email':
+                        return this.$v.form.email.$dirty
+
+                    default:
+                        // return true;
+                        return this.$v.form[attr].$dirty && !this.$v.form[attr].required
+                }
+            },
+
+            delayTouch: function($v, timeout) {
+                $v.$reset()
+                if (touchMap.has($v)) {
+                    clearTimeout(touchMap.get($v))
+                }
+
+                if(timeout) {
+                    touchMap.set($v, setTimeout($v.$touch, timeout || 1000))
+                }
+                else {
+                   $v.$touch(); 
+                }
+            }
         },
 
         created: function() {
@@ -217,88 +286,6 @@
             this.stateSelectEnabled = (isObject(this.cart) && this.cart[`${this.type}_countryCodeAlpha2`])
         },
 
-        methods: {
-            onInputChange(attr) {
-                switch(attr) {
-                    case 'email':
-                        this.delayTouch(this.$v.form.email, 1000);
-                        break;
-
-                    default:
-                        this.$v.form[attr].$touch();
-                }
-
-                // If the input value ever goes invalid then remove the green check
-                if(this.$v.form[attr].$invalid) {
-                    this.greenChecks[attr] = false;
-                }
-                else {
-                    this.$store.dispatch('CART_ATTRIBUTE_SET', {
-                        attribute: `${this.type}_${attr}`,
-                        value: this.form[attr]
-                    });
-                }
-            },
-
-            onInputBlur(attr) {
-                // If the user types quickly, the onInputChange event may still be in progress
-                // because there is a 1 second timeout for email.  Therefore we call it again
-                // so that the old instance stops and the new one fires immediately.  Then we 
-                // can procede as normal.
-                if(attr === 'email') {
-                   this.delayTouch(this.$v.form.email, 0); 
-                }
-                this.greenChecks[attr] = this.$v.form[attr].$dirty && !this.$v.form[attr].$invalid;
-            },
-
-            /**
-             * Determine if the green checkmark should be displayed
-             */
-            canShowGreenCheck(attr) {
-                return this.greenChecks[attr] && !this.$v.form[attr].$error;
-            },
-
-            /**
-             * Determine if the validation error message should be displayed
-             */
-            canShowValidationMsg(attr) {
-                switch(attr) {
-                    case 'email':
-                        return this.$v.form.email.$dirty
-
-                    default:
-                        return this.$v.form[attr].$dirty && !this.$v.form[attr].required
-                }
-            },
-
-            countryCodeChanged: function(newVal) {
-                this.form.countryCodeAlpha2 = newVal;
-                this.stateSelectEnabled = newVal ? true : false;
-                this.onInputChange('countryCodeAlpha2');
-                this.onInputBlur('countryCodeAlpha2');
-            },
-
-            stateChanged: function(newVal) {
-                this.form.state = newVal;
-                this.onInputChange('state');
-                this.onInputBlur('state');
-            },
-
-            delayTouch: function($v, timeout) {
-                $v.$reset()
-                if (touchMap.has($v)) {
-                    clearTimeout(touchMap.get($v))
-                }
-
-                if(timeout) {
-                    touchMap.set($v, setTimeout($v.$touch, timeout || 1000))
-                }
-                else {
-                   $v.$touch(); 
-                }
-            }
-        },
-
         watch: {
             '$v.$invalid': function (to, from) {
                 // console.log("INVALID WATCH", to, this.$v);
@@ -312,6 +299,7 @@
                 firstName: { required },
                 lastName: { required },
                 streetAddress: { required },
+                extendedAddress: {}, // no validation needed
                 city: { required },
                 state: { required },
                 postalCode: { required },

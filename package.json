@@ -56,7 +56,7 @@
     "crumb": "6.0.3",
     "css-loader": "0.26.1",
     "dotenv": "4.0.0",
-    "element-ui": "1.4.1",
+    "element-ui": "1.4.6",
     "email-templates": "2.5.4",
     "es6-promise": "4.1.0",
     "eslint": "3.14.1",
