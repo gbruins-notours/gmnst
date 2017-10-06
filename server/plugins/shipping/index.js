@@ -1,4 +1,3 @@
-const apiKey = process.env.NODE_ENV === 'development' ? process.env.SHIPENGINE_API_KEY_TEST : process.env.SHIPENGINE_API_KEY_PROD;
 const Joi = require('joi');
 const Boom = require('boom');
 const Wreck = require('wreck');
@@ -9,7 +8,7 @@ const wreck = Wreck.defaults({
     baseUrl: 'https://api.shipengine.com/v1',
     json: true,
     headers: {
-        'api-key': apiKey,
+        'api-key': process.env.SHIPENGINE_API_KEY_PROD,
         'Content-Type': 'application/json'
     }
 });
