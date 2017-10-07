@@ -87,6 +87,9 @@ Vue.use(Option);
 Vue.use(InputNumber);
 Vue.use(Button);
 
+Vue.prototype.$notify = Notification;
+let currentNotification = null;
+
 export default {
     components: {
         ProductPrice,
@@ -127,22 +130,24 @@ export default {
         ]),
 
         addToCart: function() {
-//            if (isObject(this.product) && !this.product.hasOwnProperty('__selectedOptions')) {
-//                this.product.__selectedOptions = {};
-//            }
+            if(currentNotification) {
+                currentNotification.close();
+            }
+
             if (!this.selectedSize) {
-                Notification.error({
+                currentNotification = this.$notify({
+                    type: 'error',
                     title: this.$t('Please select a size'),
                     message: this.$t('We want to make sure it fits!'),
-                    // duration: 4500
                     duration: 0
                 });
             }
             else if (!this.selectedQty) {
-                Notification.error({
+                currentNotification = this.$notify({
+                    type: 'error',
                     title: this.$t('Please select a quantity'),
                     message: this.$t('Thanks!'),
-                    duration: 4500
+                    duration: 0
                 });
             }
             else {
