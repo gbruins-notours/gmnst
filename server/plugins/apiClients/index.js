@@ -8,12 +8,7 @@ const HelperService = require('../../helpers.service');
 const uuidV4 = require('uuid/v4');
 const ApiClientsService = require('./apiClients.service');
 
-let appInsights = require("applicationinsights");
-let client = appInsights.defaultClient;
-
 let internals = {};
-
-
 
 
 internals.after = function (server, next) {

@@ -1,8 +1,22 @@
 const Hoek = require('hoek');
+const appInsights = require('applicationinsights');
 const Config = require('./config');
 const Server = require('./index');
 
 let internals = {};
+
+// Azure application insights setup:
+let key = process.env.NODE_ENV === 'production' ? process.env.APPINSIGHTS_INSTRUMENTATIONKEY : 'fakekey';
+appInsights.setup(key)
+    .setAutoDependencyCorrelation(true)
+    .setAutoCollectRequests(true)
+    .setAutoCollectPerformance(true)
+    .setAutoCollectExceptions(true)
+    .setAutoCollectDependencies(true)
+    .start();
+
+global.appInsightsClient = appInsights.defaultClient;
+
 
 internals.manifest = {
     connections: [

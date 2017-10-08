@@ -1,24 +1,9 @@
 const winston = require('winston');
 const moment = require('moment');
-const appInsights = require('applicationinsights');
 
 
 exports.register = (server, options, next) => {
      
-    // Azure application insights setup:
-    let key = process.env.NODE_ENV === 'test' ? 'fakekey' : process.env.APPINSIGHTS_INSTRUMENTATIONKEY;
-
-    appInsights.setup(key)
-        .setAutoDependencyCorrelation(true)
-        .setAutoCollectRequests(true)
-        .setAutoCollectPerformance(true)
-        .setAutoCollectExceptions(true)
-        .setAutoCollectDependencies(true)
-        .start();
-
-    global.appInsightsClient = appInsights.defaultClient;
-
-    
     // Winston setup: 
     const logger = new (winston.Logger)({
         transports: [
