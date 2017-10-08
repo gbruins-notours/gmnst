@@ -15,7 +15,6 @@
                 <!-- Shipping -->
                 <div v-show="currentStep === 0">
                     <div class="step-title">{{ $t('Shipping address') }}:</div>
-                    <!-- <shipping-form v-on:shipping_form_submit="shippingFormDone"></shipping-form> -->
                     <shipping-billing-form type="shipping" @valid="val => { shippingButtonEnabled = val }"></shipping-billing-form>
 
                     <div class="ptl displayTable" style="margin:0 auto">
@@ -196,7 +195,6 @@
     import { required } from 'vuelidate/lib/validators'
     import CheckoutWizardBar from '../../components/checkout/CheckoutWizardBar'
     import PaymentMethodChooser from '../../components/checkout/PaymentMethodChooser'
-    import ShippingForm from '../../components/checkout/ShippingForm'
     import ShippingBillingForm from '../../components/checkout/ShippingBillingForm'
     // import ShippingMethodForm from '../../components/checkout/ShippingMethodForm'
     import CountrySelect from '../../components/CountrySelect.vue'
@@ -226,7 +224,6 @@
         components: {
             CheckoutWizardBar,
             PaymentMethodChooser,
-            ShippingForm,
             ShippingView,
             // ShippingMethodForm,
             ShippingBillingHelp,
