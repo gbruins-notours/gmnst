@@ -196,7 +196,6 @@
     import CheckoutWizardBar from '../../components/checkout/CheckoutWizardBar'
     import PaymentMethodChooser from '../../components/checkout/PaymentMethodChooser'
     import ShippingBillingForm from '../../components/checkout/ShippingBillingForm'
-    // import ShippingMethodForm from '../../components/checkout/ShippingMethodForm'
     import CountrySelect from '../../components/CountrySelect.vue'
     import CartItems from '../../components/cart/CartItems'
     import ShippingView from '../../components/checkout/ShippingView.vue'
@@ -225,7 +224,6 @@
             CheckoutWizardBar,
             PaymentMethodChooser,
             ShippingView,
-            // ShippingMethodForm,
             ShippingBillingHelp,
             ShippingBillingForm,
             Checkbox,
