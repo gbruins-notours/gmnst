@@ -57,7 +57,7 @@ describe('Testing route: GET /cart/get', () => {
                     // Since nothing has been added to the cart yet
                     // all of these values should equal zero:
                     expect(data.num_items).to.equal(0);
-                    expect(data.sub_total).to.equal(0);
+                    expect(data.sub_total).to.equal('0.00');
                     expect(data.grand_total).to.equal('2.99');
 
                     testHelpers.destroyKnexAndStopServer(server, done);

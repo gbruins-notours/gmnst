@@ -38,7 +38,7 @@ module.exports = function (baseModel, bookshelf, server) {
                     return accounting.toFixed(subtotal, 2);
                 },
                 grand_total: function() {
-                    let subtotal = this.get('sub_total');
+                    let subtotal = parseFloat(this.get('sub_total'));
                     let salesTax = parseFloat(this.get('sales_tax') || 0);
                     let shipping = parseFloat(this.get('shipping_total') || 0);
 

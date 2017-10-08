@@ -32,7 +32,7 @@ internals.getSalesTaxAmount = (params) => {
         }
 
         // accounting.toFixed returns a string, so converting to float:
-        return resolve(parseFloat(accounting.toFixed(taxAmount, 2)));
+        return resolve(accounting.toFixed(taxAmount, 2));
     });
 };
 
