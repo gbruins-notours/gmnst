@@ -5,7 +5,11 @@
         </div>
         <div v-else class="ptl">
 
-            <article v-for="item in this.cart.cart_items" :key="item.id" class="cartItem" :id="'cartItem' + item.id">
+            <article v-for="item in this.cart.cart_items" 
+                    :key="item.id" 
+                    class="cartItem"
+                    :class="{'highlight': highlightItem === item.id, 'fadeout': added_cart_item === item.id}" 
+                    :id="'cartItem' + item.id">
                 <div class="cartItemPic">
                     <figure class="image is-128x128">
                         <img v-bind:src="productPic(item)">
@@ -126,6 +130,11 @@
                 type: Boolean,
                 default: false
             },
+
+            highlightItem: {
+                type: String,
+                default: null
+            }
         },
 
         data() {
@@ -197,6 +206,12 @@
                   // else to home page (?)
                   this.$router.push('/type/' + app.seoUri[key]);
             }
+        },
+
+        mounted() {
+            setTimeout(() => {
+                this.added_cart_item = this.highlightItem;
+            }, 1000)
         }
     }
 </script>
@@ -208,7 +223,15 @@
     .cartItem {
         width: 100%;
         margin-bottom: 20px;
-        @include box-shadow(0px, 1px, 2px, rgba(0,0,0,.1))
+        background-color: #fff;
+        @include box-shadow(0px, 1px, 2px, rgba(0,0,0,.1));
+        transition: background-color 1s linear;
+    }
+    .cartItem.highlight {
+        background-color: #d2f1d3;
+    }
+    .cartItem.fadeout {
+        background-color: #fff;
     }
 
     .cartItemPic {
@@ -221,7 +244,6 @@
         display: table-cell;
         vertical-align: top;
         width:100%;
-        background-color: #fff;
     }
 
     .cartItemInfoContent {
@@ -260,47 +282,46 @@
         }
     }
 
-// @media all and (min-width: $small-screen-up) {
 @media #{$medium-and-up} {
-        .cartItemInfoContent {
-            padding: 10px 15px;
+    .cartItemInfoContent {
+        padding: 10px 15px;
 
-            display: -webkit-flex; /* Safari */
-            display: flex;
-            -webkit-flex-direction: row; /* Safari */
-            flex-direction: row;
+        display: -webkit-flex; /* Safari */
+        display: flex;
+        -webkit-flex-direction: row; /* Safari */
+        flex-direction: row;
 
-            -webkit-flex-wrap: nowrap;
-            flex-wrap: nowrap;
+        -webkit-flex-wrap: nowrap;
+        flex-wrap: nowrap;
 
-            -webkit-justify-content: flex-start;
-            justify-content: flex-start;
+        -webkit-justify-content: flex-start;
+        justify-content: flex-start;
+    }
+
+    .cartItemMain {
+        flex-grow: 1;
+
+        .itemTitle {
+            font-size: 16px
+        }
+    }
+
+    .cartItemCol {
+        flex-grow: 0;
+        margin-left: 20px;
+
+        .itemLabel,
+        .itemVal {
+            display: block;
         }
 
-        .cartItemMain {
-            flex-grow: 1;
-
-            .itemTitle {
-                font-size: 16px
-            }
+        .itemLabel {
+            width: 80px;
         }
 
-        .cartItemCol {
-            flex-grow: 0;
-            margin-left: 20px;
-
-            .itemLabel,
-            .itemVal {
-                display: block;
-            }
-
-            .itemLabel {
-                width: 80px;
-            }
-
-            .itemVal {
-                font-size: 16px;
-            }
+        .itemVal {
+            font-size: 16px;
         }
+    }
 }
 </style>
