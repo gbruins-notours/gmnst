@@ -192,7 +192,7 @@
 
     .Header-image {
         display: inline-block;
-        width: 140px;
+        width: 180px;
         vertical-align: middle;
     }
 
@@ -208,7 +208,7 @@
         -ms-flex-align: center;
         align-items: center;
         width: 20%;
-        height: 57px;
+        height: 50px;
         background-color: $colorBluePurple;
         margin-left: 0;
 
@@ -244,6 +244,7 @@
         margin: 0 20px 0 0;
         margin: 0;
 
+
         li {
             list-style: none;
             padding: 0;
@@ -253,8 +254,10 @@
             text-decoration: none;
             cursor: pointer;
             padding: 0 10px;
-            height: 50px;
-            line-height: 50px;
+            // height: 50px;
+            // line-height: 50px;
+            height: 73px; //?
+            line-height: 78px; //?
 
             &:hover,
             &:focus {
@@ -284,12 +287,7 @@
         box-shadow: 0 0 1px 1px rgba(10, 10, 10, 0.1);
     }
 
-
-
-    @media all and (min-width: 42em) {
-        .Header {
-            height: 50px;
-        }
+    @media #{$medium-and-up}  {
         .Header-container {
             -ms-flex-wrap: nowrap;
             flex-wrap: nowrap;
@@ -337,33 +335,20 @@
         }
     }
 
-    // @media all and (min-width: 63em) {
-    @media all and (min-width: 601px) {
-    // @media #{$medium-and-up}  {
-        .Header {
-            height: 73px;
-        }
-        .Header-brand {
-            max-width: 220px;
-        }
-        .Header-image {
-            width: 180px;
-        }
-        .Navigation-list li {
-            height: 73px;
-            line-height: 78px;
-        }
-    }
-
-    @media all and (max-width: 993px) {
+    @media #{$medium-and-down}  {
         .Header-checkout,
         .Header-checkout-cell {
             height: 50px;
             font-size: 16px;
+        }
 
-            .Header-image {
-                width: 140px;
-            }
+        .Navigation-list li {
+            height: 50px;
+            line-height: 50px;
+        }
+
+        .Header-image {
+            width: 140px;
         }
 
         // overriding a weird element UI setting:
