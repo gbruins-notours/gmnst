@@ -35,7 +35,7 @@ module.exports = function (baseModel, bookshelf, server) {
 
                     // NOTE: accounting.toFixed() returns a string!
                     // http://openexchangerates.github.io/accounting.js/
-                    return parseFloat(accounting.toFixed(subtotal, 2));
+                    return accounting.toFixed(subtotal, 2);
                 },
                 grand_total: function() {
                     let subtotal = this.get('sub_total');
