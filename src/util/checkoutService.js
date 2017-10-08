@@ -73,6 +73,33 @@ export default {
         }
 
         return errorMessage;
+    },
+
+    getCartDefaults: () => {
+        return {
+            billingSameAsShipping: true,
+            shipping_firstName: null,
+            shipping_lastName: null,
+            shipping_streetAddress: null,
+            shipping_extendedAddress: null,
+            shipping_company: null,
+            shipping_city: null,
+            shipping_state: null,
+            shipping_postalCode: null,
+            shipping_countryCodeAlpha2: null,
+            shipping_email: null,
+            billing_firstName: null,
+            billing_lastName: null,
+            billing_company: null,
+            billing_streetAddress: null,
+            billing_extendedAddress: null,
+            billing_city: null,
+            billing_state: null,
+            billing_postalCode: null,
+            billing_countryCodeAlpha2: null,
+            billing_phone: null,
+            num_items: 0
+        }
     }
 
 }

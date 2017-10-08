@@ -542,6 +542,8 @@
                         console.log("CART SUCCESS RESPONSE", result)
                         //TODO: clear the cart from local storage
 
+                        this.$store.dispatch('CART_DELETE');
+
                         // teardown HF and present payment information
                         this.braintree.hostedFieldsInstance.teardown((teardownErr) => {
                             if (teardownErr) {

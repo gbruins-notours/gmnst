@@ -13,7 +13,7 @@ module.exports = function (baseModel, bookshelf, server) {
 
             hasTimestamps: true,
 
-            hidden: ['id', 'token', 'closed_at'],
+            hidden: ['token', 'closed_at'],
 
             virtuals: {
                 num_items: function() {

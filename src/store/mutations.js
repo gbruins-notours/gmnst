@@ -1,5 +1,7 @@
 import cloneDeep from 'lodash.clonedeep'
 import forEach from 'lodash.foreach'
+import checkoutService from '../util/checkoutService'
+
 
 export default {
     TOGGLE_SIDEBAR: (state, opened) => {
@@ -63,5 +65,9 @@ export default {
 
     CART_SHIPPING_METHODS: (state, data) => {
         state.cart.shippingMethods = data;
+    },
+
+    CART_DELETE: (state, data) => {
+        state.cart = checkoutService.getCartDefaults();
     }
 }

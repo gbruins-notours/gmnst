@@ -90,5 +90,9 @@ export default {
 
     CART_SHIPPING_METHODS: ({ commit }, data) => {
         commit('CART_SHIPPING_METHODS', data)
+    },
+
+    CART_DELETE: ({ commit }) => {
+        commit('CART_DELETE')
     }
 }
