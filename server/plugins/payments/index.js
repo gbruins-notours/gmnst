@@ -77,10 +77,11 @@ internals.after = function (server, next) {
                     amount: transactionJson.transaction.amount || null,
                     payment_type: transactionJson.transaction.paymentInstrumentType || null,
                     currency_iso_code: transactionJson.transaction.currencyIsoCode || null,
+                    transaction: transactionJson,
                     success: transactionJson.success || null
                 }, {method: 'insert'})
                 .then((Payment) => {
-                    resolve(Payment);
+                    resolve(Payment.toJSON());
                 })
                 .catch((err) => {
                     appInsightsClient.trackException({

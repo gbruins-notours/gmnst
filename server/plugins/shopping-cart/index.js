@@ -449,7 +449,7 @@ internals.after = function (server, next) {
                     )
                 },
                 handler: (request, reply) => {
-                    var cart;
+                    let cart;
 
                     internals.shoppingCart.get(request)
                         .then((ShoppingCart) => {
@@ -457,7 +457,25 @@ internals.after = function (server, next) {
 
                             let cartJson = ShoppingCart.toJSON();
 
-                            let paymentPromise = server.plugins.Payments.runPayment({
+                            // Updating the cart with the billing params.
+                            // Any failures that happen while saving the cart do not affect the
+                            // braintree transaction and thus should fail silently.
+                            let billingParams = cloneDeep(request.payload);
+                            delete billingParams.nonce;
+
+                            ShoppingCart.save(
+                                billingParams,
+                                { method: 'update', patch: true }
+                            )
+                            .catch((err) => {
+                                logger.error(err);
+                                appInsightsClient.trackException({
+                                    exception: err
+                                });
+                            });
+
+                            // Run they payment:
+                            return server.plugins.Payments.runPayment({
                                 paymentMethodNonce: request.payload.nonce,
                                 amount: ShoppingCart.get('grand_total'),
                                 customer: {
@@ -491,25 +509,6 @@ internals.after = function (server, next) {
                                     submitForSettlement: true
                                 }
                             });
-
-                            let billingParams = cloneDeep(request.payload);
-                            delete billingParams.nonce;
-
-                            // update the cart
-                            // Any failures that happen while saving the cart do not affect the
-                            // braintree transaction and thus should fail silently.
-                            ShoppingCart.save(
-                                billingParams,
-                                { method: 'update', patch: true }
-                            )
-                            .catch((err) => {
-                                logger.error(err);
-                                appInsightsClient.trackException({
-                                    exception: err
-                                });
-                            });
-
-                            return paymentPromise;
                         })
                         .then((transactionObj) => {
                             console.log('BRAINTREE TRANSACTION RESULT', transactionObj)
@@ -517,39 +516,41 @@ internals.after = function (server, next) {
                             //TODO: appEvents is undefined
                             // request.server.appEvents.emit('gmnst-payment-success', cart);
 
-                             // If the Braintree transaction is successful then anything that happens after this
-                             // (i.e saving the payment details to DB) needs to fail silently, as the user has
-                             // already been changed and we can't give the impression of an overall transaction
-                             // failure that may prompt them to re-do the purchase.
+                            // If the Braintree transaction is successful then anything that happens after this
+                            // (i.e saving the payment details to DB) needs to fail silently, as the user has
+                            // already been changed and we can't give the impression of an overall transaction
+                            // failure that may prompt them to re-do the purchase.
 
                             // Saving the payment transaction whether it was successful (transactionObj.success === true)
                             // or not (transactionObj.success === false)
-                            //
                             // Any failures that happen while saving the payment info do not affect the
                             // braintree transaction and thus should fail silently.
                             server.plugins.Payments
                                 .savePayment(cart.get('id'), transactionObj)
                                 .catch((err) => {
+                                    // Catching the error here and not letting it fall through 
+                                    // to the catch block below because we do not want this 
+                                    // failure returning in the API response.  It will be logged only.
                                     logger.error(`ERROR SAVING PAYMENT INFO: ${err}`)
                                     appInsightsClient.trackException({
                                         exception: err
                                     });
-                                })
-                                .finally(() => {
-                                    if (!transactionObj.success) {
-                                        let msg = transactionObj.message || 'An error occurred when saving the Payment transaction data.';
-                                        logger.error(msg)
-                                        appInsightsClient.trackException({
-                                            exception: new Error(msg)
-                                        });
-                                    }
                                 });
 
-                            reply.apiSuccess(cart.toJSON());
+
+                            // Successful transactions return the transaction id
+                            if(transactionObj.success) {
+                                reply.apiSuccess(transactionObj.transaction.id);
+                            }
+                            else {
+                                throw new Error(transactionObj.message || 'An error occurred when saving the payment transaction data.')
+                            }
                         })
                         .catch((err) => {
+                            logger.error(err)
                             appInsightsClient.trackException({
                                 exception: err
+                                // exception: new Error(msg)
                             });
                             
                             HelperService.getBoomError(err, (error, result) => {

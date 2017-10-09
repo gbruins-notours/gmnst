@@ -29,7 +29,7 @@ module.exports.up = (knex) => {
             t.dateTime('updated_at').nullable();
 
             // Foreign Keys:
-            t.integer('product_artist_id')
+            t.uuid('product_artist_id')
                 .references('id')
                 .inTable(CoreService.DB_TABLES.product_artists)
                 .onDelete('CASCADE');

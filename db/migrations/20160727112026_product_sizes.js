@@ -5,7 +5,7 @@ module.exports.up = (knex) => {
     return knex.schema.createTable(
         CoreService.DB_TABLES.product_sizes,
         (t) => {
-            t.increments('id');
+            t.uuid('id').primary();
             t.string('size').nullable();
             t.decimal('cost').nullable();
             t.decimal('base_price').nullable();

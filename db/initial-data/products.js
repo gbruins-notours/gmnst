@@ -41,15 +41,15 @@ exports.seed = (knex) => {
         // })
         .then(() => {
             let promises = [];
-            let artistId = 0;
             let d = new Date();
             let cents;
+            let artistIndex = 0;
 
             global.seedUuids = [];
 
             for(let i=1; i<31; i++) {
-                if(artistId === 5) {
-                    artistId = 0
+                if(artistIndex === 5) {
+                    artistIndex = 0
                 }
 
                 cents = (i < 10) ? parseFloat('0.0' + i) : parseFloat('0.' + i);
@@ -82,7 +82,7 @@ exports.seed = (knex) => {
                             hide_if_out_of_stock: true,
                             created_at: d,
                             updated_at: d,
-                            product_artist_id: ++artistId
+                            product_artist_id: global.productArtistSeedUuids[artistIndex]
                         })
                 )
             }

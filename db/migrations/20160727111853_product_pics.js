@@ -5,7 +5,7 @@ module.exports.up = (knex) => {
     return knex.schema.createTable(
         CoreService.DB_TABLES.product_pics,
         (t) => {
-            t.increments('id');
+            t.uuid('id');
             t.string('file_name').nullable();
             t.integer('sort_order');
             t.boolean('is_visible');

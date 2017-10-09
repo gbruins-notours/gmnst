@@ -6,6 +6,8 @@ module.exports = function (baseModel, bookshelf) {
     return baseModel.extend({
         tableName: CoreService.DB_TABLES.payments,
 
+        uuid: true,
+
         hasTimestamps: true,
 
         // One payment per shopping cart

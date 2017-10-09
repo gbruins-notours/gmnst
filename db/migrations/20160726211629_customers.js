@@ -5,7 +5,7 @@ module.exports.up = (knex) => {
     return knex.schema.createTable(
         CoreService.DB_TABLES.customers,
         (t) => {
-            t.increments('id');
+            t.uuid('id').primary();
             t.string('first_name');
             t.string('last_name').nullable();
             t.string('company').nullable();
@@ -17,8 +17,9 @@ module.exports.up = (knex) => {
             t.dateTime('updated_at').nullable();
             t.dateTime('deleted_at').nullable();
 
-            // Indexes:
-            t.index('id');
+            t.index([
+                'id'
+            ]);
         }
     );
 };

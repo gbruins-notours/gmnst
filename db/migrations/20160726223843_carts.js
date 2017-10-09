@@ -35,7 +35,7 @@ module.exports.up = (knex) => {
             t.dateTime('closed_at').nullable();
 
             // Foreign Keys:
-            t.integer('customer_id')
+            t.uuid('customer_id')
                 .references('id')
                 .inTable(CoreService.DB_TABLES.customers)
                 .onDelete('CASCADE');

@@ -4,7 +4,7 @@ module.exports.up = (knex) => {
     return knex.schema.createTable(
         CoreService.DB_TABLES.product_artists,
         (t) => {
-            t.increments('id');
+            t.uuid('id').primary();
             t.text('description_short').nullable();
             t.text('description_long').nullable();
             t.string('icon').nullable();
@@ -15,7 +15,9 @@ module.exports.up = (knex) => {
             t.dateTime('created_at').notNullable().defaultTo(knex.raw('now()'));
             t.dateTime('updated_at').nullable();
 
-            t.index('id');
+            t.index([
+                'id'
+            ]);
         }
     );
 };

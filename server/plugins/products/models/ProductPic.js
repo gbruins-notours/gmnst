@@ -5,6 +5,8 @@ module.exports = function (baseModel, bookshelf) {
     return baseModel.extend({
         tableName: CoreService.DB_TABLES.product_pics,
 
+        uuid: true,
+
         hasTimestamps: true,
 
         // One-to-One relation with Product

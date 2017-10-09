@@ -5,12 +5,13 @@ module.exports.up = (knex) => {
     return knex.schema.createTable(
         CoreService.DB_TABLES.payments,
         (t) => {
-            t.increments('id');
+            t.uuid('id').primary();
             t.string('transaction_id');
             t.string('processor_response_code').nullable();
             t.string('amount').nullable();
             t.string('payment_type').nullable();
             t.string('currency_iso_code').nullable();
+            t.jsonb('transaction').nullable();
             t.boolean('success');
             t.boolean('void');
             t.dateTime('created_at').notNullable().defaultTo(knex.raw('now()'));

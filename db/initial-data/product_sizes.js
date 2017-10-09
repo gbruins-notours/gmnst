@@ -9,22 +9,27 @@ exports.seed = (knex) => {
 
     return knex(CoreService.DB_TABLES.product_sizes)
         .del()
+        // .then(() => {
+        //     return knex.raw(`ALTER SEQUENCE ${CoreService.DB_TABLES.product_sizes}_id_seq RESTART WITH 1`);
+        // })
         .then(() => {
-            return knex.raw(`ALTER SEQUENCE ${CoreService.DB_TABLES.product_sizes}_id_seq RESTART WITH 1`);
-        })
-        .then( () => {
             let promises = [];
 
+            global.productSizeSeedUuids = [];
             global.seedUuids = global.seedUuids || [];
 
             for(let i=1; i<31; i++) {
                 // Each product randomly gets various sizes
                 (function(prodId) {
                     sizeTypes.forEach((size) => {
+                        let uuid = faker.random.uuid();
+                        global.productSizeSeedUuids.push(uuid);
+
                         if (faker.random.boolean()) {
                             promises.push(
                                 knex(CoreService.DB_TABLES.product_sizes)
                                     .insert({
+                                        id: uuid,
                                         size: size,
                                         inventory_count: faker.random.number(25),
                                         is_visible: true,
