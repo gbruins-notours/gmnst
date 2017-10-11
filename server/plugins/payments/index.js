@@ -84,7 +84,7 @@ internals.after = function (server, next) {
                     resolve(Payment.toJSON());
                 })
                 .catch((err) => {
-                    appInsightsClient.trackException({
+                    global.appInsightsClient.trackException({
                         exception: err
                     });
 
@@ -124,13 +124,78 @@ internals.after = function (server, next) {
                     return reject(result.message);
                 })
                 .catch((err) => {
-                    appInsightsClient.trackException({
+                    global.appInsightsClient.trackException({
                         exception: err
                     });
                     return reject(err);
                 });
         });
-    }
+    };
+
+
+    /**
+     * Fetches data from a given product model
+     *
+     * @param attrName
+     * @param attrValue
+     * @returns {Promise}
+     */
+    internals.modelFetch = (modelName, forgeOptions, fetchOptions) => {
+        return server.plugins.BookshelfOrm.bookshelf.model(modelName)
+            .forge(forgeOptions)
+            .fetch(fetchOptions);
+    };
+
+    /**
+     * Gets a payment by a given attribute
+     *
+     * @param attrName
+     * @param attrValue
+     * @returns {Promise}
+     */
+    internals.getPaymentByAttribute = (attrName, attrValue) => {
+        let forgeOpts = null;
+
+        if(attrName) {
+            forgeOpts = {};
+            forgeOpts[attrName] = attrValue;
+        }
+
+        let fetchOpts = {
+            withRelated: ['shoppingCart']
+        };
+
+        return internals.modelFetch('Payment', forgeOpts, fetchOpts)
+    };
+
+
+    server.route([
+        {
+            method: 'GET',
+            path: '/order',
+            config: {
+                description: 'Finds a payment entry',
+                validate: {
+                    query: {
+                        id: Joi.string().max(50)
+                    }
+                },
+                handler: (request, reply) => {
+                    internals
+                        .getPaymentByAttribute('transaction_id', request.query.id)
+                        .then((payments) => {
+                            reply.apiSuccess(payments);
+                        })
+                        .catch((err) => {
+                            global.appInsightsClient.trackException({
+                                exception: err
+                            });
+                            reply(Boom.badRequest(err));
+                        });
+                }
+            }
+        }
+    ]);
 
 
     // LOADING BOOKSHELF MODEL:

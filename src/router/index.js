@@ -14,7 +14,7 @@ import ProductList from '../pages/product/ProductList.vue';
 import ProductDetail from '../pages/product/ProductDetail.vue';
 import Cart from '../pages/cart/Cart.vue';
 import Checkout from '../pages/checkout/Checkout.vue';
-import CheckoutReceipt from '../pages/checkout/CheckoutReceipt.vue';
+import Order from '../pages/orders/Order.vue';
 import Error404 from '../pages/Error404.vue';
 
 export function createRouter () {
@@ -43,9 +43,9 @@ export function createRouter () {
                 component: Checkout
             },
             {
-                name: 'checkout_receipt',
-                path: '/cart/receipt',
-                component: CheckoutReceipt
+                name: 'orders',
+                path: '/orders/:id',
+                component: Order
             },
             {
                 name: 'cart',

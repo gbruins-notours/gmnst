@@ -23,7 +23,7 @@ exports.register = function (server, options, next) {
         if (request.response.isBoom) {
 
             if(process.env.NODE_ENV !== 'test') {
-                logger.error(request.response)
+                global.logger.error(request.response)
             }
 
             // Note: It's best not to track Azure application insights
@@ -88,11 +88,11 @@ exports.register = function (server, options, next) {
                     switch(request.payload.type) {
                         // Only supportig the 'error' and 'info' types for now
                         case 'error':
-                            logger.error(request.payload.message);
+                            global.logger.error(request.payload.message);
                             break;
 
                         default:
-                            logger.info(request.payload.message);
+                            global.logger.info(request.payload.message);
                     }
 
                     reply.apiSuccess();

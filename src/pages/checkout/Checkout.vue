@@ -555,7 +555,12 @@
                             }
                         });
 
-                        return this.$router.push({ name: 'checkout_receipt' });
+                        return this.$router.push({ 
+                            name: 'orders',
+                            params: { 
+                                id: result.transactionId
+                            } 
+                        });
                     })
                     .catch((error) => {
                         Notification.error({
@@ -746,7 +751,7 @@
             if(this.cart.num_items) {
                 let client = require('braintree-web/client');
                 client.create(
-                    { authorization: this.app.clientToken },
+                    { authorization: this.app.braintreeClientToken },
                     (clientErr, clientInstance) => {
                         if (clientErr) {
                             Notification.error({

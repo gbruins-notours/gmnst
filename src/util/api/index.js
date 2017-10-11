@@ -7,6 +7,7 @@ export default {
         return getHttp()
             .post('/api/v1/token/get')
             .then((response) => {
+                // Token is returned in the 'x-authorization' response header
                 return response.headers['x-authorization'];
             });
     },
@@ -65,6 +66,18 @@ export default {
 
         return getHttp()
             .get(`/api/v1/products?${paramString}`) // TODO: is there a XSS issue here?
+            .then((response) => {
+                return response.data.data;
+            });
+    },
+
+    getOrderById(id) {
+        return getHttp()
+            .get('/api/v1/order', {
+                params: {
+                    id
+                }
+            })
             .then((response) => {
                 return response.data.data;
             });

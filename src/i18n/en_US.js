@@ -1,4 +1,6 @@
 const translations = {
+    '# items': '# items',
+
     'About Billing and Shipping Addresses': 'About Billing and Shipping Addresses',
     'Add to cart': 'Add to cart',
     'Added to Cart': 'Added to Cart',
@@ -62,6 +64,7 @@ const translations = {
     'No matching values': 'No matching values',
 
     'optional': 'optional',
+    'Order': 'Order',
     'Order total': 'Order total',
 
     'Pay with PAYPAL': 'Pay with PAYPAL',
@@ -93,6 +96,7 @@ const translations = {
 
     'SAME AS SHIPPING ADDRESS': 'SAME AS SHIPPING ADDRESS',
     'SECURITY CODE': 'SECURITY CODE',
+    'Ship to': 'Ship to',
     'SHIPPING': 'SHIPPING',
     'Shipping': 'Shipping',
     'Shipping address': 'Shipping address',
@@ -116,17 +120,18 @@ const translations = {
     'SIZE_YOUTH_XL': 'Youth XL',
     'STATE/PROVINCE/REGION': 'STATE/PROVINCE/REGION',
     'State/Province/Region': 'State/Province/Region',
-    'Subtotal': 'Subtotal',
-
     'Stay in checkout': 'Stay in checkout',
     'STREET ADDRESS': 'STREET ADDRESS',
+    'Subtotal': 'Subtotal',
 
     'Tax': 'Tax',
     'Thanks!': 'Thanks!',
+    'Thanks.': 'Thanks.',
     'The address you provided does not seem to be a valid mailing adddress.': 'The address you provided does not seem to be a valid mailing adddress.',
     'There was an error setting up the payment client!': 'There was an error setting up the payment client!',
     'There was an error tokenizing PayPal!': 'There was an error tokenizing PayPal!',
     'Tips for entering addresses': 'Tips for entering addresses',
+    'Total': 'Total',
 
     'Unable to initialize PayPal flow. Are your options correct?': 'Unable to initialize PayPal flow. Are your options correct?',
     'USE A DIFFERENT BILLING ADDRESS': 'USE A DIFFERENT BILLING ADDRESS',

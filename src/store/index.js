@@ -23,7 +23,7 @@ export function createStore () {
                 pageHeader: {
                     inCheckoutFlow: false
                 },
-                clientToken: null,
+                braintreeClientToken: null,
                 jwtKey: null
             },
 

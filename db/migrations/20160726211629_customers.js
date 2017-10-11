@@ -13,9 +13,9 @@ module.exports.up = (knex) => {
             t.string('phone').nullable();
             t.string('fax').nullable();
             t.string('website').nullable();
-            t.dateTime('created_at').notNullable().defaultTo(knex.raw('now()'));
-            t.dateTime('updated_at').nullable();
-            t.dateTime('deleted_at').nullable();
+            t.timestamp('created_at', true).notNullable().defaultTo(knex.fn.now());
+            t.timestamp('updated_at', true).nullable();
+            t.timestamp('deleted_at', true).nullable();
 
             t.index([
                 'id'

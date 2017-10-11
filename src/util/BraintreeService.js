@@ -10,10 +10,10 @@ export default class BraintreeService {
     }
 
 
-    create(clientToken) {
+    create(braintreeClientToken) {
         return new Promise((resolve, reject) => {
             this.client.create(
-                { authorization: clientToken },
+                { authorization: braintreeClientToken },
                 (clientErr, clientInstance) => {
                     if (clientErr) {
                         return reject(clientErr)

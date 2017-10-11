@@ -4,8 +4,8 @@ import isObject from 'lodash.isobject'
 
 export default {
     JWT_KEY: ({ commit }) => {
-        return api.getJwtToken().then((token) => {
-            commit('JWT_KEY', token)
+        return api.getJwtToken().then((jsonWebToken) => {
+            commit('JWT_KEY', jsonWebToken)
         })
     },
 

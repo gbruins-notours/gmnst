@@ -18,7 +18,7 @@ export default {
     // },
 
     BRAINTREE_CLIENT_TOKEN: (state, token) => {
-        state.app.clientToken = token
+        state.app.braintreeClientToken = token
     },
 
     JWT_KEY: (state, key) => {

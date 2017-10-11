@@ -97,7 +97,7 @@ exports.register = (server, options, next) => {
                             reply.apiSuccess(response);
                         })
                         .catch((err) => {
-                            appInsightsClient.trackException({
+                            global.appInsightsClient.trackException({
                                 exception: err
                             });
                             reply(Boom.badRequest(err));
@@ -158,7 +158,7 @@ exports.register = (server, options, next) => {
                             reply.apiSuccess(response);
                         })
                         .catch((err) => {
-                            appInsightsClient.trackException({
+                            global.appInsightsClient.trackException({
                                 exception: err
                             });
                             reply(Boom.badRequest(err));

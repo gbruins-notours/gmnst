@@ -114,6 +114,12 @@ internals.manifest = {
                     publicKey: process.env.BRAINTREE_PUBLIC_KEY,
                     privateKey: process.env.BRAINTREE_PRIVATE_KEY
                 }
+            },
+            options: {
+                select: ['api'],
+                routes: {
+                    prefix: '/api/v1'
+                }
             }
         },
         {
@@ -192,7 +198,7 @@ internals.composeOptions = {
 
 Server.init(internals.manifest, internals.composeOptions, (err, server) => {
     if (err) {
-        logger.error(err);
+        global.logger.error(err);
     }
     Hoek.assert(!err, err);
 

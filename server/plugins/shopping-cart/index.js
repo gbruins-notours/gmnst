@@ -155,7 +155,7 @@ internals.after = function (server, next) {
                 })
                 .then(resolve)
                 .catch((err) => {
-                    appInsightsClient.trackException({
+                    global.appInsightsClient.trackException({
                         exception: err
                     });
                     reject(err);
@@ -232,7 +232,7 @@ internals.after = function (server, next) {
                             reply.apiSuccess(token);
                         })
                         .catch((err) => {
-                            appInsightsClient.trackException({
+                            global.appInsightsClient.trackException({
                                 exception: err
                             });
                             reply(Boom.badData(err));
@@ -254,7 +254,7 @@ internals.after = function (server, next) {
                             reply.apiSuccess(ShoppingCart.toJSON());
                         })
                         .catch((err) => {
-                            appInsightsClient.trackException({
+                            global.appInsightsClient.trackException({
                                 exception: err
                             });
 
@@ -281,7 +281,7 @@ internals.after = function (server, next) {
                             reply.apiSuccess(ShoppingCart.toJSON());
                         })
                         .catch((err) => {
-                            appInsightsClient.trackException({
+                            global.appInsightsClient.trackException({
                                 exception: err
                             });
 
@@ -317,7 +317,7 @@ internals.after = function (server, next) {
                             reply.apiSuccess(ShoppingCart.toJSON());
                         })
                         .catch((err) => {
-                            appInsightsClient.trackException({
+                            global.appInsightsClient.trackException({
                                 exception: err
                             });
                             reply(Boom.badData(err));
@@ -347,7 +347,7 @@ internals.after = function (server, next) {
                             reply.apiSuccess(ShoppingCart.toJSON());
                         })
                         .catch((err) => {
-                            appInsightsClient.trackException({
+                            global.appInsightsClient.trackException({
                                 exception: err
                             });
                             reply(Boom.badData(err));
@@ -389,7 +389,7 @@ internals.after = function (server, next) {
                                 });
                         })
                         .catch((err) => {
-                            appInsightsClient.trackException({
+                            global.appInsightsClient.trackException({
                                 exception: err
                             });
                             reply(Boom.badData(err));
@@ -426,7 +426,7 @@ internals.after = function (server, next) {
                             reply.apiSuccess(ShoppingCart.toJSON());
                         })
                         .catch((err) => {
-                            appInsightsClient.trackException({
+                            global.appInsightsClient.trackException({
                                 exception: err
                             });
                             reply(Boom.badData(err));
@@ -449,32 +449,14 @@ internals.after = function (server, next) {
                     )
                 },
                 handler: (request, reply) => {
+                    let cartJson;
                     let cart;
 
                     internals.shoppingCart.get(request)
                         .then((ShoppingCart) => {
                             cart = ShoppingCart;
+                            cartJson = ShoppingCart.toJSON();
 
-                            let cartJson = ShoppingCart.toJSON();
-
-                            // Updating the cart with the billing params.
-                            // Any failures that happen while saving the cart do not affect the
-                            // braintree transaction and thus should fail silently.
-                            let billingParams = cloneDeep(request.payload);
-                            delete billingParams.nonce;
-
-                            ShoppingCart.save(
-                                billingParams,
-                                { method: 'update', patch: true }
-                            )
-                            .catch((err) => {
-                                logger.error(err);
-                                appInsightsClient.trackException({
-                                    exception: err
-                                });
-                            });
-
-                            // Run they payment:
                             return server.plugins.Payments.runPayment({
                                 paymentMethodNonce: request.payload.nonce,
                                 amount: ShoppingCart.get('grand_total'),
@@ -526,29 +508,53 @@ internals.after = function (server, next) {
                             // Any failures that happen while saving the payment info do not affect the
                             // braintree transaction and thus should fail silently.
                             server.plugins.Payments
-                                .savePayment(cart.get('id'), transactionObj)
+                                .savePayment(cartJson.id, transactionObj)
                                 .catch((err) => {
                                     // Catching the error here and not letting it fall through 
                                     // to the catch block below because we do not want this 
                                     // failure returning in the API response.  It will be logged only.
-                                    logger.error(`ERROR SAVING PAYMENT INFO: ${err}`)
-                                    appInsightsClient.trackException({
+                                    global.logger.error(`ERROR SAVING PAYMENT INFO: ${err}`)
+                                    global.appInsightsClient.trackException({
                                         exception: err
                                     });
                                 });
 
 
+                            // Updating the cart with the billing params and the 'closed_at' 
+                            // timestamp if transaction was successful:
+                            let updateParams = cloneDeep(request.payload);
+                            delete updateParams.nonce;
+                            if(transactionObj.success) {
+                                // This will cause the cart not to be re-used
+                                // (See ShoppingCart -> getCart())
+                                updateParams.closed_at = new Date() 
+                            }
+
+                            cart.save(
+                                updateParams,
+                                { method: 'update', patch: true }
+                            )
+                            .catch((err) => {
+                                global.logger.error(err);
+                                global.appInsightsClient.trackException({
+                                    exception: err
+                                });
+                            });
+
+
                             // Successful transactions return the transaction id
                             if(transactionObj.success) {
-                                reply.apiSuccess(transactionObj.transaction.id);
+                                reply.apiSuccess({
+                                    transactionId: transactionObj.transaction.id
+                                });
                             }
                             else {
                                 throw new Error(transactionObj.message || 'An error occurred when saving the payment transaction data.')
                             }
                         })
                         .catch((err) => {
-                            logger.error(err)
-                            appInsightsClient.trackException({
+                            global.logger.error(err)
+                            global.appInsightsClient.trackException({
                                 exception: err
                                 // exception: new Error(msg)
                             });

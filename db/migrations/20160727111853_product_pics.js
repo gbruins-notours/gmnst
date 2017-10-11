@@ -9,8 +9,8 @@ module.exports.up = (knex) => {
             t.string('file_name').nullable();
             t.integer('sort_order');
             t.boolean('is_visible');
-            t.dateTime('created_at').notNullable().defaultTo(knex.raw('now()'));
-            t.dateTime('updated_at').nullable();
+            t.timestamp('created_at', true).notNullable().defaultTo(knex.fn.now());
+            t.timestamp('updated_at', true).nullable();
 
             // Foreign Keys:
             t.uuid('product_id')

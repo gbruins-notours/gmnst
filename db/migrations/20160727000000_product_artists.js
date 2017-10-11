@@ -12,8 +12,8 @@ module.exports.up = (knex) => {
             t.string('prov_state').nullable();
             t.string('country').nullable();
             t.string('email').nullable();
-            t.dateTime('created_at').notNullable().defaultTo(knex.raw('now()'));
-            t.dateTime('updated_at').nullable();
+            t.timestamp('created_at', true).notNullable().defaultTo(knex.fn.now());
+            t.timestamp('updated_at', true).nullable();
 
             t.index([
                 'id'

@@ -30,9 +30,9 @@ module.exports.up = (knex) => {
             t.decimal('shipping_total').nullable();
             t.decimal('sales_tax').nullable();
             t.string('status').nullable();
-            t.dateTime('created_at').notNullable().defaultTo(knex.raw('now()'));
-            t.dateTime('updated_at').nullable();
-            t.dateTime('closed_at').nullable();
+            t.timestamp('created_at', true).notNullable().defaultTo(knex.fn.now());
+            t.timestamp('updated_at', true).nullable();
+            t.timestamp('closed_at', true).nullable();
 
             // Foreign Keys:
             t.uuid('customer_id')

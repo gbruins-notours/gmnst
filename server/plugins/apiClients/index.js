@@ -89,7 +89,7 @@ internals.after = function (server, next) {
                     }
                 })
                 .catch((err) => {
-                    appInsightsClient.trackException({
+                    global.appInsightsClient.trackException({
                         exception: err
                     });
                     reject('Invalid API user');
@@ -180,7 +180,7 @@ internals.after = function (server, next) {
                                 throw new Error('Error creating cart token');
                             }
 
-                            let token = jwt.sign(
+                            let jsonWebToken = jwt.sign(
                                 {
                                     jti: uuid,
                                     clientId: process.env.JWT_CLIENT_ID,
@@ -189,10 +189,10 @@ internals.after = function (server, next) {
                                 process.env.JWT_SERVER_SECRET
                             );
 
-                            return reply().header('X-Authorization', token);
+                            return reply().header('X-Authorization', jsonWebToken);
                         })
                         .catch((err) => {
-                            appInsightsClient.trackException({
+                            global.appInsightsClient.trackException({
                                 exception: err
                             });
                             

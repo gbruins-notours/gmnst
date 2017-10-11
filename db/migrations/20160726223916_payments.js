@@ -14,8 +14,8 @@ module.exports.up = (knex) => {
             t.jsonb('transaction').nullable();
             t.boolean('success');
             t.boolean('void');
-            t.dateTime('created_at').notNullable().defaultTo(knex.raw('now()'));
-            t.dateTime('updated_at').nullable();
+            t.timestamp('created_at', true).notNullable().defaultTo(knex.fn.now());
+            t.timestamp('updated_at', true).nullable();
 
             // Foreign Keys:
             t.uuid('cart_id')

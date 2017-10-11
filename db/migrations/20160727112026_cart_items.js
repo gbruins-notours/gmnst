@@ -22,8 +22,8 @@ module.exports.up = (knex) => {
                 .inTable(CoreService.DB_TABLES.products)
                 .onDelete('CASCADE');
 
-            t.dateTime('created_at').notNullable().defaultTo(knex.raw('now()'));
-            t.dateTime('updated_at').nullable();
+            t.timestamp('created_at', true).notNullable().defaultTo(knex.fn.now());
+            t.timestamp('updated_at', true).nullable();
 
             t.index([
                 'id',

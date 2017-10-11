@@ -134,7 +134,7 @@ function emailPurchaseReceiptToBuyer(ShoppingCart) {
             .catch((error) => {
                 // server.appEvents.emit('email-template-error', error);
                 reject('TEMPLATE RENDER ERROR: ' + error);
-                appInsightsClient.trackException({
+                global.appInsightsClient.trackException({
                     exception: new Error('TEMPLATE RENDER ERROR: ' + error)
                 });
             });

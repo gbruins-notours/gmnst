@@ -25,8 +25,8 @@ module.exports.up = (knex) => {
             t.integer('sub_type').nullable();
             t.integer('inventory_count').nullable();
             t.boolean('hide_if_out_of_stock').nullable();
-            t.dateTime('created_at').notNullable().defaultTo(knex.raw('now()'));
-            t.dateTime('updated_at').nullable();
+            t.timestamp('created_at', true).notNullable().defaultTo(knex.fn.now());
+            t.timestamp('updated_at', true).nullable();
 
             // Foreign Keys:
             t.uuid('product_artist_id')
