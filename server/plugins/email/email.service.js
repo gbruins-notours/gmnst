@@ -1,29 +1,46 @@
+'use strict';
+
 const Promise = require('bluebird');
-const EmailTemplate = require('email-templates').EmailTemplate;
+// const EmailTemplate = require('email-templates').EmailTemplate;
+const Email = require('email-templates');
 const path = require('path');
 const Handlebars = require('handlebars');
 const forEach = require('lodash.foreach');
 const Config = require('../../config');
 const mailgun = require('mailgun-js')({apiKey: Config.get('/mailgun/apiKey'), domain: Config.get('/mailgun/domain')});
 const mailcomposer = require('mailcomposer');
-// const ShoppingCartService = require('../shopping-cart/shopping-cart.service');
 
 let internals = {};
 
 internals.dirPurchaseReceipt = path.join(__dirname, 'templates', 'purchase-receipt');
 
 internals.send = (config) => {
-    let p = new Promise( (resolve, reject) => {
+    return new Promise((resolve, reject) => {
 
-        let mail = mailcomposer({
-            from: 'thanks@gmnst.com',
-            to: config.to,
-            subject: config.subject,
-            body: config.text,
-            html: config.html
+        const email = new Email({
+            message: {
+                from: process.env.EMAIL_FROM_CART_SUCCESS || 'thanks@gmnst.com',
+                headers: {
+                    'X-Some-Custom-Thing': 'Some-Value'
+                },
+                list: {
+                    unsubscribe: 'https://niftylettuce.com/unsubscribe'
+                }
+            },
+            transport: {
+                jsonTransport: true
+            }
         });
 
-        mail.build( (mailBuildError, message) => {
+        // let mail = mailcomposer({
+        //     from: 'thanks@gmnst.com',
+        //     to: config.to,
+        //     subject: config.subject,
+        //     body: config.text,
+        //     html: config.html
+        // });
+
+        mail.build((mailBuildError, message) => {
             mailgun
                 .messages()
                 .sendMime(
@@ -61,8 +78,6 @@ internals.send = (config) => {
         //         }
         //     );
     });
-
-    return p;
 };
 
 
@@ -77,7 +92,7 @@ function emailPurchaseReceiptToBuyer(ShoppingCart) {
         forEach(cartData, (obj) => {
             templateData.cart_items.push({
                 qty: obj.qty,
-                title: obj.product.title,
+                title: obj.product.title
                 // price: ShoppingCartService.getCartItemPrice(obj), //TODO
                 // totalPrice: ShoppingCartService.getCartItemTotalPrice(obj) //TODO
             });
@@ -132,8 +147,8 @@ function emailPurchaseReceiptToBuyer(ShoppingCart) {
                 });
             })
             .catch((error) => {
-                // server.appEvents.emit('email-template-error', error);
                 reject('TEMPLATE RENDER ERROR: ' + error);
+                global.logger.error(error)
                 global.appInsightsClient.trackException({
                     exception: new Error('TEMPLATE RENDER ERROR: ' + error)
                 });

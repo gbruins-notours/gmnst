@@ -124,11 +124,6 @@ internals.manifest = {
         },
         {
             plugin: {
-                register: './plugins/email'
-            }
-        },
-        {
-            plugin: {
                 register: './plugins/shipping'
             },
             options: {
@@ -155,6 +150,11 @@ internals.manifest = {
             },
             options: {
                 select: ['api']
+            }
+        },
+        {
+            plugin: {
+                register: './plugins/email'
             }
         }
     ]

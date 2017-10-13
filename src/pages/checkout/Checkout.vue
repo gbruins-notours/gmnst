@@ -517,7 +517,8 @@
 
                 this.braintree.hostedFieldsInstance.tokenize((tokenizeErr, payload) => {
                     if (tokenizeErr) {
-                        Notification.error({
+                        currentNotification = this.$notify({
+                            type: 'error',
                             title: this.$t('Payment method error') + ':',
                             message: checkoutService.getBraintreeErrorMessage.call(this, tokenizeErr),
                             duration: 0
@@ -540,11 +541,9 @@
                     })
                     .then((result) => {
                         console.log("CART SUCCESS RESPONSE", result)
-                        //TODO: clear the cart from local storage
 
                         this.$store.dispatch('CART_DELETE');
 
-                        // teardown HF and present payment information
                         this.braintree.hostedFieldsInstance.teardown((teardownErr) => {
                             if (teardownErr) {
                                 console.log('There was an error tearing it down!', teardownErr.message);
@@ -563,7 +562,8 @@
                         });
                     })
                     .catch((error) => {
-                        Notification.error({
+                        currentNotification = this.$notify({
+                            type: 'error',
                             title: `${ this.$t('Error placing order') }:`,
                             message: api.getApiErrorMessage(error),
                             duration: 0
@@ -579,6 +579,8 @@
                 this.braintree.paypalInstance.tokenize(
                     { flow: 'vault' },
                     (pptokenizeErr, paypalPayload) => {
+                        this.placeOrderButtonLoading = false;
+
                         if (pptokenizeErr) {
                             let errorMsg = {
                                 title: null,
@@ -605,7 +607,11 @@
                             }
 
                             if(errorMsg.title) {
-                                Notification.error(errorMsg);
+                                currentNotification = this.$notify({
+                                    type: 'error',
+                                    title: errorMsg,
+                                    duration: 0
+                                });
                             }
                         }
                         else {
@@ -713,7 +719,8 @@
                     }
                 }, (hostedFieldsErr, hostedFieldsInstance) => {
                     if (hostedFieldsErr) {
-                        Notification.error({
+                        currentNotification = this.$notify({
+                            type: 'error',
                             title: this.$t('Payment method error') + ':',
                             message: checkoutService.getBraintreeErrorMessage(hostedFieldsErr, this),
                             duration: 0
@@ -733,7 +740,8 @@
                     { client: clientInstance },
                     (createPaypalErr, paypalInstance) => {
                         if (createPaypalErr) {
-                            Notification.error({
+                            currentNotification = this.$notify({
+                                type: 'error',
                                 title: this.$t('There was an error setting up the payment input fields!'),
                                 message: this.getBraintreeErrorMessage(createPaypalErr),
                                 duration: 0
@@ -754,7 +762,8 @@
                     { authorization: this.app.braintreeClientToken },
                     (clientErr, clientInstance) => {
                         if (clientErr) {
-                            Notification.error({
+                            currentNotification = this.$notify({
+                                type: 'error',
                                 title: this.$t('There was an error setting up the payment client!'),
                                 message: checkoutService.getBraintreeErrorMessage(clientErr, this),
                                 duration: 0

@@ -495,8 +495,7 @@ internals.after = function (server, next) {
                         .then((transactionObj) => {
                             console.log('BRAINTREE TRANSACTION RESULT', transactionObj)
 
-                            //TODO: appEvents is undefined
-                            // request.server.appEvents.emit('gmnst-payment-success', cart);
+                            request.server.emit('payment-success', cart);
 
                             // If the Braintree transaction is successful then anything that happens after this
                             // (i.e saving the payment details to DB) needs to fail silently, as the user has
@@ -582,7 +581,6 @@ internals.after = function (server, next) {
     server.expose('schema', internals.schema);
     server.expose('findOrCreate', internals.shoppingCart.findOrCreate);
 
-
     // LOADING BOOKSHELF MODEL:
     let bookshelf = server.plugins.BookshelfOrm.bookshelf;
     // let baseModel = bookshelf.Model.extend({});
@@ -596,13 +594,16 @@ internals.after = function (server, next) {
     bookshelf.collection('ShoppingCarts', require('./models/ShoppingCarts')(bookshelf, ShoppingCart));
     bookshelf.collection('ShoppingCartItems', require('./models/ShoppingCartItems')(bookshelf, ShoppingCartItem));
 
-
     return next();
 };
 
 
 
 exports.register = (server, options, next) => {
+    // Events must be registered before they can be emitted:
+    // https://hapijs.com/api#serveremitcriteria-data-callback
+    server.event('payment-success');
+
     server.dependency(['BookshelfOrm', 'Core', 'Products', 'Payments', 'SalesTax'], internals.after);
     return next();
 };
