@@ -313,7 +313,6 @@ internals.after = function (server, next) {
                             return server.plugins.BookshelfOrm.bookshelf.model('ShoppingCart').getCart(request);
                         })
                         .then((ShoppingCart) => {
-                            // reply.apiSuccess(ShoppingCart);
                             reply.apiSuccess(ShoppingCart.toJSON());
                         })
                         .catch((err) => {

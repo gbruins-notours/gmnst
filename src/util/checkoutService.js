@@ -98,7 +98,11 @@ export default {
             billing_postalCode: null,
             billing_countryCodeAlpha2: null,
             billing_phone: null,
-            num_items: 0
+            num_items: 0,
+            sub_total: null,
+            shipping_total: null,
+            sales_tax: null,
+            grand_total: null
         }
     }
 
