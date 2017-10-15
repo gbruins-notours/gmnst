@@ -8,6 +8,11 @@ let manifest = testHelpers.getBasicManifest();
 manifest.registrations.push(
     {
         plugin: {
+            register: './plugins/products'
+        }
+    },
+    {
+        plugin: {
             register: './plugins/payments',
             options: {
                 isSandbox: true,
@@ -15,6 +20,16 @@ manifest.registrations.push(
                 publicKey: process.env.BRAINTREE_PUBLIC_KEY,
                 privateKey: process.env.BRAINTREE_PRIVATE_KEY
             }
+        }
+    },
+    {
+        plugin: {
+            register: './plugins/shopping-cart'
+        }
+    },
+    {
+        plugin: {
+            register: './plugins/sales-tax'
         }
     }
 );

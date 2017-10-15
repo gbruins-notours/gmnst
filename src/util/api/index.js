@@ -71,11 +71,11 @@ export default {
             });
     },
 
-    getOrderById(id) {
+    getOrderById(transaction_id) {
         return getHttp()
             .get('/api/v1/order', {
                 params: {
-                    id
+                    transaction_id
                 }
             })
             .then((response) => {

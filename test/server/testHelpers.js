@@ -138,6 +138,13 @@ function getBasicManifest() {
 
 
 function startServerAndGetHeaders(manifest, composeOptions) {
+    // Mocking the appInsightsClient object
+    global.appInsightsClient = {
+        trackException: (err) => {
+            console.log('CAUGHT ERROR', err)
+        }
+    };
+
     let p = new Promise((resolve, reject) => {
 
         Server.init(manifest, composeOptions, (err, server) => {

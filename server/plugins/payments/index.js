@@ -4,6 +4,7 @@ const Boom = require('boom');
 const braintree = require('braintree');
 const Promise = require('bluebird');
 const isObject = require('lodash.isobject');
+const HelperService = require('../../helpers.service');
 
 
 let internals = {};
@@ -20,6 +21,10 @@ internals.schema = Joi.object().keys({
 internals.defaults = {
     isSandbox: true
 };
+
+internals.withRelated = [
+    'shoppingCart.cart_items.product'
+];
 
 
 internals.after = function (server, next) {
@@ -146,29 +151,6 @@ internals.after = function (server, next) {
             .fetch(fetchOptions);
     };
 
-    /**
-     * Gets a payment by a given attribute
-     *
-     * @param attrName
-     * @param attrValue
-     * @returns {Promise}
-     */
-    internals.getPaymentByAttribute = (attrName, attrValue) => {
-        let forgeOpts = null;
-
-        if(attrName) {
-            forgeOpts = {};
-            forgeOpts[attrName] = attrValue;
-        }
-
-        let fetchOpts = {
-            withRelated: ['shoppingCart']
-        };
-
-        return internals.modelFetch('Payment', forgeOpts, fetchOpts)
-    };
-
-
     server.route([
         {
             method: 'GET',
@@ -177,20 +159,49 @@ internals.after = function (server, next) {
                 description: 'Finds a payment entry',
                 validate: {
                     query: {
-                        id: Joi.string().max(50)
+                        transaction_id: Joi.string().max(50)
                     }
                 },
                 handler: (request, reply) => {
-                    internals
-                        .getPaymentByAttribute('transaction_id', request.query.id)
-                        .then((payments) => {
-                            reply.apiSuccess(payments);
+                    server.plugins.BookshelfOrm.bookshelf.model('Payment').getPaymentByAttribute('transaction_id', request.query.transaction_id)
+                        .then((payment) => {
+                            let p = payment.toJSON();
+
+                            // Much less data can be sent over the wire in this case, so trimming the response:
+                            reply.apiSuccess({
+                                id: p.id,
+                                amount: p.amount,
+                                creditCard: {
+                                    last4: p.transaction.transaction.creditCard.last4
+                                },
+                                shipping: p.transaction.transaction.shipping
+                            });
                         })
                         .catch((err) => {
                             global.appInsightsClient.trackException({
                                 exception: err
                             });
                             reply(Boom.badRequest(err));
+                        });
+                }
+            }
+        },
+        {
+            method: 'GET',
+            path: '/orders',
+            config: {
+                description: 'Gets a list of orders',
+                handler: (request, reply) => {
+                    HelperService
+                        .fetchPage(request, server.plugins.BookshelfOrm.bookshelf.model('Payment'), internals.withRelated)
+                        .then((orders) => {
+                            reply.apiSuccess(orders, orders.pagination);
+                        })
+                        .catch((err) => {
+                            global.appInsightsClient.trackException({
+                                exception: err
+                            });
+                            reply(Boom.notFound(err));
                         });
                 }
             }

@@ -1,3 +1,5 @@
+'use strict';
+
 const jwt = require('jsonwebtoken');
 const accounting = require('accounting');
 const CoreService = require('../../core/core.service');
@@ -97,7 +99,10 @@ module.exports = function (baseModel, bookshelf, server) {
                         'cart_items.product', // https://stackoverflow.com/questions/35679855/always-fetch-from-related-models-in-bookshelf-js#35841710
                         {
                             cart_items: (query) => {
-                                query.orderBy('created_at', 'DESC');
+                                // Sorting by updated_at (instead of created_at) will keep the most recently
+                                // updated cart item at the top of the list, which I think is the most
+                                // expected user experience
+                                query.orderBy('updated_at', 'DESC');
                             }
                         }
                     ]
