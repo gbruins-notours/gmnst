@@ -75,6 +75,7 @@ const translations = {
     'PAYPAL_FLOW_FAILED': 'Unable to initialize PayPal flow. Are your options correct?',
     'PayPal tokenization failed': 'PayPal tokenization failed',
     'Place your order': 'Place your order',
+    'PLACE YOUR ORDER': 'PLACE YOUR ORDER',
     'Please select a quantity': 'Please select a quantity',
     'Please select a size': 'Please select a size',
     'Please enter a valid email address.': 'Please enter a valid email address.',
@@ -91,7 +92,6 @@ const translations = {
     'RECEIPT': 'RECEIPT',
     'Required': 'Required',
     'Return to cart': 'Return to cart',
-    'REVIEW': 'REVIEW',
     'Review your order': 'Review your order',
 
     'SAME AS SHIPPING ADDRESS': 'SAME AS SHIPPING ADDRESS',

@@ -25,17 +25,8 @@
         <div class="item" 
              :class="{'active': currentStep === 2, 'completed': currentStep > 2}"
              @click="changeStep(2)">
-            <i class="fa fa-shopping-cart"></i>
-            <div class="item-desc nowrap">3) {{ $t('REVIEW') }}</div>
-        </div>
-
-        <div class="spacer">
-            <hr style="width:100%;" />
-        </div>
-
-        <div class="item" :class="{'active': currentStep === 3, 'completed': currentStep > 3}">
-            <i class="fa fa-file-text-o"></i>
-            <div class="item-desc nowrap">4) {{ $t('RECEIPT') }}</div>
+            <i class="fa fa-paper-plane-o"></i>
+            <div class="item-desc nowrap">3) {{ $t('PLACE YOUR ORDER') }}</div>
         </div>
     </div>
 </template>
