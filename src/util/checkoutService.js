@@ -104,6 +104,49 @@ export default {
             sales_tax: null,
             grand_total: null
         }
-    }
+    },
 
+
+    getFormattedShippingName: function(firstName, lastName) {
+        let val = [];
+
+        if(firstName) {
+            val.push(firstName);
+        }
+
+        if(lastName) {
+            val.push(lastName);
+        }
+
+        return val.join(' ');
+    },
+
+    getFormattedCityStateZip: function(city, state, postalCode) {
+        let val = [];
+
+        if(city) {
+            val.push(city)
+        }
+
+        if(state || postalCode) {
+            val.push(',');
+
+            if(state) {
+                val.push(' ' + state);
+            }
+
+            if(postalCode) {
+                val.push(' ' + postalCode);
+            }
+        }
+
+        return val.join('');
+    },
+
+    getFormattedCompanyName: function(name) {
+        if(name) {
+            return name.toUpperCase()
+        }
+        return null;
+    }
 }

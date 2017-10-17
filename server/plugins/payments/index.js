@@ -165,14 +165,24 @@ internals.after = function (server, next) {
                 handler: (request, reply) => {
                     server.plugins.BookshelfOrm.bookshelf.model('Payment').getPaymentByAttribute('transaction_id', request.query.transaction_id)
                         .then((payment) => {
+                            if(!payment) {
+                                return reply(Boom.notFound('Order not found'));
+                            }
+
                             let p = payment.toJSON();
 
                             // Much less data can be sent over the wire in this case, so trimming the response:
                             reply.apiSuccess({
                                 id: p.id,
+                                transaction_id: p.transaction_id,
                                 amount: p.amount,
                                 creditCard: {
-                                    last4: p.transaction.transaction.creditCard.last4
+                                    last4: p.transaction.transaction.creditCard.last4,
+                                    cardType: p.transaction.transaction.creditCard.cardType
+                                    //TODO: what about paypal?
+                                },
+                                shoppingCart: {
+                                    num_items: p.shoppingCart.num_items
                                 },
                                 shipping: p.transaction.transaction.shipping
                             });

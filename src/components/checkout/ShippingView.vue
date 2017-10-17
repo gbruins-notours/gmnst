@@ -12,6 +12,7 @@
 
 <script>
     import { mapGetters } from 'vuex'
+    import checkoutService from '../../util/checkoutService'
 
     export default {
         props: {
@@ -31,50 +32,19 @@
             ]),
 
             formattedName() {
-                let name = '';
-
-                if(this.cart.shipping_firstName) {
-                    name = this.cart.shipping_firstName;
-                }
-
-                if(this.cart.shipping_lastName) {
-                    if(name) {
-                        name += ' ';
-                    }
-
-                    name += this.cart.shipping_lastName;
-                }
-
-                return name;
+                return checkoutService.getFormattedShippingName(this.cart.shipping_firstName, this.cart.shipping_lastName);
             },
 
             formattedCityStateZip: function() {
-                let val = [];
-
-                if(this.cart.shipping_city) {
-                    val.push(this.cart.shipping_city)
-                }
-
-                if(this.cart.shipping_state || this.cart.shipping_postalCode) {
-                    val.push(',');
-
-                    if(this.cart.shipping_state) {
-                        val.push(' ' + this.cart.shipping_state);
-                    }
-
-                    if(this.cart.shipping_postalCode) {
-                        val.push(' ' + this.cart.shipping_postalCode);
-                    }
-                }
-
-                return val.join('');
+                return checkoutService.getFormattedCityStateZip(
+                    this.cart.shipping_city, 
+                    this.cart.shipping_state,
+                    this.cart.shipping_postalCode
+                );
             },
 
             companyDisplay: function() {
-                if(this.cart.shipping_company) {
-                    return this.cart.shipping_company.toUpperCase()
-                }
-                return null;
+                return checkoutService.getFormattedCompanyName(this.cart.shipping_company);
             }
         }
     }
