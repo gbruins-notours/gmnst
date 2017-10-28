@@ -8,7 +8,7 @@
                     </div>
 
                     <a class="Header-cart" @click="goToCart">
-                        <span class="icon is-medium"><i class="fa fa-shopping-cart"></i></span>
+                        <i class="fa fa-shopping-cart fs30"></i>
                         <span class="badge">{{ numCartItems }}</span>
                     </a>
 

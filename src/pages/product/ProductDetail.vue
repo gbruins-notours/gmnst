@@ -63,7 +63,6 @@
                                    class="colorBlack"
                                    :loading="isLoading">{{ $t('Add to cart') }}</el-button>
                     </div>
-
                 </div>
             </div>
         </div>

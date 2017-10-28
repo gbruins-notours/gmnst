@@ -19,7 +19,7 @@
                 <div class="cartItemInfo">
                     <div class="cartItemInfoContent">
                         <div class="cartItemMain">
-                            <div class="itemTitle">{{ item.product.title }}</div>
+                            <a class="itemTitle" @click="goToDetails(item.product.seo_uri)">{{ item.product.title }}</a>
 
                             <div v-if="allowEdit" class="mts">
                                 <el-button type="text" @click="removeItem(item.id)">{{ $t('Delete') }}</el-button>
@@ -187,13 +187,11 @@
                 });
             },
 
-            goToDetails() {
-                if (this.product.seo_uri) {
-                    this.$router.push({
-                        name: 'product_detail',
-                        params: { itemId: this.product.seo_uri }
-                    });
-                }
+            goToDetails(seo_uri) {
+                this.$router.push({
+                    name: 'product_detail',
+                    params: { itemId: seo_uri }
+                });
             },
 
             goToCheckout() {
@@ -257,7 +255,8 @@
 
         .itemTitle {
             font-weight: bold;
-            font-size: 14px
+            font-size: 14px;
+            display: block;
         }
     }
 
