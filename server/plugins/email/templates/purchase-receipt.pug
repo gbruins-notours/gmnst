@@ -1,7 +1,143 @@
-div
-    h1 Pug - node template engine #{myname}
-    #container.col
-      p You are amazing
-      p.
-        Pug is a terse and simple templating language with a
-        strong focus on performance and powerful features.
+//- Support
+//-------------------------------
+//- Works correctly in all email clients, except for Lotus Notes 4.5 and Lotus Notes 5
+
+//- Style Tags
+//--------------------------------
+mixin style-tags
+  style.
+    html {
+      margin:0;
+      padding:0;
+      height:100% !important;
+      margin:0;
+      padding:0;
+      width:100% !important;
+      background-color: #F9F9F9 !important;
+    }
+		
+    body {
+      margin:0;
+      padding:0;
+      height:100% !important;
+      margin:0;
+      padding:0;
+      width:100% !important;
+      background-color: #F9F9F9 !important;
+      -webkit-text-size-adjust:100%;
+      -ms-text-size-adjust:100%;
+
+      @media only screen and (max-width: 480px) {
+        -webkit-text-size-adjust:none !important;
+        width:100% !important;
+        min-width:100% !important;
+      }
+    }
+		
+    |<!--[if (gte mso 9)|(IE)]>
+    style.
+      .u-textFallback {
+        font-family: Arial, Helvetica, sans-serif !important;
+      }
+    |<![endif]-->
+
+
+//- IE Conditional Comment Opening
+mixin ie-open(props)
+  - props = props || {};
+  - table = props.table ? 'width="' + props.table + '"' : '';
+  - cell = props.cell ? 'width="' + props.cell + '"' : '';
+  |<!--[if (gte mso 9)|(IE)]>
+  |<table cellspacing="0" cellpadding="0" border="0" !{table} align="center">
+  |<tr>
+  |<td valign="top" !{cell}>
+  |<![endif]-->
+
+
+//- IE Conditional Comment Seperator
+mixin ie-col(props)
+  - props = props || {};
+  - cell = props.cell ? 'width="' + props.cell + '"' : '';
+  |<!--[if (gte mso 9)|(IE)]>
+  |</td>
+  |<td valign="top" !{cell}>
+  |<![endif]-->
+
+
+//- IE Conditional Comment Closing Partial
+mixin ie-close(props)
+  - props = props || {};
+  |<!--[if (gte mso 9)|(IE)]>
+  |</td>
+  |</tr>
+  |</table>
+  |<![endif]-->
+
+
+mixin header
+  tr
+    td(style="font-size: 0; text-align: center; padding: 16px 0; border-bottom:1px solid rgb(234,234,234);")
+      +ie-open(({cell: 300}))
+      div(style="display: inline-block;")
+        a(href="https://www.gmnst.com/")
+          img(src="https://www.gmnst.com/static/images/logo_header.png" alt="gmnst.com" style="border-style: none; outline: none")
+      +ie-col(({cell: 300}))
+      div(style="display: inline-block;")
+        table(cellspacing="0" cellpadding="0" border="0" width="100%"): tr: td(style="text-align:right; font-size:18px; padding:7px 20px; font-family:Montserrat, Arial, sans-serif; line-height:1.7") Order Confirmation
+      +ie-close
+
+
+mixin greeting
+  tr: td
+    table(cellspacing="0" cellpadding="0" border="0" width="100%")
+      tr: td(style="font-size:18px; line-height:30px; color:#ed198a") Thank you! #{myname}
+      tr: td You ordered #[a(href="https://www.gmnst.com") Women's Classic 5-layered... and 1 other item]. 
+
+
+mixin details
+  tr: td
+    table(cellspacing="0" cellpadding="0" border="0" width="100%")
+      tr: td(style="font-size:18px; line-height:30px; padding-top:15px; color:#ed198a;") Details
+      tr: td
+        table(cellspacing="0" cellpadding="0" border="0" width="100%")
+          tr: td(style="border:1px solid #CCCCCC; background-color:#EDEDED; color:#777777; font-size:14px; padding:7px; text-align:left") Order # #[a(href="https://www.gmnst.com") 12345]<br/><br/>Bank Details:<p style="font-weight: bold">Bank: FNB<br />Acc: 62345047915<br />Branch: 250655<br />Acc Type: Cheque<br />Acc Holder: RunwaySale<br />Reference Number: 17041100002176</p>
+
+
+mixin signature
+  tr: td
+    table(cellspacing="0" cellpadding="0" border="0" width="100%")
+      tr: td(style="padding:30px 0 10px 0; font-weight:bold; border-bottom:1px solid rgb(234,234,234);") Gmnst.com 
+
+
+mixin disclaimer
+  tr: td(style="color:#999; font-size:10px")
+    p(style="margin:10px 0 8px 0") 
+      | By placing your order, you agree to gmnst.com’s #[a(href="https://www.gmnst.com") Privacy Notice] and #[a(href="https://www.gmnst.com") Conditions of Use]. 
+      | Unless otherwise noted, items sold by gmnst.com are subject to sales tax in select states in accordance with the applicable laws of that state.
+
+    p(style="margin:0 0 8px 0") 
+      | This email was sent from a notification-only address that cannot accept incoming email. Please do not reply to this message. 
+    
+
+//- MARKUP
+
+//- Pseudo Header
+html
+  body
+    meta(content="telephone=no" name="format-detection")
+    link(href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet")
+    +style-tags
+		
+    table(cellspacing="0" cellpadding="0" border="0" width="100%")
+      //- Open Centered Content Wrapper
+      tr: td(style="padding: 0 20px")
+        +ie-open({table: 602})
+        table(cellspacing="0" cellpadding="0" border="0" width="100%" align="center" style="max-width: 602px")
+          +header
+          +greeting
+          +details
+          +signature
+          +disclaimer
+
+        //- Close Centered Content Wrapper
+        +ie-close
