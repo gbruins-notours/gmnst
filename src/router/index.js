@@ -15,6 +15,8 @@ import ProductDetail from '../pages/product/ProductDetail.vue';
 import Cart from '../pages/cart/Cart.vue';
 import Checkout from '../pages/checkout/Checkout.vue';
 import Order from '../pages/orders/Order.vue';
+import PrivacyNotice from '../pages/PrivacyNotice.vue';
+import ConditionsOfUse from '../pages/ConditionsOfUse.vue';
 import Error404 from '../pages/Error404.vue';
 
 export function createRouter () {
@@ -51,6 +53,16 @@ export function createRouter () {
                 name: 'cart',
                 path: '/cart/:id?',
                 component: Cart
+            },
+            {
+                name: 'privacy',
+                path: '/privacy',
+                component: PrivacyNotice
+            },
+            {
+                name: 'conditions_of_use',
+                path: '/conditions-of-use',
+                component: ConditionsOfUse
             },
             {
                 name: 'error404',

@@ -494,7 +494,10 @@ internals.after = function (server, next) {
                         .then((transactionObj) => {
                             console.log('BRAINTREE TRANSACTION RESULT', transactionObj)
 
-                            request.server.emit('payment-success', cart);
+                            request.server.emit('payment-success', {
+                                shoppingCart: cart,
+                                transactionId: transactionObj.transaction.id
+                            });
 
                             // If the Braintree transaction is successful then anything that happens after this
                             // (i.e saving the payment details to DB) needs to fail silently, as the user has

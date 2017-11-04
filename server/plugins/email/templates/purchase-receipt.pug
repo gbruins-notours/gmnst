@@ -2,6 +2,10 @@
 //-------------------------------
 //- Works correctly in all email clients, except for Lotus Notes 4.5 and Lotus Notes 5
 
+
+- var baseUrl = "https://www.gmnst.com"
+
+
 //- Style Tags
 //--------------------------------
 mixin style-tags
@@ -74,50 +78,80 @@ mixin ie-close(props)
   |<![endif]-->
 
 
+mixin link(path, linkText)
+  - url = baseUrl + path;
+  |<a href="!{url}">!{linkText}</a>
+
+
 mixin header
-  tr
-    td(style="font-size: 0; text-align: center; padding: 16px 0; border-bottom:1px solid rgb(234,234,234);")
-      +ie-open(({cell: 300}))
-      div(style="display: inline-block;")
-        a(href="https://www.gmnst.com/")
-          img(src="https://www.gmnst.com/static/images/logo_header.png" alt="gmnst.com" style="border-style: none; outline: none")
-      +ie-col(({cell: 300}))
-      div(style="display: inline-block;")
-        table(cellspacing="0" cellpadding="0" border="0" width="100%"): tr: td(style="text-align:right; font-size:18px; padding:7px 20px; font-family:Montserrat, Arial, sans-serif; line-height:1.7") Order Confirmation
-      +ie-close
+  +ie-open(({cell: 300}))
+  div(style="display: inline-block;")
+    a(href=baseUrl)
+      img(src=baseUrl + '/static/images/logo_header.png' alt="gmnst.com" style="border-style: none; outline: none")
+  +ie-col(({cell: 300}))
+  div(style="display: inline-block;")
+    table(cellspacing="0" cellpadding="0" border="0" width="100%")
+      tr
+        td(style="text-align:right; font-size:18px; padding:7px 20px; font-family:Montserrat, Arial, sans-serif; line-height:1.7") Order Confirmation
+  +ie-close
 
 
 mixin greeting
-  tr: td
-    table(cellspacing="0" cellpadding="0" border="0" width="100%")
-      tr: td(style="font-size:18px; line-height:30px; color:#ed198a") Thank you! #{myname}
-      tr: td You ordered #[a(href="https://www.gmnst.com") Women's Classic 5-layered... and 1 other item]. 
+  table(cellspacing="0" cellpadding="0" border="0" width="100%")
+    tr: td(style="font-size:18px; line-height:30px; color:#ed198a") Thank you!
+    tr: td 
+      | You ordered 
+      +link(`/orders/${transactionId}`, orderTitle)
+      |. 
 
 
 mixin details
-  tr: td
-    table(cellspacing="0" cellpadding="0" border="0" width="100%")
-      tr: td(style="font-size:18px; line-height:30px; padding-top:15px; color:#ed198a;") Details
-      tr: td
-        table(cellspacing="0" cellpadding="0" border="0" width="100%")
-          tr: td(style="border:1px solid #CCCCCC; background-color:#EDEDED; color:#777777; font-size:14px; padding:7px; text-align:left") Order # #[a(href="https://www.gmnst.com") 12345]<br/><br/>Bank Details:<p style="font-weight: bold">Bank: FNB<br />Acc: 62345047915<br />Branch: 250655<br />Acc Type: Cheque<br />Acc Holder: RunwaySale<br />Reference Number: 17041100002176</p>
+  table(cellspacing="0" cellpadding="0" border="0" width="100%")
+    tr: td(style="font-size:18px; line-height:30px; padding-top:15px; color:#ed198a;") Details
+    tr: td
+      table(cellspacing="0" cellpadding="0" border="0" width="100%")
+        tr: td(style="border-top:2px solid #CCCCCC; background-color:#EDEDED; padding:10px; text-align:left") 
+          table(cellspacing="0" cellpadding="0" border="0" width="100%")
+            tr: td
+              | Order
+              |
+              +link(`/orders/${transactionId}`, transactionId)
+            tr: td(style="padding-top:15px; color:#777777") Ship to:
+            tr: td
+              | <b>#{shipping.name}</b>
+            tr: td
+              | <b>#{shipping.address}</b>...
+            tr: td(style="padding-top:15px")
+              table(cellspacing="0" cellpadding="0" border="0")
+                tr
+                  td(style="padding-right:10px") Total Before Tax:
+                  td TODO
+                tr
+                  td(style="padding-right:10px") Estimated Tax:
+                  td TODO
+                tr
+                  td(style="padding-right:10px; font-weight:bold") Order Total:
+                  td TODO
 
 
 mixin signature
-  tr: td
-    table(cellspacing="0" cellpadding="0" border="0" width="100%")
-      tr: td(style="padding:30px 0 10px 0; font-weight:bold; border-bottom:1px solid rgb(234,234,234);") Gmnst.com 
+  table(cellspacing="0" cellpadding="0" border="0" width="100%")
+    tr: td(style="padding:20px 0 20px 0; font-weight:bold; border-bottom:1px solid rgb(234,234,234);") Gmnst.com 
 
 
 mixin disclaimer
-  tr: td(style="color:#999; font-size:10px")
-    p(style="margin:10px 0 8px 0") 
-      | By placing your order, you agree to gmnst.com’s #[a(href="https://www.gmnst.com") Privacy Notice] and #[a(href="https://www.gmnst.com") Conditions of Use]. 
-      | Unless otherwise noted, items sold by gmnst.com are subject to sales tax in select states in accordance with the applicable laws of that state.
+  p(style="margin:10px 0 8px 0") 
+    | By placing your order, you agree to gmnst.com’s 
+    +link('/privacy-notice', 'Privacy Notice')
+    |
+    | and 
+    +link('/conditions-of-use', 'Conditions of Use')
+    |.
+    |
+    | Unless otherwise noted, items sold by gmnst.com are subject to sales tax in select states in accordance with the applicable laws of that state.
 
-    p(style="margin:0 0 8px 0") 
-      | This email was sent from a notification-only address that cannot accept incoming email. Please do not reply to this message. 
-    
+  p(style="margin:0 0 8px 0") This email was sent from a notification-only address that cannot accept incoming email. Please do not reply to this message. 
+
 
 //- MARKUP
 
@@ -133,11 +167,19 @@ html
       tr: td(style="padding: 0 20px")
         +ie-open({table: 602})
         table(cellspacing="0" cellpadding="0" border="0" width="100%" align="center" style="max-width: 602px")
-          +header
-          +greeting
-          +details
-          +signature
-          +disclaimer
+          tr: td(style="font-size: 0; text-align: center; padding: 16px 0; border-bottom:1px solid rgb(234,234,234);")
+            +header
 
-        //- Close Centered Content Wrapper
+          tr: td
+            +greeting
+
+          tr: td
+            +details
+
+          tr: td
+            +signature
+
+          tr: td(style="color:#999; font-size:10px")
+            +disclaimer
+
         +ie-close

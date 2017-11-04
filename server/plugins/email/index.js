@@ -9,7 +9,6 @@ const pug = require('pug');
 const isObject = require('lodash.isobject');
 
 let internals = {};
-internals.dirPurchaseReceipt = path.join(__dirname, 'templates', 'purchase-receipt');
 
 internals.send = (config) => {
     return new Promise((resolve, reject) => {
@@ -40,25 +39,8 @@ internals.send = (config) => {
 };
 
 
-internals.emailPurchaseReceiptToBuyer = (ShoppingCart) => {
-    return new Promise((resolve, reject) => {
-        let file = path.join(__dirname, 'templates', 'purchase-receipt.pug')
-        let html = pug.renderFile(file, {
-            myname: 'greg' //TODO: add real template variables
-        });
-
-        internals.send({
-            to: ShoppingCart.get('shipping_email'),
-            subject: internals.buildPurchaseReceiptEmailSubject(ShoppingCart),
-            text: 'sample text for purchase receipt', //TODO:
-            html: html
-        });
-    })
-}
-
-
-internals.buildPurchaseReceiptEmailSubject = (ShoppingCart) => {
-    let cart = ShoppingCart.toJSON()
+internals.getPurchaseDescription = (ShoppingCart) => {
+    let cart = ShoppingCart.toJSON();
     let totalNumItems = cart.num_items;
     let cart_items = cart.cart_items;
     let firstItem = null;
@@ -70,16 +52,81 @@ internals.buildPurchaseReceiptEmailSubject = (ShoppingCart) => {
             remainingItems = totalNumItems - 1;
 
             if(!remainingItems) {
-                return `Your gmnst.com order of "${firstItem}"`;
+                return `"${firstItem}"`;
             }
         }
 
         let itemText = remainingItems === 1 ? 'item' : 'items';
-        return `Your gmnst.com order of "${firstItem}" and ${remainingItems} more ${itemText}`;
+        return `"${firstItem}" and ${remainingItems} more ${itemText}`;
     }
 
-    return 'Your gmnst.com order';
+    return null;
+};
+
+
+internals.getShippingName = (ShoppingCart) => {
+    let cart = ShoppingCart.toJSON();
+    let val = [];
+    
+    if(cart.shipping_firstName) {
+        val.push(cart.shipping_firstName);
+    }
+
+    if(cart.shipping_lastName) {
+        val.push(cart.shipping_lastName);
+    }
+
+    return val.join(' ');
 }
+
+
+internals.emailPurchaseReceiptToBuyer = (ShoppingCart, transactionId) => {
+    return new Promise((resolve, reject) => {
+        let file = path.join(__dirname, 'templates', 'purchase-receipt.pug');
+        let orderTitle = internals.getPurchaseDescription(ShoppingCart);
+
+        let html = pug.renderFile(file, {
+            orderTitle,
+            transactionId,
+            shipping: {
+                name: internals.getShippingName(ShoppingCart),
+                address: ShoppingCart.get('shipping_streetAddress')
+            }
+        });
+
+        internals.send({
+            to: ShoppingCart.get('shipping_email'),
+            subject: `Your gmnst.com order of ${orderTitle}`,
+            text: 'sample text for purchase receipt', //TODO:
+            html: html
+        });
+    })
+};
+
+
+// internals.buildPurchaseReceiptEmailSubject = (ShoppingCart) => {
+//     let cart = ShoppingCart.toJSON()
+//     let totalNumItems = cart.num_items;
+//     let cart_items = cart.cart_items;
+//     let firstItem = null;
+//     let remainingItems = 0;
+
+//     if(Array.isArray(cart_items)) {
+//         if(isObject(cart_items[0]) && isObject(cart_items[0].product) && cart_items[0].product.hasOwnProperty('title')) {
+//             firstItem = internals.substringOnWords(cart_items[0].product.title);
+//             remainingItems = totalNumItems - 1;
+
+//             if(!remainingItems) {
+//                 return `Your gmnst.com order of "${firstItem}"`;
+//             }
+//         }
+
+//         let itemText = remainingItems === 1 ? 'item' : 'items';
+//         return `Your gmnst.com order of "${firstItem}" and ${remainingItems} more ${itemText}`;
+//     }
+
+//     return 'Your gmnst.com order';
+// }
 
 
 /**
@@ -126,11 +173,11 @@ internals.substringOnWords = (str, maxLen, suffix) => {
 
 exports.register = function (server, options, next) {
 
-    server.on('payment-success', (ShoppingCart) => {
+    server.on('payment-success', (payload) => {
         internals
-            .emailPurchaseReceiptToBuyer(ShoppingCart)
+            .emailPurchaseReceiptToBuyer(payload.shoppingCart, payload.transactionId)
             .catch((err) => {
-                let cartId = ShoppingCart.get('id');
+                let cartId = payload.shoppingCart.get('id');
                 let msg = `Unable to send email confirmation to user after successful purchase: (ShoppingCart ID: ${cartId}) ${err}`;
 
                 global.logger.error(msg)
