@@ -1,49 +1,4 @@
-//- Support
-//-------------------------------
-//- Works correctly in all email clients, except for Lotus Notes 4.5 and Lotus Notes 5
-
-
 - var baseUrl = "https://www.gmnst.com"
-
-
-//- Style Tags
-//--------------------------------
-mixin style-tags
-  style.
-    html {
-      margin:0;
-      padding:0;
-      height:100% !important;
-      margin:0;
-      padding:0;
-      width:100% !important;
-      background-color: #F9F9F9 !important;
-    }
-		
-    body {
-      margin:0;
-      padding:0;
-      height:100% !important;
-      margin:0;
-      padding:0;
-      width:100% !important;
-      background-color: #F9F9F9 !important;
-      -webkit-text-size-adjust:100%;
-      -ms-text-size-adjust:100%;
-
-      @media only screen and (max-width: 480px) {
-        -webkit-text-size-adjust:none !important;
-        width:100% !important;
-        min-width:100% !important;
-      }
-    }
-		
-    |<!--[if (gte mso 9)|(IE)]>
-    style.
-      .u-textFallback {
-        font-family: Arial, Helvetica, sans-serif !important;
-      }
-    |<![endif]-->
 
 
 //- IE Conditional Comment Opening
@@ -100,39 +55,31 @@ mixin greeting
   table(cellspacing="0" cellpadding="0" border="0" width="100%")
     tr: td(style="font-size:18px; line-height:30px; color:#ed198a") Thank you!
     tr: td 
-      | You ordered 
+      | You ordered
+      |
       +link(`/orders/${transactionId}`, orderTitle)
       |. 
 
 
 mixin details
   table(cellspacing="0" cellpadding="0" border="0" width="100%")
-    tr: td(style="font-size:18px; line-height:30px; padding-top:15px; color:#ed198a;") Details
-    tr: td
-      table(cellspacing="0" cellpadding="0" border="0" width="100%")
-        tr: td(style="border-top:2px solid #CCCCCC; background-color:#EDEDED; padding:10px; text-align:left") 
-          table(cellspacing="0" cellpadding="0" border="0" width="100%")
-            tr: td
+    tr
+      td(style="padding-top:20px")
+
+        table(cellspacing="0" cellpadding="0" border="0" width="100%")
+          tr
+            td(style="padding-bottom:5px")
               | Order
               |
               +link(`/orders/${transactionId}`, transactionId)
-            tr: td(style="padding-top:15px; color:#777777") Ship to:
-            tr: td
-              | <b>#{shipping.name}</b>
-            tr: td
-              | <b>#{shipping.address}</b>...
-            tr: td(style="padding-top:15px")
-              table(cellspacing="0" cellpadding="0" border="0")
-                tr
-                  td(style="padding-right:10px") Total Before Tax:
-                  td TODO
-                tr
-                  td(style="padding-right:10px") Estimated Tax:
-                  td TODO
-                tr
-                  td(style="padding-right:10px; font-weight:bold") Order Total:
-                  td TODO
 
+        include includes/pink-table.pug
+          table
+            tr: td
+              include includes/shipping-table-mini.pug
+            tr: td(style="padding-top:20px")
+              include includes/totals-table.pug
+            
 
 mixin signature
   table(cellspacing="0" cellpadding="0" border="0" width="100%")
@@ -156,12 +103,7 @@ mixin disclaimer
 //- MARKUP
 
 //- Pseudo Header
-html
-  body
-    meta(content="telephone=no" name="format-detection")
-    link(href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet")
-    +style-tags
-		
+include includes/html-body.pug
     table(cellspacing="0" cellpadding="0" border="0" width="100%")
       //- Open Centered Content Wrapper
       tr: td(style="padding: 0 20px")
@@ -169,17 +111,12 @@ html
         table(cellspacing="0" cellpadding="0" border="0" width="100%" align="center" style="max-width: 602px")
           tr: td(style="font-size: 0; text-align: center; padding: 16px 0; border-bottom:1px solid rgb(234,234,234);")
             +header
-
           tr: td
             +greeting
-
           tr: td
             +details
-
           tr: td
             +signature
-
           tr: td(style="color:#999; font-size:10px")
             +disclaimer
-
         +ie-close

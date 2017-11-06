@@ -80,24 +80,71 @@ internals.getShippingName = (ShoppingCart) => {
 }
 
 
-internals.emailPurchaseReceiptToBuyer = (ShoppingCart, transactionId) => {
-    return new Promise((resolve, reject) => {
-        let file = path.join(__dirname, 'templates', 'purchase-receipt.pug');
-        let orderTitle = internals.getPurchaseDescription(ShoppingCart);
+internals.sendPurchaseEmails = (ShoppingCart, transactionId) => {
+    let orderTitle = internals.getPurchaseDescription(ShoppingCart);
 
-        let html = pug.renderFile(file, {
-            orderTitle,
-            transactionId,
-            shipping: {
-                name: internals.getShippingName(ShoppingCart),
-                address: ShoppingCart.get('shipping_streetAddress')
+    return Promise.all([
+        internals.emailPurchaseReceiptToBuyer(ShoppingCart, transactionId, orderTitle),
+        internals.emailPurchaseAlertToAdmin(ShoppingCart, transactionId, orderTitle)
+    ]);
+}
+
+
+internals.emailPurchaseReceiptToBuyer = (ShoppingCart, transactionId, orderTitle) => {
+    return new Promise((resolve, reject) => {
+        let html = pug.renderFile(
+            path.join(__dirname, 'templates', 'purchase-receipt.pug'), 
+            {
+                orderTitle,
+                transactionId,
+                shipping: {
+                    name: internals.getShippingName(ShoppingCart),
+                    address: ShoppingCart.get('shipping_streetAddress')
+                },
+                sub_total: ShoppingCart.get('sub_total'),
+                shipping_total: ShoppingCart.get('shipping_total'),
+                sales_tax: ShoppingCart.get('sales_tax'),
+                grand_total: ShoppingCart.get('grand_total')
             }
-        });
+        );
 
         internals.send({
             to: ShoppingCart.get('shipping_email'),
             subject: `Your gmnst.com order of ${orderTitle}`,
             text: 'sample text for purchase receipt', //TODO:
+            html: html
+        });
+    })
+};
+
+
+internals.emailPurchaseAlertToAdmin = (ShoppingCart, transactionId, orderTitle) => {
+    return new Promise((resolve, reject) => {
+        let html = pug.renderFile(
+            path.join(__dirname, 'templates', 'admin-purchase-alert.pug'), 
+            {
+                orderTitle,
+                transactionId,
+                shipping_firstName: ShoppingCart.get('shipping_firstName'),
+                shipping_lastName: ShoppingCart.get('shipping_lastName'),
+                shipping_streetAddress: ShoppingCart.get('shipping_streetAddress'),
+                shipping_extendedAddress: ShoppingCart.get('shipping_extendedAddress'),
+                shipping_company: ShoppingCart.get('shipping_company'),
+                shipping_city: ShoppingCart.get('shipping_city'),
+                shipping_state: ShoppingCart.get('shipping_state'),
+                shipping_postalCode: ShoppingCart.get('shipping_postalCode'),
+                shipping_countryCodeAlpha2: ShoppingCart.get('shipping_countryCodeAlpha2'),
+                shipping_email: ShoppingCart.get('shipping_email'),
+                sub_total: ShoppingCart.get('sub_total'),
+                shipping_total: ShoppingCart.get('shipping_total'),
+                sales_tax: ShoppingCart.get('sales_tax'),
+                grand_total: ShoppingCart.get('grand_total')
+            }
+        );
+
+        internals.send({
+            to: process.env.ADMIN_EMAIL,
+            subject: `NEW ORDER: ${orderTitle}`,
             html: html
         });
     })
@@ -175,7 +222,7 @@ exports.register = function (server, options, next) {
 
     server.on('payment-success', (payload) => {
         internals
-            .emailPurchaseReceiptToBuyer(payload.shoppingCart, payload.transactionId)
+            .sendPurchaseEmails(payload.shoppingCart, payload.transactionId)
             .catch((err) => {
                 let cartId = payload.shoppingCart.get('id');
                 let msg = `Unable to send email confirmation to user after successful purchase: (ShoppingCart ID: ${cartId}) ${err}`;
