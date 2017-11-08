@@ -1,0 +1,26 @@
+<template>
+    <img :src="cardTypeIcon" v-show="cardTypeIcon"/>
+</template>
+
+<script>
+    let supportedCardIcons = ['american-express', 'diners-club', 'discover', 'jcb', 'maestro', 'master-card', 'visa'];
+
+    export default{
+        props: {
+            cardType: {
+                type: String,
+                default: ''
+            }
+        },
+
+        computed: {
+            cardTypeIcon: function() {
+                let type = this.cardType ? this.cardType.toLowerCase() : null;
+                if(supportedCardIcons.indexOf(type) > -1) {
+                    return `/static/images/creditcards/${type}.png`;
+                }
+                return null;
+            }
+        }
+    }
+</script>

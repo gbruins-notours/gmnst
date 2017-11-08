@@ -48,7 +48,9 @@
                                 <label class="checkout_form_label fwb">{{ $t('CARD NUMBER') }}:</label>
                                 <div class="checkout_form_value">
                                     <div id="card-number" class="el-input__inner "></div>
-                                    <span class="card-icon" v-show="cardTypeIcon"><img :src="cardTypeIcon" /></span>
+                                    <span class="card-icon">
+                                        <credit-card-icon :card-type="cardType"></credit-card-icon>
+                                    </span>
                                     <i v-show="inputClasses['card-number']" :class="inputClasses['card-number']"></i>
                                 </div>
                             </div>
@@ -132,9 +134,15 @@
                 <!-- Review -->
                 <div v-show="currentStep === 2">
                     <div class="step-title">{{ $t('Review your order') }}:</div>
-                    <cart-items :allow-edit="false"
-                                :show-shipping-cost="true"
-                                :show-sales-tax="true"></cart-items>
+                    <cart-items :allow-edit="false"></cart-items>
+
+                    <div class="mtm clearfix">
+                        <div class="floatRight">
+                            <cart-totals-table :cart="cart"
+                                               :show-shipping-cost="true"
+                                               :show-sales-tax="true"></cart-totals-table>
+                        </div>
+                    </div>
 
                     <!-- Submit button -->
                     <div class="pal tac">
@@ -196,11 +204,13 @@
     import CheckoutWizardBar from '../../components/checkout/CheckoutWizardBar'
     import PaymentMethodChooser from '../../components/checkout/PaymentMethodChooser'
     import ShippingBillingForm from '../../components/checkout/ShippingBillingForm'
-    import CountrySelect from '../../components/CountrySelect.vue'
+    import CountrySelect from '../../components/CountrySelect'
     import CartItems from '../../components/cart/CartItems'
-    import ShippingView from '../../components/checkout/ShippingView.vue'
-    import ShippingBillingHelp from '../../components/checkout/ShippingBillingHelp.vue'
-    import BottomPopover from '../../components/BottomPopover.vue'
+    import CartTotalsTable from '../../components/cart/CartTotalsTable'
+    import ShippingView from '../../components/checkout/ShippingView'
+    import ShippingBillingHelp from '../../components/checkout/ShippingBillingHelp'
+    import BottomPopover from '../../components/BottomPopover'
+    import CreditCardIcon from '../../components/CreditCardIcon'
     import api from '../../util/api'
     import checkoutService from '../../util/checkoutService'
 
@@ -216,8 +226,6 @@
     Vue.prototype.$notify = Notification;
 
     let currentNotification = null;
-    let supportedCardIcons = ['american-express', 'diners-club', 'discover', 'jcb', 'maestro', 'master-card', 'visa'];
-
 
     export default {
         components: {
@@ -229,7 +237,9 @@
             Checkbox,
             CountrySelect,
             CartItems,
-            BottomPopover
+            BottomPopover,
+            CreditCardIcon,
+            CartTotalsTable
         },
 
         computed: {
@@ -260,13 +270,6 @@
             checkoutButtonEnabled: function() {
                 return true;
                 // return (this.paymentMethod === 'CREDIT_CARD' && !this.$v.$invalid);
-            },
-
-            cardTypeIcon: function() {
-                if(supportedCardIcons.indexOf(this.cardType) > -1) {
-                    return `/static/images/creditcards/${this.cardType}.png`;
-                }
-                return null;
             },
 
             billingSameAsShipping: {
@@ -555,7 +558,7 @@
                         });
 
                         return this.$router.push({ 
-                            name: 'orders',
+                            name: 'order',
                             params: { 
                                 id: result.transactionId
                             } 

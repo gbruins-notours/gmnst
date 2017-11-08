@@ -12,6 +12,12 @@
 
             <div class="pam">
                 <cart-items :highlight-item="added_cart_item"></cart-items>
+
+                <div class="mtm clearfix">
+                    <div class="floatRight">
+                        <cart-totals-table :cart="cart"></cart-totals-table>
+                    </div>
+                </div>
             </div>
 
             <div class="tac pal" v-if="this.cart.num_items">
@@ -30,10 +36,12 @@
     import isObject from 'lodash.isobject'
     import PageHeader from '../../components/PageHeader.vue'
     import CartItems from '../../components/cart/CartItems'
+    import CartTotalsTable from '../../components/cart/CartTotalsTable'
 
     export default {
         components: {
             CartItems,
+            CartTotalsTable,
             PageHeader
         },
 

@@ -43,6 +43,7 @@ const translations = {
 
     'Email address': 'Email address',
     'Error placing order': 'Error placing order',
+    'Estimated tax': 'Estimated tax',
     'EXPIRES': 'EXPIRES',
 
     'fill_out_form_warning': 'Please fill out the form completely before continuing. Thanks!',
@@ -66,12 +67,15 @@ const translations = {
 
     'optional': 'optional',
     'Order': 'Order',
+    'Order Details': 'Order Details',
+    'Order summary': 'Order summary',
     'Order total': 'Order total',
+    'Ordered on': 'Ordered on',
 
     'Pay with PAYPAL': 'Pay with PAYPAL',
     'PAYMENT': 'PAYMENT',
+    'Payment method': 'Payment method',
     'Payment method error': 'Payment method error',
-    'payment_type_phrase': '{type} ending in {last4}',
     'PAYPAL': 'PAYPAL',
     'PAYPAL_ACCOUNT_TOKENIZATION_FAILED': 'PayPal tokenization failed',
     'PAYPAL_FLOW_FAILED': 'Unable to initialize PayPal flow. Are your options correct?',
@@ -136,6 +140,7 @@ const translations = {
     'There was an error tokenizing PayPal!': 'There was an error tokenizing PayPal!',
     'Tips for entering addresses': 'Tips for entering addresses',
     'Total': 'Total',
+    'Total before tax': 'Total before tax',
 
     'Unable to initialize PayPal flow. Are your options correct?': 'Unable to initialize PayPal flow. Are your options correct?',
     'USE A DIFFERENT BILLING ADDRESS': 'USE A DIFFERENT BILLING ADDRESS',

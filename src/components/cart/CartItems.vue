@@ -4,7 +4,6 @@
             {{ $t('Your shopping cart does not contain any items.') }}
         </div>
         <div v-else class="ptl">
-
             <article v-for="item in cart.cart_items" 
                     :key="item.id" 
                     class="cartItem"
@@ -12,7 +11,7 @@
                     :id="'cartItem' + item.id">
                 <div class="cartItemPic">
                     <figure class="image is-128x128">
-                        <img v-bind:src="productPic(item)">
+                        <img v-bind:src="cartService.productPic(item)">
                     </figure>
                 </div>
 
@@ -61,38 +60,6 @@
                     </div>
                 </div>
             </article>
-
-            <div class="mtm clearfix">
-                <div class="floatRight">
-                    <!-- subtotal -->
-                    <div class="displayTableRow">
-                        <div class="displayTableCell prl fwb tar">
-                            {{ $t('Subtotal') }}
-                            <span class="nowrap">({{ cart.num_items }} {{ $tc('items', cart.num_items) }})</span>:
-                        </div>
-                        <div class="displayTableCell tar mono">{{ cart.sub_total }}</div>
-                    </div>
-
-                    <!-- shipping -->
-                    <div class="displayTableRow" v-if="showShippingCost">
-                        <div class="displayTableCell prl fwb tar">{{ $t('Shipping') }}:</div>
-                        <div class="displayTableCell tar mono">{{ cart.shipping_total }}</div>
-                    </div>
-
-                    <!-- sales tax -->
-                    <div class="displayTableRow" v-if="showSalesTax">
-                        <div class="displayTableCell prl fwb tar">{{ $t('Tax') }}:</div>
-                        <div class="displayTableCell tar mono">{{ cart.sales_tax }}</div>
-                    </div>
-
-                    <!-- order total -->
-                    <div class="displayTableRow" v-if="showShippingCost && showSalesTax">
-                        <div class="displayTableCell prl fwb tar colorGreen fs16">{{ $t('Order total') }}:</div>
-                        <div class="displayTableCell fwb tar colorGreen fs16 mono">{{ $n(cart.grand_total, 'currency') }}</div>
-                    </div>
-                </div>
-            </div>
-            
         </div>
     </div>
 </template>
@@ -104,9 +71,10 @@
     import api from '../../util/api'
     import { mapGetters } from 'vuex'
     import isObject from 'lodash.isobject'
-    import ProductPrice from '../../components/product/ProductPrice.vue'
-    import NumberButtons from '../../components/NumberButtons.vue'
+    import ProductPrice from '../../components/product/ProductPrice'
+    import NumberButtons from '../../components/NumberButtons'
     import { Select, Option, InputNumber, Loading, Button } from 'element-ui'
+    import cartService from '../../util/cartService'
 
     Vue.use(Select);
     Vue.use(Option);
@@ -121,33 +89,24 @@
                 default: true
             },
 
-            showShippingCost: {
-                type: Boolean,
-                default: false
-            },
-
-            showSalesTax: {
-                type: Boolean,
-                default: false
-            },
-
             highlightItem: {
                 type: String,
                 default: null
             }
         },
 
+        components: {
+            ProductPrice,
+            NumberButtons
+        },
+
         data() {
             return {
                 added_cart_item: {},
                 selectedQty: 0,
-                loading: true
+                loading: true,
+                cartService: cartService
             }
-        },
-
-        components: {
-            ProductPrice,
-            NumberButtons
         },
 
         computed: {
@@ -158,13 +117,6 @@
         },
 
         methods: {
-            productPic(cartItem) {
-                if (cartItem.product.featured_pic) {
-                    return '/static/images/product/' + cartItem.product.featured_pic;
-                }
-                return;
-            },
-
             updateCartItemQuantity(item, qty) {
                 let loadingInstance = Loading.service({ target: '#cartItem' + item.id });
 
@@ -214,113 +166,5 @@
     }
 </script>
 
-<style lang="scss">
-    @import '../../assets/css/components/_variables.scss';
-    @import '../../assets/css/components/_mixins.scss';
-
-    .cartItem {
-        width: 100%;
-        margin-bottom: 20px;
-        background-color: #fff;
-        @include box-shadow(0px, 1px, 2px, rgba(0,0,0,.1));
-        transition: background-color 1s linear;
-    }
-    .cartItem.highlight {
-        background-color: #d2f1d3;
-    }
-    .cartItem.fadeout {
-        background-color: #fff;
-    }
-
-    .cartItemPic {
-        display: table-cell;
-        overflow: hidden;
-        background-color: #000;
-    }
-
-    .cartItemInfo {
-        display: table-cell;
-        vertical-align: top;
-        width:100%;
-    }
-
-    .cartItemInfoContent {
-        display: block;
-        padding: 5px 10px;
-    }
-
-    .cartItemMain {
-        flex-grow: 1;
-        padding-bottom: 5px;
-
-        .itemTitle {
-            font-weight: bold;
-            font-size: 14px;
-            display: block;
-        }
-    }
-
-    .cartItemCol {
-        display: block;
-        margin-left: 0;
-
-        .itemLabel,
-        .itemVal {
-            display: table-cell;
-            padding: 0 10px 3px 0;
-        }
-        .itemLabel {
-            width: 60px;
-            word-wrap: break-word;
-            font-size: 11px;
-            vertical-align: top;
-        }
-        .itemVal {
-            font-weight: bold;
-            font-size: 14px;
-        }
-    }
-
-@media #{$medium-and-up} {
-    .cartItemInfoContent {
-        padding: 10px 15px;
-
-        display: -webkit-flex; /* Safari */
-        display: flex;
-        -webkit-flex-direction: row; /* Safari */
-        flex-direction: row;
-
-        -webkit-flex-wrap: nowrap;
-        flex-wrap: nowrap;
-
-        -webkit-justify-content: flex-start;
-        justify-content: flex-start;
-    }
-
-    .cartItemMain {
-        flex-grow: 1;
-
-        .itemTitle {
-            font-size: 16px
-        }
-    }
-
-    .cartItemCol {
-        flex-grow: 0;
-        margin-left: 20px;
-
-        .itemLabel,
-        .itemVal {
-            display: block;
-        }
-
-        .itemLabel {
-            width: 80px;
-        }
-
-        .itemVal {
-            font-size: 16px;
-        }
-    }
-}
+<style>
 </style>

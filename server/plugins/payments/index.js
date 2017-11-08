@@ -156,7 +156,7 @@ internals.after = function (server, next) {
             method: 'GET',
             path: '/order',
             config: {
-                description: 'Finds a payment entry',
+                description: 'Basic order info',
                 validate: {
                     query: {
                         transaction_id: Joi.string().max(50)
@@ -175,6 +175,7 @@ internals.after = function (server, next) {
                             reply.apiSuccess({
                                 id: p.id,
                                 transaction_id: p.transaction_id,
+                                created: p.created_at,
                                 amount: p.amount,
                                 creditCard: {
                                     last4: p.transaction.transaction.creditCard.last4,
@@ -184,6 +185,48 @@ internals.after = function (server, next) {
                                 shoppingCart: {
                                     num_items: p.shoppingCart.num_items
                                 },
+                                shipping: p.transaction.transaction.shipping
+                            });
+                        })
+                        .catch((err) => {
+                            global.appInsightsClient.trackException({
+                                exception: err
+                            });
+                            reply(Boom.badRequest(err));
+                        });
+                }
+            }
+        },
+        {
+            method: 'GET',
+            path: '/order-details',
+            config: {
+                description: 'More detailed info about an order',
+                validate: {
+                    query: {
+                        transaction_id: Joi.string().max(50)
+                    }
+                },
+                handler: (request, reply) => {
+                    server.plugins.BookshelfOrm.bookshelf.model('Payment').getPaymentByAttribute('transaction_id', request.query.transaction_id)
+                        .then((payment) => {
+                            if(!payment) {
+                                return reply(Boom.notFound('Order not found'));
+                            }
+
+                            let p = payment.toJSON();
+
+                            reply.apiSuccess({
+                                id: p.id,
+                                transaction_id: p.transaction_id,
+                                created: p.created_at,
+                                amount: p.amount,
+                                creditCard: {
+                                    last4: p.transaction.transaction.creditCard.last4,
+                                    cardType: p.transaction.transaction.creditCard.cardType
+                                    //TODO: what about paypal?
+                                },
+                                shoppingCart: p.shoppingCart,
                                 shipping: p.transaction.transaction.shipping
                             });
                         })

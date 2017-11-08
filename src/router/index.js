@@ -15,6 +15,7 @@ import ProductDetail from '../pages/product/ProductDetail.vue';
 import Cart from '../pages/cart/Cart.vue';
 import Checkout from '../pages/checkout/Checkout.vue';
 import Order from '../pages/orders/Order.vue';
+import OrderDetails from '../pages/orders/OrderDetails.vue';
 import PrivacyNotice from '../pages/PrivacyNotice.vue';
 import ConditionsOfUse from '../pages/ConditionsOfUse.vue';
 import Error404 from '../pages/Error404.vue';
@@ -45,9 +46,14 @@ export function createRouter () {
                 component: Checkout
             },
             {
-                name: 'orders',
-                path: '/orders/:id',
+                name: 'order',
+                path: '/order/:id',
                 component: Order
+            },
+            {
+                name: 'order_details',
+                path: '/order-details/:id',
+                component: OrderDetails
             },
             {
                 name: 'cart',

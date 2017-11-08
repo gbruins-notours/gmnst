@@ -71,9 +71,21 @@ export default {
             });
     },
 
-    getOrderById(transaction_id) {
+    getOrder(transaction_id) {
         return getHttp()
             .get('/api/v1/order', {
+                params: {
+                    transaction_id
+                }
+            })
+            .then((response) => {
+                return response.data.data;
+            });
+    },
+
+    getOrderDetails(transaction_id) {
+        return getHttp()
+            .get('/api/v1/order-details', {
                 params: {
                     transaction_id
                 }

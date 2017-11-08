@@ -17,8 +17,6 @@ let internals = {};
  * https://blog.taxjar.com/sales-tax-and-shipping/
  */
 internals.getSalesTaxAmount = (params) => {
-    console.log("GET SALES TAX AMOUNT", params)
-
     return new Promise((resolve, reject) => {
         let taxAmount = 0;
 

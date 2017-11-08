@@ -32,14 +32,16 @@
                     </div>
 
                     <div class="displayTableRow">
-                        <div class="displayTableCell prm pbs">{{ $t('Payment') }}:</div>
-                        <div class="displayTableCell fwb pbs">{{ paymentPhrase }}</div>
+                        <div class="displayTableCell prm pbs">{{ $t('Payment method') }}:</div>
+                        <div class="displayTableCell fwb pbs">
+                            <payment-type-display :card-type="order.creditCard.cardType" :last-four="order.creditCard.last4"></payment-type-display>
+                        </div>
                     </div>
 
                     <div class="displayTableRow">
                         <div class="displayTableCell prm pbs">{{ $t('Order') }}:</div>
                         <div class="displayTableCell fwb pbs">
-                            <a v-if="order.id" :click="goToOrders()">{{ order.transaction_id }}</a>
+                            <a v-if="order.id" :click="goToOrderDetails()">{{ order.transaction_id }}</a>
                         </div>
                     </div>
                 </div>
@@ -53,22 +55,15 @@
     import Vue from 'vue'
     import api from '../../util/api'
     import checkoutService from '../../util/checkoutService'
+    import PaymentTypeDisplay from '../../components/PaymentTypeDisplay'
 
     export default {
 
+        components: {
+            PaymentTypeDisplay
+        },
+
         computed: {
-            paymentPhrase: function() {
-                if(this.order.creditCard.cardType) {
-                    if(this.order.creditCard.last4) {
-                        return this.$t('payment_type_phrase', { type: this.order.creditCard.cardType, last4: this.order.creditCard.last4 })
-                    }
-                    return this.order.creditCard.cardType;
-                }
-
-                // TODO: Paypal
-                return null;
-            },
-
             formattedName() {
                 if(this.order.shipping) {
                     return checkoutService.getFormattedShippingName(this.order.shipping.firstName, this.order.shipping.lastName);
@@ -103,9 +98,9 @@
         },
 
         methods: {
-            goToOrders: function() {
+            goToOrderDetails: function() {
                 return this.$router.push({ 
-                    name: 'orders',
+                    name: 'order_details',
                     params: { 
                         id: this.order.transaction_id
                     } 
@@ -114,7 +109,7 @@
         },
 
         created() {
-            api.getOrderById(this.$route.params.id)
+            api.getOrder(this.$route.params.id)
                 .then((order) => {
                     this.order = order;
                 });
