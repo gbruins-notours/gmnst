@@ -17,11 +17,13 @@ let internals = {};
  * https://blog.taxjar.com/sales-tax-and-shipping/
  */
 internals.getSalesTaxAmount = (params) => {
+    console.log("GET SALES TAX AMOUNT", params)
+
     return new Promise((resolve, reject) => {
         let taxAmount = 0;
 
-        if(params.countryCodeAlpha2 === 'US' && params.sub_total) {
-            switch(params.state) {
+        if(params.shipping_countryCodeAlpha2 === 'US' && params.sub_total) {
+            switch(params.shipping_state) {
                 case 'CA':
                     // NOTE: shipping is not taxable in CA
                     taxAmount = parseFloat(params.sub_total) * parseFloat(process.env.TAX_RATE_CALIFORNIA || '0.09');
