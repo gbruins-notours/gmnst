@@ -1,3 +1,14 @@
+<script>
+    export default {
+        data: function() {
+            return {
+                year: new Date().getFullYear()
+            }
+        }
+    }
+</script>
+
+
 <template>
     <footer class="footer">
         <div class="container">
@@ -12,15 +23,6 @@
     </footer>
 </template>
 
-<script>
-    export default {
-        data: function() {
-            return {
-                year: new Date().getFullYear()
-            }
-        }
-    }
-</script>
 
 <style lang="scss">
     @import "../assets/css/components/_variables.scss";

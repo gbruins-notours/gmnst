@@ -1,3 +1,21 @@
+<script>
+    export default {
+        data: function() {
+            return {
+                paymentMethod: 'CREDIT_CARD'
+            }
+        },
+
+        methods: {
+            changeMethod(method) {
+                this.paymentMethod = method;
+                this.$emit('change', method)
+            }
+        }
+    }
+</script>
+
+
 <template>
     <div class="payment-methods">
         <div class="item">
@@ -22,23 +40,6 @@
     </div>
 </template>
 
-
-<script>
-    export default {
-        data: function() {
-            return {
-                paymentMethod: 'CREDIT_CARD'
-            }
-        },
-
-        methods: {
-            changeMethod(method) {
-                this.paymentMethod = method;
-                this.$emit('change', method)
-            }
-        }
-    }
-</script>
 
 <style lang="scss">
     @import "../../assets/css/components/_variables.scss";

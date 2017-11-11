@@ -56,6 +56,8 @@ const translations = {
     'GENDER_TYPE_MENS': 'Mens',
     'GENDER_TYPE_WOMENS': 'Womens',
 
+    'HATS': 'HATS',
+
     'items': 'item | items',
 
     'LAST NAME': 'LAST NAME',
@@ -99,7 +101,6 @@ const translations = {
     'RECEIPT': 'RECEIPT',
     'Required': 'Required',
     'Return to cart': 'Return to cart',
-    'Review your order': 'Review your order',
 
     'SAME AS SHIPPING ADDRESS': 'SAME AS SHIPPING ADDRESS',
     'SECURITY CODE': 'SECURITY CODE',
@@ -139,6 +140,7 @@ const translations = {
     'There was an error setting up the payment client!': 'There was an error setting up the payment client!',
     'There was an error tokenizing PayPal!': 'There was an error tokenizing PayPal!',
     'Tips for entering addresses': 'Tips for entering addresses',
+    'TOPS': 'TOPS',
     'Total': 'Total',
     'Total before tax': 'Total before tax',
 

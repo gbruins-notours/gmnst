@@ -1,12 +1,3 @@
-<template>
-    <div class="inlineBlock numberButtons">
-        <el-button-group>
-          <el-button icon="plus" @click="up" :size="buttonSize" :disabled="plusDisabled"></el-button>
-          <el-button icon="minus" @click="down" :size="buttonSize" :disabled="minusDisabled"></el-button>
-        </el-button-group>
-    </div>
-</template>
-
 <script>
     import Vue from 'vue'
     import { Button, ButtonGroup } from 'element-ui'
@@ -144,6 +135,17 @@
         }
     }
 </script>
+
+
+<template>
+    <div class="inlineBlock numberButtons">
+        <el-button-group>
+          <el-button icon="plus" @click="up" :size="buttonSize" :disabled="plusDisabled"></el-button>
+          <el-button icon="minus" @click="down" :size="buttonSize" :disabled="minusDisabled"></el-button>
+        </el-button-group>
+    </div>
+</template>
+
 
 <style>
     .numberButtons .el-button {

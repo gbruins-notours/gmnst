@@ -1,13 +1,28 @@
+<script>
+    import Vue from 'vue'
+    import { Dialog, Button } from 'element-ui'
+
+    Vue.use(Dialog)
+    Vue.use(Button)
+
+    export default {
+        data: function() {
+            return {
+                modalIsActive: false
+            }
+        }
+    }
+</script>
+
+
 <template>
     <div>
-
         <div class="fwb">{{ $t('Make sure your address is correct') }}</div>
         {{ $t('correct_address_statement') }}
 
         <div>
             <el-button type="text" @click="modalIsActive = true">{{ $t('Tips for entering addresses') }}</el-button>
         </div>
-
 
         <!-- Address help popup -->
         <el-dialog :title="$t('About Billing and Shipping Addresses')"
@@ -108,26 +123,9 @@
                 </div>
             </div>
         </el-dialog>
-
     </div>
 </template>
 
-
-<script>
-    import Vue from 'vue'
-    import { Dialog, Button } from 'element-ui'
-
-    Vue.use(Dialog)
-    Vue.use(Button)
-
-    export default {
-        data: function() {
-            return {
-                modalIsActive: false
-            }
-        }
-    }
-</script>
 
 <style lang="scss">
 .qaRow {

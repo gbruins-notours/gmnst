@@ -1,3 +1,77 @@
+<script>
+import Vue from 'vue'
+import PageHeader from '../../components/PageHeader'
+import PaymentTypeDisplay from '../../components/PaymentTypeDisplay'
+import ProductPrice from '../../components/product/ProductPrice'
+import CartTotalsTable from '../../components/cart/CartTotalsTable'
+import OrderService from './order_service.js'
+import ProductService from '../product/product_service.js'
+import ShoppingCartService from '../cart/shopping_cart_service.js'
+
+let orderService = new OrderService();
+let productService = new ProductService();
+let shoppingCartService = new ShoppingCartService();
+
+export default {
+    components: {
+        PageHeader,
+        PaymentTypeDisplay,
+        ProductPrice,
+        CartTotalsTable
+    },
+
+    computed: {
+        formattedName() {
+            if(this.order.shipping) {
+                return shoppingCartService.getFormattedShippingName(this.order.shipping.firstName, this.order.shipping.lastName);
+            }
+        },
+
+        formattedCityStateZip: function() {
+            if(this.order.shipping) {
+                return shoppingCartService.getFormattedCityStateZip(
+                    this.order.shipping.locality,
+                    this.order.shipping.region,
+                    this.order.shipping.postalCode
+                );
+            }
+        },
+
+        companyDisplay: function() {
+            if(this.order.shipping) {
+                return shoppingCartService.getFormattedCompanyName(this.order.shipping.company);
+            }
+        }
+    },
+
+    data: function() {
+        return {
+            order: {
+                creditCard: {},
+                shipping: {},
+                shoppingCart: {}
+            },
+            productService: productService
+        }
+    },
+
+    methods: {
+        goToDetails(seo_uri) {
+            this.$router.push({
+                name: 'product_detail',
+                params: { itemId: seo_uri }
+            });
+        },
+    },
+
+    created() {
+        orderService.getOrder(this.$route.params.id, true).then((order) => {
+            this.order = order;
+        });
+    }
+}
+</script>
+
 <template>
     <section class="container">
         <page-header :title="$t('Order Details')"></page-header>
@@ -53,7 +127,7 @@
                         :id="'cartItem' + item.id">
                     <div class="cartItemPic">
                         <figure class="image is-128x128">
-                            <img v-bind:src="cartService.productPic(item)">
+                            <img v-bind:src="productService.featuredProductPic(item.product)">
                         </figure>
                     </div>
 
@@ -90,80 +164,3 @@
         </div>
     </section>
 </template>
-
-<script>
-    import Vue from 'vue'
-    import api from '../../util/api'
-    import checkoutService from '../../util/checkoutService'
-    import cartService from '../../util/cartService'
-    import PageHeader from '../../components/PageHeader'
-    import PaymentTypeDisplay from '../../components/PaymentTypeDisplay'
-    import ProductPrice from '../../components/product/ProductPrice'
-    import CartTotalsTable from '../../components/cart/CartTotalsTable'
-
-    export default {
-
-        components: {
-            PageHeader,
-            PaymentTypeDisplay,
-            ProductPrice,
-            CartTotalsTable
-        },
-
-        computed: {
-            formattedName() {
-                if(this.order.shipping) {
-                    return checkoutService.getFormattedShippingName(this.order.shipping.firstName, this.order.shipping.lastName);
-                }
-            },
-
-            formattedCityStateZip: function() {
-                if(this.order.shipping) {
-                    return checkoutService.getFormattedCityStateZip(
-                        this.order.shipping.locality,
-                        this.order.shipping.region,
-                        this.order.shipping.postalCode
-                    );
-                }
-            },
-
-            companyDisplay: function() {
-                if(this.order.shipping) {
-                    return checkoutService.getFormattedCompanyName(this.order.shipping.company);
-                }
-            }
-        },
-
-        data: function() {
-            return {
-                order: {
-                    creditCard: {},
-                    shipping: {},
-                    shoppingCart: {}
-                },
-                cartService: cartService
-            }
-        },
-
-        methods: {
-            goToDetails(seo_uri) {
-                this.$router.push({
-                    name: 'product_detail',
-                    params: { itemId: seo_uri }
-                });
-            },
-        },
-
-        created() {
-            api.getOrderDetails(this.$route.params.id)
-                .then((order) => {
-                    this.order = order;
-                });
-        }
-
-    }
-</script>
-
-<style lang="scss">
-
-</style>

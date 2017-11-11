@@ -1,21 +1,3 @@
-<template>
-    <el-select v-model="selectedCountry"
-               filterable
-               :placeholder="placeholder"
-               :no-match-text="$t('No matching values')"
-               @change="emitChange"
-               @visible-change="emitVisibleChange"
-               class="widthAll">
-        <el-option
-                v-for="item in countryList"
-                :key="item.alpha2"
-                :label="item.alpha2 == 'GB' ? 'United Kingdom of Great Britain' : item.name"
-                :value="item[optionValueAttr]">
-        </el-option>
-    </el-select>
-</template>
-
-
 <script>
     import Vue from 'vue'
     import { Select } from 'element-ui'
@@ -75,5 +57,20 @@
     }
 </script>
 
-<style>
-</style>
+
+<template>
+    <el-select v-model="selectedCountry"
+               filterable
+               :placeholder="placeholder"
+               :no-match-text="$t('No matching values')"
+               @change="emitChange"
+               @visible-change="emitVisibleChange"
+               class="widthAll">
+        <el-option
+                v-for="item in countryList"
+                :key="item.alpha2"
+                :label="item.alpha2 == 'GB' ? 'United Kingdom of Great Britain' : item.name"
+                :value="item[optionValueAttr]">
+        </el-option>
+    </el-select>
+</template>

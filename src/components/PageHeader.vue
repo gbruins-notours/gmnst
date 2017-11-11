@@ -1,3 +1,10 @@
+<script>
+    export default {
+        props: ['title']
+    }
+</script>
+
+
 <template>
     <section class="page-header">
         <div class="container">
@@ -11,11 +18,6 @@
     </section>
 </template>
 
-<script>
-    export default {
-        props: ['title']
-    }
-</script>
 
 <style lang="scss">
     @import "../assets/css/components/_variables.scss";

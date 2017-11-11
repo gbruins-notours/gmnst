@@ -1,3 +1,24 @@
+<script>
+    import Vue from 'vue'
+    import { Card } from 'element-ui'
+    import ProductService from '../../pages/product/product_service.js'
+
+    let productService  = new ProductService();
+
+    Vue.use(Card)
+
+    export default {
+        props: ['product'],
+
+        computed: {
+            productPic: function() {
+                return productService.featuredProductPic(this.product);
+            }
+        }
+    }
+</script>
+
+
 <template>
     <el-card :body-style="{ padding: '0px' }" class="heightAll">
         <img :src="productPic" alt="Image" class="image">
@@ -8,25 +29,6 @@
     </el-card>
 </template>
 
-<script>
-    import Vue from 'vue'
-    import { Card } from 'element-ui';
-
-    Vue.use(Card)
-
-    export default {
-        props: ['product'],
-
-        computed: {
-            productPic: function() {
-                if (this.product.featured_pic) {
-                    return '/static/images/product/' + this.product.featured_pic;
-                }
-                return;
-            }
-        }
-    }
-</script>
 
 <style>
     .cardContent {

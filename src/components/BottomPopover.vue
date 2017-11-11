@@ -1,10 +1,3 @@
-<template>
-    <div class="bottomPopover" :style="{'width': width}">
-        <div class="arrow"></div>
-        <slot></slot>
-    </div>
-</template>
-
 <script>
     export default {
         props: {
@@ -15,6 +8,15 @@
         }
     }
 </script>
+
+
+<template>
+    <div class="bottomPopover" :style="{'width': width}">
+        <div class="arrow"></div>
+        <slot></slot>
+    </div>
+</template>
+
 
 <style lang="scss">
     @import "../assets/css/components/_mixins.scss";

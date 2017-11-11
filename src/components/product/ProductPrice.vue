@@ -1,7 +1,3 @@
-<template>
-    <span>{{ $n(price, 'currency') }}</span>
-</template>
-
 <script>
     import isObject from 'lodash.isobject'
 
@@ -29,3 +25,8 @@
         }
     }
 </script>
+
+
+<template>
+    <span>{{ $n(price, 'currency') }}</span>
+</template>

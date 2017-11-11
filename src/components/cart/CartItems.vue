@@ -1,3 +1,115 @@
+<script>
+    import Promise from 'bluebird'
+    import accounting from 'accounting'
+    import Vue from 'vue'
+    import { mapGetters } from 'vuex'
+    import isObject from 'lodash.isobject'
+    import ProductPrice from '../../components/product/ProductPrice'
+    import NumberButtons from '../../components/NumberButtons'
+    import { Select, Option, InputNumber, Loading, Button } from 'element-ui'
+    import ShoppingCartService from '../../pages/cart/shopping_cart_service.js'
+    import ProductService from '../../pages/product/product_service.js'
+
+    let shoppingCartService = new ShoppingCartService();
+    let productService = new ProductService();
+
+    Vue.use(Select);
+    Vue.use(Option);
+    Vue.use(InputNumber);
+    Vue.use(Button);
+    Vue.use(Loading.directive)
+
+    export default {
+        props: {
+            allowEdit: {
+                type: Boolean,
+                default: true
+            },
+
+            highlightItem: {
+                type: String,
+                default: null
+            }
+        },
+
+        components: {
+            ProductPrice,
+            NumberButtons
+        },
+
+        data() {
+            return {
+                added_cart_item: {},
+                selectedQty: 0,
+                loading: true,
+                productService: productService
+            }
+        },
+
+        computed: {
+            ...mapGetters([
+                'cart',
+                'app'
+            ])
+        },
+
+        methods: {
+            updateCartItemQuantity(item, qty) {
+                let loadingInstance = Loading.service({ target: `#cartItem${item.id}` });
+
+                shoppingCartService
+                    .updateItemQty({
+                        id: item.id,
+                        qty
+                    })
+                    .then((cartData) => {
+                        this.$store.dispatch('CART_SET', cartData);
+                        item.qty = qty;
+                        loadingInstance.close();
+                    });
+            },
+
+            removeItem(id) {
+                let loadingInstance = Loading.service({ target: `#cartItem${id}` });
+
+                shoppingCartService
+                    .deleteItem({
+                        id
+                    })
+                    .then((cartData) => {
+                        this.$store.dispatch('CART_SET', cartData);
+                        loadingInstance.close();
+                    });
+            },
+
+            goToDetails(seo_uri) {
+                this.$router.push({
+                    name: 'product_detail',
+                    params: { itemId: seo_uri }
+                });
+            },
+
+            goToCheckout() {
+                this.$router.push({ name: 'checkout' });
+            },
+
+            goToProductList() {
+                  //TODO: get the type of the 'added_cart_item' product and
+                  // send the user back to the list page for that type,
+                  // else to home page (?)
+                  this.$router.push('/type/' + app.seoUri[key]);
+            }
+        },
+
+        mounted() {
+            setTimeout(() => {
+                this.added_cart_item = this.highlightItem;
+            }, 1000)
+        }
+    }
+</script>
+
+
 <template>
     <div>
         <div v-if="!cart.num_items" class="fs16 tac pal">
@@ -11,7 +123,7 @@
                     :id="'cartItem' + item.id">
                 <div class="cartItemPic">
                     <figure class="image is-128x128">
-                        <img v-bind:src="cartService.productPic(item)">
+                        <img v-bind:src="productService.featuredProductPic(item.product)">
                     </figure>
                 </div>
 
@@ -63,108 +175,3 @@
         </div>
     </div>
 </template>
-
-<script>
-    import Promise from 'bluebird'
-    import accounting from 'accounting'
-    import Vue from 'vue'
-    import api from '../../util/api'
-    import { mapGetters } from 'vuex'
-    import isObject from 'lodash.isobject'
-    import ProductPrice from '../../components/product/ProductPrice'
-    import NumberButtons from '../../components/NumberButtons'
-    import { Select, Option, InputNumber, Loading, Button } from 'element-ui'
-    import cartService from '../../util/cartService'
-
-    Vue.use(Select);
-    Vue.use(Option);
-    Vue.use(InputNumber);
-    Vue.use(Button);
-    Vue.use(Loading.directive)
-
-    export default {
-        props: {
-            allowEdit: {
-                type: Boolean,
-                default: true
-            },
-
-            highlightItem: {
-                type: String,
-                default: null
-            }
-        },
-
-        components: {
-            ProductPrice,
-            NumberButtons
-        },
-
-        data() {
-            return {
-                added_cart_item: {},
-                selectedQty: 0,
-                loading: true,
-                cartService: cartService
-            }
-        },
-
-        computed: {
-            ...mapGetters([
-                'cart',
-                'app'
-            ])
-        },
-
-        methods: {
-            updateCartItemQuantity(item, qty) {
-                let loadingInstance = Loading.service({ target: '#cartItem' + item.id });
-
-                this.$store.dispatch('CART_ITEM_SET_QTY', {
-                    id: item.id,
-                    qty
-                }).then(() => {
-                    item.qty = qty;
-                    loadingInstance.close();
-                })
-            },
-
-            removeItem(id) {
-                let loadingInstance = Loading.service({ target: '#cartItem' + id });
-
-                this.$store.dispatch('CART_ITEM_DELETE', {
-                    id
-                }).then(() => {
-                    loadingInstance.close();
-                });
-            },
-
-            goToDetails(seo_uri) {
-                this.$router.push({
-                    name: 'product_detail',
-                    params: { itemId: seo_uri }
-                });
-            },
-
-            goToCheckout() {
-                this.$router.push({ name: 'checkout' });
-            },
-
-            goToProductList() {
-                  //TODO: get the type of the 'added_cart_item' product and
-                  // send the user back to the list page for that type,
-                  // else to home page (?)
-                  this.$router.push('/type/' + app.seoUri[key]);
-            }
-        },
-
-        mounted() {
-            setTimeout(() => {
-                this.added_cart_item = this.highlightItem;
-            }, 1000)
-        }
-    }
-</script>
-
-<style>
-</style>

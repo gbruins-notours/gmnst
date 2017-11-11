@@ -1,3 +1,21 @@
+<script>
+    import PageHeader from '../components/PageHeader';
+
+    export default {
+        components: {
+            PageHeader
+        },
+
+        data: function() {
+            return {
+                siteName: 'gmnst.com',
+                siteNameUpper: 'GMNST.COM',
+            }
+        }
+    }
+</script>
+
+
 <template>
     <section>
         <page-header :title="$t('Privacy Notice')"></page-header>
@@ -191,22 +209,6 @@
     </section>
 </template>
 
-<script>
-    import PageHeader from '../components/PageHeader';
-
-    export default {
-        components: {
-            PageHeader
-        },
-
-        data: function() {
-            return {
-                siteName: 'gmnst.com',
-                siteNameUpper: 'GMNST.COM',
-            }
-        }
-    }
-</script>
 
 <style lang="scss">
     .priv {

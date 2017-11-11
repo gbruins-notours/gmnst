@@ -1,124 +1,3 @@
-<template>
-    <div>
-        <!-- Email -->
-        <div v-if="type === 'shipping'">
-            <div>{{ $t('Email address') }}</div>
-            <div class="checkout_form_value">
-                <el-input v-model.trim="email" 
-                          :class="{ 'inputError': $v.form.email.$error }"></el-input>
-                <div role="alert" v-show="canShowValidationMsg('email')">
-                    <p v-if="!$v.form.email.required">{{ $t('Required') }}</p>
-                    <p v-if="!$v.form.email.email">{{ $t('Please enter a valid email address.') }}</p>
-                </div>
-                <i v-show="canShowGreenCheck('email')" class="fa fa-check-circle"></i>
-            </div>
-        </div>
-
-        <!-- Country -->
-        <div>
-            <div>{{ $t('Country') }}</div>
-            <div class="checkout_form_value">
-                <country-select v-model="countryCodeAlpha2"
-                                :init-value="countryCodeAlpha2"
-                                value-type="alpha2"
-                                @change="newVal => countryCodeAlpha2 = newVal"></country-select>
-                <p role="alert" v-show="canShowValidationMsg('countryCodeAlpha2')">{{ $t('Required') }}</p>
-                <i v-show="canShowGreenCheck('countryCodeAlpha2')" class="fa fa-check-circle"></i>
-            </div>
-        </div>
-
-        <!-- First Name -->
-        <div>
-            <div>{{ $t('First name') }}</div>
-            <div class="checkout_form_value">
-                <el-input v-model.trim="firstName"
-                          :class="{ 'inputError': $v.form.firstName.$error }"></el-input>
-                <p role="alert" v-show="canShowValidationMsg('firstName')">{{ $t('Required') }}</p>
-                <i v-show="canShowGreenCheck('firstName')" class="fa fa-check-circle"></i>
-            </div>
-        </div>
-
-        <!-- Last Name -->
-        <div>
-            <div>{{ $t('Last name') }}</div>
-            <div class="checkout_form_value">
-                <el-input v-model.trim="lastName" 
-                          :class="{ 'inputError': $v.form.lastName.$error }"></el-input>
-                <p role="alert" v-show="canShowValidationMsg('lastName')">{{ $t('Required') }}</p>
-                <i v-show="canShowGreenCheck('lastName')" class="fa fa-check-circle"></i>
-            </div>
-        </div>
-
-        <!-- Street Address -->
-        <div>
-            <div>{{ $t('Address line 1') }}</div>
-            <div class="checkout_form_value">
-                <el-input v-model.trim="streetAddress" 
-                          :class="{ 'inputError': $v.form.streetAddress.$error }"></el-input>
-                <p role="alert" v-show="canShowValidationMsg('streetAddress')">{{ $t('Required') }}</p>
-                <i v-show="canShowGreenCheck('streetAddress')" class="fa fa-check-circle"></i>
-            </div>
-        </div>
-
-        <!-- Extended Address -->
-        <!-- This value may be returned by the paypal response, so only displaying it if it does -->
-        <div v-if="form.extendedAddress">
-            <div>{{ $t('Address line 2') }}:</div>
-            <div class="checkout_form_value">
-                <el-input v-model.trim="extendedAddress"></el-input>
-            </div>
-        </div>
-
-        <!-- City -->
-        <div>
-            <div>{{ $t('City') }}</div>
-            <div class="checkout_form_value">
-                <el-input v-model.trim="city" 
-                          :class="{ 'inputError': $v.form.city.$error }"></el-input>
-                <p role="alert" v-show="canShowValidationMsg('city')">{{ $t('Required') }}</p>
-                <i v-show="canShowGreenCheck('city')" class="fa fa-check-circle"></i>
-            </div>
-        </div>
-
-        <!-- State -->
-        <div>
-            <div>{{ $t('State/Province/Region') }}</div>
-            <div class="checkout_form_value">
-                <state-province-select v-model.trim="state"
-                                    :init-value="state"
-                                    :country="countryCodeAlpha2"
-                                    :disabled="!stateSelectEnabled"
-                                    @change="newVal => state = newVal"
-                                    :class="{ 'inputError': $v.form.state.$error }"></state-province-select>
-                <p role="alert" v-show="canShowValidationMsg('state')">{{ $t('Required') }}</p>
-                <i v-show="canShowGreenCheck('state')" class="fa fa-check-circle"></i>
-            </div>
-        </div>
-
-        <!-- Postal Code -->
-        <div>
-            <div>{{ $t('Postal code') }}</div>
-            <div class="checkout_form_value">
-                <el-input v-model.trim="postalCode" 
-                        :class="{ 'inputError': $v.form.postalCode.$error }"></el-input>
-                <p role="alert" v-show="canShowValidationMsg('postalCode')">{{ $t('Required') }}</p>
-                <i v-show="canShowGreenCheck('postalCode')" class="fa fa-check-circle"></i>
-            </div>
-        </div>
-
-        <!-- Company Name -->
-        <div>
-            <div>{{ $t('Company name') }}</div>
-            <div class="checkout_form_value">
-                <el-input v-model.trim="company"
-                          :placeholder="'(' + $t('optional') + ')'"></el-input>
-                <i v-show="canShowGreenCheck('company')" class="fa fa-check-circle"></i>
-            </div>
-        </div>
-    </div>
-</template>
-
-
 <script>
     import Vue from 'vue'
     import { mapGetters } from 'vuex'
@@ -316,6 +195,127 @@
         }
     }
 </script>
+
+
+<template>
+    <div>
+        <!-- Email -->
+        <div v-if="type === 'shipping'">
+            <div>{{ $t('Email address') }}</div>
+            <div class="checkout_form_value">
+                <el-input v-model.trim="email" 
+                          :class="{ 'inputError': $v.form.email.$error }"></el-input>
+                <div role="alert" v-show="canShowValidationMsg('email')">
+                    <p v-if="!$v.form.email.required">{{ $t('Required') }}</p>
+                    <p v-if="!$v.form.email.email">{{ $t('Please enter a valid email address.') }}</p>
+                </div>
+                <i v-show="canShowGreenCheck('email')" class="fa fa-check-circle"></i>
+            </div>
+        </div>
+
+        <!-- Country -->
+        <div>
+            <div>{{ $t('Country') }}</div>
+            <div class="checkout_form_value">
+                <country-select v-model="countryCodeAlpha2"
+                                :init-value="countryCodeAlpha2"
+                                value-type="alpha2"
+                                @change="newVal => countryCodeAlpha2 = newVal"></country-select>
+                <p role="alert" v-show="canShowValidationMsg('countryCodeAlpha2')">{{ $t('Required') }}</p>
+                <i v-show="canShowGreenCheck('countryCodeAlpha2')" class="fa fa-check-circle"></i>
+            </div>
+        </div>
+
+        <!-- First Name -->
+        <div>
+            <div>{{ $t('First name') }}</div>
+            <div class="checkout_form_value">
+                <el-input v-model.trim="firstName"
+                          :class="{ 'inputError': $v.form.firstName.$error }"></el-input>
+                <p role="alert" v-show="canShowValidationMsg('firstName')">{{ $t('Required') }}</p>
+                <i v-show="canShowGreenCheck('firstName')" class="fa fa-check-circle"></i>
+            </div>
+        </div>
+
+        <!-- Last Name -->
+        <div>
+            <div>{{ $t('Last name') }}</div>
+            <div class="checkout_form_value">
+                <el-input v-model.trim="lastName" 
+                          :class="{ 'inputError': $v.form.lastName.$error }"></el-input>
+                <p role="alert" v-show="canShowValidationMsg('lastName')">{{ $t('Required') }}</p>
+                <i v-show="canShowGreenCheck('lastName')" class="fa fa-check-circle"></i>
+            </div>
+        </div>
+
+        <!-- Street Address -->
+        <div>
+            <div>{{ $t('Address line 1') }}</div>
+            <div class="checkout_form_value">
+                <el-input v-model.trim="streetAddress" 
+                          :class="{ 'inputError': $v.form.streetAddress.$error }"></el-input>
+                <p role="alert" v-show="canShowValidationMsg('streetAddress')">{{ $t('Required') }}</p>
+                <i v-show="canShowGreenCheck('streetAddress')" class="fa fa-check-circle"></i>
+            </div>
+        </div>
+
+        <!-- Extended Address -->
+        <!-- This value may be returned by the paypal response, so only displaying it if it does -->
+        <div v-if="form.extendedAddress">
+            <div>{{ $t('Address line 2') }}:</div>
+            <div class="checkout_form_value">
+                <el-input v-model.trim="extendedAddress"></el-input>
+            </div>
+        </div>
+
+        <!-- City -->
+        <div>
+            <div>{{ $t('City') }}</div>
+            <div class="checkout_form_value">
+                <el-input v-model.trim="city" 
+                          :class="{ 'inputError': $v.form.city.$error }"></el-input>
+                <p role="alert" v-show="canShowValidationMsg('city')">{{ $t('Required') }}</p>
+                <i v-show="canShowGreenCheck('city')" class="fa fa-check-circle"></i>
+            </div>
+        </div>
+
+        <!-- State -->
+        <div>
+            <div>{{ $t('State/Province/Region') }}</div>
+            <div class="checkout_form_value">
+                <state-province-select v-model.trim="state"
+                                    :init-value="state"
+                                    :country="countryCodeAlpha2"
+                                    :disabled="!stateSelectEnabled"
+                                    @change="newVal => state = newVal"
+                                    :class="{ 'inputError': $v.form.state.$error }"></state-province-select>
+                <p role="alert" v-show="canShowValidationMsg('state')">{{ $t('Required') }}</p>
+                <i v-show="canShowGreenCheck('state')" class="fa fa-check-circle"></i>
+            </div>
+        </div>
+
+        <!-- Postal Code -->
+        <div>
+            <div>{{ $t('Postal code') }}</div>
+            <div class="checkout_form_value">
+                <el-input v-model.trim="postalCode" 
+                        :class="{ 'inputError': $v.form.postalCode.$error }"></el-input>
+                <p role="alert" v-show="canShowValidationMsg('postalCode')">{{ $t('Required') }}</p>
+                <i v-show="canShowGreenCheck('postalCode')" class="fa fa-check-circle"></i>
+            </div>
+        </div>
+
+        <!-- Company Name -->
+        <div>
+            <div>{{ $t('Company name') }}</div>
+            <div class="checkout_form_value">
+                <el-input v-model.trim="company"
+                          :placeholder="'(' + $t('optional') + ')'"></el-input>
+                <i v-show="canShowGreenCheck('company')" class="fa fa-check-circle"></i>
+            </div>
+        </div>
+    </div>
+</template>
 
 
 <style lang="scss">

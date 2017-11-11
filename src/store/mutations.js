@@ -1,7 +1,10 @@
+'use strict';
+
 import cloneDeep from 'lodash.clonedeep'
 import forEach from 'lodash.foreach'
-import checkoutService from '../util/checkoutService'
+import ShoppingCartService from '../pages/cart/shopping_cart_service.js'
 
+let shoppingCartService = new ShoppingCartService();
 
 export default {
     TOGGLE_SIDEBAR: (state, opened) => {
@@ -49,10 +52,6 @@ export default {
         state.app.pageHeader.inCheckoutFlow = inCheckoutFlow
     },
 
-    receiveProducts (state, { products }) {
-        state.allProducts = products
-    },
-
     CART_SET: (state, cartData) => {
         forEach(cartData, (val, key) => {
             state.cart[key] = val;   
@@ -68,6 +67,6 @@ export default {
     },
 
     CART_DELETE: (state, data) => {
-        state.cart = checkoutService.getCartDefaults();
+        state.cart = shoppingCartService.getCartDefaults();
     }
 }

@@ -1,35 +1,3 @@
-<template>
-    <section>
-        <page-header :title="$t('Shopping Cart')"></page-header>
-
-        <div class="container">
-            <div class="tac ptl" v-if="this.cart.cart_items && this.cart.cart_items.length > 2">
-                <el-button type="warning"
-                           class="colorBlack"
-                           size="large"
-                           @click="goToCheckout">{{ $t('Proceed to checkout') }}</el-button>
-            </div>
-
-            <div class="pam">
-                <cart-items :highlight-item="added_cart_item"></cart-items>
-
-                <div class="mtm clearfix">
-                    <div class="floatRight">
-                        <cart-totals-table :cart="cart"></cart-totals-table>
-                    </div>
-                </div>
-            </div>
-
-            <div class="tac pal" v-if="this.cart.num_items">
-                <el-button type="warning"
-                           class="colorBlack"
-                           size="large"
-                           @click="goToCheckout">{{ $t('Proceed to checkout') }}</el-button>
-            </div>
-        </div>
-    </section>
-</template>
-
 <script>
     import Vue from 'vue'
     import { mapGetters } from 'vuex'
@@ -77,5 +45,35 @@
     }
 </script>
 
-<style lang="scss">
-</style>
+
+<template>
+    <section>
+        <page-header :title="$t('Shopping Cart')"></page-header>
+
+        <div class="container">
+            <div class="tac ptl" v-if="this.cart.cart_items && this.cart.cart_items.length > 2">
+                <el-button type="warning"
+                           class="colorBlack"
+                           size="large"
+                           @click="goToCheckout">{{ $t('Proceed to checkout') }}</el-button>
+            </div>
+
+            <div class="pam">
+                <cart-items :highlight-item="added_cart_item"></cart-items>
+
+                <div class="mtm clearfix">
+                    <div class="floatRight">
+                        <cart-totals-table :cart="cart"></cart-totals-table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tac pal" v-if="this.cart.num_items">
+                <el-button type="warning"
+                           class="colorBlack"
+                           size="large"
+                           @click="goToCheckout">{{ $t('Proceed to checkout') }}</el-button>
+            </div>
+        </div>
+    </section>
+</template>

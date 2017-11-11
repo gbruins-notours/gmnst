@@ -1,39 +1,5 @@
-<template>
-    <div class="checkout-wizard">
-        <div class="item" 
-             :class="{'active': currentStep === 0, 'completed': currentStep > 0}"
-             @click="changeStep(0)">
-            <i class="fa fa-truck"></i>
-            <div class="item-desc nowrap">1) {{ $t('SHIPPING') }}</div>
-        </div>
-
-        <div class="spacer">
-            <hr style="width:100%;" />
-        </div>
-
-        <div class="item" 
-             :class="{'active': currentStep === 1, 'completed': currentStep > 1}"
-             @click="changeStep(1)">
-            <i class="fa fa-handshake-o"></i>
-            <div class="item-desc nowrap">2) {{ $t('PAYMENT') }}</div>
-        </div>
-
-        <div class="spacer">
-            <hr style="width:100%;" />
-        </div>
-
-        <div class="item" 
-             :class="{'active': currentStep === 2, 'completed': currentStep > 2}"
-             @click="changeStep(2)">
-            <i class="fa fa-paper-plane-o"></i>
-            <div class="item-desc nowrap">3) {{ $t('PLACE YOUR ORDER') }}</div>
-        </div>
-    </div>
-</template>
-
-
 <script>
-    export default{
+    export default {
         props: {
             step: {
                 type: Number,
@@ -69,9 +35,43 @@
                 this.currentStep = to;
             }
         }
-
     }
 </script>
+
+
+<template>
+    <div class="checkout-wizard">
+        <div class="item" 
+             :class="{'active': currentStep === 0, 'completed': currentStep > 0}"
+             @click="changeStep(0)">
+            <i class="fa fa-truck"></i>
+            <div class="item-desc nowrap">1) {{ $t('SHIPPING') }}</div>
+        </div>
+
+        <div class="spacer">
+            <hr style="width:100%;" />
+        </div>
+
+        <div class="item" 
+             :class="{'active': currentStep === 1, 'completed': currentStep > 1}"
+             @click="changeStep(1)">
+            <i class="fa fa-handshake-o"></i>
+            <div class="item-desc nowrap">2) {{ $t('PAYMENT') }}</div>
+        </div>
+
+        <div class="spacer">
+            <hr style="width:100%;" />
+        </div>
+
+        <div class="item" 
+             :class="{'active': currentStep === 2, 'completed': currentStep > 2}"
+             @click="changeStep(2)">
+            <i class="fa fa-paper-plane-o"></i>
+            <div class="item-desc nowrap">3) {{ $t('PLACE YOUR ORDER') }}</div>
+        </div>
+    </div>
+</template>
+
 
 <style lang="scss">
     @import "../../assets/css/components/_variables.scss";

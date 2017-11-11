@@ -1,9 +1,3 @@
-<template>
-    <span class="ccIcon">
-        <credit-card-icon :card-type="cardType"></credit-card-icon>&nbsp;<span v-show="lastFour">**** {{ lastFour }}</span>
-    </span>
-</template>
-
 <script>
     import CreditCardIcon from './CreditCardIcon'
 
@@ -25,6 +19,14 @@
         }
     }
 </script>
+
+
+<template>
+    <span class="ccIcon">
+        <credit-card-icon :card-type="cardType"></credit-card-icon>&nbsp;<span v-show="lastFour">**** {{ lastFour }}</span>
+    </span>
+</template>
+
 
 <style>
     .ccIcon img {

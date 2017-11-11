@@ -1,18 +1,8 @@
-<template>
-    <div>
-        <div>{{ formattedName }}</div>
-        <div v-if="cart.shipping_company">{{ companyDisplay }}</div>
-        <div>{{ cart.shipping_streetAddress }}</div>
-        <div v-if="cart.shipping_extendedAddress">{{ cart.shipping_extendedAddress }}</div>
-        <div>{{ formattedCityStateZip }}</div>
-        <div>{{ cart.shipping_countryCodeAlpha2 }}</div>
-        <div class="pts" v-if="showEmail">{{ cart.shipping_email }}</div>
-    </div>
-</template>
-
 <script>
     import { mapGetters } from 'vuex'
-    import checkoutService from '../../util/checkoutService'
+    import ShoppingCartService from '../../pages/cart/shopping_cart_service.js'
+
+    let shoppingCartService = new ShoppingCartService();
 
     export default {
         props: {
@@ -32,11 +22,11 @@
             ]),
 
             formattedName() {
-                return checkoutService.getFormattedShippingName(this.cart.shipping_firstName, this.cart.shipping_lastName);
+                return shoppingCartService.getFormattedShippingName(this.cart.shipping_firstName, this.cart.shipping_lastName);
             },
 
             formattedCityStateZip: function() {
-                return checkoutService.getFormattedCityStateZip(
+                return shoppingCartService.getFormattedCityStateZip(
                     this.cart.shipping_city, 
                     this.cart.shipping_state,
                     this.cart.shipping_postalCode
@@ -44,8 +34,21 @@
             },
 
             companyDisplay: function() {
-                return checkoutService.getFormattedCompanyName(this.cart.shipping_company);
+                return shoppingCartService.getFormattedCompanyName(this.cart.shipping_company);
             }
         }
     }
 </script>
+
+
+<template>
+    <div>
+        <div>{{ formattedName }}</div>
+        <div v-if="cart.shipping_company">{{ companyDisplay }}</div>
+        <div>{{ cart.shipping_streetAddress }}</div>
+        <div v-if="cart.shipping_extendedAddress">{{ cart.shipping_extendedAddress }}</div>
+        <div>{{ formattedCityStateZip }}</div>
+        <div>{{ cart.shipping_countryCodeAlpha2 }}</div>
+        <div class="pts" v-if="showEmail">{{ cart.shipping_email }}</div>
+    </div>
+</template>

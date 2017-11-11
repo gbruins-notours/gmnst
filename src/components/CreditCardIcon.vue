@@ -1,7 +1,3 @@
-<template>
-    <img :src="cardTypeIcon" v-show="cardTypeIcon"/>
-</template>
-
 <script>
     let supportedCardIcons = ['american-express', 'diners-club', 'discover', 'jcb', 'maestro', 'master-card', 'visa'];
 
@@ -24,3 +20,8 @@
         }
     }
 </script>
+
+
+<template>
+    <img :src="cardTypeIcon" v-show="cardTypeIcon"/>
+</template>

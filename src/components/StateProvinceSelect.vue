@@ -1,27 +1,3 @@
-<template>
-    <el-select v-if="stateOptions"
-               filterable
-               v-model="selectedState"
-               :placeholder="placeholder"
-               @change="emitChange"
-               @visible-change="emitVisibleChange"
-               :disabled="disabled"
-               class="widthAll">
-        <el-option
-                v-for="(label, abbr) in stateOptions"
-                :key="abbr"
-                :label="$t(label)"
-                :value="abbr">
-        </el-option>
-    </el-select>
-
-    <el-input v-else
-            v-model.trim="selectedState"
-            @change="emitChange"
-            :disabled="disabled"></el-input>
-</template>
-
-
 <script>
     import Vue from 'vue'
     import { Select } from 'element-ui'
@@ -97,5 +73,26 @@
     }
 </script>
 
-<style>
-</style>
+
+<template>
+    <el-select v-if="stateOptions"
+               filterable
+               v-model="selectedState"
+               :placeholder="placeholder"
+               @change="emitChange"
+               @visible-change="emitVisibleChange"
+               :disabled="disabled"
+               class="widthAll">
+        <el-option
+                v-for="(label, abbr) in stateOptions"
+                :key="abbr"
+                :label="$t(label)"
+                :value="abbr">
+        </el-option>
+    </el-select>
+
+    <el-input v-else
+            v-model.trim="selectedState"
+            @change="emitChange"
+            :disabled="disabled"></el-input>
+</template>

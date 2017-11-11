@@ -1,34 +1,10 @@
-import api from '../util/api';
+'use strict';
+
 import isObject from 'lodash.isobject'
 
-
 export default {
-    JWT_KEY: ({ commit }) => {
-        return api.getJwtToken().then((jsonWebToken) => {
-            commit('JWT_KEY', jsonWebToken)
-        })
-    },
-
-    GET_BRAINTREE_CLIENT_TOKEN: ({ commit }) => {
-        return api.getBraintreeClientToken().then((response) => {
-            commit('BRAINTREE_CLIENT_TOKEN', response)
-        })
-    },
-
-    GET_PRODUCT_INFO: ({ commit }) => {
-        return api.getProductInfo().then((response) => {
-            commit('PRODUCT_INFO', response)
-        })
-    },
-
     IN_CHECKOUT_FLOW: ({ commit }, inCheckoutFlow) => {
         commit('IN_CHECKOUT_FLOW', inCheckoutFlow);
-    },
-
-    GET_ALL_PRODUCTS: ({ commit }) => {
-        return api.getProducts(products => {
-            commit('receiveProducts', { products });
-        })
     },
 
     TOGGLE_SIDEBAR: ({ commit }, opened) => {
@@ -39,41 +15,20 @@ export default {
         commit('TOGGLE_DEVICE', device)
     },
 
-    CART_ITEM_ADD: ({ commit }, data) => {
-        return api.shoppingCart.addItem(data).then((cartData) => {
-            commit('CART_SET', cartData);
-        })
+    JWT_KEY: ({ commit }, key) => {
+        commit('JWT_KEY', key)
     },
 
-    CART_ITEM_SET_QTY: ({ commit }, data) => {
-        return api.shoppingCart.updateItemQty(data).then((cartData) => {
-            commit('CART_SET', cartData);
-        })
+    BRAINTREE_CLIENT_TOKEN: ({ commit }, token) => {
+        commit('BRAINTREE_CLIENT_TOKEN', token)
     },
 
-    CART_ITEM_DELETE: ({ commit }, data) => {
-        return api.shoppingCart.deleteItem(data).then((cartData) => {
-            commit('CART_SET', cartData);
-        })
+    PRODUCT_INFO: ({ commit }, data) => {
+        commit('PRODUCT_INFO', data)
     },
 
-    CART_PULL: ({ commit }) => {
-        return api.shoppingCart.getCart().then((cartData) => {
-            commit('CART_SET', cartData);
-        })
-    },
-
-    /**
-     * Pushes the cart data in state to the server
-     */
-    CART_PUSH: ({ commit }) => {
-        return api.shoppingCart.getCart().then((cartData) => {
-            commit('CART_SET', cartData);
-        })
-    },
-
-    CART_SET: ({ commit }, cartData) => {
-        commit('CART_SET', cartData);
+    CART_SET: ({ commit }, data) => {
+        commit('CART_SET', data)
     },
 
     CART_ATTRIBUTE_SET: ({ commit }, config) => {

@@ -4,7 +4,9 @@ import createPersistedState from 'vuex-persistedstate'
 import actions from './actions'
 import mutations from './mutations'
 import getters from './getters'
-import checkoutService from '../util/checkoutService'
+import ShoppingCartService from '../pages/cart/shopping_cart_service.js'
+
+let shoppingCartService = new ShoppingCartService();
 
 Vue.use(Vuex)
 
@@ -30,7 +32,7 @@ export function createStore () {
             // There seems to be an issue with reactivity in the UI
             // if state properties do not exist by default.  Defining these properties
             // that need to have immediate UI reactivity solves the issue
-            cart: checkoutService.getCartDefaults()
+            cart: shoppingCartService.getCartDefaults()
         },
         getters,
         mutations,

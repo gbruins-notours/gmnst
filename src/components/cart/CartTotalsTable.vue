@@ -1,3 +1,30 @@
+<script>
+    export default {
+        props: {
+            showShippingCost: {
+                type: Boolean,
+                default: false
+            },
+
+            showSalesTax: {
+                type: Boolean,
+                default: false
+            },
+
+            cart: {
+                type: Object,
+                required: true
+            },
+
+            labelClass: {
+                type: String,
+                default: 'tar'
+            }
+        }
+    }
+</script>
+
+
 <template>
     <div v-if="cart.num_items">
         <!-- subtotal -->
@@ -28,32 +55,3 @@
         </div>
     </div>
 </template>
-
-<script>
-    export default {
-        props: {
-            showShippingCost: {
-                type: Boolean,
-                default: false
-            },
-
-            showSalesTax: {
-                type: Boolean,
-                default: false
-            },
-
-            cart: {
-                type: Object,
-                required: true
-            },
-
-            labelClass: {
-                type: String,
-                default: 'tar'
-            }
-        }
-    }
-</script>
-
-<style>
-</style>

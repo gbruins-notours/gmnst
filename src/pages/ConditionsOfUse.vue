@@ -1,13 +1,3 @@
-<template>
-    <section>
-        <page-header :title="$t('Conditions of Use')"></page-header>
-
-        <div class="container priv">
-           TODO
-        </div>
-    </section>
-</template>
-
 <script>
     import PageHeader from '../components/PageHeader';
 
@@ -24,6 +14,18 @@
         }
     }
 </script>
+
+
+<template>
+    <section>
+        <page-header :title="$t('Conditions of Use')"></page-header>
+
+        <div class="container priv">
+           TODO
+        </div>
+    </section>
+</template>
+
 
 <style lang="scss">
     .priv {

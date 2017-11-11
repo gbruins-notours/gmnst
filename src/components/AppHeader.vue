@@ -1,64 +1,6 @@
-<template>
-    <div>
-        <template v-if="!inCheckoutFlow">
-            <header role="banner" class="Header">
-                <div class="Header-container">
-                    <div class="Header-brand">
-                        <img class="Header-image cursorPointer" @click="goHome" src="/static/images/logo_header.png" alt="gmnst" />
-                    </div>
-
-                    <a class="Header-cart" @click="goToCart">
-                        <i class="fa fa-shopping-cart fs30"></i>
-                        <span class="badge">{{ numCartItems }}</span>
-                    </a>
-
-                    <nav class="Navigation">
-                        <ul class="Navigation-list" v-if="ready">
-                            <router-link :to="'/type/' + app.productInfo.seoUri[key]"
-                                         tag="li"
-                                         active-class="active"
-                                         v-for="(val, key) in app.productInfo.subTypes"
-                                         :key="key">{{ $tc(key, 2) }}</router-link>
-                        </ul>
-                    </nav>
-                </div>
-            </header>
-        </template>
-        <template v-else>
-            <header role="banner" class="Header-checkout">
-                <div class="container">
-                    <div class="displayTable widthAll">
-                        <div class="Header-checkout-cell">
-                            <img class="Header-image cursorPointer" @click="goHome" src="/static/images/logo_header.png" alt="gmnst">
-                        </div>
-                        <div class="Header-checkout-cell tac colorBlack" v-if="numCartItems">
-                            <span>{{ $t('Checkout') }}</span>
-                            <span class="nowrap">(<a @click="headerPopoverVisible = true">{{ numCartItems }}&nbsp;{{ $tc('items', numCartItems) }}</a>)</span>
-                            <el-popover
-                                ref="headerpopover"
-                                placement="bottom"
-                                offset="100"
-                                v-model="headerPopoverVisible">
-                                <div>
-                                    <div class="fs14">{{ $t('Are you sure you want to return to your Shopping Cart?') }}</div>
-                                    <el-button :plain="true" type="info" @click="headerPopoverVisible = false" class="mtm">{{ $t('Stay in checkout') }}</el-button>
-                                    <el-button type="warning" @click="headerPopoverVisible = false; goToCart()" class="mtm colorBlack">{{ $t('Return to cart') }}</el-button>
-                                </div>
-                            </el-popover>
-                        </div>
-                        <div class="Header-checkout-cell tar">
-                            <span class="icon is-medium vam"><i class="fa fa-lock colorGrayLighter"></i></span>
-                        </div>
-                    </div>
-                </div>
-            </header>
-        </template>
-    </div>
-</template>
-
 <script>
     import Vue from 'vue';
-    import { mapGetters, mapActions } from 'vuex';
+    import { mapGetters } from 'vuex';
     import isObject from 'lodash.isobject'
     import ProductPrice from './product/ProductPrice.vue'
     import { Popover, Button } from 'element-ui'
@@ -67,13 +9,6 @@
     Vue.use(Button);
 
     export default {
-        props: {
-            ready: {
-                type: Boolean,
-                default: false
-            },
-        },
-
         components: {
             ProductPrice
         },
@@ -87,21 +22,12 @@
 
         computed: {
             ...mapGetters([
-                'app',
                 'numCartItems',
                 'inCheckoutFlow'
-            ]),
-
-            productInfo: function() {
-                return this.app.productInfo || {}
-            }
+            ])
         },
 
         methods: {
-            ...mapActions([
-                'GET_PRODUCT_INFO'
-            ]),
-
             handleResize() {
                 if (window.innerWidth > 480) {
                     this.showBigLogo = true
@@ -142,6 +68,63 @@
         }
     }
 </script>
+
+
+<template>
+    <div>
+        <template v-if="!inCheckoutFlow">
+            <header role="banner" class="Header">
+                <div class="Header-container">
+                    <div class="Header-brand">
+                        <img class="Header-image cursorPointer" @click="goHome" src="/static/images/logo_header.png" alt="gmnst" />
+                    </div>
+
+                    <a class="Header-cart" @click="goToCart">
+                        <i class="fa fa-shopping-cart fs30"></i>
+                        <span class="badge">{{ numCartItems }}</span>
+                    </a>
+
+                    <nav class="Navigation">
+                        <ul class="Navigation-list">
+                            <router-link to="/type/hats" tag="li" active-class="active">{{ $t('HATS') }}</router-link>
+                            <router-link to="/type/tops" tag="li" active-class="active">{{ $t('TOPS') }}</router-link>
+                        </ul>
+                    </nav>
+                </div>
+            </header>
+        </template>
+        <template v-else>
+            <header role="banner" class="Header-checkout">
+                <div class="container">
+                    <div class="displayTable widthAll">
+                        <div class="Header-checkout-cell">
+                            <img class="Header-image cursorPointer" @click="goHome" src="/static/images/logo_header.png" alt="gmnst">
+                        </div>
+                        <div class="Header-checkout-cell tac colorBlack" v-if="numCartItems">
+                            <span>{{ $t('Checkout') }}</span>
+                            <span class="nowrap">(<a @click="headerPopoverVisible = true">{{ numCartItems }}&nbsp;{{ $tc('items', numCartItems) }}</a>)</span>
+                            <el-popover
+                                ref="headerpopover"
+                                placement="bottom"
+                                offset="100"
+                                v-model="headerPopoverVisible">
+                                <div>
+                                    <div class="fs14">{{ $t('Are you sure you want to return to your Shopping Cart?') }}</div>
+                                    <el-button :plain="true" type="info" @click="headerPopoverVisible = false" class="mtm">{{ $t('Stay in checkout') }}</el-button>
+                                    <el-button type="warning" @click="headerPopoverVisible = false; goToCart()" class="mtm colorBlack">{{ $t('Return to cart') }}</el-button>
+                                </div>
+                            </el-popover>
+                        </div>
+                        <div class="Header-checkout-cell tar">
+                            <span class="icon is-medium vam"><i class="fa fa-lock colorGrayLighter"></i></span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+        </template>
+    </div>
+</template>
+
 
 <style lang="scss">
     @import "../assets/css/components/_variables.scss";

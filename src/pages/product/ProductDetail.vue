@@ -1,85 +1,17 @@
-<template>
-    <div class="section">
-        <div class="container">
-            <div class="columns">
-                <div class="column is-6">
-                    <div class="image is-2by2 phm">
-                       <carousel :autoplay="true"
-                                 :autoplayHoverPause="true"
-                                 :navigationEnabled="true"
-                                 :perPage="1"
-                                 paginationColor="#cacac8"
-                                 paginationActiveColor="#ed198a">
-                          <slide v-for="(pic, key) in productPics" :key="key">
-                            <img :src="pic">
-                          </slide>
-                        </carousel>
-
-                    </div>
-                </div>
-
-                <div class="column is-5 is-offset-1">
-                    <div class="fs30 mbm">{{ product.title }}</div>
-
-                    <div class="pbl fs16">{{ product.description_long }}</div>
-
-                    <div class="fs20">
-                        <product-price :product="product"></product-price>
-                    </div>
-
-                    <div class="pvl"><hr></div>
-
-                    <!-- Size -->
-                    <div class="inlineBlock vat mbl" style="padding-right:40px;">
-                        <div class="fwb">{{ $t('Size') }}</div>
-                        <el-select v-model="selectedSize" placeholder="Select" class="width125">
-                            <el-option
-                                    v-for="size in sizeOptions"
-                                    :key="size"
-                                    :label="$t(size)"
-                                    :value="size">
-                            </el-option>
-                        </el-select>
-                    </div>
-
-                    <!-- quantity -->
-                    <div class="inlineBlock vat mbl">
-                        <div class="fwb">{{ $t('Quantity') }}</div>
-                        <div>
-                            <div class="displayTableCell prl fs20 vam colorGreen fw600">{{ selectedQty }}</div>
-                            <div class="displayTableCell">
-                                <number-buttons :step="1"
-                                                :min="1"
-                                                :max="product.inventory_count"
-                                                :init-value="1"
-                                                v-on:change="val => { selectedQty = val }"></number-buttons>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="ptl">
-                        <el-button type="warning" 
-                                   @click="addToCart" 
-                                   class="colorBlack"
-                                   :loading="isLoading">{{ $t('Add to cart') }}</el-button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</template>
-
 <script>
 import Promise from 'bluebird';
 import isObject from 'lodash.isobject'
+import _forEach from 'lodash.foreach';
 import Vue from 'vue'
 import { Select, Option, InputNumber, Notification, Button } from 'element-ui'
-import api from '../../util/api'
-import ProductPrice from '../../components/product/ProductPrice.vue'
-import NumberButtons from '../../components/NumberButtons.vue'
-import { mapActions } from 'vuex'
-import _forEach from 'lodash.foreach';
+import ProductPrice from '../../components/product/ProductPrice'
+import NumberButtons from '../../components/NumberButtons'
 import { Carousel, Slide } from 'vue-carousel';
+import ProductService from './product_service.js'
+import ShoppingCartService from '../cart/shopping_cart_service.js'
+
+let productService = new ProductService();
+let shoppingCartService = new ShoppingCartService();
 
 Vue.use(Select);
 Vue.use(Option);
@@ -116,18 +48,11 @@ export default {
             return;
         },
         productPic: function() {
-            if (this.product.featured_pic) {
-                return '/static/images/product/' + this.product.featured_pic;
-            }
-            return;
+            return productService.featuredProductPic(this.product);
         }
     },
 
     methods: {
-        ...mapActions([
-            'CART_ITEM_ADD'
-        ]),
-
         addToCart: function() {
             if(currentNotification) {
                 currentNotification.close();
@@ -152,14 +77,15 @@ export default {
             else {
                 this.isLoading = true;
 
-                this.CART_ITEM_ADD({
+                shoppingCartService.addItem({
                     id: this.product.id,
                     options: {
                         size: this.selectedSize,
                         qty: this.selectedQty
                     }
                 })
-                .then(() => {
+                .then((cartData) => {
+                    this.$store.dispatch('CART_SET', cartData);
                     this.isLoading = false;
                     this.$router.push(`/cart/${this.product.id}`);
                 });
@@ -242,8 +168,7 @@ export default {
     },
 
     created() {
-        // api.getProductBySeoUri(this.$route.params.id)
-        api.getProductBySeoUri(this.$route.params.itemId)
+        productService.getProductBySeoUri(this.$route.params.itemId)
             .then((product) => {
                 this.product = product;
                 document.title = product.title;
@@ -259,6 +184,79 @@ export default {
     }
 }
 </script>
+
+
+<template>
+    <div class="section">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-6">
+                    <div class="image is-2by2 phm">
+                       <carousel :autoplay="true"
+                                 :autoplayHoverPause="true"
+                                 :navigationEnabled="true"
+                                 :perPage="1"
+                                 paginationColor="#cacac8"
+                                 paginationActiveColor="#ed198a">
+                          <slide v-for="(pic, key) in productPics" :key="key">
+                            <img :src="pic">
+                          </slide>
+                        </carousel>
+
+                    </div>
+                </div>
+
+                <div class="column is-5 is-offset-1">
+                    <div class="fs30 mbm">{{ product.title }}</div>
+
+                    <div class="pbl fs16">{{ product.description_long }}</div>
+
+                    <div class="fs20">
+                        <product-price :product="product"></product-price>
+                    </div>
+
+                    <div class="pvl"><hr></div>
+
+                    <!-- Size -->
+                    <div class="inlineBlock vat mbl" style="padding-right:40px;">
+                        <div class="fwb">{{ $t('Size') }}</div>
+                        <el-select v-model="selectedSize" placeholder="Select" class="width125">
+                            <el-option
+                                    v-for="size in sizeOptions"
+                                    :key="size"
+                                    :label="$t(size)"
+                                    :value="size">
+                            </el-option>
+                        </el-select>
+                    </div>
+
+                    <!-- quantity -->
+                    <div class="inlineBlock vat mbl">
+                        <div class="fwb">{{ $t('Quantity') }}</div>
+                        <div>
+                            <div class="displayTableCell prl fs20 vam colorGreen fw600">{{ selectedQty }}</div>
+                            <div class="displayTableCell">
+                                <number-buttons :step="1"
+                                                :min="1"
+                                                :max="product.inventory_count"
+                                                :init-value="1"
+                                                v-on:change="val => { selectedQty = val }"></number-buttons>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ptl">
+                        <el-button type="warning" 
+                                   @click="addToCart" 
+                                   class="colorBlack"
+                                   :loading="isLoading">{{ $t('Add to cart') }}</el-button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
 
 <style lang="scss">
 @import '../../assets/css/components/_variables.scss';

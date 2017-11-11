@@ -1,198 +1,3 @@
-<template>
-    <div>
-        <section v-if="cart.num_items" class="container-wizard">
-            <div class="container-skinny">
-                <checkout-wizard-bar :step="currentStep" @change="checkoutStepChanged"></checkout-wizard-bar>
-            </div>
-        </section>
-
-        <section class="container-skinny pal">
-            <div v-if="!cart.num_items" class="fs16 pal tac">
-                {{ $t('Your shopping cart does not contain any items.') }}
-            </div>
-
-            <template v-else>
-                <!-- Shipping -->
-                <div v-show="currentStep === 0">
-                    <div class="step-title">{{ $t('Shipping address') }}:</div>
-                    <shipping-billing-form type="shipping" @valid="val => { shippingButtonEnabled = val }"></shipping-billing-form>
-
-                    <div class="ptl displayTable" style="margin:0 auto">
-                        <shipping-billing-help></shipping-billing-help>
-                    </div>
-
-                    <div class="ptl tac">
-                        <div class="inlineBlock">
-                            <el-button type="warning"
-                                        class="colorBlack"
-                                        size="large"
-                                        @click="submitShippingForm"
-                                        :disabled="!shippingButtonEnabled"
-                                        :loading="shippingFormIsLoading">{{ $t('Continue') }}</el-button>
-
-                            <bottom-popover width="200px"
-                                            v-show="!shippingButtonEnabled" >{{ $t('fill_out_form_warning') }}</bottom-popover>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Payment -->
-                <div v-show="currentStep === 1">
-                    <div class="step-title">{{ $t('Choose a payment method') }}:</div>
-                    <payment-method-chooser @change="val => { paymentMethod = val }"></payment-method-chooser>
-
-                    <div v-show="paymentMethod === 'CREDIT_CARD'" class="mtl">
-                        <div class="displayTable widthAll">
-                            <!-- Card Number -->
-                            <div class="displayTableRow">
-                                <label class="checkout_form_label fwb">{{ $t('CARD NUMBER') }}:</label>
-                                <div class="checkout_form_value">
-                                    <div id="card-number" class="el-input__inner "></div>
-                                    <span class="card-icon">
-                                        <credit-card-icon :card-type="cardType"></credit-card-icon>
-                                    </span>
-                                    <i v-show="inputClasses['card-number']" :class="inputClasses['card-number']"></i>
-                                </div>
-                            </div>
-
-                            <!-- Expiration -->
-                            <div class="displayTableRow">
-                                <label class="checkout_form_label fwb">{{ $t('EXPIRES') }}:</label>
-                                <div class="checkout_form_value">
-                                    <div class="inlineBlock relative">
-                                        <!-- month -->
-                                        <div id="expiration-month" class="el-input__inner hostedField60 displayTableCell"></div>
-
-                                        <div class="displayTableCell colorGrayLighter phs vat" style="font-size:22px">/</div>
-
-                                        <!-- year -->
-                                        <div id="expiration-year" class="el-input__inner hostedField60 displayTableCell"></div>
-
-                                        <i v-show="inputClasses['expiration-month'] && inputClasses['expiration-year']"
-                                           :class="getPaymentMonthYearClass(inputClasses['expiration-month'], inputClasses['expiration-year'])"></i>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- CVV -->
-                            <div class="displayTableRow">
-                                <label class="checkout_form_label">
-                                    <span class="fwb">{{ $t('SECURITY CODE') }}</span>
-                                    <span class="colorGrayLighter">({{ securityCodeHint }})</span>:
-                                </label>
-                                <div class="checkout_form_value">
-                                    <div class="displayTableCell relative">
-                                        <div id="cvv" class="el-input__inner hostedField80 displayTableCell"></div>
-                                        <i v-show="inputClasses.cvv" :class="inputClasses.cvv"></i>
-                                    </div>
-                                    <div class="displayTableCell plm vam">
-                                        <span class="underlineDotted cursorPointer" @click="securityCodeModalShow = true">{{ $t("what's this?") }}</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Billing address -->
-                            <div class="displayTableRow">
-                                <div class="checkout_form_label fwb">{{ $t('BILLING ADDRESS') }}:</div>
-                                <div class="checkout_form_value">
-                                    <el-checkbox v-model="billingSameAsShipping">{{ $t('SAME AS SHIPPING ADDRESS') }}:</el-checkbox>
-
-                                    <div class="pll mts" v-show="billingSameAsShipping">
-                                        <shipping-view :show-details="true" :show-email="false"></shipping-view>
-                                    </div>
-
-                                    <shipping-billing-form type="billing"
-                                                           v-show="!billingSameAsShipping" 
-                                                           class="mtl"></shipping-billing-form>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="ptl displayTable" style="margin:0 auto">
-                            <shipping-billing-help></shipping-billing-help>
-                        </div>
-                    </div>
-                    <div v-show="paymentMethod === 'PAYPAL'" class="colorGreen tac mtl">
-                        {{ $t('Your PayPal transaction will be completed on the next page.') }}
-                    </div> 
-
-                    <div class="ptl tac">
-                        <div class="inlineBlock">
-                            <el-button type="warning"
-                                class="colorBlack"
-                                size="large"
-                                @click="submitPaymentForm"
-                                :disabled="!paymentMethodButtonEnabled"
-                                slot="reference">{{ $t('Continue') }}</el-button>
-
-                            <bottom-popover width="200px"
-                                            v-show="!paymentMethodButtonEnabled" >{{ $t('fill_out_form_warning') }}</bottom-popover>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Review -->
-                <div v-show="currentStep === 2">
-                    <div class="step-title">{{ $t('Review your order') }}:</div>
-                    <cart-items :allow-edit="false"></cart-items>
-
-                    <div class="mtm clearfix">
-                        <div class="floatRight">
-                            <cart-totals-table :cart="cart"
-                                               :show-shipping-cost="true"
-                                               :show-sales-tax="true"></cart-totals-table>
-                        </div>
-                    </div>
-
-                    <!-- Submit button -->
-                    <div class="pal tac">
-                        <el-button v-show="paymentMethod !== 'PAYPAL'"
-                                    type="warning"
-                                    class="colorBlack"
-                                    size="large"
-                                    @click="tokenizeHostedFields"
-                                    :loading="placeOrderButtonLoading"
-                                    :disabled="!checkoutButtonEnabled">{{ $t('Place your order') }}</el-button>
-
-                        <el-button v-show="paymentMethod === 'PAYPAL'"
-                                    type="warning"
-                                    class="colorBlack"
-                                    size="large"
-                                    @click="tokenizePaypal"
-                                    :disabled="!checkoutButtonEnabled">{{ $t('Pay with PAYPAL') }}</el-button>
-                    </div>
-                </div>
-
-                <!-- CVV Modal -->
-                <el-dialog :title="$t('Finding your security code')" 
-                        :modal-append-to-body="false"
-                        :visible.sync="securityCodeModalShow">
-                    <div class="cvvCard">
-                        <div class="cvvCardPic">
-                            <img src="/static/images/creditcards/card_back_cvv_4.png">
-                        </div>
-                        <div class="cvvCardContent">
-                            <div class="fwb">{{ $t('American Express') }}</div>
-                            <div>{{ $t('cvv_help_4_digit') }}</div>
-                        </div>
-                    </div>
-
-                    <div class="cvvCard">
-                        <div class="cvvCardPic">
-                            <img src="/static/images/creditcards/card_back_cvv_3.png">
-                        </div>
-                        <div class="cvvCardContent">
-                            <div class="fwb">{{ $t('All other cards') }}</div>
-                            <div>{{ $t('cvv_help_3_digit') }}</div>
-                        </div>
-                    </div>
-                </el-dialog>
-            </template>
-
-        </section>
-    </div>
-</template>
-
 <script>
     import Vue from 'vue'
     import { mapGetters } from 'vuex'
@@ -212,7 +17,9 @@
     import BottomPopover from '../../components/BottomPopover'
     import CreditCardIcon from '../../components/CreditCardIcon'
     import api from '../../util/api'
-    import checkoutService from '../../util/checkoutService'
+    import ShoppingCartService from '../cart/shopping_cart_service.js'
+
+    let shoppingCartService = new ShoppingCartService();
 
     Vue.use(Checkbox)
     Vue.use(Input)
@@ -341,7 +148,7 @@
                     currentNotification.close();
                 }
 
-                api.shoppingCart.validateAddress({
+                shoppingCartService.validateAddress({
                     company_name: c.shipping_company,
                     address_line1: c.shipping_streetAddress,
                     city_locality: c.shipping_city,
@@ -421,7 +228,7 @@
 
             submitPaymentForm: function() {
                 if(this.cart.billingSameAsShipping) {
-                    checkoutService.copyShippingStateToBillingState(this.cart);
+                    shoppingCartService.copyShippingStateToBillingState(this.cart);
                 }
                 this.currentStep = 2
             },
@@ -430,7 +237,7 @@
             getShippingRates: function() {
                 this.$store.dispatch('CART_SHIPPING_METHODS', null);
 
-                api.shoppingCart.getShippingRates({
+                shoppingCartService.getShippingRates({
                     validate_address: 'no_validation',
                     ship_to: {
                         address_line1: this.cart.shipping_streetAddress,
@@ -476,7 +283,7 @@
                 // knowledge of the destination.  Sales tax needs to be set so
                 // the API can return the shipping/tax/grand total amounts for the 'review'
                 // checkout step
-                api.shoppingCart
+                shoppingCartService
                     .setShippingAddress(this.cartShippingAttributes)
                     .then((result) => {
                         updatedCart = result;
@@ -513,7 +320,7 @@
             },
 
 
-            getPaymentMonthYearClass: checkoutService.getPaymentMonthYearClass,
+            getPaymentMonthYearClass: shoppingCartService.getPaymentMonthYearClass,
 
             tokenizeHostedFields() {
                 this.placeOrderButtonLoading = true;
@@ -523,7 +330,7 @@
                         currentNotification = this.$notify({
                             type: 'error',
                             title: this.$t('Payment method error') + ':',
-                            message: checkoutService.getBraintreeErrorMessage.call(this, tokenizeErr),
+                            message: shoppingCartService.getBraintreeErrorMessage.call(this, tokenizeErr),
                             duration: 0
                         });
 
@@ -538,7 +345,7 @@
                     // console.log("NONCE", payload.nonce)
                     // return;
 
-                    api.shoppingCart.checkout({
+                    shoppingCartService.checkout({
                         nonce: payload.nonce,
                         ...this.cartBillingAttributes
                     })
@@ -550,7 +357,7 @@
                         this.braintree.hostedFieldsInstance.teardown((teardownErr) => {
                             if (teardownErr) {
                                 console.log('There was an error tearing it down!', teardownErr.message);
-                                checkoutService.getBraintreeErrorMessage(teardownErr, this);
+                                shoppingCartService.getBraintreeErrorMessage(teardownErr, this);
                             }
                             else {
                                 console.log("hosted fields teardown done")
@@ -725,7 +532,7 @@
                         currentNotification = this.$notify({
                             type: 'error',
                             title: this.$t('Payment method error') + ':',
-                            message: checkoutService.getBraintreeErrorMessage(hostedFieldsErr, this),
+                            message: shoppingCartService.getBraintreeErrorMessage(hostedFieldsErr, this),
                             duration: 0
                         });
                         return;
@@ -746,7 +553,7 @@
                             currentNotification = this.$notify({
                                 type: 'error',
                                 title: this.$t('There was an error setting up the payment input fields!'),
-                                message: this.getBraintreeErrorMessage(createPaypalErr),
+                                message: shoppingCartService.getBraintreeErrorMessage(createPaypalErr),
                                 duration: 0
                             });
                             return;
@@ -768,7 +575,7 @@
                             currentNotification = this.$notify({
                                 type: 'error',
                                 title: this.$t('There was an error setting up the payment client!'),
-                                message: checkoutService.getBraintreeErrorMessage(clientErr, this),
+                                message: shoppingCartService.getBraintreeErrorMessage(clientErr, this),
                                 duration: 0
                             });
                         }
@@ -787,6 +594,203 @@
         }
     }
 </script>
+
+
+<template>
+    <div>
+        <section v-if="cart.num_items" class="container-wizard">
+            <div class="container-skinny">
+                <checkout-wizard-bar :step="currentStep" @change="checkoutStepChanged"></checkout-wizard-bar>
+            </div>
+        </section>
+
+        <section class="container-skinny pal">
+            <div v-if="!cart.num_items" class="fs16 pal tac">
+                {{ $t('Your shopping cart does not contain any items.') }}
+            </div>
+
+            <template v-else>
+                <!-- Shipping -->
+                <div v-show="currentStep === 0">
+                    <div class="step-title">{{ $t('Shipping address') }}:</div>
+                    <shipping-billing-form type="shipping" @valid="val => { shippingButtonEnabled = val }"></shipping-billing-form>
+
+                    <div class="ptl displayTable" style="margin:0 auto">
+                        <shipping-billing-help></shipping-billing-help>
+                    </div>
+
+                    <div class="ptl tac">
+                        <div class="inlineBlock">
+                            <el-button type="warning"
+                                        class="colorBlack"
+                                        size="large"
+                                        @click="submitShippingForm"
+                                        :disabled="!shippingButtonEnabled"
+                                        :loading="shippingFormIsLoading">{{ $t('Continue') }}</el-button>
+
+                            <bottom-popover width="200px"
+                                            v-show="!shippingButtonEnabled" >{{ $t('fill_out_form_warning') }}</bottom-popover>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment -->
+                <div v-show="currentStep === 1">
+                    <div class="step-title">{{ $t('Choose a payment method') }}:</div>
+                    <payment-method-chooser @change="val => { paymentMethod = val }"></payment-method-chooser>
+
+                    <div v-show="paymentMethod === 'CREDIT_CARD'" class="mtl">
+                        <div class="displayTable widthAll">
+                            <!-- Card Number -->
+                            <div class="displayTableRow">
+                                <label class="checkout_form_label fwb">{{ $t('CARD NUMBER') }}:</label>
+                                <div class="checkout_form_value">
+                                    <div id="card-number" class="el-input__inner "></div>
+                                    <span class="card-icon">
+                                        <credit-card-icon :card-type="cardType"></credit-card-icon>
+                                    </span>
+                                    <i v-show="inputClasses['card-number']" :class="inputClasses['card-number']"></i>
+                                </div>
+                            </div>
+
+                            <!-- Expiration -->
+                            <div class="displayTableRow">
+                                <label class="checkout_form_label fwb">{{ $t('EXPIRES') }}:</label>
+                                <div class="checkout_form_value">
+                                    <div class="inlineBlock relative">
+                                        <!-- month -->
+                                        <div id="expiration-month" class="el-input__inner hostedField60 displayTableCell"></div>
+
+                                        <div class="displayTableCell colorGrayLighter phs vat" style="font-size:22px">/</div>
+
+                                        <!-- year -->
+                                        <div id="expiration-year" class="el-input__inner hostedField60 displayTableCell"></div>
+
+                                        <i v-show="inputClasses['expiration-month'] && inputClasses['expiration-year']"
+                                           :class="getPaymentMonthYearClass(inputClasses['expiration-month'], inputClasses['expiration-year'])"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- CVV -->
+                            <div class="displayTableRow">
+                                <label class="checkout_form_label">
+                                    <span class="fwb">{{ $t('SECURITY CODE') }}</span>
+                                    <span class="colorGrayLighter">({{ securityCodeHint }})</span>:
+                                </label>
+                                <div class="checkout_form_value">
+                                    <div class="displayTableCell relative">
+                                        <div id="cvv" class="el-input__inner hostedField80 displayTableCell"></div>
+                                        <i v-show="inputClasses.cvv" :class="inputClasses.cvv"></i>
+                                    </div>
+                                    <div class="displayTableCell plm vam">
+                                        <span class="underlineDotted cursorPointer" @click="securityCodeModalShow = true">{{ $t("what's this?") }}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Billing address -->
+                            <div class="displayTableRow">
+                                <div class="checkout_form_label fwb">{{ $t('BILLING ADDRESS') }}:</div>
+                                <div class="checkout_form_value">
+                                    <el-checkbox v-model="billingSameAsShipping">{{ $t('SAME AS SHIPPING ADDRESS') }}:</el-checkbox>
+
+                                    <div class="pll mts" v-show="billingSameAsShipping">
+                                        <shipping-view :show-details="true" :show-email="false"></shipping-view>
+                                    </div>
+
+                                    <shipping-billing-form type="billing"
+                                                           v-show="!billingSameAsShipping" 
+                                                           class="mtl"></shipping-billing-form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="ptl displayTable" style="margin:0 auto">
+                            <shipping-billing-help></shipping-billing-help>
+                        </div>
+                    </div>
+                    <div v-show="paymentMethod === 'PAYPAL'" class="colorGreen tac mtl">
+                        {{ $t('Your PayPal transaction will be completed on the next page.') }}
+                    </div> 
+
+                    <div class="ptl tac">
+                        <div class="inlineBlock">
+                            <el-button type="warning"
+                                class="colorBlack"
+                                size="large"
+                                @click="submitPaymentForm"
+                                :disabled="!paymentMethodButtonEnabled"
+                                slot="reference">{{ $t('Continue') }}</el-button>
+
+                            <bottom-popover width="200px"
+                                            v-show="!paymentMethodButtonEnabled" >{{ $t('fill_out_form_warning') }}</bottom-popover>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Review -->
+                <div v-show="currentStep === 2">
+                    <div class="step-title">{{ $t('Place your order') }}:</div>
+                    <cart-items :allow-edit="false"></cart-items>
+
+                    <div class="mtm clearfix">
+                        <div class="floatRight">
+                            <cart-totals-table :cart="cart"
+                                               :show-shipping-cost="true"
+                                               :show-sales-tax="true"></cart-totals-table>
+                        </div>
+                    </div>
+
+                    <!-- Submit button -->
+                    <div class="pal tac">
+                        <el-button v-show="paymentMethod !== 'PAYPAL'"
+                                    type="warning"
+                                    class="colorBlack"
+                                    size="large"
+                                    @click="tokenizeHostedFields"
+                                    :loading="placeOrderButtonLoading"
+                                    :disabled="!checkoutButtonEnabled">{{ $t('PLACE YOUR ORDER') }}</el-button>
+
+                        <el-button v-show="paymentMethod === 'PAYPAL'"
+                                    type="warning"
+                                    class="colorBlack"
+                                    size="large"
+                                    @click="tokenizePaypal"
+                                    :disabled="!checkoutButtonEnabled">{{ $t('Pay with PAYPAL') }}</el-button>
+                    </div>
+                </div>
+
+                <!-- CVV Modal -->
+                <el-dialog :title="$t('Finding your security code')" 
+                        :modal-append-to-body="false"
+                        :visible.sync="securityCodeModalShow">
+                    <div class="cvvCard">
+                        <div class="cvvCardPic">
+                            <img src="/static/images/creditcards/card_back_cvv_4.png">
+                        </div>
+                        <div class="cvvCardContent">
+                            <div class="fwb">{{ $t('American Express') }}</div>
+                            <div>{{ $t('cvv_help_4_digit') }}</div>
+                        </div>
+                    </div>
+
+                    <div class="cvvCard">
+                        <div class="cvvCardPic">
+                            <img src="/static/images/creditcards/card_back_cvv_3.png">
+                        </div>
+                        <div class="cvvCardContent">
+                            <div class="fwb">{{ $t('All other cards') }}</div>
+                            <div>{{ $t('cvv_help_3_digit') }}</div>
+                        </div>
+                    </div>
+                </el-dialog>
+            </template>
+
+        </section>
+    </div>
+</template>
+
 
 <style lang="scss">
     @import "../../assets/css/components/_variables.scss";
