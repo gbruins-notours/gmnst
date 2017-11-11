@@ -626,7 +626,7 @@
                                         size="large"
                                         @click="submitShippingForm"
                                         :disabled="!shippingButtonEnabled"
-                                        :loading="shippingFormIsLoading">{{ $t('Continue') }}</el-button>
+                                        :loading="shippingFormIsLoading">{{ $t('CONTINUE') }}</el-button>
 
                             <bottom-popover width="200px"
                                             v-show="!shippingButtonEnabled" >{{ $t('fill_out_form_warning') }}</bottom-popover>
@@ -721,7 +721,7 @@
                                 size="large"
                                 @click="submitPaymentForm"
                                 :disabled="!paymentMethodButtonEnabled"
-                                slot="reference">{{ $t('Continue') }}</el-button>
+                                slot="reference">{{ $t('CONTINUE') }}</el-button>
 
                             <bottom-popover width="200px"
                                             v-show="!paymentMethodButtonEnabled" >{{ $t('fill_out_form_warning') }}</bottom-popover>

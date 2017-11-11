@@ -249,7 +249,7 @@ export default {
                         <el-button type="warning" 
                                    @click="addToCart" 
                                    class="colorBlack"
-                                   :loading="isLoading">{{ $t('Add to cart') }}</el-button>
+                                   :loading="isLoading">{{ $t('ADD TO CART') }}</el-button>
                     </div>
                 </div>
             </div>

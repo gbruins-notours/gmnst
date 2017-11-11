@@ -55,7 +55,7 @@
                 <el-button type="warning"
                            class="colorBlack"
                            size="large"
-                           @click="goToCheckout">{{ $t('Proceed to checkout') }}</el-button>
+                           @click="goToCheckout">{{ $t('PROCEED TO CHECKOUT') }}</el-button>
             </div>
 
             <div class="pam">
@@ -72,7 +72,7 @@
                 <el-button type="warning"
                            class="colorBlack"
                            size="large"
-                           @click="goToCheckout">{{ $t('Proceed to checkout') }}</el-button>
+                           @click="goToCheckout">{{ $t('PROCEED TO CHECKOUT') }}</el-button>
             </div>
         </div>
     </section>
