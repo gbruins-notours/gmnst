@@ -4,13 +4,15 @@
     export default{
         props: {
             cardType: {
-                type: String,
-                default: ''
+                type: String
             },
 
             lastFour: {
-                type: String,
-                default: ''
+                type: String
+            },
+
+            payerEmail: {
+                type: String
             }
         },
 
@@ -23,7 +25,9 @@
 
 <template>
     <span class="ccIcon">
-        <credit-card-icon :card-type="cardType"></credit-card-icon>&nbsp;<span v-show="lastFour">**** {{ lastFour }}</span>
+        <credit-card-icon :card-type="cardType"></credit-card-icon>&nbsp;
+        <span v-show="lastFour">**** {{ lastFour }}</span>
+        <span v-show="payerEmail">{{ payerEmail }}</span>
     </span>
 </template>
 

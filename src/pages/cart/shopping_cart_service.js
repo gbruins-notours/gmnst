@@ -139,6 +139,16 @@ export default class ShoppingCartService {
                     errorMessage = this.$t('braintree.HOSTED_FIELDS_ATTRIBUTE_VALUE_NOT_ALLOWED');
                     break;
 
+                case 'PAYPAL_POPUP_CLOSED':
+                    // console.error('Customer closed PayPal popup.');
+                    this.paymentMethod = 'CREDIT_CARD'
+                    break;
+
+                case 'PAYPAL_ACCOUNT_TOKENIZATION_FAILED':
+                case 'PAYPAL_FLOW_FAILED':
+                    errorMessage = clientErr.details
+                    break;
+
                 default:
                     if(clientErr.hasOwnProperty('message')) {
                         errorMessage = clientErr.message;

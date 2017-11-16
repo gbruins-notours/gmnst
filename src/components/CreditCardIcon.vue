@@ -1,5 +1,5 @@
 <script>
-    let supportedCardIcons = ['american-express', 'diners-club', 'discover', 'jcb', 'maestro', 'master-card', 'visa'];
+    let supportedCardIcons = ['american-express', 'diners-club', 'discover', 'jcb', 'maestro', 'master-card', 'paypal', 'visa'];
 
     export default{
         props: {

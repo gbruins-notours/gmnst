@@ -103,6 +103,7 @@
                 securityCodeModalShow: false,
                 securityCodeHint: `3 ${this.$tc('digits_text', 3)}`,
                 placeOrderButtonLoading: false,
+                placeOrderPaypalButtonLoading: false,
                 inputClasses: {
                     'card-number': null,
                     'expiration-year': null,
@@ -320,11 +321,49 @@
             },
 
 
+            doCheckout: function(nonce) {
+                return shoppingCartService.checkout({
+                    nonce: nonce,
+                    ...this.cartBillingAttributes
+                })
+                .then((result) => {
+                    console.log("CART SUCCESS RESPONSE", result)
+
+                    this.$store.dispatch('CART_DELETE');
+
+                    this.braintree.hostedFieldsInstance.teardown((teardownErr) => {
+                        if (teardownErr) {
+                            console.log('There was an error tearing it down!', teardownErr.message);
+                            shoppingCartService.getBraintreeErrorMessage(teardownErr, this);
+                        }
+                        else {
+                            console.log("hosted fields teardown done")
+                        }
+                    });
+
+                    return this.$router.push({ 
+                        name: 'order',
+                        params: { 
+                            id: result.transactionId
+                        } 
+                    });
+                })
+                .catch((error) => {
+                    currentNotification = this.$notify({
+                        type: 'error',
+                        title: `${ this.$t('Error placing order') }:`,
+                        message: api.getApiErrorMessage(error),
+                        duration: 0
+                    });
+                })
+            },
+
+
             getPaymentMonthYearClass: shoppingCartService.getPaymentMonthYearClass,
+
 
             tokenizeHostedFields() {
                 this.placeOrderButtonLoading = true;
-
                 this.braintree.hostedFieldsInstance.tokenize((tokenizeErr, payload) => {
                     if (tokenizeErr) {
                         currentNotification = this.$notify({
@@ -338,100 +377,40 @@
                         return;
                     }
 
-                    // Not sure why this is needed.  Commenting out for now:
-                    // this.braintree.tokenizePayload = payload;
-                    // this.braintree.paymentMethodNonce = payload.nonce;
-                    // console.log("TOKENIZED PAYLOAD", payload)
-                    // console.log("NONCE", payload.nonce)
-                    // return;
-
-                    shoppingCartService.checkout({
-                        nonce: payload.nonce,
-                        ...this.cartBillingAttributes
-                    })
-                    .then((result) => {
-                        console.log("CART SUCCESS RESPONSE", result)
-
-                        this.$store.dispatch('CART_DELETE');
-
-                        this.braintree.hostedFieldsInstance.teardown((teardownErr) => {
-                            if (teardownErr) {
-                                console.log('There was an error tearing it down!', teardownErr.message);
-                                shoppingCartService.getBraintreeErrorMessage(teardownErr, this);
-                            }
-                            else {
-                                console.log("hosted fields teardown done")
-                            }
-                        });
-
-                        return this.$router.push({ 
-                            name: 'order',
-                            params: { 
-                                id: result.transactionId
-                            } 
-                        });
-                    })
-                    .catch((error) => {
-                        currentNotification = this.$notify({
-                            type: 'error',
-                            title: `${ this.$t('Error placing order') }:`,
-                            message: api.getApiErrorMessage(error),
-                            duration: 0
-                        });
-                    })
-                    .finally(() => {
+                    this.doCheckout(payload.nonce).finally(() => {
                         this.placeOrderButtonLoading = false;
-                    })
+                    });
                 });
             },
 
+
             tokenizePaypal() {
-                this.braintree.paypalInstance.tokenize(
-                    { flow: 'vault' },
-                    (pptokenizeErr, paypalPayload) => {
-                        this.placeOrderButtonLoading = false;
+                this.placeOrderPaypalButtonLoading = true;
+                this.braintree.paypalInstance.tokenize({flow: 'vault'}, (tokenizeErr, payload) => {
+                    this.placeOrderButtonLoading = false;
 
-                        if (pptokenizeErr) {
-                            let errorMsg = {
-                                title: null,
-                                message: null,
-                                duration: 0
-                            };
-
-                            // Handle tokenization errors or premature flow closure
-                            switch (pptokenizeErr.code) {
-                                case 'PAYPAL_POPUP_CLOSED':
-                                    // console.error('Customer closed PayPal popup.');
-                                    this.paymentMethod = 'CREDIT_CARD'
-                                    break;
-
-                                case 'PAYPAL_ACCOUNT_TOKENIZATION_FAILED':
-                                case 'PAYPAL_FLOW_FAILED':
-                                    errorMsg.title = $t(pptokenizeErr.code);
-                                    errorMsg.message = pptokenizeErr.details
-                                    break;
-
-                                default:
-                                    errorMsg.title = $t('There was an error tokenizing PayPal!');
-                                    errorMsg.message = pptokenizeErr.details
-                            }
-
-                            if(errorMsg.title) {
-                                currentNotification = this.$notify({
-                                    type: 'error',
-                                    title: errorMsg,
-                                    duration: 0
-                                });
-                            }
+                    if (tokenizeErr) {
+                        if(tokenizeErr.code === 'PAYPAL_POPUP_CLOSED') {
+                            this.paymentMethod = 'CREDIT_CARD'
                         }
-                        else {
-                            this.braintree.transaction.nonce = paypalPayload.paymentMethodNonce;
-                            this.braintree.transaction.payPalPayload = paypalPayload;
-                            // console.log("PAYPAL NONCE", paypalPayload.paymentMethodNonce)
-                        }
+
+                        currentNotification = this.$notify({
+                            type: 'error',
+                            title: this.$t('Payment method error') + ':',
+                            message: shoppingCartService.getBraintreeErrorMessage.call(this, tokenizeErr) || $t('There was an error tokenizing PayPal!'),
+                            duration: 0
+                        });
+
+                        this.placeOrderPaypalButtonLoading = false;
+                        return;
                     }
-                );
+
+                    this.doCheckout(payload.nonce).finally(() => {
+                        this.placeOrderButtonLoading = false;
+                    });
+                });
             },
+
 
             setHostedFieldsEventHandlers: function(hostedFieldsInstance) {
                 function getElementId(field) {
@@ -493,6 +472,7 @@
                     }
                 });
             },
+
 
             createHostedFields: function(clientInstance) {
                 let hostedFields = require('braintree-web/hosted-fields');
@@ -757,6 +737,7 @@
                                     class="colorBlack"
                                     size="large"
                                     @click="tokenizePaypal"
+                                    :loading="placeOrderPaypalButtonLoading"
                                     :disabled="!checkoutButtonEnabled">{{ $t('Pay with PAYPAL') }}</el-button>
                     </div>
                 </div>

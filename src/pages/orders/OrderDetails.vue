@@ -1,5 +1,6 @@
 <script>
 import Vue from 'vue'
+import cloneDeep from 'lodash.clonedeep'
 import PageHeader from '../../components/PageHeader'
 import PaymentTypeDisplay from '../../components/PaymentTypeDisplay'
 import ProductPrice from '../../components/product/ProductPrice'
@@ -41,15 +42,41 @@ export default {
             if(this.order.shipping) {
                 return shoppingCartService.getFormattedCompanyName(this.order.shipping.company);
             }
+        },
+
+        cardType: function() {
+            if(this.order.transaction.paymentInstrumentType === 'paypal_account') {
+                return 'paypal';
+            }
+
+            if(this.order.transaction.hasOwnProperty('creditCard')) {
+                return this.order.transaction.creditCard.cardType;
+            }
+            
+            return null;
+        },
+
+        lastFour: function() {
+            if(this.order.transaction.hasOwnProperty('creditCard')) {
+                return this.order.transaction.creditCard.last4;
+            }
+            return null;
+        },
+
+        payerEmail: function() {
+            if(this.order.transaction.hasOwnProperty('paypalAccount')) {
+                return this.order.transaction.paypalAccount.payerEmail;
+            }
+            return null;
         }
     },
 
     data: function() {
         return {
             order: {
-                creditCard: {},
                 shipping: {},
-                shoppingCart: {}
+                shoppingCart: {},
+                transaction: {}
             },
             productService: productService
         }
@@ -66,7 +93,7 @@ export default {
 
     created() {
         orderService.getOrder(this.$route.params.id, true).then((order) => {
-            this.order = order;
+            this.order = cloneDeep(order);
         });
     }
 }
@@ -105,7 +132,9 @@ export default {
                 <div class="mbl mrxl inlineBlock vat">
                     <div class="fwb">{{ $t('Payment method') }}:</div>
                     <div>
-                        <payment-type-display :card-type="order.creditCard.cardType" :last-four="order.creditCard.last4"></payment-type-display>
+                        <payment-type-display :card-type="cardType" 
+                                              :last-four="lastFour"
+                                              :payer-email="payerEmail"></payment-type-display>
                     </div>
                 </div>
 

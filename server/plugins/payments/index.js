@@ -173,19 +173,31 @@ internals.after = function (server, next) {
                             let p = payment.toJSON();
 
                             // Much less data can be sent over the wire in this case, so trimming the response:
-                            reply.apiSuccess({
+                            let response = {
                                 id: p.id,
                                 transaction_id: p.transaction_id,
                                 created: p.created_at,
                                 amount: p.amount,
-                                creditCard: {
+                                shoppingCart: request.query.verbose ? p.shoppingCart : { num_items: p.shoppingCart.num_items },
+                                shipping: p.transaction.transaction.shipping,
+                                transaction: {
+                                    paymentInstrumentType: p.transaction.transaction.paymentInstrumentType
+                                }
+                            }
+
+                            if(p.transaction.transaction.paymentInstrumentType === 'credit_card') {
+                                response.transaction.creditCard = {
                                     last4: p.transaction.transaction.creditCard.last4,
                                     cardType: p.transaction.transaction.creditCard.cardType
-                                    //TODO: what about paypal?
-                                },
-                                shoppingCart: request.query.verbose ? p.shoppingCart : { num_items: p.shoppingCart.num_items },
-                                shipping: p.transaction.transaction.shipping
-                            });
+                                }
+                            }
+                            else {
+                                response.transaction.paypalAccount = {
+                                    payerEmail: p.transaction.transaction.paypalAccount.payerEmail
+                                }
+                            }
+                            
+                            reply.apiSuccess(response);
                         })
                         .catch((err) => {
                             global.appInsightsClient.trackException({
