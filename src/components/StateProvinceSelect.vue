@@ -79,6 +79,7 @@
                filterable
                v-model="selectedState"
                :placeholder="placeholder"
+               :no-match-text="$t('No matching values')"
                @change="emitChange"
                @visible-change="emitVisibleChange"
                :disabled="disabled"
