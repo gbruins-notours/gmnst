@@ -1,10 +1,10 @@
 <script>
 import Vue from 'vue'
-import cloneDeep from 'lodash.clonedeep'
 import PageHeader from '../../components/PageHeader'
 import PaymentTypeDisplay from '../../components/PaymentTypeDisplay'
 import ProductPrice from '../../components/product/ProductPrice'
 import CartTotalsTable from '../../components/cart/CartTotalsTable'
+import orderMixin from './order_mixin'
 import OrderService from './order_service.js'
 import ProductService from '../product/product_service.js'
 import ShoppingCartService from '../cart/shopping_cart_service.js'
@@ -21,63 +21,12 @@ export default {
         CartTotalsTable
     },
 
-    computed: {
-        formattedName() {
-            if(this.order.shipping) {
-                return shoppingCartService.getFormattedShippingName(this.order.shipping.firstName, this.order.shipping.lastName);
-            }
-        },
-
-        formattedCityStateZip: function() {
-            if(this.order.shipping) {
-                return shoppingCartService.getFormattedCityStateZip(
-                    this.order.shipping.locality,
-                    this.order.shipping.region,
-                    this.order.shipping.postalCode
-                );
-            }
-        },
-
-        companyDisplay: function() {
-            if(this.order.shipping) {
-                return shoppingCartService.getFormattedCompanyName(this.order.shipping.company);
-            }
-        },
-
-        cardType: function() {
-            if(this.order.transaction.paymentInstrumentType === 'paypal_account') {
-                return 'paypal';
-            }
-
-            if(this.order.transaction.hasOwnProperty('creditCard')) {
-                return this.order.transaction.creditCard.cardType;
-            }
-            
-            return null;
-        },
-
-        lastFour: function() {
-            if(this.order.transaction.hasOwnProperty('creditCard')) {
-                return this.order.transaction.creditCard.last4;
-            }
-            return null;
-        },
-
-        payerEmail: function() {
-            if(this.order.transaction.hasOwnProperty('paypalAccount')) {
-                return this.order.transaction.paypalAccount.payerEmail;
-            }
-            return null;
-        }
-    },
+    mixins: [
+        orderMixin
+    ],
 
     data: function() {
         return {
-            order: {
-                shipping: {},
-                shoppingCart: {},
-                transaction: {}
-            },
             productService: productService
         }
     },
@@ -93,7 +42,7 @@ export default {
 
     created() {
         orderService.getOrder(this.$route.params.id, true).then((order) => {
-            this.order = cloneDeep(order);
+            this.order = order;
         });
     }
 }

@@ -1,80 +1,19 @@
 <script>
 import Vue from 'vue'
-import cloneDeep from 'lodash.clonedeep'
 import PaymentTypeDisplay from '../../components/PaymentTypeDisplay'
+import orderMixin from './order_mixin'
 import OrderService from './order_service.js'
-import ShoppingCartService from '../cart/shopping_cart_service.js'
-
 
 let orderService = new OrderService();
-let shoppingCartService = new ShoppingCartService();
-
 
 export default {
-
     components: {
         PaymentTypeDisplay
     },
 
-    computed: {
-        formattedName() {
-            if(this.order.shipping) {
-                return shoppingCartService.getFormattedShippingName(this.order.shipping.firstName, this.order.shipping.lastName);
-            }
-        },
-
-        formattedCityStateZip: function() {
-            if(this.order.shipping) {
-                return shoppingCartService.getFormattedCityStateZip(
-                    this.order.shipping.locality,
-                    this.order.shipping.region,
-                    this.order.shipping.postalCode
-                );
-            }
-        },
-
-        companyDisplay: function() {
-            if(this.order.shipping) {
-                return shoppingCartService.getFormattedCompanyName(this.order.shipping.company);
-            }
-        },
-
-        cardType: function() {
-            if(this.order.transaction.paymentInstrumentType === 'paypal_account') {
-                return 'paypal';
-            }
-            
-            if(this.order.transaction.hasOwnProperty('creditCard')) {
-                return this.order.transaction.creditCard.cardType;
-            }
-            
-            return null;
-        },
-
-        lastFour: function() {
-            if(this.order.transaction.hasOwnProperty('creditCard')) {
-                return this.order.transaction.creditCard.last4;
-            }
-            return null;
-        },
-
-        payerEmail: function() {
-            if(this.order.transaction.hasOwnProperty('paypalAccount')) {
-                return this.order.transaction.paypalAccount.payerEmail;
-            }
-            return null;
-        }
-    },
-
-    data: function() {
-        return {
-            order: {
-                shipping: {},
-                shoppingCart: {},
-                transaction: {}
-            }
-        }
-    },
+    mixins: [
+        orderMixin
+    ],
 
     methods: {
         goToOrderDetails: function() {
@@ -89,11 +28,12 @@ export default {
 
     created() {
         orderService.getOrder(this.$route.params.id).then((order) => {
-            this.order = cloneDeep(order);
+            this.order = order;
         });
     }
 }
 </script>
+
 
 <template>
     <section class="container">
@@ -140,7 +80,7 @@ export default {
                     <div class="displayTableRow">
                         <div class="displayTableCell prm pbs">{{ $t('Order') }}:</div>
                         <div class="displayTableCell fwb pbs">
-                            <a v-if="order.id" :click="goToOrderDetails()">{{ order.transaction_id }}</a>
+                            <a v-if="order.id" @click="goToOrderDetails()">{{ order.transaction_id }}</a>
                         </div>
                     </div>
                 </div>

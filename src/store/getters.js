@@ -39,8 +39,7 @@ export default {
                 attrs[key] = state.cart[key]
             }
         });
-        console.log("GETTING BILLING ATTRS", attrs)
-
+        
         return attrs;
     }
 }

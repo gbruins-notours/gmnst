@@ -291,8 +291,6 @@
                         return this.$store.dispatch('CART_SET', result);
                     })
                     .then(() => { 
-                        console.log("CART SET DONE AFTER SET SHIPPING ADDRESS") 
-
                         // As a convenience to the user keeping the Country and State
                         // values the same as the shipping values, as they are likely the same
                         if(!updatedCart.billing_countryCodeAlpha2) {
@@ -327,8 +325,6 @@
                     ...this.cartBillingAttributes
                 })
                 .then((result) => {
-                    console.log("CART SUCCESS RESPONSE", result)
-
                     this.$store.dispatch('CART_DELETE');
 
                     this.braintree.hostedFieldsInstance.teardown((teardownErr) => {
