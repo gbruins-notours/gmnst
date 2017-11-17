@@ -1,5 +1,6 @@
 const cloneDeep = require('lodash.clonedeep');
 const env = process.env.NODE_ENV === 'production' ? 'production' : 'development';
+// const env = 'production';
 
 let common = {
     client: 'pg',

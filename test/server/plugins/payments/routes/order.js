@@ -49,8 +49,9 @@ describe('Testing route: GET /order', () => {
     
                         expect(res.statusCode, 'Status code').to.equal(200);
                         expect(data.hasOwnProperty('amount')).to.equal(true);
-                        expect(data.hasOwnProperty('creditCard')).to.equal(true);
+                        expect(data.hasOwnProperty('shoppingCart')).to.equal(true);
                         expect(data.hasOwnProperty('shipping')).to.equal(true);
+                        expect(data.hasOwnProperty('transaction')).to.equal(true);
     
                         testHelpers.destroyKnexAndStopServer(server, done);
                     });
