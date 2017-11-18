@@ -48,6 +48,7 @@ describe('Testing route: GET /order', () => {
                         let data = res.result.data;
     
                         expect(res.statusCode, 'Status code').to.equal(200);
+                        expect(data.hasOwnProperty('transaction_id')).to.equal(true);
                         expect(data.hasOwnProperty('amount')).to.equal(true);
                         expect(data.hasOwnProperty('shoppingCart')).to.equal(true);
                         expect(data.hasOwnProperty('shipping')).to.equal(true);

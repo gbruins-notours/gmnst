@@ -4,6 +4,8 @@ let product_artists = require('../initial-data/product_artists');
 let product_pics = require('../initial-data/product_pics');
 let product_sizes = require('../initial-data/product_sizes');
 let products = require('../initial-data/products');
+let payments = require('../initial-data/payments');
+let carts = require('../initial-data/carts');
 
 /**
  * Knex.js's seed functionality does not provide any order of execution guarantees,
@@ -26,12 +28,18 @@ exports.seed = (knex, Promise) => {
             return products.seed(knex, Promise);
         })
 
+        // Carts
+        .then(() => {
+            return carts.seed(knex, Promise);
+        })
+
         // ...the rest, which do not depend on any specific order
         .then(() => {
             return Promise.all([
                 api_clients.seed(knex, Promise),
                 product_pics.seed(knex, Promise),
-                product_sizes.seed(knex, Promise)
+                product_sizes.seed(knex, Promise),
+                payments.seed(knex, Promise)
             ])
         });
 };
