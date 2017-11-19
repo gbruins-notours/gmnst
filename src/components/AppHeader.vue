@@ -116,7 +116,7 @@
                             </el-popover>
                         </div>
                         <div class="Header-checkout-cell tar">
-                            <span class="icon is-medium vam"><i class="fa fa-lock colorGrayLighter"></i></span>
+                            <span class="icon is-medium vam"><i class="fa fa-lock colorGray fs30"></i></span>
                         </div>
                     </div>
                 </div>
