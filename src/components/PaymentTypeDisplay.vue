@@ -24,17 +24,9 @@
 
 
 <template>
-    <span class="ccIcon">
+    <span>
         <credit-card-icon :card-type="cardType"></credit-card-icon>&nbsp;
         <span v-show="lastFour">**** {{ lastFour }}</span>
         <span v-show="payerEmail">{{ payerEmail }}</span>
     </span>
 </template>
-
-
-<style>
-    .ccIcon img {
-        width: 45px;
-        vertical-align: top;
-    }
-</style>

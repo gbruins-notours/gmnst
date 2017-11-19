@@ -42,7 +42,7 @@ internals.after = function (server, next) {
      * @returns {Promise}
      */
     internals.getClientToken = () => {
-        let p = new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) => {
             internals.braintreeGateway.clientToken.generate({}, (err, response) => {
                 if(err || !response.clientToken) {
                     return reject(err);
@@ -51,8 +51,6 @@ internals.after = function (server, next) {
                 return resolve(response.clientToken);
             });
         });
-
-        return p;
     };
 
 
@@ -71,18 +69,17 @@ internals.after = function (server, next) {
     internals.savePayment = (cart_id, transactionJson) => {
         return new Promise((resolve, reject) => {
             if(!isObject(transactionJson) || !isObject(transactionJson.transaction)) {
+                global.appInsightsClient.trackException({
+                    exception: new Error('An error occurred while processing the transaction: transactionJson.transaction is not an object')
+                });
                 return reject('An error occurred while processing the transaction.');
             }
 
             server.plugins.BookshelfOrm.bookshelf.model('Payment').forge()
                 .save({
                     cart_id: cart_id,
-                    transaction_id: transactionJson.transaction.id,
-                    processor_response_code: transactionJson.transaction.processorResponseCode || null,
-                    amount: transactionJson.transaction.amount || null,
-                    payment_type: transactionJson.transaction.paymentInstrumentType || null,
-                    currency_iso_code: transactionJson.transaction.currencyIsoCode || null,
-                    transaction: transactionJson,
+                    transaction_id: transactionJson.transaction.id,  
+                    transaction: transactionJson.transaction,
                     success: transactionJson.success || null
                 }, {method: 'insert'})
                 .then((Payment) => {
@@ -151,6 +148,7 @@ internals.after = function (server, next) {
             .fetch(fetchOptions);
     };
 
+
     server.route([
         {
             method: 'GET',
@@ -172,29 +170,28 @@ internals.after = function (server, next) {
 
                             let p = payment.toJSON();
 
-                            // Much less data can be sent over the wire in this case, so trimming the response:
+                            // Much less data can be sent over the wire in this case, 
+                            // so trimming the transaction value in the response
                             let response = {
                                 id: p.id,
-                                transaction_id: p.transaction_id,
                                 created: p.created_at,
-                                amount: p.amount,
+                                shipping: p.transaction.shipping,
                                 shoppingCart: request.query.verbose ? p.shoppingCart : { num_items: p.shoppingCart.num_items },
-                                shipping: p.transaction.transaction.shipping,
                                 transaction: {
-                                    paymentInstrumentType: p.transaction.transaction.paymentInstrumentType
+                                    id: p.transaction_id,
+                                    amount: p.transaction.amount,
+                                    payment: {
+                                        type: p.transaction.paymentInstrumentType
+                                    }
                                 }
-                            }
+                            };
 
-                            if(p.transaction.transaction.paymentInstrumentType === 'credit_card') {
-                                response.transaction.creditCard = {
-                                    last4: p.transaction.transaction.creditCard.last4,
-                                    cardType: p.transaction.transaction.creditCard.cardType
-                                }
+                            if(p.transaction.paymentInstrumentType === 'credit_card') {
+                                response.transaction.payment.last4 = p.transaction.creditCard.last4;
+                                response.transaction.payment.cardType = p.transaction.creditCard.cardType;
                             }
                             else {
-                                response.transaction.paypalAccount = {
-                                    payerEmail: p.transaction.transaction.paypalAccount.payerEmail
-                                }
+                                response.transaction.payment.payerEmail = p.transaction.paypalAccount.payerEmail;
                             }
                             
                             reply.apiSuccess(response);

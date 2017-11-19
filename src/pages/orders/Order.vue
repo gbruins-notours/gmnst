@@ -20,7 +20,7 @@ export default {
             return this.$router.push({ 
                 name: 'order_details',
                 params: { 
-                    id: this.order.transaction_id
+                    id: this.order.transaction.id
                 } 
             });
         }
@@ -65,22 +65,22 @@ export default {
 
                     <div class="displayTableRow">
                         <div class="displayTableCell prm pbs">{{ $t('Total') }}:</div>
-                        <div class="displayTableCell fwb pbs">{{ $n(order.amount, 'currency') }}</div>
+                        <div class="displayTableCell fwb pbs">{{ $n(order.transaction.amount, 'currency') }}</div>
                     </div>
 
                     <div class="displayTableRow">
                         <div class="displayTableCell prm pbs">{{ $t('Payment method') }}:</div>
                         <div class="displayTableCell fwb pbs">
                             <payment-type-display :card-type="cardType" 
-                                                  :last-four="lastFour"
-                                                  :payer-email="payerEmail"></payment-type-display>
+                                                  :last-four="order.transaction.payment.last4"
+                                                  :payer-email="order.transaction.payment.payerEmail"></payment-type-display>
                         </div>
                     </div>
 
                     <div class="displayTableRow">
                         <div class="displayTableCell prm pbs">{{ $t('Order') }}:</div>
                         <div class="displayTableCell fwb pbs">
-                            <a v-if="order.id" @click="goToOrderDetails()">{{ order.transaction_id }}</a>
+                            <a v-if="order.id" @click="goToOrderDetails()">{{ order.transaction.id }}</a>
                         </div>
                     </div>
                 </div>

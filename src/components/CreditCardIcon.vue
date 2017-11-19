@@ -23,5 +23,13 @@
 
 
 <template>
-    <img :src="cardTypeIcon" v-show="cardTypeIcon"/>
+    <img class="ccIcon" :src="cardTypeIcon" v-show="cardTypeIcon"/>
 </template>
+
+
+<style>
+    .ccIcon {
+        width: 45px;
+        vertical-align: top;
+    }
+</style>

@@ -45,7 +45,7 @@ exports.seed = (knex) => {
             let cents;
             let artistIndex = 0;
 
-            global.seedUuids = [];
+            global.productSeedUuids = [];
 
             for(let i=1; i<31; i++) {
                 if(artistIndex === 5) {
@@ -55,7 +55,7 @@ exports.seed = (knex) => {
                 cents = (i < 10) ? parseFloat('0.0' + i) : parseFloat('0.' + i);
 
                 let uuid = faker.random.uuid();
-                global.seedUuids.push(uuid);
+                global.productSeedUuids.push(uuid);
 
                 promises.push(
                     knex(CoreService.DB_TABLES.products)

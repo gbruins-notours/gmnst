@@ -21,16 +21,11 @@ exports.seed = (knex) => {
                     .insert({
                         id: faker.random.uuid(),
                         transaction_id: 'abc1',
-                        processor_response_code: 1000,
-                        amount: 100,
-                        payment_type: 'credit_card',
-                        currency_iso_code: 'USD',
                         transaction: {
-                            "transaction": {
-                                "creditCard": {
-                                    "cardType": "Visa",
-                                    "last4": "1111"
-                                }
+                            "paymentInstrumentType": "credit_card",
+                            "creditCard": {
+                                "cardType": "Visa",
+                                "last4": "1111"
                             }
                         },
                         success: true,
@@ -45,15 +40,10 @@ exports.seed = (knex) => {
                     .insert({
                         id: faker.random.uuid(),
                         transaction_id: 'abc2',
-                        processor_response_code: 1000,
-                        amount: 200,
-                        payment_type: 'paypal_account',
-                        currency_iso_code: 'USD',
                         transaction: {
-                            "transaction": {
-                                "paypalAccount": {
-                                    "payerEmail": "payer@example.com"
-                                }
+                            "paymentInstrumentType": "paypal_account",
+                            "paypalAccount": {
+                                "payerEmail": "payer@example.com"
                             }
                         },
                         success: true,

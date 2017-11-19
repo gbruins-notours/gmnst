@@ -40,18 +40,6 @@ export default {
         }
     },
 
-    computed: {
-        productCategory: function() {
-            if (isObject(this.product.type) && this.product.type.hasOwnProperty('label')) {
-                return this.product.type.label;
-            }
-            return;
-        },
-        productPic: function() {
-            return productService.featuredProductPic(this.product);
-        }
-    },
-
     methods: {
         addToCart: function() {
             if(currentNotification) {
@@ -94,76 +82,6 @@ export default {
 
         goToCart: function() {
             this.$router.push(`/cart/${this.product.id}`);
-        },
-
-        buildSizeOptions: function(product) {
-            return new Promise((resolve, reject) => {
-                let sizeOpts = [];
-                let maxInventoryCount = 0;
-
-                if (Array.isArray(product.sizes)) {
-                    product.sizes.forEach((obj) => {
-                        if (obj.is_visible && obj.inventory_count) {
-                            sizeOpts.push(obj.size);
-
-                            if (obj.inventory_count > maxInventoryCount) {
-                                maxInventoryCount = obj.inventory_count;
-                            }
-                        }
-                    });
-                }
-
-                resolve({
-                    sizeOpts,
-                    maxInventoryCount
-                });
-            });
-        },
-
-        buildPictures: function(product) {
-            let sortObj = {};
-            let pics = [];
-
-            function add(sortOrder, val) {
-                let order = sortOrder || 100;
-
-                if(!sortObj.hasOwnProperty(order)) {
-  	                 sortObj[order] = [];
-                }
-
-                 sortObj[order].push(val);
-             }
-
-             function getSortedArray(sortObj) {
-                 let vals = [];
-
-                 _forEach(sortObj, (arr) => {
-                     if(Array.isArray(arr)) {
-                        arr.forEach((val) => {
-                            vals.push(val);
-                        })
-                     }
-                 });
-
-                 return vals;
-            }
-
-            return new Promise((resolve, reject) => {
-                // featured pic is always first
-                if(product.featured_pic) {
-                    add(1, `/static/images/product/${product.featured_pic}`)
-                }
-
-                if (Array.isArray(product.pics)) {
-                    product.pics.forEach((obj) => {
-                        if (obj.is_visible && obj.file_name) {
-                            add(obj.sort_order, `/static/images/product/${obj.file_name}`)
-                        }
-                    });
-                }
-
-                resolve( getSortedArray(sortObj) );
-            });
         }
     },
 
@@ -173,11 +91,11 @@ export default {
                 this.product = product;
                 document.title = product.title;
 
-                this.buildSizeOptions(product).then((result) => {
+                productService.buildSizeOptions(product).then((result) => {
                     this.sizeOptions = result.sizeOpts;
                 });
 
-                this.buildPictures(product).then((pics) => {
+                productService.buildPictures(product).then((pics) => {
                     this.productPics = pics;
                 });
             });
@@ -202,7 +120,6 @@ export default {
                             <img :src="pic">
                           </slide>
                         </carousel>
-
                     </div>
                 </div>
 

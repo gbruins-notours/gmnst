@@ -7,7 +7,9 @@ export default {
             order: {
                 shipping: {},
                 shoppingCart: {},
-                transaction: {}
+                transaction: {
+                    payment: {}
+                }
             }
         }
     },
@@ -36,29 +38,11 @@ export default {
         },
 
         cardType: function() {
-            if(this.order.transaction.paymentInstrumentType === 'paypal_account') {
+            if(this.order.transaction.payment.type === 'paypal_account') {
                 return 'paypal';
             }
-            
-            if(this.order.transaction.hasOwnProperty('creditCard')) {
-                return this.order.transaction.creditCard.cardType;
-            }
-            
-            return null;
-        },
 
-        lastFour: function() {
-            if(this.order.transaction.hasOwnProperty('creditCard')) {
-                return this.order.transaction.creditCard.last4;
-            }
-            return null;
-        },
-
-        payerEmail: function() {
-            if(this.order.transaction.hasOwnProperty('paypalAccount')) {
-                return this.order.transaction.paypalAccount.payerEmail;
-            }
-            return null;
+            return this.order.transaction.payment.cardType;
         }
     }
 }

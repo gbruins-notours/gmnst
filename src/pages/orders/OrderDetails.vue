@@ -61,7 +61,7 @@ export default {
 
                 <div class="displayTableRow">
                     <div class="displayTableCell prm">{{ $t('Order') }}:</div>
-                    <div class="displayTableCell">{{ order.transaction_id }}</div>
+                    <div class="displayTableCell">{{ order.transaction.id }}</div>
                 </div>
             </div>
 
@@ -82,8 +82,8 @@ export default {
                     <div class="fwb">{{ $t('Payment method') }}:</div>
                     <div>
                         <payment-type-display :card-type="cardType" 
-                                              :last-four="lastFour"
-                                              :payer-email="payerEmail"></payment-type-display>
+                                              :last-four="order.transaction.payment.last4"
+                                              :payer-email="order.transaction.payment.payerEmail"></payment-type-display>
                     </div>
                 </div>
 

@@ -7,10 +7,6 @@ module.exports.up = (knex) => {
         (t) => {
             t.uuid('id').primary();
             t.string('transaction_id');
-            t.string('processor_response_code').nullable();
-            t.string('amount').nullable();
-            t.string('payment_type').nullable();
-            t.string('currency_iso_code').nullable();
             t.jsonb('transaction').nullable();
             t.boolean('success');
             t.boolean('void');

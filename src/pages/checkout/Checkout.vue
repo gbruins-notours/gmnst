@@ -332,9 +332,6 @@
                             console.log('There was an error tearing it down!', teardownErr.message);
                             shoppingCartService.getBraintreeErrorMessage(teardownErr, this);
                         }
-                        else {
-                            console.log("hosted fields teardown done")
-                        }
                     });
 
                     return this.$router.push({ 
