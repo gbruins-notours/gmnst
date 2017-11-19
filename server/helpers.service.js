@@ -1,9 +1,10 @@
+'use strict';
+
 const Boom = require('boom');
 const isString = require('lodash.isstring');
 const isObject = require('lodash.isobject');
 const forEach = require('lodash.foreach');
 const queryString = require('query-string');
-
 
 
 function queryHelper(request) {
@@ -81,24 +82,24 @@ function queryHelper(request) {
  */
 function fetchPage(request, model, withRelated) {
     let queryData = queryHelper(request);
-    let fetchPage = {};
+    let config = {};
 
     if(queryData.hasOwnProperty('limit') && queryData.limit) {
-        fetchPage.limit = queryData.limit;
+        config.limit = queryData.limit;
 
         if(queryData.hasOwnProperty('offset')) {
-            fetchPage.offset = queryData.offset;
+            config.offset = queryData.offset;
         }
     }
     else {
-        fetchPage = {
+        config = {
             pageSize: queryData.pageSize || 100,
             page: queryData.page || 1
         } 
     }
 
     if(Array.isArray(withRelated) && withRelated.length) {
-        fetchPage.withRelated = withRelated;
+        config.withRelated = withRelated;
     }
 
     return model.query((qb) => {
@@ -109,6 +110,7 @@ function fetchPage(request, model, withRelated) {
             qb.where(queryData.where[0], queryData.where[1], queryData.where[2]);
         }
 
+        /*
         if(queryData.whereRaw) {
             if(queryData.whereRaw.length === 1) {
                 qb.whereRaw(queryData.whereRaw);
@@ -117,6 +119,7 @@ function fetchPage(request, model, withRelated) {
                 qb.whereRaw(queryData.whereRaw.shift(), queryData.whereRaw);
             }
         }
+        */
 
         if(queryData.andWhere) {
             forEach(queryData.andWhere, function(arr) {
@@ -125,7 +128,7 @@ function fetchPage(request, model, withRelated) {
         }
     })
     .orderBy(queryData.orderBy, queryData.orderDir)
-    .fetchPage(fetchPage);
+    .fetchPage(config);
 }
 
 
