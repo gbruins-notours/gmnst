@@ -1,9 +1,9 @@
 const cloneDeep = require('lodash.clonedeep');
-const env = process.env.NODE_ENV === 'production' ? 'production' : 'development';
-// const env = 'production';
+// const env = process.env.NODE_ENV === 'production' ? 'production' : 'development';
+const env = 'production';
 
 let common = {
-    client: 'pg',
+    client: 'postgres',
     pool: {
         min: 2,
         max: 10
@@ -27,13 +27,15 @@ dev.connection = {
 };
 
 let prod = cloneDeep(common);
-prod.connection = {
-    host: process.env.POSTGRESQLCONNSTR_POSTGRES_HOST,
-    user: process.env.POSTGRESQLCONNSTR_POSTGRES_USER,
-    password: process.env.POSTGRESQLCONNSTR_POSTGRES_PASSWORD,
-    database: process.env.POSTGRESQLCONNSTR_POSTGRES_DB,
-    ssl: true
-};
+// prod.connection = {
+//     host: process.env.POSTGRESQLCONNSTR_POSTGRES_HOST,
+//     user: process.env.POSTGRESQLCONNSTR_POSTGRES_USER,
+//     password: process.env.POSTGRESQLCONNSTR_POSTGRES_PASSWORD,
+//     database: process.env.POSTGRESQLCONNSTR_POSTGRES_DB,
+//     port: 5432,
+//     ssl: true
+// };
+prod.connection = `postgres://${process.env.POSTGRESQLCONNSTR_POSTGRES_USER}:${process.env.POSTGRESQLCONNSTR_POSTGRES_PASSWORD}@${process.env.POSTGRESQLCONNSTR_POSTGRES_HOST}:5432/${process.env.POSTGRESQLCONNSTR_POSTGRES_DB}?ssl=true`
 
 let config = {
     development: dev,
