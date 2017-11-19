@@ -137,7 +137,10 @@ export default {
                     <!-- Size -->
                     <div class="inlineBlock vat mbl" style="padding-right:40px;">
                         <div class="fwb">{{ $t('Size') }}</div>
-                        <el-select v-model="selectedSize" placeholder="Select" class="width125">
+                        <el-select v-model="selectedSize" 
+                                   :no-data-text="$t('Sorry this item does not have any sizes available')"
+                                   placeholder="Select" 
+                                   class="width125">
                             <el-option
                                     v-for="size in sizeOptions"
                                     :key="size"

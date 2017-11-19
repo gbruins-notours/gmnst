@@ -127,6 +127,7 @@ const translations = {
     'SIZE_YOUTH_M': 'Youth M',
     'SIZE_YOUTH_L': 'Youth L',
     'SIZE_YOUTH_XL': 'Youth XL',
+    'Sorry this item does not have any sizes available': 'Sorry this item does not have any sizes available',
     'STATE/PROVINCE/REGION': 'STATE/PROVINCE/REGION',
     'State/Province/Region': 'State/Province/Region',
     'Stay in checkout': 'Stay in checkout',
