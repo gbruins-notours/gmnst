@@ -538,42 +538,39 @@
                 );
             },
 
-            getBraintreeClientToken: function() {
+            getClientToken: function() {
                 return new Promise((resolve, reject) => {
-                    if(!this.braintreeClientToken) {
+                    if(!this.$store.state.app.braintreeClientToken) {
                         shoppingCartService.getBraintreeClientToken().then((token) => {
                             this.$store.dispatch('BRAINTREE_CLIENT_TOKEN', token);
-                            return resolve(token);       
+                            resolve(token);       
                         });
                     }
-
-                    return resolve(this.braintreeClientToken);  
+                    else {
+                        resolve(this.$store.state.app.braintreeClientToken);  
+                    }
                 });
             }
         },
 
         created() {
             if(this.cart.num_items) {
-                this.getBraintreeClientToken().then((token) => {
+                this.getClientToken().then((token) => {
                     let client = require('braintree-web/client');
-                    client.create(
-                        { authorization: token },
-                        (clientErr, clientInstance) => {
-                            if (clientErr) {
-                                currentNotification = this.$notify({
-                                    type: 'error',
-                                    title: this.$t('There was an error setting up the payment client!'),
-                                    message: shoppingCartService.getBraintreeErrorMessage(clientErr, this),
-                                    duration: 0
-                                });
-                            }
-                            else {
-                                this.braintree.clientInstance = clientInstance
-                                this.createHostedFields(clientInstance);
-                                this.createPaypal(clientInstance);
-                            }
-                        }
-                    );
+                    client
+                        .create({ authorization: token })
+                        .then((clientInstance) => {
+                            this.createHostedFields(clientInstance);
+                            this.createPaypal(clientInstance);
+                        })
+                        .catch((clientErr) => {
+                            currentNotification = this.$notify({
+                                type: 'error',
+                                title: this.$t('There was an error setting up the payment client!'),
+                                message: shoppingCartService.getBraintreeErrorMessage(clientErr, this),
+                                duration: 0
+                            });
+                        })
                 });
             }
         },
