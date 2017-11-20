@@ -11,6 +11,10 @@ export default {
         return state.app.sidebar;
     },
 
+    braintreeClientToken: (state) => {
+        return state.app.braintreeClientToken;
+    },
+
     cart: (state) => {
         return state.cart;
     },

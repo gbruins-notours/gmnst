@@ -1,5 +1,4 @@
 <script>
-    import Promise from 'bluebird'
     import accounting from 'accounting'
     import Vue from 'vue'
     import { mapGetters } from 'vuex'

@@ -50,17 +50,14 @@
                 utilityService.getJwtToken().then((jsonWebToken) => {
                     this.$store.dispatch('JWT_KEY', jsonWebToken);
 
-                    Promise.all([
-                        shoppingCartService.getCart(),
-                        shoppingCartService.getBraintreeClientToken()
-                    ])
-                    .then((response) => {
-                        this.$store.dispatch('CART_SET', response[0]);
-                        this.$store.dispatch('BRAINTREE_CLIENT_TOKEN', response[2]);
-                    })
-                    .catch((error) => {
-                        console.log('GET JWT Error', error);
-                    });
+                    shoppingCartService
+                        .getCart()
+                        .then((cart) => {
+                            this.$store.dispatch('CART_SET', cart);
+                        })
+                        .catch((error) => {
+                            console.log('GET JWT Error', error);
+                        });
                 })
             }
         }

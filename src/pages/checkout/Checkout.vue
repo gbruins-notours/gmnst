@@ -3,6 +3,7 @@
     import { mapGetters } from 'vuex'
     import isObject from 'lodash.isobject'
     import forEach from 'lodash.foreach'
+    import Promise from 'bluebird';
     import { Checkbox, Input, Notification, RadioGroup, Radio, Tabs, TabPane, Loading, Dialog } from 'element-ui'
     import Validations from 'vuelidate'
     import { required } from 'vuelidate/lib/validators'
@@ -54,7 +55,8 @@
                 'cart',
                 'cartShippingAttributes',
                 'cartBillingAttributes',
-                'app'
+                'app',
+                'braintreeClientToken'
             ]),
 
             paymentMethodButtonEnabled: function() {
@@ -466,7 +468,6 @@
                 });
             },
 
-
             createHostedFields: function(clientInstance) {
                 let hostedFields = require('braintree-web/hosted-fields');
                 hostedFields.create({
@@ -535,30 +536,45 @@
                         this.braintree.paypalInstance = paypalInstance;
                     }
                 );
+            },
+
+            getBraintreeClientToken: function() {
+                return new Promise((resolve, reject) => {
+                    if(!this.braintreeClientToken) {
+                        shoppingCartService.getBraintreeClientToken().then((token) => {
+                            this.$store.dispatch('BRAINTREE_CLIENT_TOKEN', token);
+                            return resolve(token);       
+                        });
+                    }
+
+                    return resolve(this.braintreeClientToken);  
+                });
             }
         },
 
         created() {
             if(this.cart.num_items) {
-                let client = require('braintree-web/client');
-                client.create(
-                    { authorization: this.app.braintreeClientToken },
-                    (clientErr, clientInstance) => {
-                        if (clientErr) {
-                            currentNotification = this.$notify({
-                                type: 'error',
-                                title: this.$t('There was an error setting up the payment client!'),
-                                message: shoppingCartService.getBraintreeErrorMessage(clientErr, this),
-                                duration: 0
-                            });
+                this.getBraintreeClientToken().then((token) => {
+                    let client = require('braintree-web/client');
+                    client.create(
+                        { authorization: token },
+                        (clientErr, clientInstance) => {
+                            if (clientErr) {
+                                currentNotification = this.$notify({
+                                    type: 'error',
+                                    title: this.$t('There was an error setting up the payment client!'),
+                                    message: shoppingCartService.getBraintreeErrorMessage(clientErr, this),
+                                    duration: 0
+                                });
+                            }
+                            else {
+                                this.braintree.clientInstance = clientInstance
+                                this.createHostedFields(clientInstance);
+                                this.createPaypal(clientInstance);
+                            }
                         }
-                        else {
-                            this.braintree.clientInstance = clientInstance
-                            this.createHostedFields(clientInstance);
-                            this.createPaypal(clientInstance);
-                        }
-                    }
-                );
+                    );
+                });
             }
         },
 
