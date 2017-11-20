@@ -26,7 +26,17 @@ export function createStore () {
                     inCheckoutFlow: false
                 },
                 braintreeClientToken: null,
-                jwtKey: null
+                jwtKey: null,
+                productInfo: {
+                    subTypes: {
+                        PRODUCT_SUBTYPE_HAT: 1,
+                        PRODUCT_SUBTYPE_TOP: 2
+                    },
+                    seoUri: {
+                        PRODUCT_SUBTYPE_HAT: 'hats',
+                        PRODUCT_SUBTYPE_TOP: 'tops'
+                    }
+                }
             },
 
             // There seems to be an issue with reactivity in the UI

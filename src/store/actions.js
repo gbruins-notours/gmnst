@@ -23,10 +23,6 @@ export default {
         commit('BRAINTREE_CLIENT_TOKEN', token)
     },
 
-    PRODUCT_INFO: ({ commit }, data) => {
-        commit('PRODUCT_INFO', data)
-    },
-
     CART_SET: ({ commit }, data) => {
         commit('CART_SET', data)
     },

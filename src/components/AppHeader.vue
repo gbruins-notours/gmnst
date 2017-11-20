@@ -24,7 +24,11 @@
             ...mapGetters([
                 'numCartItems',
                 'inCheckoutFlow'
-            ])
+            ]),
+
+            productInfo: function() {
+                return this.$store.state.app.productInfo || {};
+            }
         },
 
         methods: {
@@ -86,8 +90,12 @@
 
                     <nav class="Navigation">
                         <ul class="Navigation-list">
-                            <router-link to="/type/hats" tag="li" active-class="active">{{ $t('HATS') }}</router-link>
-                            <router-link to="/type/tops" tag="li" active-class="active">{{ $t('TOPS') }}</router-link>
+                            <router-link 
+                                v-for="(val, key) in productInfo.subTypes" 
+                                :key="key" 
+                                :to="`/type/${productInfo.seoUri[key]}`" 
+                                tag="li" 
+                                active-class="active">{{ $tc(key, 2) }}</router-link>
                         </ul>
                     </nav>
                 </div>

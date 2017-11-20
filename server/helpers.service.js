@@ -110,7 +110,6 @@ function fetchPage(request, model, withRelated) {
             qb.where(queryData.where[0], queryData.where[1], queryData.where[2]);
         }
 
-        /*
         if(queryData.whereRaw) {
             if(queryData.whereRaw.length === 1) {
                 qb.whereRaw(queryData.whereRaw);
@@ -119,7 +118,6 @@ function fetchPage(request, model, withRelated) {
                 qb.whereRaw(queryData.whereRaw.shift(), queryData.whereRaw);
             }
         }
-        */
 
         if(queryData.andWhere) {
             forEach(queryData.andWhere, function(arr) {

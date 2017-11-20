@@ -1,6 +1,4 @@
 <script>
-import { mapGetters } from 'vuex'
-import isObject from 'lodash.isobject';
 import ProductCard from '../../components/product/ProductCard'
 import ProductService from './product_service.js'
 
@@ -21,23 +19,17 @@ export default {
     },
 
     methods: {
-        ...mapGetters([
-            'app'
-        ]),
-
         getIdByProductType(type) {
-            let info = this.app();
+            let info = this.$store.state.app.productInfo;
             let id = 0;
             let subtype = null;
 
-            if(isObject(info) && isObject(info.productInfo)) {
-                Object.keys(info.productInfo.seoUri).forEach((key) => {
-                    if (info.productInfo.seoUri[key] === type && info.productInfo.subTypes.hasOwnProperty(key)) {
-                        id = info.productInfo.subTypes[key];
-                        subtype = key;
-                    }
-                });
-            }
+            Object.keys(info.seoUri).forEach((key) => {
+                if (info.seoUri[key] === type && info.subTypes.hasOwnProperty(key)) {
+                    id = info.subTypes[key];
+                    subtype = key;
+                }
+            });
 
             return {
                 productTypeId: id,
@@ -46,19 +38,19 @@ export default {
         },
 
         fetchProducts(productTypeId) {
-            let params = {
-                where: ['is_available', '=', true],
-                whereRaw: ['sub_type & ? > 0', [productTypeId]],
-                andWhere: [
-                    ['inventory_count', '>', 0]
-                ],
-                orderBy: 'updated_at',
-                orderDir: 'DESC'
-            };
-
-            productService.getProducts(params).then((products) => {
-                this.products = products;
-            });
+            productService
+                .getProducts({
+                    where: ['is_available', '=', true],
+                    whereRaw: ['sub_type & ? > 0', [productTypeId]],
+                    andWhere: [
+                        ['inventory_count', '>', 0]
+                    ],
+                    orderBy: 'updated_at',
+                    orderDir: 'DESC'
+                })
+                .then((products) => {
+                    this.products = products;
+                });
         },
 
         goToDetails(product) {

@@ -6,11 +6,9 @@
     import AppHeader from '@/components/AppHeader'
     import AppFooter from '@/components/AppFooter'
     import ShoppingCartService from './pages/cart/shopping_cart_service.js'
-    import ProductService from './pages/product/product_service.js'
     import UtilityService from './utility_service.js'
 
     let shoppingCartService = new ShoppingCartService();
-    let productService = new ProductService();
     let utilityService = new UtilityService();
 
     export default {
@@ -54,12 +52,10 @@
 
                     Promise.all([
                         shoppingCartService.getCart(),
-                        productService.getProductInfo(),
                         shoppingCartService.getBraintreeClientToken()
                     ])
                     .then((response) => {
                         this.$store.dispatch('CART_SET', response[0]);
-                        this.$store.dispatch('PRODUCT_INFO', response[1]);
                         this.$store.dispatch('BRAINTREE_CLIENT_TOKEN', response[2]);
                     })
                     .catch((error) => {
