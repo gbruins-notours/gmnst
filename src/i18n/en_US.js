@@ -60,6 +60,8 @@ const translations = {
 
     'items': 'item | items',
 
+    'KEEP SHOPPING': 'KEEP SHOPPING',
+
     'LAST NAME': 'LAST NAME',
     'Last name': 'Last name',
 
@@ -68,6 +70,7 @@ const translations = {
     'No matching values': 'No matching values',
 
     'optional': 'optional',
+    'OR': 'OR',
     'Order': 'Order',
     'Order Details': 'Order Details',
     'Order summary': 'Order summary',
@@ -112,6 +115,7 @@ const translations = {
     'Shipping options are loading': 'Shipping options are loading',
     'Shipping to': 'Shipping to',
     'Shopping Cart': 'Shopping Cart',
+    'Shop for': 'Shop for',
     'Shorts': 'Shorts',
     'Size': 'Size',
     'SIZE_ADULT_XS': 'Adult XS',

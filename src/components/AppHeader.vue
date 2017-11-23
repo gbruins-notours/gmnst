@@ -90,11 +90,11 @@
 
                     <nav class="Navigation">
                         <ul class="Navigation-list">
-                            <router-link 
-                                v-for="(val, key) in productInfo.subTypes" 
-                                :key="key" 
-                                :to="`/type/${productInfo.seoUri[key]}`" 
-                                tag="li" 
+                            <router-link
+                                v-for="(val, key) in productInfo.subTypes"
+                                :key="key"
+                                :to="`/type/${productInfo.seoUri[key]}`"
+                                tag="li"
                                 active-class="active">{{ $tc(key, 2) }}</router-link>
                         </ul>
                     </nav>

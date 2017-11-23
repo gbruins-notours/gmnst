@@ -2,15 +2,20 @@
     import Vue from 'vue'
     import { mapGetters } from 'vuex'
     import isObject from 'lodash.isobject'
+    import { Button } from 'element-ui'
     import PageHeader from '../../components/PageHeader.vue'
     import CartItems from '../../components/cart/CartItems'
     import CartTotalsTable from '../../components/cart/CartTotalsTable'
+    import KeepShoppingButton from '../../components/cart/KeepShoppingButton'
+
+    Vue.use(Button);
 
     export default {
         components: {
             CartItems,
             CartTotalsTable,
-            PageHeader
+            PageHeader,
+            KeepShoppingButton
         },
 
         computed: {
@@ -68,11 +73,17 @@
                 </div>
             </div>
 
-            <div class="tac pal" v-if="this.cart.num_items">
+            <div class="tac mtl" v-if="this.cart.num_items">
                 <el-button type="warning"
                            class="colorBlack"
                            size="large"
                            @click="goToCheckout">{{ $t('PROCEED TO CHECKOUT') }}</el-button>
+
+               <div class="mvl colorGray">{{ $t('OR') }}</div>
+            </div>
+
+            <div class="tac">
+                <keep-shopping-button></keep-shopping-button>
             </div>
         </div>
     </section>
