@@ -10,7 +10,6 @@
     import CheckoutWizardBar from '../../components/checkout/CheckoutWizardBar'
     import PaymentMethodChooser from '../../components/checkout/PaymentMethodChooser'
     import ShippingBillingForm from '../../components/checkout/ShippingBillingForm'
-    import CountrySelect from '../../components/CountrySelect'
     import CartItems from '../../components/cart/CartItems'
     import CartTotalsTable from '../../components/cart/CartTotalsTable'
     import ShippingView from '../../components/checkout/ShippingView'
@@ -43,7 +42,6 @@
             ShippingBillingHelp,
             ShippingBillingForm,
             Checkbox,
-            CountrySelect,
             CartItems,
             BottomPopover,
             CreditCardIcon,
@@ -62,13 +60,13 @@
             paymentMethodButtonEnabled: function() {
                 if(this.paymentMethod === 'PAYPAL' ||
                     (this.paymentMethod === 'CREDIT_CARD' &&
-                    this.inputClasses['card-number'] && 
-                    this.inputClasses['card-number'].indexOf('colorGreen') > -1 && 
-                    this.inputClasses['expiration-year'] && 
-                    this.inputClasses['expiration-year'].indexOf('colorGreen') > -1 && 
+                    this.inputClasses['card-number'] &&
+                    this.inputClasses['card-number'].indexOf('colorGreen') > -1 &&
+                    this.inputClasses['expiration-year'] &&
+                    this.inputClasses['expiration-year'].indexOf('colorGreen') > -1 &&
                     this.inputClasses['expiration-month'] &&
-                    this.inputClasses['expiration-month'].indexOf('colorGreen') > -1 && 
-                    this.inputClasses['cvv'] && 
+                    this.inputClasses['expiration-month'].indexOf('colorGreen') > -1 &&
+                    this.inputClasses['cvv'] &&
                     this.inputClasses['cvv'].indexOf('colorGreen') > -1)) {
                     return true;
                 }
@@ -292,7 +290,7 @@
                         updatedCart = result;
                         return this.$store.dispatch('CART_SET', result);
                     })
-                    .then(() => { 
+                    .then(() => {
                         // As a convenience to the user keeping the Country and State
                         // values the same as the shipping values, as they are likely the same
                         if(!updatedCart.billing_countryCodeAlpha2) {
@@ -336,11 +334,11 @@
                         }
                     });
 
-                    return this.$router.push({ 
+                    return this.$router.push({
                         name: 'order',
-                        params: { 
+                        params: {
                             id: result.transactionId
-                        } 
+                        }
                     });
                 })
                 .catch((error) => {
@@ -543,11 +541,11 @@
                     if(!this.$store.state.app.braintreeClientToken) {
                         shoppingCartService.getBraintreeClientToken().then((token) => {
                             this.$store.dispatch('BRAINTREE_CLIENT_TOKEN', token);
-                            resolve(token);       
+                            resolve(token);
                         });
                     }
                     else {
-                        resolve(this.$store.state.app.braintreeClientToken);  
+                        resolve(this.$store.state.app.braintreeClientToken);
                     }
                 });
             }
@@ -686,7 +684,7 @@
                                     </div>
 
                                     <shipping-billing-form type="billing"
-                                                           v-show="!billingSameAsShipping" 
+                                                           v-show="!billingSameAsShipping"
                                                            class="mtl"></shipping-billing-form>
                                 </div>
                             </div>
@@ -698,7 +696,7 @@
                     </div>
                     <div v-show="paymentMethod === 'PAYPAL'" class="colorGreen tac mtl">
                         {{ $t('Your PayPal transaction will be completed on the next page.') }}
-                    </div> 
+                    </div>
 
                     <div class="ptl tac">
                         <div class="inlineBlock">
@@ -749,7 +747,7 @@
                 </div>
 
                 <!-- CVV Modal -->
-                <el-dialog :title="$t('Finding your security code')" 
+                <el-dialog :title="$t('Finding your security code')"
                         :modal-append-to-body="false"
                         :visible.sync="securityCodeModalShow">
                     <div class="cvvCard">

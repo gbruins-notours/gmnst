@@ -139,7 +139,7 @@
                     touchMap.set($v, setTimeout($v.$touch, timeout || 1000))
                 }
                 else {
-                   $v.$touch(); 
+                   $v.$touch();
                 }
             }
         },
@@ -203,7 +203,7 @@
         <div v-if="type === 'shipping'">
             <div>{{ $t('Email address') }}</div>
             <div class="checkout_form_value">
-                <el-input v-model.trim="email" 
+                <el-input v-model.trim="email"
                           :class="{ 'inputError': $v.form.email.$error }"></el-input>
                 <div role="alert" v-show="canShowValidationMsg('email')">
                     <p v-if="!$v.form.email.required">{{ $t('Required') }}</p>
@@ -219,7 +219,6 @@
             <div class="checkout_form_value">
                 <country-select v-model="countryCodeAlpha2"
                                 :init-value="countryCodeAlpha2"
-                                value-type="alpha2"
                                 @change="newVal => countryCodeAlpha2 = newVal"></country-select>
                 <p role="alert" v-show="canShowValidationMsg('countryCodeAlpha2')">{{ $t('Required') }}</p>
                 <i v-show="canShowGreenCheck('countryCodeAlpha2')" class="fa fa-check-circle"></i>
@@ -241,7 +240,7 @@
         <div>
             <div>{{ $t('Last name') }}</div>
             <div class="checkout_form_value">
-                <el-input v-model.trim="lastName" 
+                <el-input v-model.trim="lastName"
                           :class="{ 'inputError': $v.form.lastName.$error }"></el-input>
                 <p role="alert" v-show="canShowValidationMsg('lastName')">{{ $t('Required') }}</p>
                 <i v-show="canShowGreenCheck('lastName')" class="fa fa-check-circle"></i>
@@ -252,7 +251,7 @@
         <div>
             <div>{{ $t('Address line 1') }}</div>
             <div class="checkout_form_value">
-                <el-input v-model.trim="streetAddress" 
+                <el-input v-model.trim="streetAddress"
                           :class="{ 'inputError': $v.form.streetAddress.$error }"></el-input>
                 <p role="alert" v-show="canShowValidationMsg('streetAddress')">{{ $t('Required') }}</p>
                 <i v-show="canShowGreenCheck('streetAddress')" class="fa fa-check-circle"></i>
@@ -272,7 +271,7 @@
         <div>
             <div>{{ $t('City') }}</div>
             <div class="checkout_form_value">
-                <el-input v-model.trim="city" 
+                <el-input v-model.trim="city"
                           :class="{ 'inputError': $v.form.city.$error }"></el-input>
                 <p role="alert" v-show="canShowValidationMsg('city')">{{ $t('Required') }}</p>
                 <i v-show="canShowGreenCheck('city')" class="fa fa-check-circle"></i>
@@ -298,7 +297,7 @@
         <div>
             <div>{{ $t('Postal code') }}</div>
             <div class="checkout_form_value">
-                <el-input v-model.trim="postalCode" 
+                <el-input v-model.trim="postalCode"
                         :class="{ 'inputError': $v.form.postalCode.$error }"></el-input>
                 <p role="alert" v-show="canShowValidationMsg('postalCode')">{{ $t('Required') }}</p>
                 <i v-show="canShowGreenCheck('postalCode')" class="fa fa-check-circle"></i>
