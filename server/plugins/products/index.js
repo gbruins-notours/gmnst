@@ -33,6 +33,7 @@ internals.after = function (server, next) {
         {
             sizes: (query) => {
                 query.where('is_visible', '=', true);
+                query.orderBy('sort', 'ASC');
             },
 
             pics: (query) => {
@@ -182,7 +183,7 @@ internals.after = function (server, next) {
         'ProductArtist',
         require('./models/ProductArtist')(baseModel, bookshelf, server)
     );
-    
+
 
     bookshelf['model'](
         'ProductPic',

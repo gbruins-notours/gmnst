@@ -21,7 +21,7 @@ exports.seed = (knex) => {
             for(let i=1; i<31; i++) {
                 // Each product randomly gets various sizes
                 (function(prodId) {
-                    sizeTypes.forEach((size) => {
+                    sizeTypes.forEach((size, index) => {
                         let uuid = faker.random.uuid();
                         global.productSizeSeedUuids.push(uuid);
 
@@ -33,6 +33,7 @@ exports.seed = (knex) => {
                                         size: size,
                                         inventory_count: faker.random.number(25),
                                         is_visible: true,
+                                        sort: index,
                                         product_id: global.productSeedUuids[prodId-1]
                                     })
                             );

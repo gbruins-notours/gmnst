@@ -12,6 +12,7 @@ module.exports.up = (knex) => {
             t.decimal('sale_price').nullable();
             t.boolean('is_on_sale').nullable();
             t.integer('inventory_count').notNull();
+            t.integer('sort').notNull();
             t.boolean('is_visible');
 
             // Foreign Keys:
