@@ -11,6 +11,7 @@
     // Without that extra space the last of the duplicate values will be displayed as the
     // selected value.  For example, "Puerto Rico" will always be displayed for the "US" value.
     // I hope this works.
+    // DATA SOURCE:  http://www.fedex.com/gb/tracking/codes.html
     let countries = [
         {alpha2: 'US', name: 'United States of America (USA)'},
         {alpha2: 'CA', name: 'Canada'},

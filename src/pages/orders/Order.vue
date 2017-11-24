@@ -17,11 +17,11 @@ export default {
 
     methods: {
         goToOrderDetails: function() {
-            return this.$router.push({ 
+            return this.$router.push({
                 name: 'order_details',
-                params: { 
+                params: {
                     id: this.order.transaction.id
-                } 
+                }
             });
         }
     },
@@ -71,7 +71,7 @@ export default {
                     <div class="displayTableRow">
                         <div class="displayTableCell prm pbs">{{ $t('Payment method') }}:</div>
                         <div class="displayTableCell fwb pbs">
-                            <payment-type-display :card-type="cardType" 
+                            <payment-type-display :card-type="cardType"
                                                   :last-four="order.transaction.payment.last4"
                                                   :payer-email="order.transaction.payment.payerEmail"></payment-type-display>
                         </div>
@@ -85,7 +85,6 @@ export default {
                     </div>
                 </div>
             </div>
-
         </div>
     </section>
 </template>
