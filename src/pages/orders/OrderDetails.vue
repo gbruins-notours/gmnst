@@ -56,7 +56,7 @@ export default {
             <div class="mbl">
                 <div class="displayTableRow">
                     <div class="displayTableCell prm">{{ $t('Ordered on') }}:</div>
-                    <div class="displayTableCell">{{ order.created }}</div>
+                    <div class="displayTableCell">{{ order.created | format8601 }}</div>
                 </div>
 
                 <div class="displayTableRow">
