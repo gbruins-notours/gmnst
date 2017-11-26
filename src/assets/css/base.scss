@@ -6,6 +6,7 @@
 @import "components/objects";
 @import "components/mixins";
 @import "components/cartItem";
+@import "components/element-ui-overrides";
 
 @import '~animate.css';
 .animated {
@@ -62,11 +63,11 @@ label {
  .clearfix::before,
  .clearfix::after {
    content: "";
-   display: table; 
+   display: table;
 }
- 
+
  .clearfix::after {
-   clear: both; 
+   clear: both;
 }
 
 ul.disc {
@@ -81,7 +82,7 @@ ul.disc {
 
 .container-skinny {
     max-width: 700px;
-    margin: 0 auto; 
+    margin: 0 auto;
 }
 
 // @media screen and (min-width: 1192px) {
@@ -92,7 +93,7 @@ ul.disc {
 
 // @media screen and (min-width: 1000px) {
 //     .container-skinny {
-//         margin: 0 auto;    
+//         margin: 0 auto;
 //     }
 // }
 
@@ -260,7 +261,7 @@ ul.disc {
     @include growHover()
 }
 
-@media #{$small-and-down} {  
+@media #{$small-and-down} {
     .el-notification {
         right: auto;
     }

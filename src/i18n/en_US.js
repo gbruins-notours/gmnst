@@ -31,6 +31,7 @@ const translations = {
     'Company name': 'Company name',
     'Conditions of Use': 'Conditions of Use',
     'CONTINUE': 'CONTINUE',
+    'CONTINUE SHOPPING': 'CONTINUE SHOPPING',
     'correct_address_statement': 'If the address contains typos or other errors, your package may be undeliverable.',
     'COUNTRY': 'COUNTRY',
     'Country': 'Country',
@@ -60,7 +61,7 @@ const translations = {
 
     'items': 'item | items',
 
-    'KEEP SHOPPING': 'KEEP SHOPPING',
+
 
     'LAST NAME': 'LAST NAME',
     'Last name': 'Last name',

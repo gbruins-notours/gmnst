@@ -1,8 +1,8 @@
 <script>
+import Vue from 'vue'
 import Promise from 'bluebird';
 import isObject from 'lodash.isobject'
 import _forEach from 'lodash.foreach';
-import Vue from 'vue'
 import { Select, Option, InputNumber, Notification, Button } from 'element-ui'
 import ProductPrice from '../../components/product/ProductPrice'
 import NumberButtons from '../../components/NumberButtons'
@@ -137,9 +137,9 @@ export default {
                     <!-- Size -->
                     <div class="inlineBlock vat mbl" style="padding-right:40px;">
                         <div class="fwb">{{ $t('Size') }}</div>
-                        <el-select v-model="selectedSize" 
+                        <el-select v-model="selectedSize"
                                    :no-data-text="$t('Sorry this item does not have any sizes available')"
-                                   placeholder="Select" 
+                                   placeholder="Select"
                                    class="width125">
                             <el-option
                                     v-for="size in sizeOptions"
@@ -166,8 +166,8 @@ export default {
                     </div>
 
                     <div class="ptl">
-                        <el-button type="warning" 
-                                   @click="addToCart" 
+                        <el-button type="warning"
+                                   @click="addToCart"
                                    class="colorBlack"
                                    :loading="isLoading">{{ $t('ADD TO CART') }}</el-button>
                     </div>
@@ -180,14 +180,6 @@ export default {
 
 <style lang="scss">
 @import '../../assets/css/components/_variables.scss';
-
-.VueCarousel-navigation-button {
-    font-size: 20px;
-    color: $colorPink !important;
-}
-.VueCarousel-navigation--disabled {
-    color: $colorGray !important;
-}
 
 .prod-attributes-table {
     padding-top: 10px;
