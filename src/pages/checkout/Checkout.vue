@@ -297,12 +297,13 @@
                             this.$store.dispatch('CART_ATTRIBUTE_SET', {
                                 attribute: 'billing_countryCodeAlpha2',
                                 value: updatedCart.shipping_countryCodeAlpha2
-                            });
-                        }
-                        if(!updatedCart.billing_state) {
-                            this.$store.dispatch('CART_ATTRIBUTE_SET', {
-                                attribute: 'billing_state',
-                                value: updatedCart.shipping_state
+                            }).then(() => {
+                                if(!updatedCart.billing_state) {
+                                    this.$store.dispatch('CART_ATTRIBUTE_SET', {
+                                        attribute: 'billing_state',
+                                        value: updatedCart.shipping_state
+                                    });
+                                }
                             });
                         }
 
@@ -643,12 +644,12 @@
                                 <div class="checkout_form_value">
                                     <div class="inlineBlock relative">
                                         <!-- month -->
-                                        <div id="expiration-month" class="el-input__inner hostedField60 displayTableCell"></div>
+                                        <div id="expiration-month" class="el-input__inner hostedField70 displayTableCell"></div>
 
                                         <div class="displayTableCell colorGrayLighter phs vat" style="font-size:22px">/</div>
 
                                         <!-- year -->
-                                        <div id="expiration-year" class="el-input__inner hostedField60 displayTableCell"></div>
+                                        <div id="expiration-year" class="el-input__inner hostedField70 displayTableCell"></div>
 
                                         <i v-show="inputClasses['expiration-month'] && inputClasses['expiration-year']"
                                            :class="getPaymentMonthYearClass(inputClasses['expiration-month'], inputClasses['expiration-year'])"></i>
@@ -682,7 +683,6 @@
                                     <div class="pll mts" v-show="billingSameAsShipping">
                                         <shipping-view :show-details="true" :show-email="false"></shipping-view>
                                     </div>
-
                                     <shipping-billing-form type="billing"
                                                            v-show="!billingSameAsShipping"
                                                            class="mtl"></shipping-billing-form>
@@ -792,13 +792,13 @@
         right: 0px;
 
         img {
-            width: 58px;
+            width: 65px;
         }
     }
 
-    .hostedField60 {
-        min-width:60px !important;
-        width:60px !important;
+    .hostedField70 {
+        min-width:70px !important;
+        width:70px !important;
     }
 
     .hostedField80 {

@@ -17,7 +17,17 @@
     function getSetMaker(attr) {
         return {
             get: function() {
-                return this.cart[`${this.type}_${attr}`];
+                let val = this.cart[`${this.type}_${attr}`];
+
+                // the getter gets called whenever a state value changes
+                this.form[attr] = val;
+                this.greenChecks[attr] = !this.$v.form[attr].$invalid;
+
+                if(attr === 'countryCodeAlpha2') {
+                    this.stateSelectEnabled = (isObject(this.cart) && val);
+                }
+
+                return val;
             },
             set: function(newVal) {
                 this.$store.dispatch('CART_ATTRIBUTE_SET', {
@@ -25,17 +35,9 @@
                     value: newVal
                 });
 
-                this.form[attr] = this.cart[`${this.type}_${attr}`];
-                this.greenChecks[attr] = !this.$v.form[attr].$invalid;
-
                 switch(attr) {
                     case 'email':
                         this.delayTouch(this.$v.form.email, 1000);
-                        break;
-
-                    case 'countryCodeAlpha2':
-                        this.stateSelectEnabled = (isObject(this.cart) && this.cart[`${this.type}_${attr}`]);
-                        this.$v.form[attr].$touch();
                         break;
 
                     default:
@@ -282,13 +284,15 @@
         <div>
             <div>{{ $t('State/Province/Region') }}</div>
             <div class="checkout_form_value">
-                <state-province-select v-model.trim="state"
-                                    :init-value="state"
-                                    :country="countryCodeAlpha2"
-                                    :disabled="!stateSelectEnabled"
-                                    @change="newVal => state = newVal"
-                                    :class="{ 'inputError': $v.form.state.$error }"></state-province-select>
+                <state-province-select 
+                    v-model.trim="state"
+                    :init-value="state"
+                    :country="countryCodeAlpha2"
+                    :disabled="!stateSelectEnabled"
+                    @change="newVal => state = newVal"
+                    :class="{ 'inputError': $v.form.state.$error }"></state-province-select>
                 <p role="alert" v-show="canShowValidationMsg('state')">{{ $t('Required') }}</p>
+                <p v-show="!stateSelectEnabled" class="colorGray fs12">{{ $t('Please select a Country first') }}</p>
                 <i v-show="canShowGreenCheck('state')" class="fa fa-check-circle"></i>
             </div>
         </div>

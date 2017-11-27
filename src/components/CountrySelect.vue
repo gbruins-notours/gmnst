@@ -238,12 +238,10 @@
         methods: {
             emitChange(val) {
                 this.$emit('change', val)
-                console.log('change', val)
             },
 
             emitVisibleChange(val) {
                this.$emit('visible-change', val)
-               console.log('visible-change', val)
             }
         },
 

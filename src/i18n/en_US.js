@@ -91,6 +91,7 @@ const translations = {
     'Please select a quantity': 'Please select a quantity',
     'Please select a size': 'Please select a size',
     'Please enter a valid email address.': 'Please enter a valid email address.',
+    'Please select a Country first': 'Please select a Country first',
     'POSTAL CODE': 'POSTAL CODE',
     'Postal code': 'Postal code',
     'Price': 'Price',
