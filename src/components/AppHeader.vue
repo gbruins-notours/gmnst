@@ -116,9 +116,9 @@
                                 placement="bottom"
                                 offset="100"
                                 v-model="headerPopoverVisible">
-                                <div>
+                                <div class="tac">
                                     <div class="fs14">{{ $t('Are you sure you want to return to your Shopping Cart?') }}</div>
-                                    <el-button :plain="true" type="info" @click="headerPopoverVisible = false" class="mtm">{{ $t('Stay in checkout') }}</el-button>
+                                    <el-button plain @click="headerPopoverVisible = false" class="mtm">{{ $t('Stay in checkout') }}</el-button>
                                     <el-button type="warning" @click="headerPopoverVisible = false; goToCart()" class="mtm colorBlack">{{ $t('Return to cart') }}</el-button>
                                 </div>
                             </el-popover>
