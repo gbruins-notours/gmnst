@@ -67,7 +67,8 @@
                     this.inputClasses['expiration-month'] &&
                     this.inputClasses['expiration-month'].indexOf('colorGreen') > -1 &&
                     this.inputClasses['cvv'] &&
-                    this.inputClasses['cvv'].indexOf('colorGreen') > -1)) {
+                    this.inputClasses['cvv'].indexOf('colorGreen') > -1) && 
+                    (this.billingSameAsShipping || (!this.billingSameAsShipping && this.separateBillingFormValid))) {
                     return true;
                 }
 
@@ -104,6 +105,7 @@
                 securityCodeHint: `3 ${this.$tc('digits_text', 3)}`,
                 placeOrderButtonLoading: false,
                 placeOrderPaypalButtonLoading: false,
+                separateBillingFormValid: false,
                 inputClasses: {
                     'card-number': null,
                     'expiration-year': null,
@@ -685,6 +687,7 @@
                                     </div>
                                     <shipping-billing-form type="billing"
                                                            v-show="!billingSameAsShipping"
+                                                           @valid="val => { separateBillingFormValid = val }"
                                                            class="mtl"></shipping-billing-form>
                                 </div>
                             </div>
