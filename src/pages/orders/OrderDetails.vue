@@ -1,5 +1,6 @@
 <script>
 import Vue from 'vue'
+import { Loading } from 'element-ui'
 import PageHeader from '../../components/PageHeader'
 import PaymentTypeDisplay from '../../components/PaymentTypeDisplay'
 import ProductPrice from '../../components/product/ProductPrice'
@@ -12,6 +13,8 @@ import ShoppingCartService from '../cart/shopping_cart_service.js'
 let orderService = new OrderService();
 let productService = new ProductService();
 let shoppingCartService = new ShoppingCartService();
+
+Vue.use(Loading.directive)
 
 export default {
     components: {
@@ -27,7 +30,8 @@ export default {
 
     data: function() {
         return {
-            productService: productService
+            productService: productService,
+            loading: true
         }
     },
 
@@ -41,9 +45,14 @@ export default {
     },
 
     created() {
-        orderService.getOrder(this.$route.params.id, true).then((order) => {
-            this.order = order;
-        });
+        orderService
+            .getOrder(this.$route.params.id, true)
+            .then((order) => {
+                this.order = order;
+            })
+            .finally(() => {
+                this.loading = false;
+            });
     }
 }
 </script>
@@ -52,7 +61,7 @@ export default {
     <section class="container">
         <page-header :title="$t('Order Details')"></page-header>
 
-        <div class="pal">
+        <div class="pal" v-loading="loading">
             <div class="mbl">
                 <div class="displayTableRow">
                     <div class="displayTableCell prm">{{ $t('Ordered on') }}:</div>

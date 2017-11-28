@@ -1,10 +1,13 @@
 <script>
 import Vue from 'vue'
+import { Loading } from 'element-ui'
 import PaymentTypeDisplay from '../../components/PaymentTypeDisplay'
 import orderMixin from './order_mixin'
 import OrderService from './order_service.js'
 
 let orderService = new OrderService();
+
+Vue.use(Loading.directive)
 
 export default {
     components: {
@@ -14,6 +17,12 @@ export default {
     mixins: [
         orderMixin
     ],
+
+    data: function() {
+        return {
+            loading: true
+        }
+    },
 
     methods: {
         goToOrderDetails: function() {
@@ -27,9 +36,15 @@ export default {
     },
 
     created() {
-        orderService.getOrder(this.$route.params.id).then((order) => {
-            this.order = order;
-        });
+        orderService
+            .getOrder(this.$route.params.id)
+            .then((order) => {
+                this.order = order;
+                this.loading = false;
+            })
+            .finally(() => {
+                this.loading = false;
+            });
     }
 }
 </script>
@@ -44,7 +59,7 @@ export default {
                 {{ $t('Thanks.') }}
             </div>
 
-            <div class="displayTable mha">
+            <div class="displayTable mha" v-loading="loading">
                 <div class="mtl">
                     <div class="fwb">{{ $t('Shipping to') }}:</div>
                     <div>

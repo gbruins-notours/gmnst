@@ -3,7 +3,7 @@ import Vue from 'vue'
 import Promise from 'bluebird';
 import isObject from 'lodash.isobject'
 import _forEach from 'lodash.foreach';
-import { Select, Option, InputNumber, Notification, Button } from 'element-ui'
+import { Select, Option, InputNumber, Notification, Button, Loading } from 'element-ui'
 import ProductPrice from '../../components/product/ProductPrice'
 import NumberButtons from '../../components/NumberButtons'
 import { Carousel, Slide } from 'vue-carousel';
@@ -17,6 +17,7 @@ Vue.use(Select);
 Vue.use(Option);
 Vue.use(InputNumber);
 Vue.use(Button);
+Vue.use(Loading.directive)
 
 Vue.prototype.$notify = Notification;
 let currentNotification = null;
@@ -36,7 +37,8 @@ export default {
             productPics: [],
             selectedSize: null,
             selectedQty: 1,
-            isLoading: false
+            isLoading: false,
+            pageIsLoading: true
         }
     },
 
@@ -86,7 +88,8 @@ export default {
     },
 
     created() {
-        productService.getProductBySeoUri(this.$route.params.itemId)
+        productService
+            .getProductBySeoUri(this.$route.params.itemId)
             .then((product) => {
                 this.product = product;
                 document.title = product.title;
@@ -98,6 +101,9 @@ export default {
                 productService.buildPictures(product).then((pics) => {
                     this.productPics = pics;
                 });
+            })
+            .finally(() => {
+                this.pageIsLoading = false;
             });
     }
 }
@@ -123,7 +129,7 @@ export default {
                     </div>
                 </div>
 
-                <div class="column is-5 is-offset-1">
+                <div class="column is-5 is-offset-1" v-loading="pageIsLoading">
                     <div class="fs30 mbm">{{ product.title }}</div>
 
                     <div class="pbl fs16">{{ product.description_long }}</div>
