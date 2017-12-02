@@ -12,8 +12,8 @@ services:
 
 install:
   - sudo bash -c "$(curl -fsSL https://s3.amazonaws.com/tools.nanobox.io/bootstrap/ci.sh)"
-  - export NODE_ENV=development
-  - npm install
+  - export NODE_ENV=production
+  - nanobox run npm install
 
 before_script:
   - psql -c 'create database travis_ci_test;' -U postgres
