@@ -17,8 +17,8 @@ install:
 
 before_script:
   - psql -c 'create database travis_ci_test;' -U postgres
-  - nanobox run npm run knex-migrate
-  - nanobox run npm run knex-seed
+  - nanobox run npm run knex:migrate
+  - nanobox run npm run knex:seed
   - nanobox run npm run build
 
 script: nanobox run npm run test:server
