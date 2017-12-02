@@ -16,6 +16,7 @@ before_script:
   - psql -c 'create database travis_ci_test;' -U postgres
   - npm run knex-migrate
   - npm run knex-seed
+  - npm run build
 
 # https://github.com/travis-ci/travis-ci/issues/4771
 env:

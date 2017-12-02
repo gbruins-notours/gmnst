@@ -17,7 +17,6 @@ appInsights.setup(key)
 
 global.appInsightsClient = appInsights.defaultClient;
 
-
 internals.manifest = {
     connections: [
         // {

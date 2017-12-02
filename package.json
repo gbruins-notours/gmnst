@@ -11,19 +11,16 @@
     "url": "https://gitlab.com/notoursllc/gmnst"
   },
   "scripts": {
-    "start:dev": "NODE_ENV=development node --require dotenv/config server/start.js",
-    "start:stage": "NODE_ENV=staging node --require dotenv/config server/start.js",
-    "start:localprod": "NODE_ENV=production node --require dotenv/config server/start.js",
-    "start": "NODE_ENV=production node server/start.js",
-    "build": "node --require dotenv/config build/build.js",
+    "start": "node server/start.js",
+    "build": "node build/build.js",
     "unit": "cross-env BABEL_ENV=test karma start test/client/unit/karma.conf.js --single-run",
     "e2e": "node test/client/e2e/runner.js",
     "test:client": "npm run unit && npm run e2e",
     "test:server": "NODE_ENV=test lab -a code -v --leaks test/server",
     "test2": "NODE_ENV=test npm run test:client && npm run test:server",
-    "knex:migrate-seed": "node --require dotenv/config build/db_migrate_seed",
-    "knex:migrate": "node --require dotenv/config ./node_modules/knex/bin/cli.js migrate:latest",
-    "knex:seed": "node --require dotenv/config ./node_modules/knex/bin/cli.js seed:run"
+    "knex:migrate-seed": "node build/db_migrate_seed",
+    "knex:migrate": "node ./node_modules/knex/bin/cli.js migrate:latest",
+    "knex:seed": "node ./node_modules/knex/bin/cli.js seed:run"
   },
   "dependencies": {
     "accounting": "0.4.1",

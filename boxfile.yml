@@ -1,0 +1,20 @@
+run.config:
+  engine: nodejs
+
+  # add nginx package
+  extra_packages:
+    - nginx
+
+# add a postgres database
+data.db:
+  image: nanobox/postgresql:9.6
+
+# add a web component and give it a "start" command
+web.main:
+  start:
+    nginx: nginx -c /app/nanobox_config/nginx.conf
+    node: npm start
+
+# add a worker component and give it a "start" command
+# worker.main:
+#   start: node worker.js
