@@ -12,12 +12,11 @@ install:
   - nanobox evar add NODE_ENV=production
   - nanobox run npm install
 
-before_script:
+script: 
   - nanobox run npm run knex:migrate
   - nanobox run npm run knex:seed
   - nanobox run npm run build
-
-script: nanobox run npm run test:server
+  - nanobox run npm run test:server
 
 after_success:
   - nanobox remote add gmnst-prod
