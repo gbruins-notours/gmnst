@@ -24,4 +24,4 @@ after_success:
   - nanobox deploy
 
 notifications:
-  email: true
+  email: false
