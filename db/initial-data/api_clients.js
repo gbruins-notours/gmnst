@@ -7,7 +7,7 @@ exports.seed = (knex) => {
     let hashedPassword;
 
     return ApiClientsService
-        .cryptPassword('G244.h"eSjV/')
+        .cryptPassword(process.env.JWT_CLIENT_SECRET)
         .then((pwd) => {
             hashedPassword = pwd;
             return knex(CoreService.DB_TABLES.api_clients).del()
