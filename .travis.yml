@@ -1,6 +1,8 @@
 language: node_js
 
-sudo: true
+dist: trusty
+
+sudo: required
 
 node_js:
   - "6"
@@ -9,14 +11,21 @@ services:
   - postgresql
 
 install:
+  - sudo bash -c "$(curl -fsSL https://s3.amazonaws.com/tools.nanobox.io/bootstrap/ci.sh)"
   - export NODE_ENV=development
   - npm install
 
 before_script:
   - psql -c 'create database travis_ci_test;' -U postgres
-  - npm run knex-migrate
-  - npm run knex-seed
-  - npm run build
+  - nanobox run npm run knex-migrate
+  - nanobox run npm run knex-seed
+  - nanobox run npm run build
+
+script: nanobox run npm run test:server
+
+after_success:
+  - nanobox remote add gmnst-prod
+  - nanobox deploy
 
 # https://github.com/travis-ci/travis-ci/issues/4771
 env:
@@ -24,7 +33,7 @@ env:
 
 # https://github.com/travis-ci/travis-ci/issues/4771
 addons:
-  postgresql: "9.4"
+  postgresql: "9.6"
   apt:
     sources:
     - ubuntu-toolchain-r-test
@@ -33,4 +42,4 @@ addons:
     - g++-4.8
 
 notifications:
-  email: false
+  email: true
