@@ -12,6 +12,7 @@
   },
   "scripts": {
     "start": "node server/start.js",
+    "start:dev": "NODE_ENV=development node --require dotenv/config server/start.js",
     "build": "node build/build.js",
     "unit": "cross-env BABEL_ENV=test karma start test/client/unit/karma.conf.js --single-run",
     "e2e": "node test/client/e2e/runner.js",
@@ -36,7 +37,7 @@
     "babel-preset-env": "1.2.1",
     "babel-preset-stage-2": "6.22.0",
     "babel-register": "6.22.0",
-    "bcryptjs": "2.4.3",
+    "bcrypt": "1.0.3",
     "bluebird": "3.5.0",
     "bookshelf": "0.10.4",
     "bookshelf-modelbase": "2.10.4",

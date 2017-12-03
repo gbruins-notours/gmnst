@@ -1,5 +1,5 @@
 const Promise = require('bluebird');
-const bcrypt = require('bcryptjs');
+const bcrypt = require('bcrypt');
 
 
 /**
