@@ -17,6 +17,7 @@ install:
   - nanobox evar add local EMAIL_FROM_CART_SUCCESS=$EMAIL_FROM_CART_SUCCESS
   - nanobox evar add local EMAIL_FROM_CART_SUCCESS_NAME=$EMAIL_FROM_CART_SUCCESS_NAME
   - nanobox evar add local JWT_CLIENT_ID=$JWT_CLIENT_ID
+  - nanobox evar add local JWT_CLIENT_SECRET=$JWT_CLIENT_SECRET
   - nanobox evar add local JWT_SERVER_SECRET=$JWT_SERVER_SECRET
   - nanobox evar add local MAILGUN_API_KEY=$MAILGUN_API_KEY
   - nanobox evar add local MAILGUN_DOMAIN=$MAILGUN_DOMAIN
