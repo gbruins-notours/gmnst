@@ -13,6 +13,7 @@ install:
   - nanobox run npm install
 
 script: 
+  - echo "ADMIN EMAIL: " + $ADMIN_EMAIL
   - nanobox evar add DATA_DB_NAME=$DATA_DB_NAME
   - nanobox evar add ADMIN_EMAIL=$ADMIN_EMAIL
   - nanobox evar add BRAINTREE_ENVIRONMENT=$BRAINTREE_ENVIRONMENT
