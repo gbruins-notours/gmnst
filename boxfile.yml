@@ -1,7 +1,6 @@
 run.config:
   engine: nodejs
   engine.config:
-    dep_manager: npm
     runtime: nodejs-7.10
 
   extra_packages:

@@ -28,7 +28,11 @@ internals.manifest = {
             port: Config.get('/port/api'),
             labels: ['api'],
             routes: {
-                cors: false,
+                // cors: false,
+                cors: {
+                    origin: ['*'],
+                    headers: ['Accept', 'Authorization', 'Content-Type', 'If-None-Match']
+                },
                 security: {
                     hsts: true,
                     xframe: true,
