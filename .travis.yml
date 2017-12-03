@@ -11,9 +11,6 @@ install:
   - sudo bash -c "$(curl -fsSL https://s3.amazonaws.com/tools.nanobox.io/bootstrap/ci.sh)"
   - nanobox evar add NODE_ENV=production
   - nanobox run npm install
-
-script: 
-  - echo $ADMIN_EMAIL
   - nanobox evar add local DATA_DB_NAME=$DATA_DB_NAME
   - nanobox evar add local ADMIN_EMAIL=$ADMIN_EMAIL
   - nanobox evar add local BRAINTREE_ENVIRONMENT=$BRAINTREE_ENVIRONMENT
@@ -32,16 +29,22 @@ script:
   - nanobox evar add local SHIPENGINE_CARRIER_ID_FEDEX=$SHIPENGINE_CARRIER_ID_FEDEX
   - nanobox evar add local SHIPPING_FLAT_COST=$SHIPPING_FLAT_COST
   - nanobox evar add local TAX_RATE_CALIFORNIA=$TAX_RATE_CALIFORNIA
+  - echo "====== Environment variables ======"
+  - nanobox run evar ls local
   - nanobox run npm run build
-
-after_script:
   - nanobox run npm run knex:migrate
   - nanobox run npm run knex:seed
-  - nanobox run npm run test:server
+
+script: nanobox run npm run test:server
 
 after_success:
   - nanobox remote add gmnst-prod
   - nanobox deploy
 
 notifications:
-  email: true
+  email:
+    recipients:
+      - gregbruins@gmail.com
+    # always|never|change - change is when the repo status goes from pass to fail or vice versa
+    on_success: always
+    on_failure: always

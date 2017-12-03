@@ -38,7 +38,5 @@ config.production.connection = cloneDeep(commonDB);
 // prod.connection.port = 5432;
 // prod.connection.ssl = true;
 
-console.log("ENV VARS", process.env)
-
 let env = process.env.NODE_ENV === 'production' ? 'production' : 'development';
 module.exports = config[env];
