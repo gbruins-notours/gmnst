@@ -168,6 +168,9 @@ internals.after = function (server, next) {
 
                     // - Validate the API user
                     // - Create a shopping cart token
+
+                    console.log("ENV VARS in token/get route: ", process.env);
+                    
                     ApiClientsService
                         .cryptPassword(process.env.CART_TOKEN_SECRET + uuid)
                         .then((cartToken) => {

@@ -15,9 +15,6 @@ function cryptPassword(password) {
                 return reject(err);
             }
 
-            console.log("cryptPassword - CRYPT PASSWORD", password);
-            console.log("cryptPassword - CRYPT SALT", salt);
-
             bcrypt.hash(password, salt, (err, hash) => {
                 if (err) {
                     return reject(err);
@@ -38,8 +35,6 @@ function cryptPassword(password) {
  * @returns {Promise}
  */
 function comparePassword(password, userPassword) {
-    console.log("COMPARE PASSWORD", password, userPassword);
-
     return new Promise((resolve, reject) => {
         bcrypt.compare(password, userPassword, (err, isPasswordMatch) => {
             if (err) {
