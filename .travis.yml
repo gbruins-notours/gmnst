@@ -34,7 +34,7 @@ script:
   - nanobox run npm run test:server
 
 after_success:
-  - nanobox remote add gmnst-prod
+  - nanobox remote add gmnst
   - nanobox deploy
 
 notifications:
