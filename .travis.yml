@@ -29,7 +29,6 @@ install:
   - nanobox evar add local SHIPENGINE_CARRIER_ID_FEDEX=$SHIPENGINE_CARRIER_ID_FEDEX
   - nanobox evar add local SHIPPING_FLAT_COST=$SHIPPING_FLAT_COST
   - nanobox evar add local TAX_RATE_CALIFORNIA=$TAX_RATE_CALIFORNIA
-  - echo "====== Environment variables ======"
   - nanobox evar ls local
   - nanobox run npm run build
   - nanobox run npm run knex:migrate
