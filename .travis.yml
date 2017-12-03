@@ -9,8 +9,7 @@ node_js:
 
 install:
   - sudo bash -c "$(curl -fsSL https://s3.amazonaws.com/tools.nanobox.io/bootstrap/ci.sh)"
-  - nanobox evar add NODE_ENV=production
-  - nanobox run npm install
+  - nanobox evar add local NODE_ENV=production
   - nanobox evar add local DATA_DB_NAME=$DATA_DB_NAME
   - nanobox evar add local ADMIN_EMAIL=$ADMIN_EMAIL
   - nanobox evar add local BRAINTREE_ENVIRONMENT=$BRAINTREE_ENVIRONMENT
@@ -29,7 +28,9 @@ install:
   - nanobox evar add local SHIPENGINE_CARRIER_ID_FEDEX=$SHIPENGINE_CARRIER_ID_FEDEX
   - nanobox evar add local SHIPPING_FLAT_COST=$SHIPPING_FLAT_COST
   - nanobox evar add local TAX_RATE_CALIFORNIA=$TAX_RATE_CALIFORNIA
-  - nanobox evar ls local
+  - nanobox run npm install
+
+before_script:
   - nanobox run npm run build
   - nanobox run npm run knex:migrate
   - nanobox run npm run knex:seed

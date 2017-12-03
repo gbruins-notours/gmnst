@@ -168,15 +168,13 @@ internals.after = function (server, next) {
 
                     // - Validate the API user
                     // - Create a shopping cart token
-                    Promise
-                        .all([
-                            ApiClientsService.cryptPassword(process.env.CART_TOKEN_SECRET + uuid)
-                        ])
-                        .then((results) => {
+                    ApiClientsService
+                        .cryptPassword(process.env.CART_TOKEN_SECRET + uuid)
+                        .then((cartToken) => {
                             if(!process.env.JWT_CLIENT_ID) {
                                 throw new Error('Invalid API user');
                             }
-                            if(!results[0]) {
+                            if(!cartToken) {
                                 throw new Error('Error creating cart token');
                             }
 
@@ -184,7 +182,7 @@ internals.after = function (server, next) {
                                 {
                                     jti: uuid,
                                     clientId: process.env.JWT_CLIENT_ID,
-                                    ct: results[0]  // cart token
+                                    ct: cartToken
                                 },
                                 process.env.JWT_SERVER_SECRET
                             );

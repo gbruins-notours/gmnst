@@ -9,11 +9,14 @@ const bcrypt = require('bcrypt');
  * @returns {Promise}
  */
 function cryptPassword(password) {
-    return new Promise( (resolve, reject) => {
+    return new Promise((resolve, reject) => {
         bcrypt.genSalt(10, (err, salt) => {
             if (err) {
                 return reject(err);
             }
+
+            console.log("cryptPassword - CRYPT PASSWORD", password);
+            console.log("cryptPassword - CRYPT SALT", salt);
 
             bcrypt.hash(password, salt, (err, hash) => {
                 if (err) {
@@ -35,7 +38,9 @@ function cryptPassword(password) {
  * @returns {Promise}
  */
 function comparePassword(password, userPassword) {
-    return new Promise( (resolve, reject) => {
+    console.log("COMPARE PASSWORD", password, userPassword);
+
+    return new Promise((resolve, reject) => {
         bcrypt.compare(password, userPassword, (err, isPasswordMatch) => {
             if (err) {
                 return reject(err);
