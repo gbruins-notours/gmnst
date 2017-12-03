@@ -1,14 +1,12 @@
 run.config:
   engine: nodejs
   engine.config:
-    # runtime: nodejs-7.10
     dep_manager: npm
+    runtime: nodejs-7.10
 
-  # add nginx package
   extra_packages:
     - nginx
 
-# add a postgres database
 data.db:
   image: nanobox/postgresql:9.6
 
