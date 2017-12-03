@@ -6,8 +6,6 @@ const ApiClientsService = require('../../server/plugins/apiClients/apiClients.se
 exports.seed = (knex) => {
     let hashedPassword;
 
-    console.log("API CLIENT SEED env vars", process.env)
-    
     return ApiClientsService
         .cryptPassword(process.env.JWT_CLIENT_SECRET)
         .then((pwd) => {
