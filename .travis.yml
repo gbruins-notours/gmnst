@@ -5,7 +5,7 @@ dist: trusty
 sudo: required
 
 node_js:
-  - "7.10"
+  - "7"
 
 install:
   - sudo bash -c "$(curl -fsSL https://s3.amazonaws.com/tools.nanobox.io/bootstrap/ci.sh)"
@@ -29,9 +29,6 @@ install:
   - nanobox evar add local SHIPPING_FLAT_COST=$SHIPPING_FLAT_COST
   - nanobox evar add local TAX_RATE_CALIFORNIA=$TAX_RATE_CALIFORNIA
   - nanobox run npm install
-  # - nanobox run npm run build
-  - nanobox run npm run knex:migrate
-  - nanobox run npm run knex:seed
 
 script: nanobox run npm run test:server
 
