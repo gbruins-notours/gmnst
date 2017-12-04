@@ -32,14 +32,14 @@ internals.manifest = {
                 cors: {
                     origin: ['*'],
                     headers: ['Accept', 'Authorization', 'Content-Type', 'If-None-Match']
-                },
-                security: {
-                    hsts: true,
-                    xframe: true,
-                    xss: true,
-                    noOpen: true,
-                    noSniff: true
                 }
+                // security: {
+                //     hsts: true,
+                //     xframe: true,
+                //     xss: true,
+                //     noOpen: true,
+                //     noSniff: true
+                // }
             }
         }
     ],
