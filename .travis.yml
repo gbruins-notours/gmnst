@@ -6,6 +6,10 @@ sudo: required
 
 install:
   - sudo bash -c "$(curl -fsSL https://s3.amazonaws.com/tools.nanobox.io/bootstrap/ci.sh)"
+
+  # link this code base to the production nanobox so we can add env variables to our prod instance
+  - nanobox remote add $NANOBOX_APP_NAME
+
   # adding local and production environment variables
   # NODE_ENV
   - nanobox evar add local NODE_ENV=production
@@ -104,13 +108,12 @@ script:
   - nanobox run npm run test:server
 
 after_success:
-  - nanobox remote add gmnst
   - nanobox deploy
 
 notifications:
   email:
     recipients:
-      - gregbruins@gmail.com
+      - $ADMIN_EMAIL
     # always|never|change - change is when the repo status goes from pass to fail or vice versa
     on_success: always
     on_failure: always
