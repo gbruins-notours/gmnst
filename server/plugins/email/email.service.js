@@ -149,9 +149,6 @@ function emailPurchaseReceiptToBuyer(ShoppingCart) {
             .catch((error) => {
                 reject('TEMPLATE RENDER ERROR: ' + error);
                 global.logger.error(error)
-                global.appInsightsClient.trackException({
-                    exception: new Error('TEMPLATE RENDER ERROR: ' + error)
-                });
             });
     });
 

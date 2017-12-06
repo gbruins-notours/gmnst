@@ -13,6 +13,7 @@
   "scripts": {
     "start": "node server/start.js",
     "start:dev": "NODE_ENV=development node --require dotenv/config server/start.js",
+    "start:local": "NODE_ENV=development IS_LOCAL=true node --require dotenv/config server/start.js",
     "build": "node build/build.js",
     "unit": "cross-env BABEL_ENV=test karma start test/client/unit/karma.conf.js --single-run",
     "e2e": "node test/client/e2e/runner.js",
@@ -26,7 +27,6 @@
   "dependencies": {
     "accounting": "0.4.1",
     "animate.css": "3.5.2",
-    "applicationinsights": "1.0.0",
     "axios": "0.16.1",
     "babel-core": "6.22.1",
     "babel-eslint": "7.1.1",

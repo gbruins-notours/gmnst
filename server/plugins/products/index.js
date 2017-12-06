@@ -99,9 +99,7 @@ internals.after = function (server, next) {
                             reply.apiSuccess(products);
                         })
                         .catch((err) => {
-                            global.appInsightsClient.trackException({
-                                exception: err
-                            });
+                            global.logger.error(err);
                             reply(Boom.badRequest(err));
                         });
                 }
@@ -124,9 +122,7 @@ internals.after = function (server, next) {
                             reply.apiSuccess(products);
                         })
                         .catch((err) => {
-                            global.appInsightsClient.trackException({
-                                exception: err
-                            });
+                            global.logger.error(err);
                             reply(Boom.badRequest(err));
                         });
                 }
@@ -159,9 +155,7 @@ internals.after = function (server, next) {
                             reply.apiSuccess(products, products.pagination);
                         })
                         .catch((err) => {
-                            global.appInsightsClient.trackException({
-                                exception: err
-                            });
+                            global.logger.error(err);
                             reply(Boom.notFound(err));
                         });
                 }

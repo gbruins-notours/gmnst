@@ -69,9 +69,7 @@ internals.after = function (server, next) {
     internals.savePayment = (cart_id, transactionJson) => {
         return new Promise((resolve, reject) => {
             if(!isObject(transactionJson) || !isObject(transactionJson.transaction)) {
-                global.appInsightsClient.trackException({
-                    exception: new Error('An error occurred while processing the transaction: transactionJson.transaction is not an object')
-                });
+                global.logger.error('An error occurred while processing the transaction: transactionJson.transaction is not an object')
                 return reject('An error occurred while processing the transaction.');
             }
 
@@ -86,10 +84,7 @@ internals.after = function (server, next) {
                     resolve(Payment.toJSON());
                 })
                 .catch((err) => {
-                    global.appInsightsClient.trackException({
-                        exception: err
-                    });
-
+                    global.logger.error(err);
                     reject(err);
                 });
         });
@@ -126,9 +121,7 @@ internals.after = function (server, next) {
                     return reject(result.message);
                 })
                 .catch((err) => {
-                    global.appInsightsClient.trackException({
-                        exception: err
-                    });
+                    global.logger.error(err);
                     return reject(err);
                 });
         });
@@ -197,9 +190,7 @@ internals.after = function (server, next) {
                             reply.apiSuccess(response);
                         })
                         .catch((err) => {
-                            global.appInsightsClient.trackException({
-                                exception: err
-                            });
+                            global.logger.error(err);
                             reply(Boom.badRequest(err));
                         });
                 }
@@ -217,9 +208,7 @@ internals.after = function (server, next) {
                             reply.apiSuccess(orders, orders.pagination);
                         })
                         .catch((err) => {
-                            global.appInsightsClient.trackException({
-                                exception: err
-                            });
+                            global.logger.error(err);
                             reply(Boom.notFound(err));
                         });
                 }

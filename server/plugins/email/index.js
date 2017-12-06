@@ -226,11 +226,7 @@ exports.register = function (server, options, next) {
             .catch((err) => {
                 let cartId = payload.shoppingCart.get('id');
                 let msg = `Unable to send email confirmation to user after successful purchase: (ShoppingCart ID: ${cartId}) ${err}`;
-
                 global.logger.error(msg)
-                global.appInsightsClient.trackException({
-                    exception: new Error(msg)
-                });
             });
     });
 

@@ -64,7 +64,7 @@
             @include box-shadow(0px, 1px, 5px, rgba(0,0,0,.2));
             @include border-radius(2px);
             border: 3px solid #fff;
-            background-color: #f3f3f3;
+            background-color: #dff0f7;
             text-align: center;
             min-width: 80px;
             position: relative;

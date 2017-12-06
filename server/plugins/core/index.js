@@ -25,14 +25,6 @@ exports.register = function (server, options, next) {
             if(process.env.NODE_ENV !== 'test') {
                 global.logger.error(request.response)
             }
-
-            // Note: It's best not to track Azure application insights
-            // events (client.trackException()) here because it wont report 
-            // the file and line number of where the error actually occurred.
-
-            // if(request.response.output.statusCode === 404) {
-            //     server.log('error', request.response);
-            // }
         }
         return reply.continue();
     });

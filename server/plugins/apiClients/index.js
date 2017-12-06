@@ -89,9 +89,7 @@ internals.after = function (server, next) {
                     }
                 })
                 .catch((err) => {
-                    global.appInsightsClient.trackException({
-                        exception: err
-                    });
+                    global.logger.error(err)
                     reject('Invalid API user');
                 });
         });
@@ -190,10 +188,7 @@ internals.after = function (server, next) {
                             return reply().header('X-Authorization', jsonWebToken);
                         })
                         .catch((err) => {
-                            global.appInsightsClient.trackException({
-                                exception: err
-                            });
-                            
+                            global.logger.error(err);
                             reply(Boom.unauthorized(err));
                         });
                 }
