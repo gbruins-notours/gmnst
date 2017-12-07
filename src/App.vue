@@ -1,74 +1,89 @@
 <script>
-    import Promise from 'bluebird';
-    import { mapGetters } from 'vuex'
-    import { mapActions } from 'vuex';
-    import isObject from 'lodash.isobject'
-    import AppHeader from '@/components/AppHeader'
-    import AppFooter from '@/components/AppFooter'
-    import ShoppingCartService from './pages/cart/shopping_cart_service.js'
-    import UtilityService from './utility_service.js'
+import Vue from 'vue'
+import Promise from 'bluebird';
+import { mapGetters } from 'vuex'
+import { mapActions } from 'vuex';
+import isObject from 'lodash.isobject'
+import { Loading } from 'element-ui'
+import AppHeader from '@/components/AppHeader'
+import AppFooter from '@/components/AppFooter'
+import ShoppingCartService from './pages/cart/shopping_cart_service.js'
+import UtilityService from './utility_service.js'
 
-    let shoppingCartService = new ShoppingCartService();
-    let utilityService = new UtilityService();
+Vue.use(Loading.directive);
 
-    export default {
-        components: {
-            AppHeader,
-            AppFooter
-        },
+let shoppingCartService = new ShoppingCartService();
+let utilityService = new UtilityService();
 
-        computed: {
-            ...mapGetters([
-                'app'
-            ])
-        },
+export default {
+    components: {
+        AppHeader,
+        AppFooter
+    },
 
-        methods: {
-            ...mapActions([
-                'TOGGLE_DEVICE'
-            ])
-        },
+    computed: {
+        ...mapGetters([
+            'app'
+        ]),
 
-        created () {
-            const { body } = document
-            const WIDTH = 768
-            const RATIO = 3
+        globalLoading: function() {
+            return this.$store.state.app.loading.show;
+        }
+    },
 
-            const handler = () => {
-                if (!document.hidden) {
-                    let rect = body.getBoundingClientRect()
-                    let isMobile = rect.width - RATIO < WIDTH
-                    this.TOGGLE_DEVICE(isMobile ? 'mobile' : 'other')
-                }
-            }
+    methods: {
+        ...mapActions([
+            'TOGGLE_DEVICE'
+        ])
+    },
 
-            document.addEventListener('visibilitychange', handler)
-            window.addEventListener('DOMContentLoaded', handler)
-            window.addEventListener('resize', handler)
+    watch: {
+        '$route': function() {
+            console.log("ROUTE CHANGE")
+            this.$store.dispatch('TOGGLE_LOADING');
+        }
+    },
 
-            if (!this.app.jwtKey) {
-                utilityService.getJwtToken().then((jsonWebToken) => {
-                    this.$store.dispatch('JWT_KEY', jsonWebToken);
+    created () {
+        const { body } = document
+        const WIDTH = 768
+        const RATIO = 3
 
-                    shoppingCartService
-                        .getCart()
-                        .then((cart) => {
-                            this.$store.dispatch('CART_SET', cart);
-                        })
-                        .catch((error) => {
-                            console.log('GET JWT Error', error);
-                        });
-                })
+        const handler = () => {
+            if (!document.hidden) {
+                let rect = body.getBoundingClientRect()
+                let isMobile = rect.width - RATIO < WIDTH
+                this.TOGGLE_DEVICE(isMobile ? 'mobile' : 'other')
             }
         }
+
+        document.addEventListener('visibilitychange', handler)
+        window.addEventListener('DOMContentLoaded', handler)
+        window.addEventListener('resize', handler)
+
+        if (!this.app.jwtKey) {
+            utilityService.getJwtToken().then((jsonWebToken) => {
+                this.$store.dispatch('JWT_KEY', jsonWebToken);
+
+                shoppingCartService
+                    .getCart()
+                    .then((cart) => {
+                        this.$store.dispatch('CART_SET', cart);
+                    })
+                    .catch((error) => {
+                        console.log('GET JWT Error', error);
+                    });
+            })
+        }
     }
+}
 </script>
 
 
 <template>
     <div id="app">
         <app-header></app-header>
-        <main>
+        <main v-loading="$store.state.app.loading.show" :element-loading-text="$store.state.app.loading.text">
             <router-view></router-view>
         </main>
         <app-footer></app-footer>

@@ -1,139 +1,139 @@
 <script>
-    import Vue from 'vue'
-    import { Button, ButtonGroup } from 'element-ui'
+import Vue from 'vue'
+import { Button, ButtonGroup } from 'element-ui'
 
-    Vue.use(Button);
-    Vue.use(ButtonGroup);
+Vue.use(Button);
+Vue.use(ButtonGroup);
 
-    export default {
-        props: {
-            min: {
-                type: Number,
-                default: 0,
-                required: false
-            },
-
-            max: {
-                type: Number,
-                required: false
-            },
-
-            step: {
-                type: Number,
-                default: 1,
-                required: false
-            },
-
-            size: {
-                type: String,
-                required: false
-            },
-
-            // this allows using the `value` prop for a different purpose
-            initValue: {
-                type: Number,
-                default: 0
-            },
+export default {
+    props: {
+        min: {
+            type: Number,
+            default: 0,
+            required: false
         },
 
-        computed: {
-            buttonSize() {
-                let sizes = ['large', 'small', 'mini'];
+        max: {
+            type: Number,
+            required: false
+        },
 
-                if(this.size && sizes.indexOf(this.size) > -1) {
-                    return this.size;
-                }
+        step: {
+            type: Number,
+            default: 1,
+            required: false
+        },
 
-                return '';
-            },
+        size: {
+            type: String,
+            required: false
+        },
 
-            plusDisabled() {
-                return this.max && this.selectedVal >= this.max;
-            },
+        // this allows using the `value` prop for a different purpose
+        initValue: {
+            type: Number,
+            default: 0
+        },
+    },
 
-            minusDisabled() {
-                return this.min && this.selectedVal <= this.min;
+    computed: {
+        buttonSize() {
+            let sizes = ['large', 'small', 'mini'];
+
+            if(this.size && sizes.indexOf(this.size) > -1) {
+                return this.size;
             }
+
+            return '';
         },
 
-        created() {
-            this.selectedVal = this.setInRange(this.initValue);
-            // this.emitVal();
+        plusDisabled() {
+            return this.max && this.selectedVal >= this.max;
         },
 
-        methods: {
-            setInRange(val) {
-                let newVal = 0;
+        minusDisabled() {
+            return this.min && this.selectedVal <= this.min;
+        }
+    },
 
-                if(this.min) {
-                    if(val >= this.min) {
-                        newVal = val;
-                    }
-                }
-                else {
+    created() {
+        this.selectedVal = this.setInRange(this.initValue);
+        // this.emitVal();
+    },
+
+    methods: {
+        setInRange(val) {
+            let newVal = 0;
+
+            if(this.min) {
+                if(val >= this.min) {
                     newVal = val;
                 }
+            }
+            else {
+                newVal = val;
+            }
 
-                if(this.max) {
-                    if(val <= this.max) {
-                        newVal = val;
-                    }
-                }
-                else {
+            if(this.max) {
+                if(val <= this.max) {
                     newVal = val;
                 }
+            }
+            else {
+                newVal = val;
+            }
 
-                return newVal;
-            },
+            return newVal;
+        },
 
-            up() {
-                let tempVal = this.selectedVal + this.step;
+        up() {
+            let tempVal = this.selectedVal + this.step;
 
-                if(this.max) {
-                    if(tempVal <= this.max) {
-                        this.selectedVal = tempVal;
-                        this.emitVal();
-                    }
-                }
-                else {
+            if(this.max) {
+                if(tempVal <= this.max) {
                     this.selectedVal = tempVal;
                     this.emitVal();
                 }
-            },
+            }
+            else {
+                this.selectedVal = tempVal;
+                this.emitVal();
+            }
+        },
 
-            down() {
-                let tempVal = this.selectedVal - this.step;
+        down() {
+            let tempVal = this.selectedVal - this.step;
 
-                if(this.min) {
-                    if(tempVal >= this.min) {
-                        this.selectedVal = tempVal;
-                        this.emitVal();
-                    }
-                }
-                else {
+            if(this.min) {
+                if(tempVal >= this.min) {
                     this.selectedVal = tempVal;
                     this.emitVal();
                 }
-            },
-
-            emitVal() {
-                this.$emit('change', this.selectedVal)
-                // this.$emit('input', this.selectedVal)
+            }
+            else {
+                this.selectedVal = tempVal;
+                this.emitVal();
             }
         },
 
-        watch: {
-            'initValue' (val) {
-                this.selectedVal = this.setInRange(val);
-            }
-        },
+        emitVal() {
+            this.$emit('change', this.selectedVal)
+            // this.$emit('input', this.selectedVal)
+        }
+    },
 
-        data() {
-            return {
-                selectedVal: null
-            }
+    watch: {
+        'initValue' (val) {
+            this.selectedVal = this.setInRange(val);
+        }
+    },
+
+    data() {
+        return {
+            selectedVal: null
         }
     }
+}
 </script>
 
 

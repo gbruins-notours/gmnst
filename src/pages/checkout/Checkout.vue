@@ -104,7 +104,6 @@
                 securityCodeModalShow: false,
                 securityCodeHint: `3 ${this.$tc('digits_text', 3)}`,
                 placeOrderButtonLoading: false,
-                placeOrderPaypalButtonLoading: false,
                 separateBillingFormValid: false,
                 inputClasses: {
                     'card-number': null,
@@ -381,29 +380,38 @@
 
 
             tokenizePaypal() {
-                this.placeOrderPaypalButtonLoading = true;
+                //test
+                this.$store.dispatch('TOGGLE_LOADING', {
+                    show: true,
+                    text: this.$t('PAYPAL_WINDOW_IS_OPEN')
+                });  
+                
                 this.braintree.paypalInstance.tokenize({flow: 'vault'}, (tokenizeErr, payload) => {
-                    this.placeOrderButtonLoading = false;
+                    
 
-                    if (tokenizeErr) {
-                        if(tokenizeErr.code === 'PAYPAL_POPUP_CLOSED') {
-                            this.paymentMethod = 'CREDIT_CARD'
+                    if (isObject(tokenizeErr)) {
+                        this.$store.dispatch('TOGGLE_LOADING'); 
+
+                        // Not all error codes warrant a notification popup
+                        if (tokenizeErr.code !== 'PAYPAL_POPUP_CLOSED') {
+                            currentNotification = this.$notify({
+                                type: 'error',
+                                title: this.$t('Payment method error') + ':',
+                                message: shoppingCartService.getBraintreeErrorMessage.call(this, tokenizeErr) || $t('There was an error tokenizing PayPal!'),
+                                duration: 0
+                            });
                         }
-
-                        currentNotification = this.$notify({
-                            type: 'error',
-                            title: this.$t('Payment method error') + ':',
-                            message: shoppingCartService.getBraintreeErrorMessage.call(this, tokenizeErr) || $t('There was an error tokenizing PayPal!'),
-                            duration: 0
-                        });
-
-                        this.placeOrderPaypalButtonLoading = false;
-                        return;
                     }
-
-                    this.doCheckout(payload.nonce).finally(() => {
-                        this.placeOrderButtonLoading = false;
-                    });
+                    else {
+                        this.$store.dispatch('TOGGLE_LOADING', {
+                            show: true,
+                            text: null
+                        });  
+                        
+                        this.doCheckout(payload.nonce).finally(() => {
+                            this.$store.dispatch('TOGGLE_LOADING'); 
+                        });
+                    }
                 });
             },
 
@@ -697,8 +705,8 @@
                             <shipping-billing-help></shipping-billing-help>
                         </div>
                     </div>
-                    <div v-show="paymentMethod === 'PAYPAL'" class="colorGreen tac mtl">
-                        {{ $t('Your PayPal transaction will be completed on the next page.') }}
+                    <div v-show="paymentMethod === 'PAYPAL'" class="tac mtl fwb">
+                        {{ $t('Your PayPal transaction will be completed on the next page') }}:
                     </div>
 
                     <div class="ptl tac">
@@ -744,7 +752,6 @@
                                     class="colorBlack"
                                     size="large"
                                     @click="tokenizePaypal"
-                                    :loading="placeOrderPaypalButtonLoading"
                                     :disabled="!checkoutButtonEnabled">{{ $t('Pay with PAYPAL') }}</el-button>
                     </div>
                 </div>

@@ -1,6 +1,6 @@
 'use strict';
 
-import cloneDeep from 'lodash.clonedeep'
+import isObject from 'lodash.isobject'
 import forEach from 'lodash.foreach'
 import ShoppingCartService from '../pages/cart/shopping_cart_service.js'
 
@@ -16,6 +16,17 @@ export default {
         state.app.device.isTablet = device === 'tablet';
     },
 
+    TOGGLE_LOADING: (state, config) => {
+        if(isObject(config)) {
+            state.app.loading.show = config.show || false;
+            state.app.loading.text = config.text || null;
+        }
+        else {
+            state.app.loading.show = false;
+            state.app.loading.text = null;
+        }
+    },
+
     // APP_INFO: (state, data) => {
     //     state.appInfo = decorateAppInfo(data);
     // },
@@ -29,7 +40,7 @@ export default {
     },
 
     IN_CHECKOUT_FLOW: (state, inCheckoutFlow) => {
-        state.app.pageHeader.inCheckoutFlow = inCheckoutFlow
+        state.app.header.inCheckoutFlow = inCheckoutFlow
     },
 
     CART_SET: (state, cartData) => {

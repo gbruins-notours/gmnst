@@ -4,7 +4,7 @@ export default {
     },
 
     inCheckoutFlow: (state) => {
-        return state.app.pageHeader.inCheckoutFlow;
+        return state.app.header.inCheckoutFlow;
     },
 
     sidebar: (state) => {

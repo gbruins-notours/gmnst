@@ -18,12 +18,16 @@ export function createStore () {
                     isMobile: false,
                     isTablet: false
                 },
+                header: {
+                    inCheckoutFlow: false
+                },
                 sidebar: {
                     opened: false,
                     hidden: false
                 },
-                pageHeader: {
-                    inCheckoutFlow: false
+                loading: {
+                    show: false,
+                    text: null
                 },
                 braintreeClientToken: null,
                 jwtKey: null,

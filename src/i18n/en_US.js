@@ -83,9 +83,10 @@ const translations = {
     'Payment method': 'Payment method',
     'Payment method error': 'Payment method error',
     'PAYPAL': 'PAYPAL',
+    'PayPal tokenization failed': 'PayPal tokenization failed',
     'PAYPAL_ACCOUNT_TOKENIZATION_FAILED': 'PayPal tokenization failed',
     'PAYPAL_FLOW_FAILED': 'Unable to initialize PayPal flow. Are your options correct?',
-    'PayPal tokenization failed': 'PayPal tokenization failed',
+    'PAYPAL_WINDOW_IS_OPEN': 'The PayPal secure payment popup window is open. It may appear behind this window (so look there if you do not see it).',
     'Place your order': 'Place your order',
     'PLACE YOUR ORDER': 'PLACE YOUR ORDER',
     'Please select a quantity': 'Please select a quantity',
@@ -159,7 +160,7 @@ const translations = {
 
     'Your billing info': 'Your billing info',
     'Your order': 'Your order',
-    'Your PayPal transaction will be completed on the next page.': 'Your PayPal transaction will be completed on the next page.',
+    'Your PayPal transaction will be completed on the next page': 'Your PayPal transaction will be completed on the next page',
     'Your shopping cart does not contain any items.': 'Your shopping cart does not contain any items.',
 
     'braintree': {
