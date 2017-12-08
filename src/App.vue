@@ -4,13 +4,10 @@ import Promise from 'bluebird';
 import { mapGetters } from 'vuex'
 import { mapActions } from 'vuex';
 import isObject from 'lodash.isobject'
-import { Loading } from 'element-ui'
 import AppHeader from '@/components/AppHeader'
 import AppFooter from '@/components/AppFooter'
 import ShoppingCartService from './pages/cart/shopping_cart_service.js'
 import UtilityService from './utility_service.js'
-
-Vue.use(Loading.directive);
 
 let shoppingCartService = new ShoppingCartService();
 let utilityService = new UtilityService();
@@ -24,11 +21,7 @@ export default {
     computed: {
         ...mapGetters([
             'app'
-        ]),
-
-        globalLoading: function() {
-            return this.$store.state.app.loading.show;
-        }
+        ])
     },
 
     methods: {
@@ -76,7 +69,7 @@ export default {
 <template>
     <div id="app">
         <app-header></app-header>
-        <main v-loading="$store.state.app.loading.show" :element-loading-text="$store.state.app.loading.text">
+        <main>
             <router-view></router-view>
         </main>
         <app-footer></app-footer>
