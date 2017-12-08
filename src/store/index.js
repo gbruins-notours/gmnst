@@ -25,10 +25,6 @@ export function createStore () {
                     opened: false,
                     hidden: false
                 },
-                loading: {
-                    show: false,
-                    text: null
-                },
                 braintreeClientToken: null,
                 jwtKey: null,
                 productInfo: {

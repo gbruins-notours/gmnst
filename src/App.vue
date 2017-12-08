@@ -37,13 +37,6 @@ export default {
         ])
     },
 
-    watch: {
-        '$route': function() {
-            console.log("ROUTE CHANGE")
-            this.$store.dispatch('TOGGLE_LOADING');
-        }
-    },
-
     created () {
         const { body } = document
         const WIDTH = 768

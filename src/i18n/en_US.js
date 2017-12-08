@@ -98,6 +98,7 @@ const translations = {
     'Price': 'Price',
     'Privacy Notice': 'Privacy Notice',
     'PROCEED TO CHECKOUT': 'PROCEED TO CHECKOUT',
+    'Processing': 'Processing',
     'PRODUCT_SUBTYPE_HAT': 'Hat | Hats',
     'PRODUCT_SUBTYPE_TOP': 'Top | Tops',
     'PRODUCT_TYPE_APPAREL': 'Apparel',

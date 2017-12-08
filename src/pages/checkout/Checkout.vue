@@ -380,17 +380,16 @@
 
 
             tokenizePaypal() {
-                //test
-                this.$store.dispatch('TOGGLE_LOADING', {
-                    show: true,
-                    text: this.$t('PAYPAL_WINDOW_IS_OPEN')
-                });  
+                let loadingInstance = Loading.service({
+                    lock: true,
+                    fullscreen: true,
+                    text: this.$t('PAYPAL_WINDOW_IS_OPEN'),
+                    background: 'rgba(0, 0, 0, 0.7)'
+                });
                 
                 this.braintree.paypalInstance.tokenize({flow: 'vault'}, (tokenizeErr, payload) => {
-                    
-
                     if (isObject(tokenizeErr)) {
-                        this.$store.dispatch('TOGGLE_LOADING'); 
+                        loadingInstance.close();
 
                         // Not all error codes warrant a notification popup
                         if (tokenizeErr.code !== 'PAYPAL_POPUP_CLOSED') {
@@ -403,13 +402,9 @@
                         }
                     }
                     else {
-                        this.$store.dispatch('TOGGLE_LOADING', {
-                            show: true,
-                            text: null
-                        });  
-                        
+                        loadingInstance.setText(`${this.$t('Processing')}...`);
                         this.doCheckout(payload.nonce).finally(() => {
-                            this.$store.dispatch('TOGGLE_LOADING'); 
+                            loadingInstance.close();
                         });
                     }
                 });

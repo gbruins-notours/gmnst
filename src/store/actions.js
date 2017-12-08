@@ -15,10 +15,6 @@ export default {
         commit('TOGGLE_DEVICE', device)
     },
 
-    TOGGLE_LOADING: ({ commit }, config) => {
-        commit('TOGGLE_LOADING', config)
-    },
-
     JWT_KEY: ({ commit }, key) => {
         commit('JWT_KEY', key)
     },

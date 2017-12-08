@@ -16,17 +16,6 @@ export default {
         state.app.device.isTablet = device === 'tablet';
     },
 
-    TOGGLE_LOADING: (state, config) => {
-        if(isObject(config)) {
-            state.app.loading.show = config.show || false;
-            state.app.loading.text = config.text || null;
-        }
-        else {
-            state.app.loading.show = false;
-            state.app.loading.text = null;
-        }
-    },
-
     // APP_INFO: (state, data) => {
     //     state.appInfo = decorateAppInfo(data);
     // },
