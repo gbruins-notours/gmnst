@@ -129,7 +129,7 @@ export default {
                                  paginationColor="#cacac8"
                                  paginationActiveColor="#ed198a">
                           <slide v-for="(pic, key) in productPics" :key="key">
-                            <img :src="pic" v-img :alt="product.title">
+                            <img :src="pic" :alt="product.title" v-img:prod>
                           </slide>
                         </carousel>
                     </div>
