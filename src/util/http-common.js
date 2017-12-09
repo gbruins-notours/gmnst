@@ -1,6 +1,12 @@
 import isObject from 'lodash.isobject';
 import axios from 'axios';
 
+// Axios does not implement .finally in the returned promise
+// so this shim will add support
+// See https://github.com/axios/axios/issues/34
+import promiseFinally from 'promise.prototype.finally';
+promiseFinally.shim();
+
 
 function getJwtKey() {
     if(!getJwtKey.key) {
