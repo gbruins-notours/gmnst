@@ -4,6 +4,7 @@ import Promise from 'bluebird';
 import isObject from 'lodash.isobject'
 import _forEach from 'lodash.foreach';
 import { Select, Option, InputNumber, Notification, Button, Loading } from 'element-ui'
+import VueImg from 'v-img';
 import ProductPrice from '../../components/product/ProductPrice'
 import NumberButtons from '../../components/NumberButtons'
 import { Carousel, Slide } from 'vue-carousel';
@@ -18,6 +19,11 @@ Vue.use(Option);
 Vue.use(InputNumber);
 Vue.use(Button);
 Vue.use(Loading.directive)
+Vue.use(VueImg, {
+  altAsTitle: false,
+  sourceButton: false, // Display 'download' button near 'close' that opens source image in new tab
+  openOn: 'click', // Event listener to open gallery will be applied to <img> element
+});
 
 Vue.prototype.$notify = Notification;
 let currentNotification = null;
@@ -123,7 +129,7 @@ export default {
                                  paginationColor="#cacac8"
                                  paginationActiveColor="#ed198a">
                           <slide v-for="(pic, key) in productPics" :key="key">
-                            <img :src="pic">
+                            <img :src="pic" v-img>
                           </slide>
                         </carousel>
                     </div>
