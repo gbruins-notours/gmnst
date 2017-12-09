@@ -20,7 +20,7 @@ Vue.use(InputNumber);
 Vue.use(Button);
 Vue.use(Loading.directive)
 Vue.use(VueImg, {
-  altAsTitle: false,
+  altAsTitle: true,
   sourceButton: false, // Display 'download' button near 'close' that opens source image in new tab
   openOn: 'click', // Event listener to open gallery will be applied to <img> element
 });
@@ -129,7 +129,7 @@ export default {
                                  paginationColor="#cacac8"
                                  paginationActiveColor="#ed198a">
                           <slide v-for="(pic, key) in productPics" :key="key">
-                            <img :src="pic" v-img>
+                            <img :src="pic" v-img :alt="product.title">
                           </slide>
                         </carousel>
                     </div>
