@@ -2,6 +2,7 @@ run.config:
   engine: nodejs
   engine.config:
     runtime: nodejs-8.9
+    python_version: python-2.7
 
   extra_packages:
     - nginx
@@ -11,8 +12,6 @@ run.config:
 
   cache_dirs:
     - node_modules
-
-python_version: python-2.7
 
 data.db:
   image: nanobox/postgresql:9.6
