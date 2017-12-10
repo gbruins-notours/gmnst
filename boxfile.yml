@@ -5,13 +5,14 @@ run.config:
 
   extra_packages:
     - nginx
-    - python-2.7
 
   extra_steps:
     - npm install
 
   cache_dirs:
     - node_modules
+
+python_version: python-2.7
 
 data.db:
   image: nanobox/postgresql:9.6
