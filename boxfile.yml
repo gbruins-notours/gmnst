@@ -1,10 +1,17 @@
 run.config:
-  engine: nodejs
+  engine: python
   engine.config:
-    runtime: nodejs-7.10
+    runtime: python-2.7
 
   extra_packages:
     - nginx
+    - nodejs-8.9
+
+  extra_steps:
+    - npm install
+
+  cache_dirs:
+    - node_modules
 
 data.db:
   image: nanobox/postgresql:9.6
