@@ -136,6 +136,7 @@
 
 <style lang="scss">
     @import "../assets/css/components/_variables.scss";
+    @import "../assets/css/components/_mixins.scss";
 
     .Header,
     .Header-checkout {
@@ -179,12 +180,22 @@
         align-items: center;
         color: #02182B;
         margin-left: 20px;
+        
     }
 
     .Header-image {
         display: inline-block;
         width: 180px;
         vertical-align: middle;
+    }
+
+    .Header-image,
+    .Header-cart {
+        @include grow()
+    }
+    .Header-image:hover,
+    .Header-cart:hover i {
+        @include growHover()
     }
 
     .Header-cart {
