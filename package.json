@@ -11,7 +11,6 @@
     "url": "https://gitlab.com/notoursllc/gmnst"
   },
   "scripts": {
-    "prestart": "node build/db_migrate_seed",
     "start": "node server/start.js",
     "start:dev": "NODE_ENV=development node --require dotenv/config server/start.js",
     "start:local": "NODE_ENV=development IS_LOCAL=true node --require dotenv/config server/start.js",
