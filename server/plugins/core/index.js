@@ -29,42 +29,7 @@ exports.register = function (server, options, next) {
         return reply.continue();
     });
 
-
-    server.route([
-        {
-            method: 'GET',
-            path: '/static/{filepath*}',
-            config: {
-                auth: false,
-                cache: {
-                    expiresIn: 24 * 60 * 60 * 1000,
-                    privacy: 'public'
-                }
-            },
-            handler: {
-                directory: {
-                    path: path.resolve(__dirname, '../../../dist/static/'),
-                    listing: false,
-                    index: false
-                }
-            }
-        },
-        {
-            path: '/favicon.ico',
-            method: 'get',
-            config: {
-                auth: false,
-                cache: {
-                    expiresIn: 1000*60*60*24*21
-                }
-            },
-            handler: function(request, reply) {
-                // if (!options.path) {
-                //     return reply().code(204).type('image/x-icon');
-                // }
-                reply(null, fs.createReadStream(path.resolve(__dirname, '../../../dist/static/favicon.ico'))).code(200).type('image/x-icon');
-            }
-        },
+    let routes = [
         {
             method: 'POST',
             path: '/api/v1/logger',
@@ -107,8 +72,52 @@ exports.register = function (server, options, next) {
                 // return reply.view('index', {});
             }
         }
-    ]);
+    ];
 
+    // nginx handles static file access in production, for better performance
+    // so only add these routes if running locally.
+    // Even so it's probably best to develop locally using Nanobox, so perhaps
+    // this can be removed
+    if(process.env.IS_LOCAL) {
+        routes.unshift(
+            {
+                method: 'GET',
+                path: '/static/{filepath*}',
+                config: {
+                    auth: false,
+                    cache: {
+                        expiresIn: 24 * 60 * 60 * 1000,
+                        privacy: 'public'
+                    }
+                },
+                handler: {
+                    directory: {
+                        path: path.resolve(__dirname, '../../../dist/static/'),
+                        listing: false,
+                        index: false
+                    }
+                }
+            },
+            {
+                path: '/favicon.ico',
+                method: 'get',
+                config: {
+                    auth: false,
+                    cache: {
+                        expiresIn: 1000*60*60*24*21
+                    }
+                },
+                handler: function(request, reply) {
+                    // if (!options.path) {
+                    //     return reply().code(204).type('image/x-icon');
+                    // }
+                    reply(null, fs.createReadStream(path.resolve(__dirname, '../../../dist/static/favicon.ico'))).code(200).type('image/x-icon');
+                }
+            }
+        );
+    }
+
+    server.route(routes);
 
     return next();
 };
