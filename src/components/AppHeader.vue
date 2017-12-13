@@ -213,6 +213,7 @@
         height: 50px;
         background-color: $colorBluePurple;
         margin-left: 0;
+        position: relative;
 
         .icon {
             height: 30px !important;
@@ -285,8 +286,10 @@
         text-align: center;
         white-space: nowrap;
         position: absolute;
-        transform: translateY(-70%) translateX(60%);
+        // transform: translateY(50%) translateX(60%);
         box-shadow: 0 0 1px 1px rgba(10, 10, 10, 0.1);
+        top: 15px;
+        left: 35px;
     }
 
     @media #{$medium-and-up}  {
