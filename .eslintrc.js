@@ -20,6 +20,7 @@ module.exports = {
     'no-debugger': process.env.NODE_ENV === 'production' ? ERROR : OFF,
     'no-multiple-empty-lines': OFF,
     'no-trailing-spaces': OFF,
+    'operator-linebreak': OFF,
     'padded-blocks': OFF,
     'semi': OFF,
     // Turned off spaces before pern because of broken Beautify formating for JS inside script tag

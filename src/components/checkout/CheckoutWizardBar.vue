@@ -44,8 +44,8 @@
         <div class="item" 
              :class="{'active': currentStep === 0, 'completed': currentStep > 0}"
              @click="changeStep(0)">
-            <i class="fa fa-truck"></i>
-            <div class="item-desc nowrap">1) {{ $t('SHIPPING') }}</div>
+            <i class="fa fa-smile-o"></i>
+            <div class="item-desc nowrap">1) {{ $t('SHIPPING ADDRESS') }}</div>
         </div>
 
         <div class="spacer">
@@ -55,8 +55,8 @@
         <div class="item" 
              :class="{'active': currentStep === 1, 'completed': currentStep > 1}"
              @click="changeStep(1)">
-            <i class="fa fa-handshake-o"></i>
-            <div class="item-desc nowrap">2) {{ $t('PAYMENT') }}</div>
+            <i class="fa fa-truck"></i>
+            <div class="item-desc nowrap">2) {{ $t('SHIPPING METHOD') }}</div>
         </div>
 
         <div class="spacer">
@@ -66,7 +66,7 @@
         <div class="item" 
              :class="{'active': currentStep === 2, 'completed': currentStep > 2}"
              @click="changeStep(2)">
-            <i class="fa fa-paper-plane-o"></i>
+            <i class="fa fa-gift"></i>
             <div class="item-desc nowrap">3) {{ $t('PLACE YOUR ORDER') }}</div>
         </div>
     </div>

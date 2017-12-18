@@ -206,7 +206,8 @@ ul.disc {
         min-width: 200px;
     }
 
-    i.fa {
+    > i.fa,
+    .checkout_form_value_icon {
         position: absolute;
         top: -9px;
         right: -8px;
@@ -218,13 +219,14 @@ ul.disc {
 @media all and (min-width: 601px) {
     .checkout_form_label {
         display: table-cell;
-        padding: 0 10px 10px 0;
+        padding: 0 40px 10px 0;
         vertical-align: top;
+        text-align: right;
     }
 
     // .checkout_form_value {
     //     display: table-cell;
-    //     padding-bottom: 10px;
+    //     padding-bottom: 15px;
     // }
 }
 

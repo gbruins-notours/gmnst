@@ -15,6 +15,7 @@
 .displayTableRow { display: table-row }
 
 .floatRight { float: right !important }
+.floatLeft { float: left !important }
 
 .inline { display: inline }
 .inlineBlock { display: inline-block }
@@ -67,6 +68,7 @@
 .wordwrap { white-space: wordwrap !important }
 
 .tac{ text-align: center !important }
+.tal{ text-align: left !important }
 .tar{ text-align: right !important }
 
 .underlineDotted { border-bottom: 1px dotted !important }

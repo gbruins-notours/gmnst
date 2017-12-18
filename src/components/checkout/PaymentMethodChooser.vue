@@ -41,13 +41,12 @@
 </template>
 
 
-<style lang="scss">
+<style lang="scss" scoped>
     @import "../../assets/css/components/_variables.scss";
     @import "../../assets/css/components/_mixins.scss";
 
     .payment-methods {
         display: table;
-        margin: 0 auto;
 
         .item {
             display: table-cell;
@@ -68,6 +67,10 @@
             text-align: center;
             min-width: 80px;
             position: relative;
+
+            .fa {
+                position: relative;
+            }
 
             .fa-check-circle {
                 font-size: 20px;
