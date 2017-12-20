@@ -45,7 +45,7 @@
              :class="{'active': currentStep === 0, 'completed': currentStep > 0}"
              @click="changeStep(0)">
             <i class="fa fa-smile-o"></i>
-            <div class="item-desc nowrap">1) {{ $t('SHIPPING ADDRESS') }}</div>
+            <div class="item-desc">1) {{ $t('SHIPPING ADDRESS') }}</div>
         </div>
 
         <div class="spacer">
@@ -56,7 +56,7 @@
              :class="{'active': currentStep === 1, 'completed': currentStep > 1}"
              @click="changeStep(1)">
             <i class="fa fa-truck"></i>
-            <div class="item-desc nowrap">2) {{ $t('SHIPPING METHOD') }}</div>
+            <div class="item-desc">2) {{ $t('SHIPPING METHOD') }}</div>
         </div>
 
         <div class="spacer">
@@ -67,7 +67,7 @@
              :class="{'active': currentStep === 2, 'completed': currentStep > 2}"
              @click="changeStep(2)">
             <i class="fa fa-gift"></i>
-            <div class="item-desc nowrap">3) {{ $t('PLACE YOUR ORDER') }}</div>
+            <div class="item-desc">3) {{ $t('PLACE YOUR ORDER') }}</div>
         </div>
     </div>
 </template>
@@ -112,6 +112,7 @@
 
             .item-desc {
                 font-size: 10px;
+                white-space: normal;
             }
 
             &.active {
@@ -143,6 +144,7 @@
 
                 .item-desc {
                     font-size: 12px;
+                    white-space: nowrap;
                 }
             }
         }
