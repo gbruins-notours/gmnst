@@ -48,7 +48,6 @@ export default class ShoppingCartService {
             });
     }
 
-    //DONE
     setShippingAddress(address) {
         return getHttp()
             .post('/api/v1/cart/shipping/setaddress', address)
@@ -57,7 +56,6 @@ export default class ShoppingCartService {
             });
     }
 
-    //DONE
     validateAddress(address) {
         return getHttp()
             .post('/api/v1/shipping/validateAddress', address)
@@ -66,7 +64,6 @@ export default class ShoppingCartService {
             });
     }
 
-    //DONE
     getShippingRates(params) {
         return getHttp()
             .post('/api/v1/shipping/rates', params)

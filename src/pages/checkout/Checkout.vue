@@ -34,6 +34,9 @@
     Vue.prototype.$notify = Notification;
 
     let currentNotification = null;
+    let STEP_SHIPPING_ADDRESS = 0;
+    let STEP_SHIPPING_METHOD = 1;
+    let STEP_PLACE_ORDER= 2;
 
     export default {
         components: {
@@ -97,9 +100,13 @@
 
         data: function() {
             return {
+                STEP_SHIPPING_ADDRESS: 0,
+                STEP_SHIPPING_METHOD: 1,
+                STEP_PLACE_ORDER: 2,
                 currentStep: 0,
                 shippingFormIsLoading: false,
                 shippingButtonEnabled: false,
+                shippingRates: null,
                 paymentMethod: 'CREDIT_CARD',
                 cardType: null,
                 securityCodeModalShow: false,
@@ -229,10 +236,10 @@
             },
 
 
-            submitShippingDestinationForm: function() {
+            submitShippingMethodForm: function() {
                 //TODO: finish this method
-                console.log("submitShippingDestinationForm")
-                this.currentStep = 2
+                console.log("submitShippingMethodForm")
+                this.currentStep = this.STEP_PLACE_ORDER;
             },
 
 
@@ -258,7 +265,7 @@
             getShippingRates: function() {
                 this.$store.dispatch('CART_SHIPPING_METHODS', null);
 
-                shoppingCartService.getShippingRates({
+                return shoppingCartService.getShippingRates({
                     validate_address: 'no_validation',
                     ship_to: {
                         address_line1: this.cart.shipping_streetAddress,
@@ -278,6 +285,7 @@
                 })
                 .then((result) => {
                     this.$store.dispatch('CART_SHIPPING_METHODS', result);
+                    return result;
                 })
                 .catch((result) => {
                     currentNotification = this.$notify({
@@ -311,6 +319,12 @@
                         return this.$store.dispatch('CART_SET', result);
                     })
                     .then(() => {
+                        return this.getShippingRates();
+                    })
+                    .then((shippingRates) => {
+                        console.log("shippingRates", shippingRates);
+                        this.shippingRates = shippingRates;
+
                         // As a convenience to the user keeping the Country and State
                         // values the same as the shipping values, as they are likely the same
                         if(!updatedCart.billing_countryCodeAlpha2) {
@@ -327,7 +341,7 @@
                             });
                         }
 
-                        this.currentStep = 1;
+                        this.currentStep = this.STEP_SHIPPING_METHOD;
                     })
                     .catch((result) => {
                         // currentNotification = this.$notify({
@@ -620,7 +634,7 @@
 
             <template v-else>
                 <!-- Shipping -->
-                <div v-show="currentStep === 0">
+                <div v-show="currentStep === STEP_SHIPPING_ADDRESS">
                     <div class="step-title">{{ $t('Shipping address') }}:</div>
                     <shipping-billing-form type="shipping" @valid="val => { shippingButtonEnabled = val }"></shipping-billing-form>
 
@@ -644,7 +658,7 @@
                 </div>
 
                 <!-- Shipping Method -->
-                <div v-show="currentStep === 1">
+                <div v-show="currentStep === STEP_SHIPPING_METHOD">
                     <div class="step-title">{{ $t('Shipping Method') }}:</div>
                     TODO
 
@@ -652,7 +666,7 @@
                         <div class="inlineBlock">
                             <el-button type="warning"
                                         class="colorBlack"
-                                        @click="submitShippingDestinationForm"
+                                        @click="submitShippingMethodForm"
                                         size="large">{{ $t('CONTINUE TO PAYMENT') }}</el-button>
 
                             <!-- <bottom-popover width="200px"
@@ -662,7 +676,7 @@
                 </div>
 
                 <!-- Payment -->
-                <div v-show="currentStep === 2">
+                <div v-show="currentStep === STEP_PLACE_ORDER">
                     <div class="step-title">{{ $t('PLACE YOUR ORDER') }}:</div>
 
                     <div class="mtl">
@@ -792,7 +806,7 @@
                     <div class="ptl">
                         <cart-items :allow-edit="false"></cart-items>
                     </div>
-                </div>
+                </div>  
 
                 <!-- CVV Modal -->
                 <el-dialog :title="$t('Finding your security code')"

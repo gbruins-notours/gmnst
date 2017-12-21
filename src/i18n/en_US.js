@@ -174,7 +174,24 @@ const translations = {
         'HOSTED_FIELDS_ATTRIBUTE_VALUE_NOT_ALLOWED': 'Your credit card info contains an invalid value'
     },
 
-
+    'shipping': {
+        'fedex_express_saver': {
+            'name': 'FedEx Express Saver',
+            'desc': 'Delivery averages 4 business days.  Use this option if you are more concerned with keeping shipping costs low than quick delivery.'
+        },
+        'fedex_2day': {
+            'name': 'FedEx 2Day',
+            'desc': 'Delivery averages 2 business days.'
+        },
+        'usps_parcel_select': {
+            'name': 'USPS Parcel Select Ground',
+            'desc': 'Delivery averages 3-9 business days.  Use this option if you are more concerned with keeping shipping costs low than quick delivery.'
+        },
+        'usps_priority_mail': {
+            'name': 'USPS Priority Mail',
+            'desc': 'Delivery averages 2-4 business days.  Faster delivery and a slightly higher cost.'
+        }
+    },
 
     // US states
     'Alabama': 'Alabama',
