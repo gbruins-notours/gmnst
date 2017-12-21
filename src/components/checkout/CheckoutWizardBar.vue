@@ -113,6 +113,7 @@
             .item-desc {
                 font-size: 10px;
                 white-space: normal;
+                line-height: 12px;
             }
 
             &.active {
@@ -145,6 +146,7 @@
                 .item-desc {
                     font-size: 12px;
                     white-space: nowrap;
+                    line-height: 20px;
                 }
             }
         }
