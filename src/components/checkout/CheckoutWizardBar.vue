@@ -107,7 +107,7 @@
 
         .item {
             font-size: 18px;
-            padding: 3px;
+            padding: 2px;
             @include border-radius(2px);
             line-height: 18px;
             border: 1px solid transparent;
@@ -122,8 +122,8 @@
                 line-height: 12px;
 
                 .fa-check-circle {
-                    margin-top: -3px;
-                    font-size: 14px;
+                    margin-top: -2px;
+                    font-size: 12px;
                 }
             }
 
@@ -153,11 +153,17 @@
             .item {
                 font-size: 25px;
                 line-height: 25px;
+                padding: 3px;
 
                 .item-desc {
                     font-size: 12px;
                     white-space: nowrap;
                     line-height: 20px;
+
+                    .fa-check-circle {
+                        margin-top: -3px;
+                        font-size: 14px;
+                    }
                 }
             }
         }
