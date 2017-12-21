@@ -100,15 +100,23 @@
 
 
 <style lang="scss">
-    .container-wizard {
-        padding: 7px;
-        background-color: #f1f1f1;
-    }
+    @import "../../assets/css/components/_variables.scss";
 
     .step-title {
         font-size: 20px;
         font-weight: 500;
         margin-bottom: 20px;
         text-align: center;
+    }
+
+    .container-wizard {
+        padding: 4px;
+        background-color: #f1f1f1;
+    }
+
+    @media #{$medium-and-up} {  
+        .container-wizard {
+            padding: 7px;
+        }
     }
 </style>

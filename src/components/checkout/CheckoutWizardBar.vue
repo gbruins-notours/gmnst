@@ -45,7 +45,9 @@
              :class="{'active': currentStep === 0, 'completed': currentStep > 0}"
              @click="changeStep(0)">
             <i class="fa fa-smile-o"></i>
-            <div class="item-desc">1) {{ $t('SHIPPING ADDRESS') }}</div>
+            <div class="item-desc">
+                <span v-show="currentStep === 0">1)</span><i v-show="currentStep > 0" class="fa fa-check-circle"></i> {{ $t('SHIPPING ADDRESS') }}
+            </div>
         </div>
 
         <div class="spacer">
@@ -56,7 +58,9 @@
              :class="{'active': currentStep === 1, 'completed': currentStep > 1}"
              @click="changeStep(1)">
             <i class="fa fa-truck"></i>
-            <div class="item-desc">2) {{ $t('SHIPPING METHOD') }}</div>
+            <div class="item-desc">
+                <span v-show="currentStep <= 1">2)</span><i v-show="currentStep > 1" class="fa fa-check-circle"></i> {{ $t('SHIPPING METHOD') }}
+            </div>
         </div>
 
         <div class="spacer">
@@ -67,7 +71,9 @@
              :class="{'active': currentStep === 2, 'completed': currentStep > 2}"
              @click="changeStep(2)">
             <i class="fa fa-gift"></i>
-            <div class="item-desc">3) {{ $t('PLACE YOUR ORDER') }}</div>
+            <div class="item-desc">
+                <span v-show="currentStep <= 2">3)</span><i v-show="currentStep > 2" class="fa fa-check-circle"></i> {{ $t('PLACE YOUR ORDER') }}
+            </div>
         </div>
     </div>
 </template>
@@ -114,6 +120,11 @@
                 font-size: 10px;
                 white-space: normal;
                 line-height: 12px;
+
+                .fa-check-circle {
+                    margin-top: -3px;
+                    font-size: 14px;
+                }
             }
 
             &.active {
