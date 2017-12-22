@@ -2,9 +2,9 @@
     import Vue from 'vue'
     import { mapGetters } from 'vuex'
     import CheckoutWizardBar from '@/components/checkout/CheckoutWizardBar'
-    import ShippingAddressStep from '@/components/checkout/ShippingAddressStep'
-    import ShippingMethodStep from '@/components/checkout/ShippingMethodStep'
-    import PlaceOrderStep from '@/components/checkout/PlaceOrderStep'
+    import ShippingAddressStep from '@/components/checkout/StepShippingAddress'
+    import ShippingMethodStep from '@/components/checkout/StepShippingMethod'
+    import PlaceOrderStep from '@/components/checkout/StepPlaceOrder'
 
     let currentNotification = null;
 

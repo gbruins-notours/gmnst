@@ -11,6 +11,7 @@
 
     Vue.prototype.$notify = Notification;
     Vue.use(Button)
+    Vue.use(Loading.directive)
 
     let currentNotification = null;
     let shoppingCartService = new ShoppingCartService();
@@ -63,13 +64,8 @@
                         updatedCart = result;
                         return this.$store.dispatch('CART_SET', result);
                     })
-                    // .then(() => {
-                    //     return this.getShippingRates();
-                    // })
-                    .then((shippingRates) => {
+                    .then(() => {
                         this.$emit('done', 'shipping-address-step')
-                        // console.log("shippingRates", shippingRates);
-                        // this.shippingRates = shippingRates;
 
                         // As a convenience to the user keeping the Country and State
                         // values the same as the shipping values, as they are likely the same
@@ -89,12 +85,12 @@
                         }
                     })
                     .catch((result) => {
-                        // currentNotification = this.$notify({
-                        //     title: this.$t('An error occurred'),
-                        //     message: 'We were unable to get shipping rates because of a server error.',
-                        //     duration: 0,
-                        //     type: 'error'
-                        // });
+                        currentNotification = this.$notify({
+                            title: this.$t('An error occurred'),
+                            message: 'A server error occurred while setting the shipping address.',
+                            duration: 0,
+                            type: 'error'
+                        });
                     });
             },
 
@@ -197,10 +193,13 @@
 <template>
     <div>
         <div class="step-title">{{ $t('SHIPPING ADDRESS') }}:</div>
-        <shipping-billing-form type="shipping" @valid="val => { shippingButtonEnabled = val }"></shipping-billing-form>
 
-        <div class="ptl displayTable" style="margin:0 auto">
-            <shipping-billing-help></shipping-billing-help>
+        <div v-loading="shippingFormIsLoading" class="phm">
+            <shipping-billing-form type="shipping" @valid="val => { shippingButtonEnabled = val }"></shipping-billing-form>
+
+            <div class="ptl displayTable" style="margin:0 auto">
+                <shipping-billing-help></shipping-billing-help>
+            </div>
         </div>
 
         <div class="ptl tac">

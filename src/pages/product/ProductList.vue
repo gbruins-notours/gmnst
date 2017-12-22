@@ -86,7 +86,6 @@ export default {
 }
 </script>
 
-
 <template>
     <section class="section container is-fluid">
         <div class="columns is-multiline">

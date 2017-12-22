@@ -63,10 +63,9 @@ const translations = {
 
     'items': 'item | items',
 
-
-
     'LAST NAME': 'LAST NAME',
     'Last name': 'Last name',
+    'Loading...': 'Loading...',
 
     'Make sure your address is correct': 'Make sure your address is correct',
 
@@ -183,11 +182,11 @@ const translations = {
         },
         'usps_parcel_select': {
             'name': 'USPS Parcel Select Ground',
-            'desc': 'Delivery averages 3-9 business days.  Use this option if you are more concerned with keeping shipping costs low than quick delivery.'
+            'desc': 'Delivery averages 3-9 business days.'
         },
         'usps_priority_mail': {
             'name': 'USPS Priority Mail',
-            'desc': 'Delivery averages 2-4 business days.  Faster delivery and a slightly higher cost.'
+            'desc': 'Delivery averages 2-4 business days.'
         }
     },
 

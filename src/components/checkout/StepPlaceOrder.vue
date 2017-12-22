@@ -138,41 +138,6 @@
             },
 
 
-            getShippingRates: function() {
-                this.$store.dispatch('CART_SHIPPING_METHODS', null);
-
-                return shoppingCartService.getShippingRates({
-                    validate_address: 'no_validation',
-                    ship_to: {
-                        address_line1: this.cart.shipping_streetAddress,
-                        city_locality: this.cart.shipping_city,
-                        state_province: this.cart.shipping_state,
-                        postal_code: this.cart.shipping_postalCode,
-                        country_code: this.cart.shipping_countryCodeAlpha2
-                    },
-                    packages: [
-                        {
-                            weight: {
-                                value: '6.0',  //TODO
-                                unit: 'ounce'
-                            }
-                        }
-                    ]
-                })
-                .then((result) => {
-                    this.$store.dispatch('CART_SHIPPING_METHODS', result);
-                    return result;
-                })
-                .catch((result) => {
-                    currentNotification = this.$notify({
-                        title: this.$t('An error occurred'),
-                        message: 'We were unable to get shipping rates because of a server error.',
-                        duration: 0,
-                        type: 'error'
-                    });
-                });
-            },
-
             doCheckout: function(nonce) {
                 return shoppingCartService.checkout({
                     nonce: nonce,
