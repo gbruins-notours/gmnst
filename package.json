@@ -20,9 +20,9 @@
     "test:client": "npm run unit && npm run e2e",
     "test:server": "NODE_ENV=test lab -a code -v --leaks test/server",
     "test2": "NODE_ENV=test npm run test:client && npm run test:server",
-    "knex:migrate-seed": "node build/db_migrate_seed",
     "knex:migrate": "node ./node_modules/knex/bin/cli.js migrate:latest",
-    "knex:seed": "node ./node_modules/knex/bin/cli.js seed:run"
+    "knex:migrate-latest": "node build/db_migrate_latest",
+    "knex:seed": "node build/db_seed"
   },
   "dependencies": {
     "accounting": "0.4.1",
@@ -53,7 +53,7 @@
     "crumb": "6.0.3",
     "css-loader": "0.26.1",
     "dotenv": "4.0.0",
-    "element-ui": "2.0.7",
+    "element-ui": "2.0.8",
     "es6-promise": "4.1.0",
     "eslint": "3.14.1",
     "eslint-config-standard": "6.2.1",

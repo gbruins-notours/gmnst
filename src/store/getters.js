@@ -45,5 +45,9 @@ export default {
         });
         
         return attrs;
+    },
+
+    getShippingRateCache: (state) => {
+        return state.app.shippingRatesCache;
     }
 }

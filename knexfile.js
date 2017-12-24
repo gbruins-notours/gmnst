@@ -21,14 +21,15 @@ let common = {
     }
 };
 
-if(process.env.IS_LOCAL) {
-    common.connection = {
-        host: process.env.POSTGRES_HOST_LOCAL,
-        user: process.env.POSTGRES_USER_LOCAL,
-        password: process.env.POSTGRES_PASSWORD_LOCAL,
-        database: process.env.POSTGRES_DB_LOCAL 
-    }
-}
+// if(process.env.IS_LOCAL) {
+// if(process.env.NODE_ENV === 'development') {
+//     common.connection = {
+//         host: process.env.POSTGRES_HOST_LOCAL,
+//         user: process.env.POSTGRES_USER_LOCAL,
+//         password: process.env.POSTGRES_PASSWORD_LOCAL,
+//         database: process.env.POSTGRES_DB_LOCAL 
+//     }
+// }
 
 // Not sure if these are needed on nanobox so commenting out for now:
 // if(process.env.NODE_ENV === 'production') {

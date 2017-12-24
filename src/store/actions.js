@@ -39,11 +39,15 @@ export default {
         commit('CART_BILLING_SAME_AS_SHIPPING', sameAsShipping)
     },
 
-    CART_SHIPPING_METHODS: ({ commit }, data) => {
-        commit('CART_SHIPPING_METHODS', data)
+    CART_SET_SHIPPING_RATES_CACHE: ({ commit }, data) => {
+        commit('CART_SET_SHIPPING_RATES_CACHE', data)
     },
 
-    CART_DELETE: ({ commit }) => {
-        commit('CART_DELETE')
+    CART_CLEAR_SHIPPING_RATES_CACHE: ({ commit }, data) => {
+        commit('CART_CLEAR_SHIPPING_RATES_CACHE', data)
+    },
+
+    CHECKOUT_CLEANUP: ({ commit }) => {
+        commit('CHECKOUT_CLEANUP')
     }
 }

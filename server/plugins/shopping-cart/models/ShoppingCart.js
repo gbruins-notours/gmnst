@@ -2,6 +2,7 @@
 
 const jwt = require('jsonwebtoken');
 const accounting = require('accounting');
+const isObject = require('lodash.isobject');
 const CoreService = require('../../core/core.service');
 
 
@@ -38,6 +39,13 @@ module.exports = function (baseModel, bookshelf, server) {
                     // NOTE: accounting.toFixed() returns a string!
                     // http://openexchangerates.github.io/accounting.js/
                     return accounting.toFixed(subtotal, 2);
+                },
+                shipping_total: function() {
+                    let obj = this.get('shipping_rate');
+                    if(isObject(obj) && isObject(obj.shipping_amount)) {
+                        return accounting.toFixed(obj.shipping_amount.amount, 2);
+                    }
+                    return null;
                 },
                 grand_total: function() {
                     let subtotal = parseFloat(this.get('sub_total'));
@@ -127,8 +135,7 @@ module.exports = function (baseModel, bookshelf, server) {
                 return self.getCart(request)
                     .then((ShoppingCart) => {
                         return ShoppingCart || self.create({
-                            token: self.getCartToken(request),
-                            shipping_total: accounting.toFixed((process.env.SHIPPING_FLAT_COST || 0), 2)
+                            token: self.getCartToken(request)
                         });
                     })
             }

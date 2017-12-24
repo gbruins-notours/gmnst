@@ -42,7 +42,7 @@ exports.register = (server, options, next) => {
                 colorize: false,
                 filename: path.join(logsDirectory, '/error.log'),
                 timestamp: () => moment(new Date()).format('YYYY-MM-DD hh:mm:ss'),
-                json: true,
+                json: false,
                 maxFiles: 10,
                 datePattern: '.yyyy-MM-dd'
             })
@@ -58,7 +58,7 @@ exports.register = (server, options, next) => {
                 colorize: false,
                 filename: path.join(logsDirectory, '/error.log'),
                 timestamp: () => moment(new Date()).format('YYYY-MM-DD hh:mm:ss'),
-                json: true,
+                json: false,
                 maxFiles: 10,
                 datePattern: '.yyyy-MM-dd'
             })

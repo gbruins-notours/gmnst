@@ -15,6 +15,7 @@
     import CreditCardIcon from '@/components/CreditCardIcon'
     import api from '@/util/api'
     import ShoppingCartService from '@/pages/cart/shopping_cart_service.js'
+    import PageHeader from '@/components/PageHeader'
 
     let shoppingCartService = new ShoppingCartService();
 
@@ -30,6 +31,7 @@
 
     export default {
         components: {
+            PageHeader,
             PaymentMethodChooser,
             ShippingView,
             ShippingBillingHelp,
@@ -144,7 +146,7 @@
                     ...this.cartBillingAttributes
                 })
                 .then((result) => {
-                    this.$store.dispatch('CART_DELETE');
+                    this.$store.dispatch('CHECKOUT_CLEANUP');
 
                     this.braintree.hostedFieldsInstance.teardown((teardownErr) => {
                         if (teardownErr) {
@@ -400,7 +402,7 @@
 
 <template>
     <div>
-        <div class="step-title">{{ $t('PLACE YOUR ORDER') }}:</div>
+        <page-header :title="$t('Place your order') + ':'"></page-header>
 
         <div class="mtl">
             <div class="displayTable widthAll">

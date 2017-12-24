@@ -36,6 +36,10 @@ export function createStore () {
                         PRODUCT_SUBTYPE_HAT: 'hats',
                         PRODUCT_SUBTYPE_TOP: 'tops'
                     }
+                },
+                shippingRatesCache: {
+                    updated: null,
+                    cache: null
                 }
             },
 

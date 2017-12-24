@@ -72,6 +72,16 @@ export default class ShoppingCartService {
             });
     }
 
+    setShippingRate(obj) {
+        return getHttp()
+            .post('/api/v1/cart/shipping/rate', {
+                shipping_rate: obj
+            })
+            .then((response) => {
+                return response.data.data;
+            });
+    }
+
     checkout(params) {
         return getHttp()
             .post('/api/v1/cart/checkout', params)
@@ -235,6 +245,7 @@ export default class ShoppingCartService {
             num_items: 0,
             sub_total: null,
             shipping_total: null,
+            shipping_rate: null,
             sales_tax: null,
             grand_total: null
         }

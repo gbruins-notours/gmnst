@@ -3,6 +3,9 @@
     import { mapGetters } from 'vuex'
     import { Button, Notification, Loading, Radio } from 'element-ui'
     import forEach from 'lodash.foreach'
+    import isObject from 'lodash.isobject'
+    import Promise from 'bluebird';
+    import PageHeader from '@/components/PageHeader'
     import ShoppingCartService from '@/pages/cart/shopping_cart_service.js'
 
     Vue.use(Button)
@@ -11,89 +14,156 @@
     Vue.prototype.$notify = Notification;
 
     let shoppingCartService = new ShoppingCartService();
+    let currentNotification = null;
 
     export default {
+        components: {
+            PageHeader
+        },
+
         data: function() {
             return {
                 shippingRates: [],
                 selectedRate: null,
-                isLoading: true
+                isLoading: false
             }
         },
 
         computed: {
             ...mapGetters([
-                'cart'
+                'cart',
+                'getShippingRateCache'
             ])
         },
 
         methods: {
             submitShippingMethodForm: function() {
-                //TODO: finish this method
-                console.log("submitShippingMethodForm")
-                this.$emit('done', 'shipping-method-step')
+                let r = null;
+
+                forEach(this.shippingRates, (rate) => {
+                    if(rate.rate_id === this.selectedRate) {
+                        r = rate;
+                    }
+                });
+
+                if(!r) {
+                    currentNotification = this.$notify({
+                        title: this.$t('Please select a shipping method'),
+                        message: 'Thanks!',
+                        duration: 0,
+                        type: 'error'
+                    });
+                }
+                else {
+                    this.isLoading = true;
+
+                    shoppingCartService
+                        .setShippingRate(r)
+                        .then((shoppingCart) => {
+                            console.log("SET SHIPPING RATE RESPOENSE", shoppingCart);
+                            this.$store.dispatch('CART_SET', shoppingCart);
+                            this.isLoading = false;
+                            this.$emit('done', 'shipping-method-step')  
+                        })
+                        .catch(() => {
+                            this.isLoading = false;
+                            currentNotification = this.$notify({
+                                title: this.$t('An error occurred'),
+                                message: msg,
+                                duration: 0,
+                                type: 'error'
+                            });
+                        })
+                }
             },
 
             getShippingRates: function() {
-                // this.$store.dispatch('CART_SHIPPING_METHODS', null);
-                shoppingCartService.getShippingRates({
-                    validate_address: 'no_validation',
-                    ship_to: {
-                        address_line1: this.cart.shipping_streetAddress,
-                        city_locality: this.cart.shipping_city,
-                        state_province: this.cart.shipping_state,
-                        postal_code: this.cart.shipping_postalCode,
-                        country_code: this.cart.shipping_countryCodeAlpha2
-                    },
-                    packages: [
-                        {
-                            weight: {
-                                value: '6.0',  //TODO
-                                unit: 'ounce'
-                            }
-                        }
-                    ]
-                })
-                .then((result) => {
-                    // this.$store.dispatch('CART_SHIPPING_METHODS', result);
-                    // pre-select the lowest rate:
+                return new Promise((resolve, reject) => {
+                    if(this.getShippingRateCache.cache) {
+                        resolve(this.getShippingRateCache.cache)
+                    }
+                    else {
+                        shoppingCartService.getShippingRates({
+                            validate_address: 'no_validation',
+                            ship_to: {
+                                address_line1: this.cart.shipping_streetAddress,
+                                city_locality: this.cart.shipping_city,
+                                state_province: this.cart.shipping_state,
+                                postal_code: this.cart.shipping_postalCode,
+                                country_code: this.cart.shipping_countryCodeAlpha2
+                            },
+                            packages: [
+                                {
+                                    weight: {
+                                        value: '6.0',  //TODO
+                                        unit: 'ounce'
+                                    }
+                                }
+                            ]
+                        })
+                        .then((result) => {
+                            this.$store.dispatch('CART_SET_SHIPPING_RATES_CACHE', result);
+                            resolve(result);
+                        })
+                        .catch((result) => {
+                            let msg = 'We were unable to get shipping rates because of a server error.'
+                            
+                            currentNotification = this.$notify({
+                                title: this.$t('An error occurred'),
+                                message: msg,
+                                duration: 0,
+                                type: 'error'
+                            });
+
+                            reject(msg);
+                        })
+                    }
+                });
+            },
+
+            processShippingRates: function() {
+                // this.isLoading = true;
+
+                // Get rates from cache if available.  If not then getting fresh rates.  
+                // Then pre-selecting either the previously selected rate or the lowest rate
+                // returned from the API response
+                this.getShippingRates().then((result) => {
                     let lowestRate = null;
                     let lowestId = null;
+                    let allRateIds = [];
 
                     forEach(result, (rate) => {
                         if(!lowestRate || (rate.shipping_amount.amount < lowestRate)) {
                             lowestRate = rate.shipping_amount.amount;
-                            lowestId = rate.rate_id
+                            lowestId = rate.rate_id;
+                            allRateIds.push(rate.shipping_amount.rate_id);
                         }
                     });
 
-                    this.selectedRate = lowestId;
+                    if(isObject(this.cart) 
+                        && isObject(this.cart.shipping_rate) 
+                        && allRateIds.indexOf(this.cart.shipping_rate.rate_id) > -1) {
+                        this.selectedRate = this.cart.shipping_rate.rate_id;
+                    }
+                    else {
+                        this.selectedRate = lowestId;
+                    }
+
                     this.shippingRates = result;
-                })
-                .catch((result) => {
-                    currentNotification = this.$notify({
-                        title: this.$t('An error occurred'),
-                        message: 'We were unable to get shipping rates because of a server error.',
-                        duration: 0,
-                        type: 'error'
-                    });
-                })
-                .finally(() => {
                     this.isLoading = false;
                 });
             },
         },
 
         created: function() {
-            console.log("created shipping method")
-            this.getShippingRates();
+            this.processShippingRates();
         }
     }
 </script>
 
 <template>
     <div>
-        <div class="step-title">{{ $t('SHIPPING METHOD') }}:</div>
+        <page-header :title="$t('Shipping method') + ':'"></page-header>
 
         <div v-loading="isLoading" :element-loading-text="$t('Loading...')" class="mtl tac">
             <div class="inlineBlock">
@@ -114,6 +184,8 @@
                 <el-button type="warning"
                             class="colorBlack"
                             @click="submitShippingMethodForm"
+                            :disabled="!selectedRate"
+                            :loading="isLoading"
                             size="large">{{ $t('CONTINUE TO PAYMENT') }}</el-button>
             </div>
         </div>

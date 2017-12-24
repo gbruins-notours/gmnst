@@ -10,5 +10,4 @@ const DB_TABLES = {
     products: 'products'
 };
 
-
 module.exports.DB_TABLES = DB_TABLES;

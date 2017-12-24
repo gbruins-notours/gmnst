@@ -23,7 +23,7 @@
     @import "../assets/css/components/_variables.scss";
 
     .page-header {
-        padding: 10px 10px;
+        padding: 10px 0;
 
         h2 {
             font-size: 24px;

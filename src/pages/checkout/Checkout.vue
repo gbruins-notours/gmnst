@@ -86,7 +86,7 @@
             </div>
         </section>
 
-        <section class="container-skinny pal">
+        <section class="container-skinny phm">
             <div v-if="!cart.num_items" class="fs16 pal tac">
                 {{ $t('Your shopping cart does not contain any items.') }}
             </div>
@@ -101,13 +101,6 @@
 
 <style lang="scss">
     @import "../../assets/css/components/_variables.scss";
-
-    .step-title {
-        font-size: 20px;
-        font-weight: 500;
-        margin-bottom: 20px;
-        text-align: center;
-    }
 
     .container-wizard {
         padding: 4px;

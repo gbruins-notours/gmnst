@@ -8,6 +8,7 @@
     import ShippingBillingHelp from '@/components/checkout/ShippingBillingHelp'
     import ShoppingCartService from '@/pages/cart/shopping_cart_service.js'
     import BottomPopover from '@/components/BottomPopover'
+    import PageHeader from '@/components/PageHeader'
 
     Vue.prototype.$notify = Notification;
     Vue.use(Button)
@@ -20,7 +21,8 @@
         components: {
             ShippingBillingForm,
             ShippingBillingHelp,
-            BottomPopover
+            BottomPopover,
+            PageHeader
         },
 
         computed: {
@@ -52,6 +54,12 @@
             shippingFormDone: function() {
                 let updatedCart = null;
                 delete this.cartShippingAttributes.shipping_total;
+                delete this.cartShippingAttributes.shipping_rate;
+
+                // This step needs to clear the shipping rate cache because
+                // we are assuming the shipping address has changed and thus
+                // new rates should be retrieved
+                this.$store.dispatch('CART_CLEAR_SHIPPING_RATES_CACHE');
 
                 // Setting the shipping address will also calculate the
                 // sales tax for the cart because sales tax calculation requires
@@ -192,9 +200,9 @@
 
 <template>
     <div>
-        <div class="step-title">{{ $t('SHIPPING ADDRESS') }}:</div>
+        <page-header :title="$t('Shipping address') + ':'"></page-header>
 
-        <div v-loading="shippingFormIsLoading" class="phm">
+        <div v-loading="shippingFormIsLoading" class="mtm">
             <shipping-billing-form type="shipping" @valid="val => { shippingButtonEnabled = val }"></shipping-billing-form>
 
             <div class="ptl displayTable" style="margin:0 auto">

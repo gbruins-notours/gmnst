@@ -50,7 +50,8 @@ internals.billingAttributes = {
 internals.schema = Joi.object().keys({
     token: Joi.string().trim().max(100).required(),
     billing: Joi.object().keys(internals.billingAttributes),
-    shipping: Joi.object().keys(internals.shippingAttributes)
+    shipping: Joi.object().keys(internals.shippingAttributes),
+    shipping_rate: Joi.object().unknown()
 });
 
 
@@ -155,9 +156,7 @@ internals.after = function (server, next) {
                 })
                 .then(resolve)
                 .catch((err) => {
-                    global.appInsightsClient.trackException({
-                        exception: err
-                    });
+                    global.logger.error(err);
                     reject(err);
                 });
         });
@@ -232,9 +231,7 @@ internals.after = function (server, next) {
                             reply.apiSuccess(token);
                         })
                         .catch((err) => {
-                            global.appInsightsClient.trackException({
-                                exception: err
-                            });
+                            global.logger.error(err);
                             reply(Boom.badData(err));
                         });
                 }
@@ -254,10 +251,7 @@ internals.after = function (server, next) {
                             reply.apiSuccess(ShoppingCart.toJSON());
                         })
                         .catch((err) => {
-                            global.appInsightsClient.trackException({
-                                exception: err
-                            });
-
+                            global.logger.error(err);
                             HelperService.getBoomError(err, (error, result) => {
                                 reply(result);
                             });
@@ -281,10 +275,7 @@ internals.after = function (server, next) {
                             reply.apiSuccess(ShoppingCart.toJSON());
                         })
                         .catch((err) => {
-                            global.appInsightsClient.trackException({
-                                exception: err
-                            });
-
+                            global.logger.error(err);
                             HelperService.getBoomError(err, (error, result) => {
                                 reply(result);
                             });
@@ -316,9 +307,7 @@ internals.after = function (server, next) {
                             reply.apiSuccess(ShoppingCart.toJSON());
                         })
                         .catch((err) => {
-                            global.appInsightsClient.trackException({
-                                exception: err
-                            });
+                            global.logger.error(err);
                             reply(Boom.badData(err));
                         });
                 }
@@ -346,9 +335,7 @@ internals.after = function (server, next) {
                             reply.apiSuccess(ShoppingCart.toJSON());
                         })
                         .catch((err) => {
-                            global.appInsightsClient.trackException({
-                                exception: err
-                            });
+                            global.logger.error(err);
                             reply(Boom.badData(err));
                         });
                 }
@@ -388,9 +375,7 @@ internals.after = function (server, next) {
                                 });
                         })
                         .catch((err) => {
-                            global.appInsightsClient.trackException({
-                                exception: err
-                            });
+                            global.logger.error(err);
                             reply(Boom.badData(err));
                         });
                 }
@@ -425,9 +410,33 @@ internals.after = function (server, next) {
                             reply.apiSuccess(ShoppingCart.toJSON());
                         })
                         .catch((err) => {
-                            global.appInsightsClient.trackException({
-                                exception: err
-                            });
+                            global.logger.error(err);
+                            reply(Boom.badData(err));
+                        });
+                }
+            }
+        },
+        {
+            method: 'POST',
+            path: '/cart/shipping/rate',
+            config: {
+                description: 'Sets the selected shipping rate for the cart',
+                validate: {
+                    payload: Joi.reach(internals.schema, 'shipping_rate')
+                },
+                handler: (request, reply) => {
+                    internals.shoppingCart.get(request)
+                        .then((ShoppingCart) => {
+                            return ShoppingCart.save(
+                                request.payload,
+                                { method: 'update', patch: true }
+                            );
+                        })
+                        .then((ShoppingCart) => {
+                            reply.apiSuccess(ShoppingCart.toJSON());
+                        })
+                        .catch((err) => {
+                            global.logger.error(err);
                             reply(Boom.badData(err));
                         });
                 }
@@ -515,9 +524,6 @@ internals.after = function (server, next) {
                                     // to the catch block below because we do not want this 
                                     // failure returning in the API response.  It will be logged only.
                                     global.logger.error(`ERROR SAVING PAYMENT INFO: ${err}`)
-                                    global.appInsightsClient.trackException({
-                                        exception: err
-                                    });
                                 });
 
 
@@ -537,9 +543,6 @@ internals.after = function (server, next) {
                             )
                             .catch((err) => {
                                 global.logger.error(err);
-                                global.appInsightsClient.trackException({
-                                    exception: err
-                                });
                             });
 
 
@@ -555,11 +558,6 @@ internals.after = function (server, next) {
                         })
                         .catch((err) => {
                             global.logger.error(err)
-                            global.appInsightsClient.trackException({
-                                exception: err
-                                // exception: new Error(msg)
-                            });
-                            
                             HelperService.getBoomError(err, (error, result) => {
                                 reply(result);
                             });
