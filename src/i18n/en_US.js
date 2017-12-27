@@ -11,6 +11,7 @@ const translations = {
     'All other cards': 'All other cards',
     'All Rights Reserved': 'All Rights Reserved',
     'American Express': 'American Express',
+    'An email confirmation was sent to:': 'An email confirmation was sent to:',
     'An error occurred': 'An error occurred',
     'Are you sure you want to return to your Shopping Cart?': 'Are you sure you want to return to your Shopping Cart?',
 
@@ -94,6 +95,7 @@ const translations = {
     'PAYPAL_WINDOW_IS_OPEN': 'The PayPal secure payment popup window is open. It may appear behind this window (so look there if you do not see it).',
     'PLACE YOUR ORDER': 'PLACE YOUR ORDER',
     'Place your order': 'Place your order',
+    'Please allow a few minutes for email delivery.': 'Please allow a few minutes for email delivery.',
     'Please select a quantity': 'Please select a quantity',
     'Please select a size': 'Please select a size',
     'Please enter a valid email address.': 'Please enter a valid email address.',

@@ -165,11 +165,15 @@ internals.after = function (server, next) {
 
                             // Much less data can be sent over the wire in this case, 
                             // so trimming the transaction value in the response
+                            let cartResponse = request.query.verbose 
+                                                ? p.shoppingCart 
+                                                : { num_items: p.shoppingCart.num_items, shipping_email: p.shoppingCart.shipping_email };
+
                             let response = {
                                 id: p.id,
                                 created: p.created_at,
                                 shipping: p.transaction.shipping,
-                                shoppingCart: request.query.verbose ? p.shoppingCart : { num_items: p.shoppingCart.num_items },
+                                shoppingCart: cartResponse,
                                 transaction: {
                                     id: p.transaction_id,
                                     amount: p.transaction.amount,
