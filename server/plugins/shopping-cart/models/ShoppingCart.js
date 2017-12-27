@@ -28,6 +28,20 @@ module.exports = function (baseModel, bookshelf, server) {
 
                     return numItems;
                 },
+                product_weight_total: function() {
+                    let weight = 0;
+
+                    this.related('cart_items').forEach((model) => {
+                        let prod = model.related('product');
+                        let qty = model.get('qty');
+
+                        if(prod && qty) {
+                            weight += parseFloat((prod.get('weight_oz') * qty) || 0); 
+                        }
+                    });
+
+                    return accounting.toFixed(weight, 1);
+                },
                 sub_total: function() {
                     // return server.plugins.ShoppingCart.getCartSubTotal( this.related('cart_data') );
                     let subtotal = 0;

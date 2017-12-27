@@ -219,6 +219,7 @@ export default class ShoppingCartService {
             billing_countryCodeAlpha2: null,
             billing_phone: null,
             num_items: 0,
+            product_weight_total: 0,
             sub_total: null,
             shipping_total: null,
             shipping_rate: null,

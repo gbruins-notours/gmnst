@@ -96,7 +96,7 @@
                             packages: [
                                 {
                                     weight: {
-                                        value: '6.0',  //TODO
+                                        value: this.cart.product_weight_total,
                                         unit: 'ounce'
                                     }
                                 }
@@ -123,7 +123,7 @@
             },
 
             processShippingRates: function() {
-                // this.isLoading = true;
+                this.isLoading = true;
 
                 // Get rates from cache if available.  If not then getting fresh rates.  
                 // Then pre-selecting either the previously selected rate or the lowest rate
