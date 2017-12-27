@@ -21,15 +21,11 @@
             </div>
 
             <div class="level-item">
-                <router-link :to="{name: 'privacy'}">{{ $t('Privacy Notice') }}</router-link>
-            </div>
-
-            <div class="level-item">
-                <router-link :to="{name: 'conditions_of_use'}">{{ $t('Conditions of Use') }}</router-link>
-            </div>
-
-            <div class="level-item">
-                <div class="tar">&#169; {{ year }} gmnst.com</div>
+                <div class="tar fs12">
+                    &#169; {{ year }} gmnst.com, {{ $t('All Rights Reserved') }}. 
+                    <span class="underline"><router-link :to="{name: 'privacy'}">{{ $t('Privacy') }}</router-link></span> and 
+                    <span class="underline"><router-link :to="{name: 'conditions_of_use'}">{{ $t('Conditions') }}</router-link></span>
+                </div>
             </div>
         </div>
     </footer>

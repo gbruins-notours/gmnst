@@ -17,6 +17,7 @@
     import api from '@/util/api'
     import ShoppingCartService from '@/pages/cart/shopping_cart_service.js'
     import PageHeader from '@/components/PageHeader'
+    import SiteName from '@/components/SiteName'
 
     let shoppingCartService = new ShoppingCartService();
 
@@ -41,7 +42,8 @@
             CartItems,
             BottomPopover,
             CreditCardIcon,
-            CartTotalsTable
+            CartTotalsTable,
+            SiteName
         },
 
         computed: {
@@ -553,6 +555,14 @@
                 <bottom-popover width="200px"
                                 v-show="!paymentMethodButtonEnabled" >{{ $t('fill_out_form_warning') }}</bottom-popover>
             </div>
+        </div>
+
+        <div class="fs12 mtl tac">
+            <i18n path="accept_privacy_and_tos" tag="div">
+                <span place="siteName"><site-name></site-name>'s</span>
+                <span place="linkPrivacy"><router-link :to="{name: 'privacy'}">{{ $t('Privacy Notice') }}</router-link></span>
+                <span place="linkTos"><router-link :to="{name: 'conditions_of_use'}">{{ $t('Conditions of Use') }}</router-link></span>
+            </i18n>
         </div>
 
         <div class="ptl">

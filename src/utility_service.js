@@ -12,4 +12,21 @@ export default class UtilityService {
                 return response.headers['x-authorization'];
             });
     }
+
+    getHelpEmailAddress() {
+        return 'help@gmnst.com';
+    }
+
+    getBrandName() {
+        return 'Gmnst';
+    }
+
+    getSiteName() {
+        return 'gmnst.com';
+    }
+
+    getSiteUrl() {
+        return 'www.gmnst.com';
+    }
+
 }

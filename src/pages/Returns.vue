@@ -1,5 +1,8 @@
 <script>
-    import PageHeader from '../components/PageHeader';
+    import PageHeader from '../components/PageHeader'
+    import UtilityService from '@/utility_service.js'
+
+    let utilityService = new UtilityService();
 
     export default {
         components: {
@@ -8,7 +11,7 @@
 
         data: function() {
             return {
-                returnsEmailAddress: 'help@gmnst.com'
+                returnsEmailAddress: utilityService.getHelpEmailAddress()
             }
         }
     }

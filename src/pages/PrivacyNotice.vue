@@ -1,15 +1,19 @@
 <script>
-    import PageHeader from '../components/PageHeader';
+    import PageHeader from '@/components/PageHeader'
+    import SiteName from '@/components/SiteName'
+    import UtilityService from '@/utility_service.js'
+
+    let utilityService = new UtilityService();
 
     export default {
         components: {
-            PageHeader
+            PageHeader,
+            SiteName
         },
 
         data: function() {
             return {
-                siteName: 'gmnst.com',
-                siteNameUpper: 'GMNST.COM',
+                helpEmailAddress: utilityService.getHelpEmailAddress()
             }
         }
     }
@@ -24,13 +28,13 @@
             We know how important it is to protect your personal information. We want to make every customer experience safe and secure. 
             In keeping with that goal, we have developed this Privacy Notice to outline our guidelines for the collection and use of personal information.
 
-            <h2>WHO IS {{ siteName.toUpperCase() }}<sup>&reg;</sup> ?</h2>
-            {{ siteName }}<sup>&reg;</sup> is the operating name of Not Ours, LLC. This policy applies to {{ siteName }}<sup>&reg;</sup> and 
+            <h2>WHO IS <site-name :uppercase="true"></site-name>?</h2>
+            <site-name></site-name> is the operating name of Not Ours, LLC. This policy applies to <site-name></site-name>and 
             all of its named operations and divisions ("Gmnst", "we", "our" or "us").
 
-            <h2>WHAT INFORMATION DOES {{ siteName.toUpperCase() }}<sup>&reg;</sup> COLLECT AND HOW IS IT USED?</h2>
+            <h2>WHAT INFORMATION DOES <site-name :uppercase="true"></site-name> COLLECT AND HOW IS IT USED?</h2>
 
-            At {{ siteName }}<sup>&reg;</sup> , we collect two types of information: personal information and non-personal information. With your 
+            At <site-name></site-name>, we collect two types of information: personal information and non-personal information. With your 
             consent we may use your personal information for a number of different purposes, for example to:
 
             <ul>
@@ -61,11 +65,11 @@
             <h2>WITHDRAWING YOUR CONSENT</h2>
             If you have "opted in" or subscribed to one of our newsletters or mailing lists, we will always provide you the opportunity to "opt out" or unsubscribe. For example, each e-mail we send you will tell you how to decline further e-mail.
 
-            <h2>INFORMATION {{ siteName.toUpperCase() }}<sup>&reg;</sup> COLLECTS FROM YOU</h2>
+            <h2>INFORMATION <site-name :uppercase="true"></site-name>COLLECTS FROM YOU</h2>
             Listed here are some examples of the ways that we collect information about you and how we use it.
 
             <h2>ON-SITE PURCHASES</h2>
-            When you purchase an {{ siteName }}<sup>&reg;</sup> product or service, you may need to provide us with contact and payment information (such as credit card information) so that we can process your request. Examples where we need contact information include delivery of products, mailing of your product, and rebate requests. If we collect this information, we may also ask for your consent to use this information to send you promotional information on products and services.
+            When you purchase an <site-name></site-name> product or service, you may need to provide us with contact and payment information (such as credit card information) so that we can process your request. Examples where we need contact information include delivery of products, mailing of your product, and rebate requests. If we collect this information, we may also ask for your consent to use this information to send you promotional information on products and services.
 
             <h2>OUR WEB SITES</h2>
             While using our Web Sites, you may be asked to voluntarily provide certain personal information (such as your name, email address, postal address, telephone number, or credit card information). We use this information to complete your transaction and to apply for access to certain special features and functions of the Web Sites. If you choose not to provide requested personal information, you will not be able to use certain features of the Web Sites and you will not be able to engage in transactions through the Web Sites.
@@ -82,7 +86,7 @@
             third parties or the public in connection with the administration of such Promotion, including in connection with winner selection, 
             prize fulfillment, and as required by law or permitted by the Promotion's official rules, such as on a winner's list.
 
-            <h2>INFORMATION {{ siteName.toUpperCase() }}<sup>&reg;</sup> COLLECTS AUTOMATICALLY</h2>
+            <h2>INFORMATION <site-name :uppercase="true"></site-name> COLLECTS AUTOMATICALLY</h2>
             Like many other Web sites, we automatically collect certain non-personal information regarding Web site users that does not identify you. 
             Examples include the Internet Protocol (IP) address of your computer, the IP address of your Internet Service Provider, the date and time 
             you access the Web Site, the Internet address of the Web site from which you linked directly to the Web Site, the operating system you 
@@ -108,20 +112,20 @@
 
             <h2>LINKS TO OTHER WEB SITES</h2>
             Our Web Site may contain links to other Web sites or Internet resources. When you click on one of those links you are contacting another 
-            Web site or Internet resource. {{ siteName }}<sup>&reg;</sup> has no responsibility or liability for or control over those other Web 
+            Web site or Internet resource. <site-name :uppercase="true"></site-name> has no responsibility or liability for or control over those other Web 
             sites or Internet resources or their collection, use and disclosure of your personal information.
 
             <p>We encourage you to read the privacy policies of those other sites to learn how they collect and use information about you.</p>
 
-            <h2>DOES {{ siteName.toUpperCase() }}<sup>&reg;</sup> DISCLOSE THE INFORMATION IT COLLECTS?</h2>
-            {{ siteName }}<sup>&reg;</sup> does not sell your personal information. However we may share your information with third parties acting 
+            <h2>DOES <site-name :uppercase="true"></site-name> DISCLOSE THE INFORMATION IT COLLECTS?</h2>
+            <site-name></site-name> does not sell your personal information. However we may share your information with third parties acting 
             on our behalf or as permitted or required by law.
 
             <h2>DISCLOSURE TO SERVICE PROVIDERS</h2>
-            {{ siteName }}<sup>&reg;</sup> may share your personal information with certain service providers in order to provide products and services 
+            <site-name></site-name> may share your personal information with certain service providers in order to provide products and services 
             to you, to verify and validate information, and to address customer service matters. Examples of service providers include those shipping 
             vendors who ships products to you on our behalf or third party emailing services newsletters, to name a few. To reduce the risk of fraud 
-            or misuse of personal information, {{ siteName }}<sup>&reg;</sup> may also verify your personal information, including but not limited 
+            or misuse of personal information, <site-name></site-name> may also verify your personal information, including but not limited 
             to your address and credit card information, with third party service providers.
 
             <p>We will use reasonable efforts to ensure that your personal information is used in a manner that is consistent with this Policy. If you 
@@ -145,7 +149,7 @@
             materials, without further notice or compensation.
 
             <h2>LEGAL DISCLOSURE</h2>
-            {{ siteName }}<sup>&reg;</sup> may disclose your information without your knowledge or consent in the following situations only:
+            <site-name></site-name> may disclose your information without your knowledge or consent in the following situations only:
 
             <ul>
                 <li>to a lawyer representing the organization</li>
@@ -170,8 +174,8 @@
                 <li>if it is publicly available as specified in the regulations; or if required by law</li>
             </ul>
 
-            <h2>HOW DOES {{ siteName.toUpperCase() }}<sup>&reg;</sup> PROTECT MY INFORMATION?</h2>
-            The security of your personal information is a high priority for {{ siteName }}<sup>&reg;</sup>. We assume all responsibility for your 
+            <h2>HOW DOES <site-name :uppercase="true"></site-name> PROTECT MY INFORMATION?</h2>
+            The security of your personal information is a high priority for <site-name></site-name>. We assume all responsibility for your 
             personal information while it is in our possession, and thus, we maintain appropriate safeguards and current security standards to protect 
             your personal information, whether recorded on paper or captured electronically, against unauthorized access, disclosure, or misuse. We 
             also take responsibility for your personal information that we may transfer to a third party for processing. This being the case, we 
@@ -180,7 +184,7 @@
             <h2>HOW CAN I VERIFY MY INFORMATION?</h2>
             You can check your information to verify, update, or correct it, and to have any obsolete information removed. You can also ask to review 
             any of the information that we have retained, how we have used it, and to whom we have disclosed it at 
-            any time by contacting us at sales@{{ siteName }}<sup>&reg;</sup>.com. Subject to certain exceptions prescribed by law, and provided 
+            any time by contacting us at {{ helpEmailAddress }}. Subject to certain exceptions prescribed by law, and provided 
             we can authenticate your identity, you will be given reasonable access to your personal information, and will be entitled to challenge 
             the accuracy and completeness of the information and to have it amended as appropriate.</p>
 
@@ -195,9 +199,9 @@
             <p>You can also request that we remove your information from our records. Subject to our requirements for continued retention of 
             your information, for example, for billing, audit, or warranty purposes, we will make every reasonable effort to honour your request.</p>
 
-            <h2>HOW CAN I CONTACT {{ siteName.toUpperCase() }}<sup>&reg;</sup> ?</h2>
-            {{ siteName }}<sup>&reg;</sup> is responsible for all personal information under its control. If you have any questions, concerns or 
-            complaints about the privacy policies please contact us at sales@gmnst.com
+            <h2>HOW CAN I CONTACT <site-name :uppercase="true"></site-name>?</h2>
+            <site-name></site-name> is responsible for all personal information under its control. If you have any questions, concerns or 
+            complaints about the privacy policies please contact us at {{ helpEmailAddress }}
             
             <p>We will respond to your request or investigate your concern as quickly as we can.</p>
 
@@ -210,26 +214,6 @@
 </template>
 
 
-<style lang="scss" scoped>
-    .priv {
-        h2 {
-            font-weight: bold;
-            font-size: 20px;
-            line-height: 35px;  
-            margin-top: 20px;
-        }
-
-        p {
-            margin-top: 15px;
-        }
-
-        ul {
-            margin: 14px 0 14px 28px;
-            padding-left: 0;
-
-            li {
-                list-style: disc;
-            }
-        }
-    }
+<style lang="scss">
+    @import "../assets/css/components/_privacy.scss";
 </style>
