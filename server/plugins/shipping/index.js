@@ -219,25 +219,24 @@ exports.register = (server, options, next) => {
                     }
                 },
                 handler: (request, reply) => {
-                    let payload = {
-                        shipment: request.payload,
-                        rate_options: {
-                            carrier_ids: internals.getCarrierIdsForCountry(request.payload.ship_to.country_code)
-                        }
-                    };
-
-                    payload.shipment.ship_from = {
-                        name: process.env.SHIPPING_ADDRESS_FROM_NAME,
-                        address_line1: process.env.SHIPPING_ADDRESS_FROM_ADDRESS1,
-                        city_locality: process.env.SHIPPING_ADDRESS_FROM_CITY,
-                        state_province: process.env.SHIPPING_ADDRESS_FROM_STATE,
-                        postal_code: process.env.SHIPPING_ADDRESS_FROM_ZIP,
-                        country_code: process.env.SHIPPING_ADDRESS_FROM_COUNTRY_CODE,
-                        phone: process.env.SHIPPING_ADDRESS_FROM_PHONE
-                    };
-
                     internals
-                        .getShippingRates(payload)
+                        .getShippingRates({
+                            shipment: {
+                                ship_from: {
+                                    name: process.env.SHIPPING_ADDRESS_FROM_NAME,
+                                    address_line1: process.env.SHIPPING_ADDRESS_FROM_ADDRESS1,
+                                    city_locality: process.env.SHIPPING_ADDRESS_FROM_CITY,
+                                    state_province: process.env.SHIPPING_ADDRESS_FROM_STATE,
+                                    postal_code: process.env.SHIPPING_ADDRESS_FROM_ZIP,
+                                    country_code: process.env.SHIPPING_ADDRESS_FROM_COUNTRY_CODE,
+                                    phone: process.env.SHIPPING_ADDRESS_FROM_PHONE
+                                },
+                                ...request.payload
+                            },
+                            rate_options: {
+                                carrier_ids: internals.getCarrierIdsForCountry(request.payload.ship_to.country_code)
+                            }
+                        })
                         .then((response) => {
                             internals.parseShippingRateResponse(response).then((filtered) => {
                                 reply.apiSuccess(filtered);
