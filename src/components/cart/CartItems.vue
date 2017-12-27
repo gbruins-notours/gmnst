@@ -6,7 +6,6 @@
     import { Select, Option, InputNumber, Loading, Button } from 'element-ui'
     import ProductPrice from '@/components/product/ProductPrice'
     import NumberButtons from '@/components/NumberButtons'
-    import KeepShoppingButton from '@/components/cart/KeepShoppingButton'
     import ShoppingCartService from '@/pages/cart/shopping_cart_service.js'
     import ProductService from '@/pages/product/product_service.js'
 
@@ -34,8 +33,7 @@
 
         components: {
             ProductPrice,
-            NumberButtons,
-            KeepShoppingButton
+            NumberButtons
         },
 
         data() {
@@ -115,10 +113,6 @@
     <div>
         <div v-if="!cart.num_items" class="fs16 tac pal">
             {{ $t('Your shopping cart does not contain any items.') }}
-
-            <div class="mtl">
-                <keep-shopping-button></keep-shopping-button>
-            </div>
         </div>
         <div v-else class="ptl">
             <article v-for="item in cart.cart_items" 
