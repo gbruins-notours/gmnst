@@ -9,16 +9,17 @@ Vue.use(Router)
 // const ProductDetail = () => System.import('../pages/product/ProductDetail.vue')
 // const Error404 = () => System.import('../pages/Error404.vue')
 
-import Home from '../pages/Home.vue';
-import ProductList from '../pages/product/ProductList.vue';
-import ProductDetail from '../pages/product/ProductDetail.vue';
-import Cart from '../pages/cart/Cart.vue';
-import Checkout from '../pages/checkout/Checkout.vue';
-import Order from '../pages/orders/Order.vue';
-import OrderDetails from '../pages/orders/OrderDetails.vue';
-import PrivacyNotice from '../pages/PrivacyNotice.vue';
-import ConditionsOfUse from '../pages/ConditionsOfUse.vue';
-import Error404 from '../pages/Error404.vue';
+import Home from '@/pages/Home.vue';
+import ProductList from '@/pages/product/ProductList.vue';
+import ProductDetail from '@/pages/product/ProductDetail.vue';
+import Cart from '@/pages/cart/Cart.vue';
+import Checkout from '@/pages/checkout/Checkout.vue';
+import Order from '@/pages/orders/Order.vue';
+import OrderDetails from '@/pages/orders/OrderDetails.vue';
+import PrivacyNotice from '@/pages/PrivacyNotice.vue';
+import ConditionsOfUse from '@/pages/ConditionsOfUse.vue';
+import Returns from '@/pages/Returns.vue';
+import Error404 from '@/pages/Error404.vue';
 
 export function createRouter () {
     return new Router({
@@ -69,6 +70,11 @@ export function createRouter () {
                 name: 'conditions_of_use',
                 path: '/conditions-of-use',
                 component: ConditionsOfUse
+            },
+            {
+                name: 'returns',
+                path: '/returns',
+                component: Returns
             },
             {
                 name: 'error404',

@@ -210,7 +210,7 @@
 </template>
 
 
-<style lang="scss">
+<style lang="scss" scoped>
     .priv {
         h2 {
             font-weight: bold;

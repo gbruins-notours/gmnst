@@ -17,6 +17,10 @@
             </div>
 
             <div class="level-item">
+                <router-link :to="{name: 'returns'}">{{ $t('Returns / Exchanges') }}</router-link>
+            </div>
+
+            <div class="level-item">
                 <router-link :to="{name: 'privacy'}">{{ $t('Privacy Notice') }}</router-link>
             </div>
 
@@ -26,10 +30,6 @@
 
             <div class="level-item">
                 <div class="tar">&#169; {{ year }} gmnst.com</div>
-                    <!-- <a class="icon" href="https://github.com/jgthms/bulma">
-                        <i class="fa fa-github"></i>
-                    </a> -->
-                </p>
             </div>
         </div>
     </footer>

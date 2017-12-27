@@ -111,6 +111,8 @@ const translations = {
     'RECEIPT': 'RECEIPT',
     'Required': 'Required',
     'Return to cart': 'Return to cart',
+    'Returns / Exchanges': 'Returns / Exchanges',
+    'returns_help': 'For help with Exchanging or Returning an item, please contact us at',
 
     'SAME AS SHIPPING ADDRESS': 'SAME AS SHIPPING ADDRESS',
     'SECURITY CODE': 'SECURITY CODE',
