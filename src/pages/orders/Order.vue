@@ -60,7 +60,7 @@ export default {
             </div>
 
             <div v-loading="loading">
-                <div class="mtl tac">
+                <div class="mtl grayCell">
                     <div class="colorGreen">
                         {{ $t('An email confirmation was sent to:' )}}
                         <div class="fwb">{{ order.shoppingCart.shipping_email }}</div>
@@ -114,3 +114,19 @@ export default {
         </div>
     </section>
 </template>
+
+<style lang="scss" scoped>
+    @import "../../assets/css/components/_variables.scss";
+    @import "../../assets/css/components/_mixins.scss";
+
+    .grayCell {
+        padding: 10px;
+        margin: 20px auto 0 auto;
+        display: table;
+        font-size: 14px;
+        @include rounded();
+        background-color: $bgGrayZebra;
+        width: 100%;
+        text-align: center;
+    }
+</style>
