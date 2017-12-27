@@ -3,6 +3,7 @@
     import { mapGetters } from 'vuex'
     import isObject from 'lodash.isobject'
     import forEach from 'lodash.foreach'
+    import cloneDeep from 'lodash.clonedeep'
     import Promise from 'bluebird';
     import { Checkbox, Input, Notification, Loading, Dialog, Select } from 'element-ui'
     import PaymentMethodChooser from '@/components/checkout/PaymentMethodChooser'
@@ -121,22 +122,47 @@
         },
 
         methods: {
-            submitPaymentForm: function() {
-                this.setBillingData();
+            setBillingData: function() {
+                return new Promise((resolve, reject) => {
+                    if(this.cart.billingSameAsShipping) {
+                        let shippingKeys = [
+                            'firstName',
+                            'lastName',
+                            'streetAddress',
+                            'extendedAddress',
+                            'company',
+                            'city',
+                            'state',
+                            'postalCode',
+                            'countryCodeAlpha2'
+                        ];
 
-                if(this.paymentMethod === 'PAYPAL') {
-                    this.tokenizePaypal();
-                }
-                else {
-                    this.tokenizeHostedFields();
-                }
+                        let cart = cloneDeep(this.cart);
+
+                        shippingKeys.forEach((item) => {
+                            cart[`billing_${item}`] = cart[`shipping_${item}`]
+                        });
+
+                        this.$store.dispatch('CART_SET', cart).then(resolve);
+                    }
+                    else {
+                        resolve();
+                    }
+                });
             },
 
 
-            setBillingData: function() {
-                if(this.cart.billingSameAsShipping) {
-                    shoppingCartService.copyShippingStateToBillingState(this.cart);
-                }
+            submitPaymentForm: function() {
+                this.setBillingData().then(() => {
+                    this.placeOrderButtonLoading = true;
+
+                    if(this.paymentMethod === 'PAYPAL') {
+                        this.tokenizePaypal();
+                    }
+                    else {
+                        this.tokenizeHostedFields();
+                    }
+                });
             },
 
 
@@ -178,8 +204,15 @@
 
             tokenizeHostedFields() {
                 this.placeOrderButtonLoading = true;
-                this.braintree.hostedFieldsInstance.tokenize((tokenizeErr, payload) => {
-                    if (tokenizeErr) {
+
+                this.braintree.hostedFieldsInstance
+                    .tokenize()
+                    .then((payload) => {
+                        this.doCheckout(payload.nonce).finally(() => {
+                            this.placeOrderButtonLoading = false;
+                        });
+                    })
+                    .catch((tokenizeErr) => {
                         currentNotification = this.$notify({
                             type: 'error',
                             title: this.$t('Payment method error') + ':',
@@ -188,13 +221,7 @@
                         });
 
                         this.placeOrderButtonLoading = false;
-                        return;
-                    }
-
-                    this.doCheckout(payload.nonce).finally(() => {
-                        this.placeOrderButtonLoading = false;
                     });
-                });
             },
 
 
@@ -206,8 +233,15 @@
                     background: 'rgba(0, 0, 0, 0.7)'
                 });
                 
-                this.braintree.paypalInstance.tokenize({flow: 'vault'}, (tokenizeErr, payload) => {
-                    if (isObject(tokenizeErr)) {
+                this.braintree.paypalInstance
+                    .tokenize({flow: 'vault'}) 
+                    .then((payload) => {
+                        loadingInstance.setText(`${this.$t('Processing')}...`);
+                        this.doCheckout(payload.nonce).finally(() => {
+                            loadingInstance.close();
+                        });
+                    })
+                    .catch((tokenizeErr) => {
                         loadingInstance.close();
 
                         // Not all error codes warrant a notification popup
@@ -219,14 +253,7 @@
                                 duration: 0
                             });
                         }
-                    }
-                    else {
-                        loadingInstance.setText(`${this.$t('Processing')}...`);
-                        this.doCheckout(payload.nonce).finally(() => {
-                            loadingInstance.close();
-                        });
-                    }
-                });
+                    });
             },
 
 
@@ -491,7 +518,7 @@
                             <shipping-view :show-details="true" :show-email="false"></shipping-view>
                         </div>
                         <shipping-billing-form type="billing"
-                                            v-show="!billingSameAsShipping"
+                                            v-if="!billingSameAsShipping"
                                             @valid="val => { separateBillingFormValid = val }"
                                             class="mtl"></shipping-billing-form>
                     </div>

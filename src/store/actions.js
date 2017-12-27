@@ -28,11 +28,15 @@ export default {
     },
 
     CART_ATTRIBUTE_SET: ({ commit }, config) => {
-        if(isObject(config) && 
-            config.hasOwnProperty('attribute') && 
-            config.hasOwnProperty('value')) {
-            commit('CART_ATTRIBUTE_SET', config)
-        }
+        let conf = Array.isArray(config) ? config : [config];
+
+        conf.forEach((obj) => {
+            if(isObject(obj) && 
+                obj.hasOwnProperty('attribute') && 
+                obj.hasOwnProperty('value')) {
+                commit('CART_ATTRIBUTE_SET', obj)
+            }
+        });
     },
 
     CART_BILLING_SAME_AS_SHIPPING: ({ commit }, sameAsShipping) => {

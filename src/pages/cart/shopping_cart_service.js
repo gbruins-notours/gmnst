@@ -105,30 +105,6 @@ export default class ShoppingCartService {
         }
     }
 
-    copyShippingStateToBillingState(cart) {
-        let shippingKeys = [
-            'firstName',
-            'lastName',
-            'streetAddress',
-            'extendedAddress',
-            'company',
-            'city',
-            'state',
-            'postalCode',
-            'countryCodeAlpha2',
-            'email'
-        ];
-
-        shippingKeys.forEach((item) => {
-            let billing_key = `billing_${item}`;
-            let shipping_key = `shipping_${item}`;
-
-            if(item !== 'email') {
-                cart[billing_key] = cart[shipping_key]
-            }  
-        })
-    }
-
     getBraintreeErrorMessage(clientErr) {
         let errorMessage = clientErr;
 

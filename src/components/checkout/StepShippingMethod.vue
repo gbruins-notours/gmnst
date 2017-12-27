@@ -4,6 +4,7 @@
     import { Button, Notification, Loading, Radio } from 'element-ui'
     import forEach from 'lodash.foreach'
     import isObject from 'lodash.isobject'
+    import cloneDeep from 'lodash.clonedeep'
     import Promise from 'bluebird';
     import PageHeader from '@/components/PageHeader'
     import ShoppingCartService from '@/pages/cart/shopping_cart_service.js'
@@ -60,16 +61,16 @@
                     shoppingCartService
                         .setShippingRate(r)
                         .then((shoppingCart) => {
-                            console.log("SET SHIPPING RATE RESPOENSE", shoppingCart);
-                            this.$store.dispatch('CART_SET', shoppingCart);
-                            this.isLoading = false;
-                            this.$emit('done', 'shipping-method-step')  
+                            this.$store.dispatch('CART_SET', shoppingCart).then(() => {
+                                this.$emit('done', 'shipping-method-step') ;
+                                this.isLoading = false;
+                            });
                         })
                         .catch(() => {
                             this.isLoading = false;
                             currentNotification = this.$notify({
                                 title: this.$t('An error occurred'),
-                                message: msg,
+                                message: '',
                                 duration: 0,
                                 type: 'error'
                             });
@@ -165,7 +166,7 @@
     <div>
         <page-header :title="$t('Shipping method') + ':'"></page-header>
 
-        <div v-loading="isLoading" :element-loading-text="$t('Loading...')" class="mtl tac">
+        <div v-loading="isLoading" class="mtl tac">
             <div class="inlineBlock">
                 <div v-for="rate in shippingRates" :key="rate.rate_id" class="displayTableRow">
                     <div class="displayTableCell vat fs20 tal">
@@ -185,7 +186,6 @@
                             class="colorBlack"
                             @click="submitShippingMethodForm"
                             :disabled="!selectedRate"
-                            :loading="isLoading"
                             size="large">{{ $t('CONTINUE TO PAYMENT') }}</el-button>
             </div>
         </div>

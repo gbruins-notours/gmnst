@@ -52,7 +52,6 @@
             },
 
             shippingFormDone: function() {
-                let updatedCart = null;
                 delete this.cartShippingAttributes.shipping_total;
                 delete this.cartShippingAttributes.shipping_rate;
 
@@ -69,28 +68,20 @@
                 return shoppingCartService
                     .setShippingAddress(this.cartShippingAttributes)
                     .then((result) => {
-                        updatedCart = result;
+                        // As a convenience to the user keeping the Country and State
+                        // values the same as the shipping values, as they are likely the same
+                        if(!result.billing_countryCodeAlpha2) {
+                            result.billing_countryCodeAlpha2 = result.shipping_countryCodeAlpha2
+
+                            if(!result.billing_state) {
+                                result.billing_state = result.shipping_state
+                            }
+                        }
+
                         return this.$store.dispatch('CART_SET', result);
                     })
                     .then(() => {
                         this.$emit('done', 'shipping-address-step')
-
-                        // As a convenience to the user keeping the Country and State
-                        // values the same as the shipping values, as they are likely the same
-                        if(!updatedCart.billing_countryCodeAlpha2) {
-                            this.$store.dispatch('CART_ATTRIBUTE_SET', {
-                                attribute: 'billing_countryCodeAlpha2',
-                                value: updatedCart.shipping_countryCodeAlpha2
-                            })
-                            .then(() => {
-                                if(!updatedCart.billing_state) {
-                                    this.$store.dispatch('CART_ATTRIBUTE_SET', {
-                                        attribute: 'billing_state',
-                                        value: updatedCart.shipping_state
-                                    });
-                                }
-                            });
-                        }
                     })
                     .catch((result) => {
                         currentNotification = this.$notify({

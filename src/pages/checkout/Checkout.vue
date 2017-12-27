@@ -5,6 +5,7 @@
     import ShippingAddressStep from '@/components/checkout/StepShippingAddress'
     import ShippingMethodStep from '@/components/checkout/StepShippingMethod'
     import PlaceOrderStep from '@/components/checkout/StepPlaceOrder'
+    import KeepShoppingButton from '@/components/cart/KeepShoppingButton'
 
     let currentNotification = null;
 
@@ -13,7 +14,8 @@
             CheckoutWizardBar,
             ShippingAddressStep,
             ShippingMethodStep,
-            PlaceOrderStep
+            PlaceOrderStep,
+            KeepShoppingButton
         },
 
         computed: {
@@ -89,6 +91,10 @@
         <section class="container-skinny phm">
             <div v-if="!cart.num_items" class="fs16 pal tac">
                 {{ $t('Your shopping cart does not contain any items.') }}
+
+                <div class="mtl">
+                    <keep-shopping-button></keep-shopping-button>
+                </div>
             </div>
 
             <template v-else>
