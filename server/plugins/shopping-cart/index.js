@@ -4,11 +4,7 @@ const Joi = require('joi');
 const Boom = require('boom');
 const Promise = require('bluebird');
 const HelperService = require('../../helpers.service');
-const forEach = require('lodash.foreach');
-const isObject = require('lodash.isobject');
-const isString = require('lodash.isstring');
 const cloneDeep = require('lodash.clonedeep');
-const jwt = require('jsonwebtoken');
 
 let internals = {};
 
@@ -91,7 +87,6 @@ internals.after = function (server, next) {
 
 
     internals.shoppingCartItem = {};
-
 
     /**
      * Adds a product to the shopping cart using the HTTP request data
@@ -178,47 +173,6 @@ internals.after = function (server, next) {
     };
 
 
-    /**
-     * Removes an item from the cart
-     *
-     * @param request
-     * @returns {Promise<U>|*|Promise.<TResult>}
-     */
-    internals.shoppingCartItem.remove = (request) => {
-        return internals.shoppingCartItem
-            .get(request.payload.id)
-            .then((ShoppingCartItem) => {
-                if(!ShoppingCartItem) {
-                    return;
-                }
-
-                return ShoppingCartItem.destroy();
-            });
-    };
-
-
-    /**
-     * Updates the qty value of a cart item
-     *
-     * @param request
-     * @returns {Promise<U>|*|Promise.<TResult>}
-     */
-    internals.shoppingCartItem.updateQty = (request) => {
-        return internals.shoppingCartItem
-            .get(request, request.payload.id)
-            .then((ShoppingCartItem) => {
-                if(!ShoppingCartItem) {
-                    return;
-                }
-
-                return ShoppingCartItem.save(
-                    { qty: parseInt((ShoppingCartItem.get('qty') + request.payload.qty), 10) },
-                    { method: 'update', patch: true }
-                );
-            });
-    };
-
-
     /************************************
      * ROUTE HANDLERS
      ************************************/
@@ -264,8 +218,7 @@ internals.after = function (server, next) {
 
 
     internals.cartItemAdd = (request, reply) => {
-        internals.shoppingCartItem
-            .add(request)
+        internals.shoppingCartItem.add(request)
             .then(() => {
                 return server.plugins.BookshelfOrm.bookshelf.model('ShoppingCart').getCart(request);
             })
@@ -282,7 +235,14 @@ internals.after = function (server, next) {
     internals.cartItemRemove = (request, reply) => {
         internals.shoppingCart.get(request)
             .then((ShoppingCart) => {
-                return internals.shoppingCartItem.remove(request);
+                return internals.shoppingCartItem.get(request.payload.id)
+                    .then((ShoppingCartItem) => {
+                        if(!ShoppingCartItem) {
+                            return;
+                        }
+
+                        return ShoppingCartItem.destroy();
+                    });
             })
             .then(() => {
                 return internals.shoppingCart.get(request);
