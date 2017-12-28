@@ -183,7 +183,6 @@ internals.after = function (server, next) {
                 reply.apiSuccess(token);
             })
             .catch((err) => {
-                global.logger.error(err);
                 reply(Boom.badData(err));
             });
     };
@@ -195,7 +194,6 @@ internals.after = function (server, next) {
                 reply.apiSuccess(ShoppingCart.toJSON());
             })
             .catch((err) => {
-                global.logger.error(err);
                 reply(Boom.notFound(err));
             });
     };
@@ -207,7 +205,6 @@ internals.after = function (server, next) {
                 reply.apiSuccess(ShoppingCart.toJSON());
             })
             .catch((err) => {
-                global.logger.error(err);
                 reply(Boom.notFound(err));
             });
     };
@@ -222,7 +219,6 @@ internals.after = function (server, next) {
                 reply.apiSuccess(ShoppingCart.toJSON());
             })
             .catch((err) => {
-                global.logger.error(err);
                 reply(Boom.badData(err));
             });
     };
@@ -247,7 +243,6 @@ internals.after = function (server, next) {
                 reply.apiSuccess(ShoppingCart.toJSON());
             })
             .catch((err) => {
-                global.logger.error(err);
                 reply(Boom.badData(err));
             });
     };
@@ -276,7 +271,6 @@ internals.after = function (server, next) {
                     });
             })
             .catch((err) => {
-                global.logger.error(err);
                 reply(Boom.badData(err));
             });
     };
@@ -303,7 +297,6 @@ internals.after = function (server, next) {
                 reply.apiSuccess(ShoppingCart.toJSON());
             })
             .catch((err) => {
-                global.logger.error(err);
                 reply(Boom.badData(err));
             });
     };
@@ -321,7 +314,6 @@ internals.after = function (server, next) {
                 reply.apiSuccess(ShoppingCart.toJSON());
             })
             .catch((err) => {
-                global.logger.error(err);
                 reply(Boom.badData(err));
             });
     };
@@ -429,7 +421,7 @@ internals.after = function (server, next) {
             })
             .catch((err) => {
                 let msg = err instanceof Error ? err.message : err;
-                global.logger.error(msg);
+                // NOTE: Boom errors are automatically logged by the onPreResponse handler
                 reply(Boom.badData(msg));
             });
     };

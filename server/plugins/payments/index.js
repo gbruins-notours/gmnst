@@ -124,8 +124,8 @@ internals.after = function (server, next) {
                     throw new Error(result.message);
                 })
                 .catch((err) => {
+                    // NOTE: this error will be logged by the calling function
                     let msg = err instanceof Error ? err.message : err;
-                    global.logger.error(msg);
                     return reject(msg);
                 });
         });

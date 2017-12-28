@@ -21,7 +21,6 @@ exports.register = function (server, options, next) {
     // Handle Boom errors
     server.ext('onPreResponse', function (request, reply) {
         if (request.response.isBoom) {
-
             if(process.env.NODE_ENV !== 'test') {
                 global.logger.error(request.response)
             }
