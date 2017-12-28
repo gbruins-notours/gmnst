@@ -4,6 +4,7 @@ let shoppingCartService = new ShoppingCartService();
 export default {
     data: function() {
         return {
+            orderExists: false,
             order: {
                 shipping: {},
                 shoppingCart: {},

@@ -75,6 +75,7 @@ const translations = {
 
     'No matching values': 'No matching values',
 
+    'Oops we could not find the order you are looking for.': 'Oops we could not find the order you are looking for.',
     'optional': 'optional',
     'OR': 'OR',
     'Order': 'Order',
