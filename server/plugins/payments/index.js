@@ -1,3 +1,5 @@
+'use strict';
+
 const Joi = require('joi');
 const Hoek = require('hoek');
 const Boom = require('boom');
@@ -110,7 +112,7 @@ internals.after = function (server, next) {
 
             const validateResult = schema.validate(opts);
             if (validateResult.error) {
-                return reject(Boom.badData(validateResult.error));
+                return reject(validateResult.error);
             }
 
             internals.braintreeGateway.transaction.sale(opts)
@@ -118,27 +120,78 @@ internals.after = function (server, next) {
                     if (result.success) {
                         return resolve(result);
                     }
-                    return reject(result.message);
+
+                    throw new Error(result.message);
                 })
                 .catch((err) => {
-                    global.logger.error(err);
-                    return reject(err);
+                    let msg = err instanceof Error ? err.message : err;
+                    global.logger.error(msg);
+                    return reject(msg);
                 });
         });
     };
 
 
-    /**
-     * Fetches data from a given product model
-     *
-     * @param attrName
-     * @param attrValue
-     * @returns {Promise}
-     */
-    internals.modelFetch = (modelName, forgeOptions, fetchOptions) => {
-        return server.plugins.BookshelfOrm.bookshelf.model(modelName)
-            .forge(forgeOptions)
-            .fetch(fetchOptions);
+    /************************************
+     * ROUTE HANDLERS
+     ************************************/
+
+    internals.getOrder = (request, reply) => {
+        server.plugins.BookshelfOrm.bookshelf.model('Payment').getPaymentByAttribute('transaction_id', request.query.transaction_id)
+            .then((payment) => {
+                if(!payment) {
+                    return reply(Boom.notFound('Order not found'));
+                }
+
+                let p = payment.toJSON();
+
+                // Much less data can be sent over the wire in this case, 
+                // so trimming the transaction value in the response
+                let cartResponse = request.query.verbose 
+                                    ? p.shoppingCart 
+                                    : { num_items: p.shoppingCart.num_items, shipping_email: p.shoppingCart.shipping_email };
+
+                let response = {
+                    id: p.id,
+                    created: p.created_at,
+                    shipping: p.transaction.shipping,
+                    shoppingCart: cartResponse,
+                    transaction: {
+                        id: p.transaction_id,
+                        amount: p.transaction.amount,
+                        payment: {
+                            type: p.transaction.paymentInstrumentType
+                        }
+                    }
+                };
+
+                if(p.transaction.paymentInstrumentType === 'credit_card') {
+                    response.transaction.payment.last4 = p.transaction.creditCard.last4;
+                    response.transaction.payment.cardType = p.transaction.creditCard.cardType;
+                }
+                else {
+                    response.transaction.payment.payerEmail = p.transaction.paypalAccount.payerEmail;
+                }
+                
+                reply.apiSuccess(response);
+            })
+            .catch((err) => {
+                global.logger.error(err);
+                reply(Boom.badRequest(err));
+            });
+    };
+
+
+    internals.getOrders = (request, reply) => {
+        HelperService
+            .fetchPage(request, server.plugins.BookshelfOrm.bookshelf.model('Payment'), internals.withRelated)
+            .then((orders) => {
+                reply.apiSuccess(orders, orders.pagination);
+            })
+            .catch((err) => {
+                global.logger.error(err);
+                reply(Boom.notFound(err));
+            });
     };
 
 
@@ -154,50 +207,7 @@ internals.after = function (server, next) {
                         verbose: Joi.boolean().optional()
                     }
                 },
-                handler: (request, reply) => {
-                    server.plugins.BookshelfOrm.bookshelf.model('Payment').getPaymentByAttribute('transaction_id', request.query.transaction_id)
-                        .then((payment) => {
-                            if(!payment) {
-                                return reply(Boom.notFound('Order not found'));
-                            }
-
-                            let p = payment.toJSON();
-
-                            // Much less data can be sent over the wire in this case, 
-                            // so trimming the transaction value in the response
-                            let cartResponse = request.query.verbose 
-                                                ? p.shoppingCart 
-                                                : { num_items: p.shoppingCart.num_items, shipping_email: p.shoppingCart.shipping_email };
-
-                            let response = {
-                                id: p.id,
-                                created: p.created_at,
-                                shipping: p.transaction.shipping,
-                                shoppingCart: cartResponse,
-                                transaction: {
-                                    id: p.transaction_id,
-                                    amount: p.transaction.amount,
-                                    payment: {
-                                        type: p.transaction.paymentInstrumentType
-                                    }
-                                }
-                            };
-
-                            if(p.transaction.paymentInstrumentType === 'credit_card') {
-                                response.transaction.payment.last4 = p.transaction.creditCard.last4;
-                                response.transaction.payment.cardType = p.transaction.creditCard.cardType;
-                            }
-                            else {
-                                response.transaction.payment.payerEmail = p.transaction.paypalAccount.payerEmail;
-                            }
-                            
-                            reply.apiSuccess(response);
-                        })
-                        .catch((err) => {
-                            global.logger.error(err);
-                            reply(Boom.badRequest(err));
-                        });
-                }
+                handler: internals.getOrder
             }
         },
         {
@@ -205,17 +215,7 @@ internals.after = function (server, next) {
             path: '/orders',
             config: {
                 description: 'Gets a list of orders',
-                handler: (request, reply) => {
-                    HelperService
-                        .fetchPage(request, server.plugins.BookshelfOrm.bookshelf.model('Payment'), internals.withRelated)
-                        .then((orders) => {
-                            reply.apiSuccess(orders, orders.pagination);
-                        })
-                        .catch((err) => {
-                            global.logger.error(err);
-                            reply(Boom.notFound(err));
-                        });
-                }
+                handler: internals.getOrders
             }
         }
     ]);

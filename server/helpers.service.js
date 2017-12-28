@@ -1,8 +1,6 @@
 'use strict';
 
-const Boom = require('boom');
 const isString = require('lodash.isstring');
-const isObject = require('lodash.isobject');
 const forEach = require('lodash.foreach');
 const queryString = require('query-string');
 
@@ -130,27 +128,13 @@ function fetchPage(request, model, withRelated) {
 }
 
 
-function getBoomError(err, defaultError) {
-    if(isObject(err) && err.isBoom) {
-        return err;
-    }
-    if(defaultError) {
-        return defaultError;
-    }
-    return Boom.notFound(err);
-}
-
-
 function isDev() {
     return process.env.NODE_ENV === 'development';
 }
 
 
 function makeArray(val) {
-    if(!Array.isArray(val)) {
-        return [val];
-    }
-    return val;
+    return !Array.isArray(val) ? [val] : val;
 }
 
 
@@ -163,7 +147,6 @@ function twoPointDecimal(value) {
 
 module.exports.queryHelper = queryHelper;
 module.exports.fetchPage = fetchPage;
-module.exports.getBoomError = getBoomError;
 module.exports.isDev = isDev;
 module.exports.makeArray = makeArray;
 module.exports.twoPointDecimal = twoPointDecimal;

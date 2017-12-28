@@ -196,9 +196,7 @@ internals.after = function (server, next) {
             })
             .catch((err) => {
                 global.logger.error(err);
-                HelperService.getBoomError(err, (error, result) => {
-                    reply(result);
-                });
+                reply(Boom.notFound(err));
             });
     };
 
@@ -210,9 +208,7 @@ internals.after = function (server, next) {
             })
             .catch((err) => {
                 global.logger.error(err);
-                HelperService.getBoomError(err, (error, result) => {
-                    reply(result);
-                });
+                reply(Boom.notFound(err));
             });
     };
 
@@ -432,10 +428,9 @@ internals.after = function (server, next) {
                 }
             })
             .catch((err) => {
-                global.logger.error(err)
-                HelperService.getBoomError(err, (error, result) => {
-                    reply(result);
-                });
+                let msg = err instanceof Error ? err.message : err;
+                global.logger.error(msg);
+                reply(Boom.badData(msg));
             });
     };
 
