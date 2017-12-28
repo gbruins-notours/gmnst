@@ -7,6 +7,10 @@ sudo: required
 node_js:
   - "8.9"
 
+cache:
+  directories:
+    - node_modules
+
 install:
   - sudo bash -c "$(curl -fsSL https://s3.amazonaws.com/tools.nanobox.io/bootstrap/ci.sh)"
 
