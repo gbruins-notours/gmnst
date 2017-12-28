@@ -13,6 +13,11 @@ run.config:
   cache_dirs:
     - node_modules
 
+deploy.config:
+  before_live:
+    web.main:
+      - npm run knex:migrate
+
 data.db:
   image: nanobox/postgresql:9.6
 
