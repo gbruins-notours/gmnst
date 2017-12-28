@@ -15,6 +15,15 @@
             return {
                 helpEmailAddress: utilityService.getHelpEmailAddress()
             }
+        },
+
+        metaInfo() {
+            return {
+                title: this.$t('Privacy Notice'),
+                meta: [
+                    { vmid: 'description', name: 'description', content: `Privacy Notice for gmnst.com` }
+                ]
+            }
         }
     }
 </script>

@@ -1,6 +1,6 @@
 <script>
-import ProductCard from '../../components/product/ProductCard'
-import ProductService from './product_service.js'
+import ProductCard from '@/components/product/ProductCard'
+import ProductService from '@/pages/product/product_service.js'
 
 let productService = new ProductService();
 
@@ -14,7 +14,13 @@ export default {
     data() {
         return {
             products: {},
-            pageTitle: null
+            productSubType: 'fff'
+        }
+    },
+
+    computed: {
+        productTypeName() {
+            return this.$tc(this.productSubType, 2);
         }
     },
 
@@ -68,8 +74,17 @@ export default {
             this.fetchProducts(productTypeId);
 
             if(productSubType) {
-                this.pageTitle = productSubType;
+                this.productSubType = productSubType;
             }
+        }
+    },
+
+    metaInfo() {
+        return {
+            title: this.productTypeName,
+            meta: [
+                { vmid: 'description', name: 'description', content: `${this.productSubType} by Gmnst` }
+            ]
         }
     },
 
@@ -89,7 +104,7 @@ export default {
 <template>
     <section class="section container is-fluid">
         <div class="columns is-multiline">
-            <div class="column is-4" v-for="(product, index) in products" :key="product.id">
+            <div class="column is-4" v-for="product in products" :key="product.id">
                 <span v-on:click="goToDetails(product)" class="cursorPointer">
                     <product-card :product="product"></product-card>
                 </span>

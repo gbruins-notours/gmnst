@@ -46,6 +46,15 @@
                     });
                 }
             }
+        },
+
+        metaInfo() {
+            return {
+                title: this.$t('Shopping Cart'),
+                meta: [
+                    { vmid: 'description', name: 'description', content: `Your Shopping Cart at gmnst.com` }
+                ]
+            }
         }
     }
 </script>

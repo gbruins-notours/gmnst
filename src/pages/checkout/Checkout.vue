@@ -75,7 +75,16 @@
 
         mounted: function() {
             this.$store.dispatch('IN_CHECKOUT_FLOW', true);
-        }
+        },
+
+        metaInfo() {
+            return {
+                title: this.$t('Checkout'),
+                meta: [
+                    { vmid: 'description', name: 'description', content: `Your Shopping Cart at gmnst.com` }
+                ]
+            }
+        }     
     }
 </script>
 

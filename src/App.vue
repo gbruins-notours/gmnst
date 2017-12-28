@@ -13,6 +13,23 @@ let shoppingCartService = new ShoppingCartService();
 let utilityService = new UtilityService();
 
 export default {
+    metaInfo: {
+        // if no subcomponents specify a metaInfo.title, this title will be used
+        title: 'Welcome',
+        // all titles will be injected into this template
+        titleTemplate: (titleChunk) => {
+            return titleChunk ? `${titleChunk} | gmnst` : 'gmnst';
+        },
+        meta: [
+            { charset: 'utf-8' },
+            { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+            { vmid: 'description', name: 'description', content: 'T-shirts and Hats for the gymnastics lifestyle' }
+        ],
+        link: [
+            { rel: 'favicon', href: '/static/favicon.ico' }
+        ]
+    },
+
     components: {
         AppHeader,
         AppFooter

@@ -17,6 +17,15 @@
                 siteUrl: utilityService.getSiteUrl(),
                 helpEmailAddress: utilityService.getHelpEmailAddress()
             }
+        },
+
+        metaInfo() {
+            return {
+                title: this.$t('Conditions of Use'),
+                meta: [
+                    { vmid: 'description', name: 'description', content: `Conditions of Use for gmnst.com` }
+                ]
+            }
         }
     }
 </script>

@@ -49,6 +49,15 @@ export default {
             .finally(() => {
                 this.loading = false;
             });
+    },
+
+    metaInfo() {
+        return {
+            title: this.$t('Thanks.'),
+            meta: [
+                { vmid: 'description', name: 'description', content: `Thanks for your order from Gmnst` }
+            ]
+        }
     }
 }
 </script>

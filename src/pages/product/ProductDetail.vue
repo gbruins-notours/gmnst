@@ -48,6 +48,15 @@ export default {
         }
     },
 
+    computed: {
+        productTitle() {
+            return this.product.title;
+        },
+        productDesc() {
+            return this.product.description_long;
+        },
+    },
+
     methods: {
         addToCart: function() {
             if(currentNotification) {
@@ -98,7 +107,6 @@ export default {
             .getProductBySeoUri(this.$route.params.itemId)
             .then((product) => {
                 this.product = product;
-                document.title = product.title;
 
                 productService.buildSizeOptions(product).then((result) => {
                     this.sizeOptions = result.sizeOpts;
@@ -111,6 +119,15 @@ export default {
             .finally(() => {
                 this.pageIsLoading = false;
             });
+    },
+
+    metaInfo() {
+        return {
+            title: this.productTitle,
+            meta: [
+                { vmid: 'description', name: 'description', content: this.productDesc }
+            ]
+        }
     }
 }
 </script>
