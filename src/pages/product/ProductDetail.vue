@@ -2,23 +2,27 @@
 import Vue from 'vue'
 import Promise from 'bluebird';
 import isObject from 'lodash.isobject'
-import _forEach from 'lodash.foreach';
+import _forEach from 'lodash.foreach'
 import { Select, Option, InputNumber, Notification, Button, Loading } from 'element-ui'
-import VueImg from 'v-img';
-import ProductPrice from '../../components/product/ProductPrice'
-import NumberButtons from '../../components/NumberButtons'
-import { Carousel, Slide } from 'vue-carousel';
-import ProductService from './product_service.js'
-import ShoppingCartService from '../cart/shopping_cart_service.js'
+import VueImg from 'v-img'
+import { Carousel, Slide } from 'vue-carousel'
+import SocialSharing from 'vue-social-sharing'
+import ProductPrice from '@/components/product/ProductPrice'
+import NumberButtons from '@/components/NumberButtons'
+import ProductService from '@/pages/product/product_service.js'
+import ShoppingCartService from '@/pages/cart/shopping_cart_service.js'
+import UtilityService from '@/utility_service.js'
 
 let productService = new ProductService();
 let shoppingCartService = new ShoppingCartService();
+let utilityService = new UtilityService();
 
 Vue.use(Select);
 Vue.use(Option);
 Vue.use(InputNumber);
 Vue.use(Button);
 Vue.use(Loading.directive)
+Vue.use(SocialSharing)
 Vue.use(VueImg, {
   altAsTitle: true,
   sourceButton: false, // Display 'download' button near 'close' that opens source image in new tab
@@ -44,7 +48,9 @@ export default {
             selectedSize: null,
             selectedQty: 1,
             isLoading: false,
-            pageIsLoading: true
+            pageIsLoading: true,
+            siteUrl: utilityService.getSiteUrl(true),
+            twitterUser: utilityService.getTwitterUser()
         }
     },
 
@@ -55,6 +61,9 @@ export default {
         productDesc() {
             return this.product.description_long;
         },
+        mediaPicture() {
+            return `${this.siteUrl}${this.productPics[0]}`
+        }
     },
 
     methods: {
@@ -202,6 +211,38 @@ export default {
                     </div>
                 </div>
             </div>
+
+            <div class="social">
+                <social-sharing :url="siteUrl"
+                                :title="product.title"
+                                :description="product.title"
+                                :quote="product.title"
+                                hashtags="gmnst"
+                                :twitter-user="twitterUser"
+                                :media="mediaPicture"
+                                inline-template>
+                    <div>
+                        <network network="facebook">
+                            <i class="fa fa-facebook" alt="Facebook"></i>
+                        </network>
+                        <network network="googleplus">
+                            <i class="fa fa-google-plus" alt="Google+"></i>
+                        </network>
+                        <network network="pinterest">
+                            <i class="fa fa-pinterest" alt="Pinterest"></i>
+                        </network>
+                        <network network="reddit">
+                            <i class="fa fa-reddit" alt="Reddit"></i>
+                        </network>
+                        <network network="twitter">
+                            <i class="fa fa-twitter" alt="Twitter"></i>
+                        </network>
+                        <network network="weibo">
+                            <i class="fa fa-weibo" alt="Weibo"></i>
+                        </network> 
+                    </div>
+                </social-sharing>
+            </div>
         </div>
     </div>
 </template>
@@ -226,6 +267,24 @@ export default {
     .value {
         display: table-cell;
         padding-bottom: 10px;
+    }
+}
+
+.social {
+    margin-top: 40px;
+    text-align: center;
+
+    .fa {
+        font-size: 20px;
+        margin-right: 10px;
+        cursor: pointer;
+    }
+}
+
+@media #{$medium-and-up} {  
+    .social {
+        margin-top: 0;
+        text-align: right;
     }
 }
 </style>

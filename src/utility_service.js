@@ -25,8 +25,12 @@ export default class UtilityService {
         return 'gmnst.com';
     }
 
-    getSiteUrl() {
-        return 'www.gmnst.com';
+    getSiteUrl(full) {
+        return full ? 'https://www.gmnst.com' : 'www.gmnst.com';
+    }
+
+    getTwitterUser() {
+        return 'gmnstLife';
     }
 
 }
