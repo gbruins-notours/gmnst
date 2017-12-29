@@ -134,7 +134,13 @@ export default {
         return {
             title: this.productTitle,
             meta: [
-                { vmid: 'description', name: 'description', content: this.productDesc }
+                { vmid: 'description', name: 'description', content: this.productDesc },
+                { name: 'og:site_name', content: utilityService.getSiteName() },
+                { name: 'og:url', content: this.$route.fullPath },
+                { name: 'og:title', content: this.productTitle },
+                { name: 'og:type', content: 'website' },
+                { name: 'og:image', content: this.mediaPicture },
+                { name: 'og:description', content: this.product.description_long },
             ]
         }
     }
@@ -230,9 +236,6 @@ export default {
                         </network>
                         <network network="pinterest">
                             <i class="fa fa-pinterest" alt="Pinterest"></i>
-                        </network>
-                        <network network="reddit">
-                            <i class="fa fa-reddit" alt="Reddit"></i>
                         </network>
                         <network network="twitter">
                             <i class="fa fa-twitter" alt="Twitter"></i>
