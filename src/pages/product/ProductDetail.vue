@@ -219,7 +219,7 @@ export default {
             </div>
 
             <div class="social">
-                <social-sharing :url="$route.fullPath"
+                <social-sharing :url="siteUrl + $route.fullPath"
                                 :title="product.title"
                                 :description="product.title"
                                 :quote="product.title"
@@ -228,12 +228,12 @@ export default {
                                 :media="mediaPicture"
                                 inline-template>
                     <div>
-                        <network network="facebook">
+                        <!-- <network network="facebook">
                             <i class="fa fa-facebook" alt="Facebook"></i>
                         </network>
                         <network network="googleplus">
                             <i class="fa fa-google-plus" alt="Google+"></i>
-                        </network>
+                        </network> -->
                         <network network="pinterest">
                             <i class="fa fa-pinterest" alt="Pinterest"></i>
                         </network>
@@ -278,7 +278,7 @@ export default {
     text-align: center;
 
     .fa {
-        font-size: 20px;
+        font-size: 25px;
         margin-right: 10px;
         cursor: pointer;
     }
