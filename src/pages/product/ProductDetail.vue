@@ -219,7 +219,7 @@ export default {
             </div>
 
             <div class="social">
-                <social-sharing :url="siteUrl"
+                <social-sharing :url="$route.fullPath"
                                 :title="product.title"
                                 :description="product.title"
                                 :quote="product.title"
