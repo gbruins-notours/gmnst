@@ -3,7 +3,7 @@
     import { mapGetters } from 'vuex'
     import isObject from 'lodash.isobject'
     import forEach from 'lodash.foreach'
-    import { Notification, Loading, Dialog, Select, Button } from 'element-ui'
+    import { Notification, Loading, Button } from 'element-ui'
     import ShippingBillingForm from '@/components/checkout/ShippingBillingForm'
     import ShippingBillingHelp from '@/components/checkout/ShippingBillingHelp'
     import ShoppingCartService from '@/pages/cart/shopping_cart_service.js'
@@ -209,8 +209,8 @@
                             @click="submitShippingForm"
                             :disabled="!shippingButtonEnabled"
                             :loading="shippingFormIsLoading">{{ $t('CONTINUE TO SHIPPING METHOD') }}</el-button>
-
-                <bottom-popover width="200px"
+                
+                <bottom-popover width="225px"
                                 v-show="!shippingButtonEnabled" >{{ $t('fill_out_form_warning') }}</bottom-popover>
             </div>
         </div>

@@ -22,6 +22,8 @@
     @import "../assets/css/components/_mixins.scss";
 
     .bottomPopover {
+        display: table;
+        margin: 0 auto;
         background-color: #525151;
         color: #fff;
         padding: 10px;
