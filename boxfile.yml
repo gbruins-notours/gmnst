@@ -13,6 +13,9 @@ run.config:
   cache_dirs:
     - node_modules
 
+  # Enable filesystem watcher
+  fs_watch: true
+
 deploy.config:
   before_live:
     web.main:
