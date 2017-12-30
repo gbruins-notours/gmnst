@@ -140,7 +140,9 @@
                         default:
                             let message = this.$t('The address you provided does not seem to be a valid mailing adddress.');
 
-                            if(isObject(validation) && Array.isArray(validation.messages)) {
+                            if(isObject(validation) 
+                                && Array.isArray(validation.messages)
+                                && validation.messages.length) {
                                 let messages = [];
 
                                 // Skipping message code 'a1003', because it seems kind of useless.  It's message is
