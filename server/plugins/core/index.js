@@ -62,7 +62,7 @@ exports.register = function (server, options, next) {
                 auth: false
             },
             handler: function (request, reply) {
-                console.log("GOT SOCIALBOT!")
+                console.log("GOT SOCIALBOT!", request.headers)
                 reply.file(path.resolve(__dirname, '../../../dist/index.html'));
             }
         },
