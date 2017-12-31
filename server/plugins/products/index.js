@@ -4,6 +4,7 @@ const HelperService = require('../../helpers.service');
 const ProductService = require('./products.service');
 
 let internals = {};
+let routePrefix = '/api/v1';
 
 internals.after = function (server, next) {
 
@@ -84,31 +85,9 @@ internals.after = function (server, next) {
     server.route([
         {
             method: 'GET',
-            path: '/product',
+            path: '/product/share',  // NOTE: no routePrefix on this one
             config: {
-                description: 'Finds a product by ID',
-                validate: {
-                    query: {
-                        id: Joi.string().uuid()
-                    }
-                },
-                handler: (request, reply) => {
-                    internals
-                        .getProductByAttribute('id', request.query.id)
-                        .then((products) => {
-                            reply.apiSuccess(products);
-                        })
-                        .catch((err) => {
-                            global.logger.error(err);
-                            reply(Boom.badRequest(err));
-                        });
-                }
-            }
-        },
-        {
-            method: 'GET',
-            path: '/product/share',
-            config: {
+                auth: false,
                 validate: {
                     query: {
                         id: Joi.string().max(100)
@@ -116,13 +95,26 @@ internals.after = function (server, next) {
                 },
             },
             handler: function (request, reply) {
-                console.log("GOT PRODUCT SHARE!", request.headers)
-                reply("socialbot reply");
+                console.log("GOT PRODUCT SHARE!", request.query.id)
+                internals
+                    .getProductByAttribute('id', request.query.id)
+                    .then((products) => {
+                        // reply("socialbot reply");
+                        return reply.view('socialshare', {
+                            title: 'test title',
+                            description: 'test description',
+                            image: 'https://www.gmnst.com/static/images/logo_header.png'
+                        });
+                    })
+                    .catch((err) => {
+                        global.logger.error(err);
+                        reply(Boom.badRequest(err));
+                    });
             }
         },
         {
             method: 'GET',
-            path: '/product/seo',
+            path: `${routePrefix}/product/seo`,
             config: {
                 description: 'Finds a product by it\'s seo uri',
                 validate: {
@@ -145,7 +137,7 @@ internals.after = function (server, next) {
         },
         {
             method: 'GET',
-            path: '/product/info',
+            path: `${routePrefix}/product/info`,
             config: {
                 description: 'Returns general info about products',
                 handler: (request, reply) => {
@@ -160,7 +152,30 @@ internals.after = function (server, next) {
         },
         {
             method: 'GET',
-            path: '/products',
+            path: `${routePrefix}/product`,
+            config: {
+                description: 'Finds a product by ID',
+                validate: {
+                    query: {
+                        id: Joi.string().uuid()
+                    }
+                },
+                handler: (request, reply) => {
+                    internals
+                        .getProductByAttribute('id', request.query.id)
+                        .then((products) => {
+                            reply.apiSuccess(products);
+                        })
+                        .catch((err) => {
+                            global.logger.error(err);
+                            reply(Boom.badRequest(err));
+                        });
+                }
+            }
+        },
+        {
+            method: 'GET',
+            path: `${routePrefix}/products`,
             config: {
                 description: 'Gets a list of products',
                 handler: (request, reply) => {
