@@ -228,12 +228,12 @@ export default {
                                 :media="mediaPicture"
                                 inline-template>
                     <div>
-                        <!-- <network network="facebook">
+                        <network network="facebook">
                             <i class="fa fa-facebook" alt="Facebook"></i>
                         </network>
                         <network network="googleplus">
                             <i class="fa fa-google-plus" alt="Google+"></i>
-                        </network> -->
+                        </network>
                         <network network="pinterest">
                             <i class="fa fa-pinterest" alt="Pinterest"></i>
                         </network>
@@ -242,7 +242,7 @@ export default {
                         </network>
                         <network network="weibo">
                             <i class="fa fa-weibo" alt="Weibo"></i>
-                        </network> 
+                        </network>
                     </div>
                 </social-sharing>
             </div>
@@ -284,7 +284,7 @@ export default {
     }
 }
 
-@media #{$medium-and-up} {  
+@media #{$medium-and-up} {
     .social {
         margin-top: 0;
         text-align: right;

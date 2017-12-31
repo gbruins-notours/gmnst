@@ -57,6 +57,17 @@ exports.register = function (server, options, next) {
         },
         {
             method: 'GET',
+            path: '/socialbot',
+            config: {
+                auth: false
+            },
+            handler: function (request, reply) {
+                console.log("GOT SOCIALBOT!")
+                reply.file(path.resolve(__dirname, '../../../dist/index.html'));
+            }
+        }
+        {
+            method: 'GET',
             path: '/{path*}',
             config: {
                 auth: false
