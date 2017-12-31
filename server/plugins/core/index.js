@@ -57,17 +57,6 @@ exports.register = function (server, options, next) {
         },
         {
             method: 'GET',
-            path: '/share',
-            config: {
-                auth: false
-            },
-            handler: function (request, reply) {
-                console.log("GOT SHARE!", request.headers)
-                reply("socialbot reply");
-            }
-        },
-        {
-            method: 'GET',
             path: '/{path*}',
             config: {
                 auth: false

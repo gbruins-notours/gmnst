@@ -107,6 +107,21 @@ internals.after = function (server, next) {
         },
         {
             method: 'GET',
+            path: '/product/share',
+            config: {
+                validate: {
+                    query: {
+                        id: Joi.string().max(100)
+                    }
+                },
+            },
+            handler: function (request, reply) {
+                console.log("GOT PRODUCT SHARE!", request.headers)
+                reply("socialbot reply");
+            }
+        },
+        {
+            method: 'GET',
             path: '/product/seo',
             config: {
                 description: 'Finds a product by it\'s seo uri',
