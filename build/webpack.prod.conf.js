@@ -93,6 +93,11 @@ let webpackConfig = merge(baseConfig, {
                 from: path.resolve(__dirname, '../static'),
                 to: 'static',
                 ignore: ['.*']
+            },
+            {
+                from: path.resolve(__dirname, '../server/views'),
+                to: 'views',
+                ignore: ['index.html']
             }
         ])
     ],

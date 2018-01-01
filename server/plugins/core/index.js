@@ -3,8 +3,18 @@ const fs = require('fs');
 const Joi = require('joi');
 const isObject = require('lodash.isobject');
 
+let internals = {};
 
-exports.register = function (server, options, next) {
+internals.after = (server, next) => {
+
+    server.views({
+        engines: {
+            html: require('handlebars')
+        },
+        path: path.resolve(__dirname, '../../../dist')
+        // partialsPath: '../../views/partials',
+        // relativeTo: __dirname // process.cwd() // prefer this over __dirname when compiling to dist/cjs and using rollup
+    });
 
     server.decorate('reply', 'apiSuccess', function (responseData, paginationObj) {
         let response = {};
@@ -16,7 +26,6 @@ exports.register = function (server, options, next) {
 
         return this.response(response);
     });
-
 
     // Handle Boom errors
     server.ext('onPreResponse', function (request, reply) {
@@ -66,7 +75,7 @@ exports.register = function (server, options, next) {
 
                 // TODO: get CSRF token to add to template?
                 // return reply.view('index', {
-                //     crumb: request.plugins.crumb
+                //     crumb: 123
                 // });
                 // return reply.view('index', {});
             }
@@ -118,6 +127,13 @@ exports.register = function (server, options, next) {
 
     server.route(routes);
 
+    return next();
+};
+
+
+
+exports.register = function (server, options, next) {
+    server.dependency(['vision'], internals.after);
     return next();
 };
 

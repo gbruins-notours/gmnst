@@ -34,6 +34,9 @@ internals.manifest = {
         {
             plugin: 'inert'
         },
+        {
+            plugin: 'vision'
+        },
         // {
         //     plugin: {
         //         register: './plugins/crumbCsrf'
@@ -78,10 +81,9 @@ internals.manifest = {
                 register: './plugins/products'
             },
             options: {
-                select: ['api'],
-                routes: {
-                    prefix: '/api/v1'
-                }
+                select: ['api']
+                // NOTE: not setting the routes.prefix value here
+                // because I set it conditionally in the plugin route code
             }
         },
         {
@@ -195,3 +197,56 @@ Server.init(internals.manifest, internals.composeOptions, (err, server) => {
     const api = server.select('api');
     console.log('API server started at: ' + api.info.uri);
 });
+
+
+
+/*
+ * The Hapi v17 way:
+ */
+ /*
+const manifest = {
+    server: {
+        // cache: 'redis',
+        port: Config.get('/port/api')
+    },
+    register: {
+        plugins: [
+            {
+                plugin: require('./plugins/bookshelf-orm'),
+                options: {
+                    knex: {
+                        debug: Config.get('/db/debug')
+                    },
+                    plugins: [
+                        require('bookshelf-uuid')
+                    ]
+                }
+            },
+            {
+                plugin: require('./plugins/customer')
+            },
+            {
+                plugin: require('./plugins/apiClients'),
+                options: {
+                    routes: {
+                        prefix: '/api/v1'
+                    }
+                }
+            }
+        ]
+    }
+};
+
+const options = {
+    relativeTo: __dirname
+};
+
+try {
+    Server.init(manifest, options);
+    console.log('Web server started.');
+}
+catch (err) {
+    console.error(err);
+    process.exit(1);
+}
+*/

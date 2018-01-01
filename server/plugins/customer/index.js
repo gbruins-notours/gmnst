@@ -35,3 +35,16 @@ exports.register = (server, options, next) => {
 };
 
 exports.register.attributes = require('./package.json');
+
+
+/*
+ * The Hapi v17 way:
+ */
+
+// exports.plugin = {
+//     once: true,
+//     pkg: require('./package.json'),
+//     register: function (server, options) {
+//         server.dependency('BookshelfOrm', internals.after);
+//     }
+// };

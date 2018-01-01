@@ -49,7 +49,7 @@ exports.register = (server, options, next) => {
 
     if (settings.namespace) {
         server.expose(settings.namespace, bookshelf);
-    } 
+    }
     else {
         // server.expose(bookshelf);
         server.expose('bookshelf', bookshelf);
@@ -62,3 +62,53 @@ exports.register = (server, options, next) => {
 };
 
 exports.register.attributes = require('./package.json');
+
+
+
+/*
+ * The Hapi v17 way:
+ */
+ 
+// exports.plugin = {
+//     once: true,
+//     pkg: require('./package.json'),
+//     register: function (server, options) {
+//         let knex;
+//         let bookshelf = null;
+//         let requiredPlugins = ['registry', 'virtuals', 'visibility', 'pagination'];
+//
+//         const validateOptions = internals.schema.validate(options);
+//         if (validateOptions.error) {
+//             global.logger.error(validateOptions.error);
+//             // return next(validateOptions.error);
+//             throw new Error(validateOptions.error);
+//         }
+//
+//         const settings = Hoek.applyToDefaults(internals.defaults, options);
+//         settings.plugins = Array.isArray(settings.plugins) ? requiredPlugins.concat(settings.plugins) : requiredPlugins;
+//
+//         try {
+//             knex = require('knex')(settings.knex);
+//             bookshelf = require('bookshelf');
+//             bookshelf = bookshelf(knex);
+//         }
+//         catch (ex) {
+//             // return next(new Error('Bad Knex Options: ' + ex.toString()));
+//             throw new Error('Bad Knex Options: ' + ex.toString());
+//         }
+//
+//         settings.plugins.map(function (plugin) {
+//             bookshelf.plugin(plugin);
+//         });
+//
+//         if (settings.namespace) {
+//             server.expose(settings.namespace, bookshelf);
+//         }
+//         else {
+//             // server.expose(bookshelf);
+//             server.expose('bookshelf', bookshelf);
+//         }
+//
+//         server.expose('knexObject', knex);
+//     }
+// };

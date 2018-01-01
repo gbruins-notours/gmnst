@@ -46,13 +46,15 @@ exports.register = (server, options, next) =>  {
     server.ext('onPreResponse', (request, reply) => {
         let url = request.raw.req.url;
 
-        if(url.indexOf('/api') !== -1) {
+        if(url.indexOf('/api') !== -1 || url.indexOf('/product/share') !== -1) {
             return reply.continue();
         }
         else {
             // This assumes you are using the html-webpack-plugin
             // If you are serving a static html file just reply with that file directly
             const filename = path.join(compiler.outputPath, 'index.html');
+
+            // The returned HTML will include the auto-injected js file(s)
             compiler.outputFileSystem.readFile(filename, (fileReadErr, result) => {
                 if (fileReadErr) {
                     return reply(fileReadErr);

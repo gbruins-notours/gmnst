@@ -1,5 +1,7 @@
 const Joi = require('joi');
 const Boom = require('boom');
+const path = require('path');
+const isObject = require('lodash.isobject');
 const HelperService = require('../../helpers.service');
 const ProductService = require('./products.service');
 
@@ -7,6 +9,20 @@ let internals = {};
 let routePrefix = '/api/v1';
 
 internals.after = function (server, next) {
+
+    // Yes this was aleady set in the Core plugin, but apparently
+    // it must be set in every plugin that needs a view engine:
+    // https://github.com/hapijs/vision/issues/94
+    server.views({
+        engines: {
+            html: require('handlebars')
+        },
+        // path: path.resolve(__dirname, '../../..')
+        path: path.resolve(__dirname, '../../../dist')
+        // path: '../../../dist/views',
+        // partialsPath: '../../views/partials',
+        // relativeTo: __dirname // process.cwd() // prefer this over __dirname when compiling to dist/cjs and using rollup
+    });
 
     internals.schema = Joi.object().keys({
         title: Joi.string().max(100).required(),
@@ -82,7 +98,95 @@ internals.after = function (server, next) {
     };
 
 
+    /************************************
+     * ROUTE HANDLERS
+     ************************************/
+
+    internals.productShare = (request, reply) => {
+        internals
+            .getProductByAttribute('id', request.query.id)
+            .then((product) => {
+                let p = isObject(product) ? product.toJSON() : {};
+                let urlImages = 'https://www.gmnst.com/static/images/';
+
+                console.log("PROD JSON", p)
+
+                return reply.view('views/socialshare', {
+                    title: p.title || 'Welcome to Gmnst.com',
+                    description: p.description_short || '',
+                    image: p.featured_pic ? `${urlImages}product/${p.featured_pic}` : `${urlImages}logo_header.png`
+                });
+            })
+            .catch((err) => {
+                global.logger.error(err);
+                reply(Boom.badRequest(err));
+            });
+    };
+
+
+    internals.productRoute = (request, reply) => {
+        internals
+            .getProductByAttribute('id', request.query.id)
+            .then((products) => {
+                reply.apiSuccess(products);
+            })
+            .catch((err) => {
+                global.logger.error(err);
+                reply(Boom.badRequest(err));
+            });
+    };
+
+
+    internals.productSeo = (request, reply) => {
+        internals
+            .getProductByAttribute('seo_uri', request.query.id)
+            .then((products) => {
+                reply.apiSuccess(products);
+            })
+            .catch((err) => {
+                global.logger.error(err);
+                reply(Boom.badRequest(err));
+            });
+    };
+
+
+    internals.productInfo = (request, reply) => {
+        reply.apiSuccess({
+            types: ProductService.getProductTypes(),
+            subTypes: ProductService.getProductSubTypes(),
+            sizes: ProductService.getSizeTypes(),
+            genders: ProductService.getGenderTypes()
+        });
+    };
+
+
+    internals.productsRoute = (request, reply) => {
+        HelperService
+            .fetchPage(request, server.plugins.BookshelfOrm.bookshelf.model('Product'), internals.withRelated)
+            .then((products) => {
+                reply.apiSuccess(products, products.pagination);
+            })
+            .catch((err) => {
+                global.logger.error(err);
+                reply(Boom.notFound(err));
+            });
+    };
+
+
     server.route([
+        {
+            method: 'GET',
+            path: `${routePrefix}/product`,
+            config: {
+                description: 'Finds a product by ID',
+                validate: {
+                    query: {
+                        id: Joi.string().uuid()
+                    }
+                },
+                handler: internals.productRoute
+            }
+        },
         {
             method: 'GET',
             path: '/product/share',  // NOTE: no routePrefix on this one
@@ -94,23 +198,7 @@ internals.after = function (server, next) {
                     }
                 },
             },
-            handler: function (request, reply) {
-                console.log("GOT PRODUCT SHARE!", request.query.id)
-                internals
-                    .getProductByAttribute('id', request.query.id)
-                    .then((products) => {
-                        // reply("socialbot reply");
-                        return reply.view('socialshare', {
-                            title: 'test title',
-                            description: 'test description',
-                            image: 'https://www.gmnst.com/static/images/logo_header.png'
-                        });
-                    })
-                    .catch((err) => {
-                        global.logger.error(err);
-                        reply(Boom.badRequest(err));
-                    });
-            }
+            handler: internals.productShare
         },
         {
             method: 'GET',
@@ -122,17 +210,7 @@ internals.after = function (server, next) {
                         id: Joi.string().max(100)
                     }
                 },
-                handler: (request, reply) => {
-                    internals
-                        .getProductByAttribute('seo_uri', request.query.id)
-                        .then((products) => {
-                            reply.apiSuccess(products);
-                        })
-                        .catch((err) => {
-                            global.logger.error(err);
-                            reply(Boom.badRequest(err));
-                        });
-                }
+                handler: internals.productSeo
             }
         },
         {
@@ -140,37 +218,7 @@ internals.after = function (server, next) {
             path: `${routePrefix}/product/info`,
             config: {
                 description: 'Returns general info about products',
-                handler: (request, reply) => {
-                    reply.apiSuccess({
-                        types: ProductService.getProductTypes(),
-                        subTypes: ProductService.getProductSubTypes(),
-                        sizes: ProductService.getSizeTypes(),
-                        genders: ProductService.getGenderTypes()
-                    });
-                }
-            }
-        },
-        {
-            method: 'GET',
-            path: `${routePrefix}/product`,
-            config: {
-                description: 'Finds a product by ID',
-                validate: {
-                    query: {
-                        id: Joi.string().uuid()
-                    }
-                },
-                handler: (request, reply) => {
-                    internals
-                        .getProductByAttribute('id', request.query.id)
-                        .then((products) => {
-                            reply.apiSuccess(products);
-                        })
-                        .catch((err) => {
-                            global.logger.error(err);
-                            reply(Boom.badRequest(err));
-                        });
-                }
+                handler: internals.productInfo
             }
         },
         {
@@ -178,17 +226,7 @@ internals.after = function (server, next) {
             path: `${routePrefix}/products`,
             config: {
                 description: 'Gets a list of products',
-                handler: (request, reply) => {
-                    HelperService
-                        .fetchPage(request, server.plugins.BookshelfOrm.bookshelf.model('Product'), internals.withRelated)
-                        .then((products) => {
-                            reply.apiSuccess(products, products.pagination);
-                        })
-                        .catch((err) => {
-                            global.logger.error(err);
-                            reply(Boom.notFound(err));
-                        });
-                }
+                handler: internals.productsRoute
             }
         }
     ]);

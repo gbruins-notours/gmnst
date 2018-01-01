@@ -11,3 +11,13 @@ exports.init = function (manifest, options, next) {
         });
     });
 };
+
+
+/*
+ * The Hapi v17 way:
+ */
+ 
+// exports.init = async function (manifest, options) {
+//     const webServer = await Glue.compose(manifest, options);
+//     await webServer.start();
+// };
