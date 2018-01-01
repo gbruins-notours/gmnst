@@ -9,6 +9,8 @@ const describe = lab.experiment;
 const expect = Code.expect;
 const it = lab.test;
 
+let routePrefix = testHelpers.getApiPrefix();
+
 
 describe('Testing route: GET /product/{id}', () => {
 
@@ -30,9 +32,11 @@ describe('Testing route: GET /product/{id}', () => {
                     .forge()
                     .save(attributes)
                     .then((Prod) => {
+                        let p = Prod.toJSON();
+
                         const request = {
                             method: 'GET',
-                            url: `/product?id=${Prod.attributes.id}`,
+                            url: `${routePrefix}/product?id=${p.id}`,
                             headers
                         };
 
@@ -63,7 +67,7 @@ describe('Testing route: GET /product/{id}', () => {
 
                 const request = {
                     method: 'GET',
-                    url: '/product?id=',
+                    url: '${routePrefix}/product?id=',
                     headers
                 };
 
@@ -83,7 +87,7 @@ describe('Testing route: GET /product/{id}', () => {
 
                 const request = {
                     method: 'GET',
-                    url: '/product?id=123',
+                    url: '${routePrefix}/product?id=123',
                     headers
                 };
 
@@ -103,7 +107,7 @@ describe('Testing route: GET /product/{id}', () => {
 
                 const request = {
                     method: 'GET',
-                    url: '/product?id=abc',
+                    url: '${routePrefix}/product?id=abc',
                     headers
                 };
 
@@ -120,10 +124,10 @@ describe('Testing route: GET /product/{id}', () => {
             .startServerAndGetHeaders(serverSetup.manifest, serverSetup.composeOptions)
             .then(({err, server, headers}) => {
                 expect(err).not.to.exist();
-                
+
                 const request = {
                     method: 'GET',
-                    url: `/product?id=2e8d31fd-dbde-4e65-8172-a7b7bbf1619e`,
+                    url: `${routePrefix}/product?id=2e8d31fd-dbde-4e65-8172-a7b7bbf1619e`,
                     headers
                 };
 

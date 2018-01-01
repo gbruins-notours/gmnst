@@ -10,6 +10,8 @@ const describe = lab.experiment;
 const expect = Code.expect;
 const it = lab.test;
 
+let routePrefix = testHelpers.getApiPrefix();
+
 
 describe('Testing route: GET /products', () => {
 
@@ -28,13 +30,13 @@ describe('Testing route: GET /products', () => {
                         ],
                         orderBy: 'updated_at',
                         orderDir: 'DESC'
-                    }, 
+                    },
                     { arrayFormat: 'bracket' }
                 );
 
                 const request = {
                     method: 'GET',
-                    url: `/products?${paramString}`,
+                    url: `${routePrefix}/products?${paramString}`,
                     headers
                 };
 
@@ -56,13 +58,13 @@ describe('Testing route: GET /products', () => {
                     {
                         where: ['is_available', '=', true],
                         limit: 1
-                    }, 
+                    },
                     { arrayFormat: 'bracket' }
                 );
 
                 const request = {
                     method: 'GET',
-                    url: `/products?${paramString}`,
+                    url: `${routePrefix}/products?${paramString}`,
                     headers
                 };
 

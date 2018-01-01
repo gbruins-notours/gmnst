@@ -104,6 +104,11 @@ function getBasicManifest() {
             },
             {
                 plugin: {
+                    register: 'vision'
+                }
+            },
+            {
+                plugin: {
                     register: './plugins/logger'
                 }
             },
@@ -199,13 +204,15 @@ function getProduct(server, headers, paramString) {
         {
             where: ['is_available', '=', true],
             limit: 1
-        }, 
+        },
         { arrayFormat: 'bracket' }
     );
 
+    let apiPrefix = getApiPrefix();
+
     return server.inject({
         method: 'GET',
-        url: `/products?${paramString || paramStringDefault}`,
+        url: `${apiPrefix}/products?${paramString || paramStringDefault}`,
         headers
     })
     .then((res) => {
@@ -228,7 +235,12 @@ function addToCart(server, headers, productId, options) {
         }
     });
 }
-        
+
+
+function getApiPrefix() {
+    return '/api/v1';
+}
+
 
 module.exports.destroyKnexAndStopServer = destroyKnexAndStopServer;
 module.exports.getFakeBillingAddress = getFakeBillingAddress;
@@ -241,3 +253,4 @@ module.exports.getRegistrationIndexFromManifest = getRegistrationIndexFromManife
 module.exports.spliceRegistrationFromManifest = spliceRegistrationFromManifest;
 module.exports.getProduct = getProduct;
 module.exports.addToCart = addToCart;
+module.exports.getApiPrefix = getApiPrefix;
