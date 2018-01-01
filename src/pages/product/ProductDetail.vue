@@ -222,7 +222,6 @@ export default {
                 <social-sharing :url="siteUrl + '/product/share?id=' + product.id"
                                 :title="product.title"
                                 :description="product.title"
-                                :quote="product.title"
                                 hashtags="gmnst"
                                 :twitter-user="twitterUser"
                                 :media="mediaPicture"
