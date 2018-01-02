@@ -16,6 +16,7 @@ import UtilityService from '@/utility_service.js'
 let productService = new ProductService();
 let shoppingCartService = new ShoppingCartService();
 let utilityService = new UtilityService();
+let pageUrl = utilityService.getSiteUrl(true);
 
 Vue.use(Select);
 Vue.use(Option);
@@ -50,6 +51,7 @@ export default {
             isLoading: false,
             pageIsLoading: true,
             siteUrl: utilityService.getSiteUrl(true),
+            pageUrl: `${utilityService.getSiteUrl(true)}${this.$route.fullPath}`,
             twitterUser: utilityService.getTwitterUser()
         }
     },
@@ -219,7 +221,8 @@ export default {
             </div>
 
             <div class="social">
-                <social-sharing :url="siteUrl + '/product/share?id=' + product.id"
+                <!-- <social-sharing :url="siteUrl + '/product/share?id=' + product.id" -->
+                <social-sharing :url="pageUrl"
                                 :title="product.title"
                                 :description="product.title"
                                 hashtags="gmnst"
@@ -238,9 +241,6 @@ export default {
                         </network>
                         <network network="twitter">
                             <i class="fa fa-twitter" alt="Twitter"></i>
-                        </network>
-                        <network network="weibo">
-                            <i class="fa fa-weibo" alt="Weibo"></i>
                         </network>
                     </div>
                 </social-sharing>

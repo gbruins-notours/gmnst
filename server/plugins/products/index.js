@@ -103,6 +103,8 @@ internals.after = function (server, next) {
      ************************************/
 
     internals.productShare = (request, reply) => {
+        console.lot("IN PRODUCT SHARE", request.query);
+        
         internals
             .getProductByAttribute('id', request.query.id)
             .then((product) => {
