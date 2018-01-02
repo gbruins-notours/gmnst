@@ -104,24 +104,24 @@ internals.after = function (server, next) {
 
     internals.productShare = (request, reply) => {
         console.lot("IN PRODUCT SHARE", request.query);
-        
-        internals
-            .getProductByAttribute('id', request.query.id)
-            .then((product) => {
-                let p = isObject(product) ? product.toJSON() : {};
-                let urlImages = 'https://www.gmnst.com/static/images/';
 
-                return reply.view('views/socialshare', {
-                    title: p.title || 'Welcome to Gmnst.com',
-                    description: p.description_short || '',
-                    image: p.featured_pic ? `${urlImages}product/${p.featured_pic}` : `${urlImages}logo_header.png`,
-                    url: `https://www.gmnst.com/product/share?id=${request.query.id}`
-                });
-            })
-            .catch((err) => {
-                global.logger.error(err);
-                reply(Boom.badRequest(err));
-            });
+        // internals
+        //     .getProductByAttribute('id', request.query.id)
+        //     .then((product) => {
+        //         let p = isObject(product) ? product.toJSON() : {};
+        //         let urlImages = 'https://www.gmnst.com/static/images/';
+
+        //         return reply.view('views/socialshare', {
+        //             title: p.title || 'Welcome to Gmnst.com',
+        //             description: p.description_short || '',
+        //             image: p.featured_pic ? `${urlImages}product/${p.featured_pic}` : `${urlImages}logo_header.png`,
+        //             url: `https://www.gmnst.com/product/share?id=${request.query.id}`
+        //         });
+        //     })
+        //     .catch((err) => {
+        //         global.logger.error(err);
+        //         reply(Boom.badRequest(err));
+        //     });
     };
 
 
@@ -195,7 +195,7 @@ internals.after = function (server, next) {
                 auth: false,
                 validate: {
                     query: {
-                        id: Joi.string().max(100)
+                        uri: Joi.string()
                     }
                 }
             },
