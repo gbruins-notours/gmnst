@@ -109,12 +109,11 @@ internals.after = function (server, next) {
                 let p = isObject(product) ? product.toJSON() : {};
                 let urlImages = 'https://www.gmnst.com/static/images/';
 
-                console.log("PROD JSON", p)
-
                 return reply.view('views/socialshare', {
                     title: p.title || 'Welcome to Gmnst.com',
                     description: p.description_short || '',
-                    image: p.featured_pic ? `${urlImages}product/${p.featured_pic}` : `${urlImages}logo_header.png`
+                    image: p.featured_pic ? `${urlImages}product/${p.featured_pic}` : `${urlImages}logo_header.png`,
+                    url: `https://www.gmnst.com/product/share?id=${request.query.id}`
                 });
             })
             .catch((err) => {
