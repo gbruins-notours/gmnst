@@ -103,25 +103,28 @@ internals.after = function (server, next) {
      ************************************/
 
     internals.productShare = (request, reply) => {
-        console.log("IN PRODUCT SHARE", request.query);
+        let uriParts = request.query.uri.split('/');
+        let seoUri = uriParts[uriParts.length - 1];
 
-        // internals
-        //     .getProductByAttribute('id', request.query.id)
-        //     .then((product) => {
-        //         let p = isObject(product) ? product.toJSON() : {};
-        //         let urlImages = 'https://www.gmnst.com/static/images/';
+        console.log("IN PRODUCT SHARE", request.query.uri, seoUri);
 
-        //         return reply.view('views/socialshare', {
-        //             title: p.title || 'Welcome to Gmnst.com',
-        //             description: p.description_short || '',
-        //             image: p.featured_pic ? `${urlImages}product/${p.featured_pic}` : `${urlImages}logo_header.png`,
-        //             url: `https://www.gmnst.com/product/share?id=${request.query.id}`
-        //         });
-        //     })
-        //     .catch((err) => {
-        //         global.logger.error(err);
-        //         reply(Boom.badRequest(err));
-        //     });
+        internals
+            .getProductByAttribute('seo_uri', seoUri)
+            .then((product) => {
+                let p = isObject(product) ? product.toJSON() : {};
+                let urlImages = 'https://www.gmnst.com/static/images/';
+
+                return reply.view('views/socialshare', {
+                    title: p.title || 'Welcome to Gmnst.com',
+                    description: p.description_short || '',
+                    image: p.featured_pic ? `${urlImages}product/${p.featured_pic}` : `${urlImages}logo_header.png`,
+                    url: `https://www.gmnst.com/${request.query.uri}`
+                });
+            })
+            .catch((err) => {
+                global.logger.error(err);
+                reply(Boom.badRequest(err));
+            });
     };
 
 
