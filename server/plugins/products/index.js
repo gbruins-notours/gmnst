@@ -196,7 +196,7 @@ internals.after = function (server, next) {
                     query: {
                         id: Joi.string().max(100)
                     }
-                },
+                }
             },
             handler: internals.productShare
         },
