@@ -160,6 +160,7 @@ export default {
                                  :autoplayHoverPause="true"
                                  :navigationEnabled="true"
                                  :perPage="1"
+                                 :loop="true"
                                  paginationColor="#cacac8"
                                  paginationActiveColor="#ed198a">
                           <slide v-for="(pic, key) in productPics" :key="key">
