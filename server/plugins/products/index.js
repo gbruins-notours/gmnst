@@ -106,8 +106,6 @@ internals.after = function (server, next) {
         let uriParts = request.query.uri.split('/');
         let seoUri = uriParts[uriParts.length - 1];
 
-        console.log("IN PRODUCT SHARE", request.query.uri, seoUri);
-
         internals
             .getProductByAttribute('seo_uri', seoUri)
             .then((product) => {
