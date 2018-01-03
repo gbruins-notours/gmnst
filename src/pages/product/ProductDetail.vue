@@ -279,7 +279,7 @@ export default {
 
     .fa {
         font-size: 25px;
-        margin-right: 10px;
+        margin-right: 20px;
         cursor: pointer;
     }
 }
