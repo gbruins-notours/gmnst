@@ -58,19 +58,27 @@ exports.config = {
             // grid with only 5 firefox instances available you can make sure that not more than
             // 5 instances get started at a time.
             maxInstances: 5,
-            //
             browserName: 'firefox',
-            platform: 'Windows 10'
+            platform: 'Windows 10',
+            'tunnel-identifier': process.env.TRAVIS_JOB_NUMBER,
+            build: process.env.TRAVIS_BUILD_NUMBER,
+            name: 'integration'
         },
         {
             browserName: 'chrome',
             platform: 'Windows 10',
-            version: '47'
+            version: '47',
+            'tunnel-identifier': process.env.TRAVIS_JOB_NUMBER,
+            build: process.env.TRAVIS_BUILD_NUMBER,
+            name: 'integration'
         },
         {
             browserName: 'internet explorer',
             platform: 'Windows 10',
-            version: '11.0'
+            version: '11.0',
+            'tunnel-identifier': process.env.TRAVIS_JOB_NUMBER,
+            build: process.env.TRAVIS_BUILD_NUMBER,
+            name: 'integration'
         }
     ],
     //
@@ -108,7 +116,13 @@ exports.config = {
     //
     // Default timeout for all waitFor* commands.
     waitforTimeout: 10000,
-    //
+
+    // https://wiki.saucelabs.com/display/DOCS/Test+Configuration+Options#TestConfigurationOptions-IdleTestTimeout
+    idleTimeout: 90,
+
+    // https://wiki.saucelabs.com/display/DOCS/Test+Configuration+Options#TestConfigurationOptions-MaximumTestDuration
+    maxDuration: 1800,
+
     // Default timeout in milliseconds for request
     // if Selenium Grid doesn't send response
     connectionRetryTimeout: 90000,

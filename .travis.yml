@@ -11,6 +11,9 @@ cache:
   directories:
     - node_modules
 
+addons:
+  sauce_connect: true
+
 install:
   - sudo bash -c "$(curl -fsSL https://s3.amazonaws.com/tools.nanobox.io/bootstrap/ci.sh)"
 
@@ -111,6 +114,7 @@ script:
   - nanobox run npm run knex:migrate
   - nanobox run npm run knex:seed
   - nanobox run npm run test:server
+  - nanobox run npm run test:e2e
 
 after_success:
   - nanobox deploy
