@@ -4,6 +4,8 @@ test/client/unit/coverage
 test/client/e2e/reports
 *.env
 app.yaml
+wdio
+hs_err_pid*
 
 .DS_Store
 .idea
