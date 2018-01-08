@@ -52,14 +52,27 @@ exports.config = {
     // Sauce Labs platform configurator - a great tool to configure your capabilities:
     // https://docs.saucelabs.com/reference/platforms-configurator
     //
-    capabilities: [{
-        // maxInstances can get overwritten per capability. So if you have an in-house Selenium
-        // grid with only 5 firefox instances available you can make sure that not more than
-        // 5 instances get started at a time.
-        maxInstances: 5,
-        //
-        browserName: 'firefox'
-    }],
+    capabilities: [
+        {
+            // maxInstances can get overwritten per capability. So if you have an in-house Selenium
+            // grid with only 5 firefox instances available you can make sure that not more than
+            // 5 instances get started at a time.
+            maxInstances: 5,
+            //
+            browserName: 'firefox',
+            platform: 'Windows 10'
+        },
+        {
+            browserName: 'chrome',
+            platform: 'Windows 10',
+            version: '47'
+        },
+        {
+            browserName: 'internet explorer',
+            platform: 'Windows 10',
+            version: '11.0'
+        }
+    ],
     //
     // ===================
     // Test Configurations
