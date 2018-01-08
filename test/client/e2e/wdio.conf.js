@@ -61,24 +61,21 @@ exports.config = {
             browserName: 'firefox',
             platform: 'Windows 10',
             'tunnel-identifier': process.env.TRAVIS_JOB_NUMBER,
-            build: process.env.TRAVIS_BUILD_NUMBER,
-            name: 'integration'
+            build: process.env.TRAVIS_BUILD_NUMBER
         },
         {
             browserName: 'chrome',
             platform: 'Windows 10',
             version: '47',
             'tunnel-identifier': process.env.TRAVIS_JOB_NUMBER,
-            build: process.env.TRAVIS_BUILD_NUMBER,
-            name: 'integration'
+            build: process.env.TRAVIS_BUILD_NUMBER
         },
         {
             browserName: 'internet explorer',
             platform: 'Windows 10',
             version: '11.0',
             'tunnel-identifier': process.env.TRAVIS_JOB_NUMBER,
-            build: process.env.TRAVIS_BUILD_NUMBER,
-            name: 'integration'
+            build: process.env.TRAVIS_BUILD_NUMBER
         }
     ],
     //
