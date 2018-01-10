@@ -12,11 +12,9 @@ import VueI18n from 'vue-i18n'
 import translations from './i18n'
 
 // Bugsnag:
-console.log("ENV", process.env)
 if(process.env.NODE_ENV === 'production' && process.env.BUG_SNAG_API_KEY) {
-    const bugsnagClient = bugsnag(process.env.BUG_SNAG_API_KEY)
+    const bugsnagClient = bugsnag(process.env.BUG_SNAG_API_KEY);
     bugsnagClient.use(bugsnagVue(Vue));
-    bugsnagClient.notify(new Error('Test error from prod'))
 }
 
 // register global utility filters.
