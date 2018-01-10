@@ -22,7 +22,8 @@ let webpackConfig = merge(baseConfig, {
         // The DefinePlugin allows you to create global constants which can be configured at compile time.
         new webpack.DefinePlugin({
             'process.env': {
-                NODE_ENV: '"production"'
+                NODE_ENV: '"production"',
+                BUG_SNAG_API_KEY: JSON.stringify(process.env.BUG_SNAG_API_KEY)
             }
         }),
 

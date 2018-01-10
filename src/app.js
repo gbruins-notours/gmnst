@@ -4,10 +4,19 @@ import Vue from 'vue'
 import {sync} from 'vuex-router-sync'
 import { createStore } from './store'
 import { createRouter } from './router'
+import bugsnag from 'bugsnag-js'
+import bugsnagVue from 'bugsnag-vue'
 import App from './App.vue'
 import * as filters from './util/filters'
 import VueI18n from 'vue-i18n'
 import translations from './i18n'
+
+// Bugsnag:
+if(process.env.NODE_ENV === 'production' && process.env.BUG_SNAG_API_KEY) {
+    const bugsnagClient = bugsnag(process.env.BUG_SNAG_API_KEY)
+    bugsnagClient.use(bugsnagVue(Vue));
+    bugsnagClient.notify(new Error('Test error from prod'))
+}
 
 // register global utility filters.
 Object.keys(filters).forEach(key => {
@@ -16,7 +25,6 @@ Object.keys(filters).forEach(key => {
 
 Vue.use(VueI18n)
 Vue.config.productionTip = false
-
 
 // Expose a factory function that creates a fresh set of store, router,
 // app instances on each call (which is called for each SSR request)

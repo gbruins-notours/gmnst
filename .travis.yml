@@ -51,6 +51,9 @@ install:
   - nanobox evar add local BRAINTREE_PUBLIC_KEY=$BRAINTREE_PUBLIC_KEY
   - nanobox evar add BRAINTREE_PUBLIC_KEY=$BRAINTREE_PUBLIC_KEY
 
+  # BUG_SNAG_API_KEY (production only)
+  - nanobox evar add BUG_SNAG_API_KEY=$BUG_SNAG_API_KEY
+
   # CART_TOKEN_SECRET
   - nanobox evar add local CART_TOKEN_SECRET=$CART_TOKEN_SECRET
   - nanobox evar add CART_TOKEN_SECRET=$CART_TOKEN_SECRET
