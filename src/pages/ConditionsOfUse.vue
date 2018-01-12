@@ -1,38 +1,40 @@
 <script>
-    import PageHeader from '@/components/PageHeader';
-    import BrandName from '@/components/BrandName'
-    import UtilityService from '@/utility_service.js'
+import DefaultLayout from '@/layouts/DefaultLayout'
+import PageHeader from '@/components/PageHeader';
+import BrandName from '@/components/BrandName'
+import UtilityService from '@/utility_service.js'
 
-    let utilityService = new UtilityService();
+let utilityService = new UtilityService();
 
-    export default {
-        components: {
-            PageHeader,
-            BrandName
-        },
+export default {
+    components: {
+        DefaultLayout,
+        PageHeader,
+        BrandName
+    },
 
-        data: function() {
-            return {
-                siteName: utilityService.getSiteName(),
-                siteUrl: utilityService.getSiteUrl(),
-                helpEmailAddress: utilityService.getHelpEmailAddress()
-            }
-        },
+    data: function() {
+        return {
+            siteName: utilityService.getSiteName(),
+            siteUrl: utilityService.getSiteUrl(),
+            helpEmailAddress: utilityService.getHelpEmailAddress()
+        }
+    },
 
-        metaInfo() {
-            return {
-                title: this.$t('Conditions of Use'),
-                meta: [
-                    { vmid: 'description', name: 'description', content: `Conditions of Use for gmnst.com` }
-                ]
-            }
+    metaInfo() {
+        return {
+            title: this.$t('Conditions of Use'),
+            meta: [
+                { vmid: 'description', name: 'description', content: `Conditions of Use for gmnst.com` }
+            ]
         }
     }
+}
 </script>
 
 
 <template>
-    <section>
+    <default-layout>
         <page-header :title="$t('Conditions of Use')"></page-header>
 
         <div class="container priv">
@@ -273,7 +275,7 @@
                 they are illegal is prohibited. Those who choose to access the Site from other locations do so on their own volition and 
                 are responsible for compliance with applicable laws.</p>
         </div>
-    </section>
+    </default-layout>
 </template>
 
 <style lang="scss">

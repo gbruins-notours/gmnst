@@ -1,4 +1,5 @@
 <script>
+import DefaultLayout from '@/layouts/DefaultLayout'
 import ProductCard from '@/components/product/ProductCard'
 import ProductService from '@/pages/product/product_service.js'
 
@@ -8,6 +9,7 @@ export default {
     props: ['id'],
 
     components: {
+        DefaultLayout,
         ProductCard
     },
 
@@ -102,13 +104,15 @@ export default {
 </script>
 
 <template>
-    <section class="section container is-fluid">
-        <div class="columns is-multiline">
-            <div class="column is-4" v-for="product in products" :key="product.id">
-                <span v-on:click="goToDetails(product)" class="cursorPointer">
-                    <product-card :product="product"></product-card>
-                </span>
+    <default-layout>
+        <section class="section container is-fluid">
+            <div class="columns is-multiline">
+                <div class="column is-4" v-for="product in products" :key="product.id">
+                    <span v-on:click="goToDetails(product)" class="cursorPointer">
+                        <product-card :product="product"></product-card>
+                    </span>
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
+    </default-layout>
 </template>

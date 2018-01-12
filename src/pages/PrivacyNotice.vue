@@ -1,36 +1,38 @@
 <script>
-    import PageHeader from '@/components/PageHeader'
-    import SiteName from '@/components/SiteName'
-    import UtilityService from '@/utility_service.js'
+import DefaultLayout from '@/layouts/DefaultLayout'
+import PageHeader from '@/components/PageHeader'
+import SiteName from '@/components/SiteName'
+import UtilityService from '@/utility_service.js'
 
-    let utilityService = new UtilityService();
+let utilityService = new UtilityService();
 
-    export default {
-        components: {
-            PageHeader,
-            SiteName
-        },
+export default {
+    components: {
+        DefaultLayout,
+        PageHeader,
+        SiteName
+    },
 
-        data: function() {
-            return {
-                helpEmailAddress: utilityService.getHelpEmailAddress()
-            }
-        },
+    data: function() {
+        return {
+            helpEmailAddress: utilityService.getHelpEmailAddress()
+        }
+    },
 
-        metaInfo() {
-            return {
-                title: this.$t('Privacy Notice'),
-                meta: [
-                    { vmid: 'description', name: 'description', content: `Privacy Notice for gmnst.com` }
-                ]
-            }
+    metaInfo() {
+        return {
+            title: this.$t('Privacy Notice'),
+            meta: [
+                { vmid: 'description', name: 'description', content: `Privacy Notice for gmnst.com` }
+            ]
         }
     }
+}
 </script>
 
 
 <template>
-    <section>
+    <default-layout>
         <page-header :title="$t('Privacy Notice')"></page-header>
 
         <div class="container priv">
@@ -219,7 +221,7 @@
             change, or remove portions of this Policy when we feel it is appropriate to do so. Whenever we update this Policy we will change 
             the date on the Policy to indicate when the changes were made.
         </div>
-    </section>
+    </default-layout>
 </template>
 
 

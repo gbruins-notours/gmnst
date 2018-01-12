@@ -1,6 +1,7 @@
 <script>
     import Vue from 'vue'
     import { mapGetters } from 'vuex'
+    import DefaultLayout from '@/layouts/DefaultLayout'
     import CheckoutWizardBar from '@/components/checkout/CheckoutWizardBar'
     import ShippingAddressStep from '@/components/checkout/StepShippingAddress'
     import ShippingMethodStep from '@/components/checkout/StepShippingMethod'
@@ -11,6 +12,7 @@
 
     export default {
         components: {
+            DefaultLayout,
             CheckoutWizardBar,
             ShippingAddressStep,
             ShippingMethodStep,
@@ -90,7 +92,7 @@
 
 
 <template>
-    <div>
+    <default-layout>
         <section v-if="cart.num_items" class="container-wizard">
             <div class="container-skinny">
                 <checkout-wizard-bar :step="currentStep" @change="checkoutStepChanged"></checkout-wizard-bar>
@@ -110,7 +112,7 @@
                 <component v-bind:is="stepComponent" @done="componentDone"></component>
             </template>
         </section>
-    </div>
+    </default-layout>
 </template>
 
 

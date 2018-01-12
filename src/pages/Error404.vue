@@ -1,11 +1,16 @@
 <script>
-    export default{
+import DefaultLayout from '@/layouts/DefaultLayout'
+
+export default{
+    components: {
+        DefaultLayout
     }
+}
 </script>
 
 
 <template>
-    <div>
+    <default-layout>
         404 Error
-    </div>
+    </default-layout>
 </template>

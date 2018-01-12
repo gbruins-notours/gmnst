@@ -1,11 +1,8 @@
 <script>
 import Vue from 'vue'
-import Promise from 'bluebird';
-import { mapGetters } from 'vuex'
-import { mapActions } from 'vuex';
+import { mapGetters, mapActions } from 'vuex'
 import isObject from 'lodash.isobject'
-import AppHeader from '@/components/AppHeader'
-import AppFooter from '@/components/AppFooter'
+// import DefaultLayout from '@/layouts/default'
 import ShoppingCartService from './pages/cart/shopping_cart_service.js'
 import UtilityService from './utility_service.js'
 
@@ -30,10 +27,9 @@ export default {
         ]
     },
 
-    components: {
-        AppHeader,
-        AppFooter
-    },
+    // components: {
+    //     DefaultLayout
+    // },
 
     computed: {
         ...mapGetters([
@@ -85,11 +81,7 @@ export default {
 
 <template>
     <div id="app">
-        <app-header></app-header>
-        <main>
-            <router-view></router-view>
-        </main>
-        <app-footer></app-footer>
+        <router-view></router-view>
     </div>
 </template>
 
@@ -98,6 +90,12 @@ export default {
     @import "assets/css/base";
 
     #app {
+        display: flex;
+        min-height: 100vh;
+        flex-direction: column;
+    }
+
+    .layoutContainer {
         display: flex;
         min-height: 100vh;
         flex-direction: column;

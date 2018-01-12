@@ -3,15 +3,17 @@
     import { mapGetters } from 'vuex'
     import isObject from 'lodash.isobject'
     import { Button } from 'element-ui'
-    import PageHeader from '../../components/PageHeader.vue'
-    import CartItems from '../../components/cart/CartItems'
-    import CartTotalsTable from '../../components/cart/CartTotalsTable'
-    import KeepShoppingButton from '../../components/cart/KeepShoppingButton'
+    import DefaultLayout from '@/layouts/DefaultLayout'
+    import PageHeader from '@/components/PageHeader.vue'
+    import CartItems from '@/components/cart/CartItems'
+    import CartTotalsTable from '@/components/cart/CartTotalsTable'
+    import KeepShoppingButton from '@/components/cart/KeepShoppingButton'
 
     Vue.use(Button);
 
     export default {
         components: {
+            DefaultLayout,
             CartItems,
             CartTotalsTable,
             PageHeader,
@@ -61,7 +63,7 @@
 
 
 <template>
-    <section>
+    <default-layout>
         <page-header :title="$t('Shopping Cart')"></page-header>
 
         <div class="container">
@@ -95,5 +97,5 @@
                 <keep-shopping-button></keep-shopping-button>
             </div>
         </div>
-    </section>
+    </default-layout>
 </template>
