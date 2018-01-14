@@ -34,6 +34,16 @@ Vue.use(VueImg, {
 Vue.prototype.$notify = Notification;
 let currentNotification = null;
 
+
+function showNotification(Notification) {
+    if(currentNotification) {
+        currentNotification.close();
+    }
+
+    currentNotification = Notification
+}
+
+
 export default {
     components: {
         DefaultLayout,
@@ -45,7 +55,7 @@ export default {
 
     data() {
         return {
-            product: {},
+            product: null,
             sizeOptions: [],
             productPics: [],
             selectedSize: null,
@@ -60,10 +70,10 @@ export default {
 
     computed: {
         productTitle() {
-            return this.product.title;
+            return this.product ? this.product.title : '';
         },
         productDesc() {
-            return this.product.description_long;
+            return this.product ? this.product.description_long : '';
         },
         mediaPicture() {
             return `${this.siteUrl}${this.productPics[0]}`
@@ -72,25 +82,25 @@ export default {
 
     methods: {
         addToCart: function() {
-            if(currentNotification) {
-                currentNotification.close();
-            }
-
             if (!this.selectedSize) {
-                currentNotification = this.$notify({
-                    type: 'error',
-                    title: this.$t('Please select a size'),
-                    message: this.$t('We want to make sure it fits!'),
-                    duration: 0
-                });
+                showNotification(
+                    this.$notify({
+                        type: 'error',
+                        title: this.$t('Please select a size'),
+                        message: this.$t('We want to make sure it fits!'),
+                        duration: 0
+                    })
+                )
             }
             else if (!this.selectedQty) {
-                currentNotification = this.$notify({
-                    type: 'error',
-                    title: this.$t('Please select a quantity'),
-                    message: this.$t('Thanks!'),
-                    duration: 0
-                });
+                showNotification(
+                    this.$notify({
+                        type: 'error',
+                        title: this.$t('Please select a quantity'),
+                        message: this.$t('Thanks!'),
+                        duration: 0
+                    })
+                )
             }
             else {
                 this.isLoading = true;
@@ -119,6 +129,10 @@ export default {
         productService
             .getProductBySeoUri(this.$route.params.itemId)
             .then((product) => {
+                if(!product) {
+                    throw new Error(this.$t('Product not found'));
+                }
+
                 this.product = product;
 
                 productService.buildSizeOptions(product).then((result) => {
@@ -128,6 +142,16 @@ export default {
                 productService.buildPictures(product).then((pics) => {
                     this.productPics = pics;
                 });
+            })
+            .catch((e) => {
+                showNotification(
+                    this.$notify({
+                        type: 'error',
+                        title: e.message,
+                        // message: null,
+                        duration: 0
+                    })
+                )
             })
             .finally(() => {
                 this.pageIsLoading = false;
@@ -144,7 +168,7 @@ export default {
                 { name: 'og:title', content: this.productTitle },
                 { name: 'og:type', content: 'website' },
                 { name: 'og:image', content: this.mediaPicture },
-                { name: 'og:description', content: this.product.description_long },
+                { name: 'og:description', content: this.product ? this.product.description_long: '' },
             ]
         }
     }
@@ -154,7 +178,7 @@ export default {
 
 <template>
     <default-layout>
-        <div class="section">
+        <div v-if="this.product" class="section v-cloak">
             <div class="container">
                 <div class="columns">
                     <div class="column is-6">

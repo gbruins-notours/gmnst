@@ -112,6 +112,7 @@ const translations = {
     'PRODUCT_SUBTYPE_HAT': 'Hat | Hats',
     'PRODUCT_SUBTYPE_TOP': 'Top | Tops',
     'PRODUCT_TYPE_APPAREL': 'Apparel',
+    'Product not found': 'Product not found',
 
     'Quantity': 'Quantity',
 

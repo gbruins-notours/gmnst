@@ -75,6 +75,10 @@ ul.disc {
     list-style-position: outside;
 }
 
+[v-cloak] {
+    display: none
+}
+
 .pageContainer {
     padding: 20px 0 60px 0;
 }
