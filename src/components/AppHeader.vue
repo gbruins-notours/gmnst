@@ -180,7 +180,6 @@
         align-items: center;
         color: #02182B;
         margin-left: 20px;
-        
     }
 
     .Header-image {

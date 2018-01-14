@@ -20,6 +20,8 @@ const Error404 = () => System.import('@/pages/Error404')
 
 // Admin pages
 const AdminHome = () => System.import('@/pages/admin/AdminHome.vue')
+const AdminProducts = () => System.import('@/pages/admin/AdminProducts.vue')
+const AdminReports = () => System.import('@/pages/admin/AdminReports.vue')
 
 
 // import Home from '@/pages/Home'
@@ -98,8 +100,18 @@ export function createRouter () {
             // Admin Routes
             {
                 name: 'adminHome',
-                path: '/admin',
+                path: '/acts',
                 component: AdminHome
+            },
+            {
+                name: 'adminProducts',
+                path: '/acts/products',
+                component: AdminProducts
+            },
+            {
+                name: 'adminReports',
+                path: '/acts/reports',
+                component: AdminReports
             }
         ]
     })
