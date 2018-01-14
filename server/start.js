@@ -12,6 +12,7 @@ internals.composeOptions = {
 Server.init(manifest, internals.composeOptions, (err, server) => {
     if (err) {
         global.logger.error(err);
+        global.bugsnag(err);
     }
     Hoek.assert(!err, err);
 

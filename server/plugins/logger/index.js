@@ -1,11 +1,28 @@
 const winston = require('winston');
 const RotateFile = require('winston-daily-rotate-file');
 const moment = require('moment');
+const Promise = require('bluebird');
 const fs = require('fs');
 const path = require('path');
 const logsDirectory = path.join(__dirname, '../../../dist', 'logs');
+const bugsnag = require('bugsnag')
+
 
 exports.register = (server, options, next) => {
+
+    // Bugsnag setup:
+    bugsnag.register(process.env.BUG_SNAG_API_KEY);
+    global.bugsnag = function() {
+        let args = arguments;
+
+        return new Promise((resolve, reject) => {
+            if(process.env.NODE_ENV === 'production') {
+                bugsnag.notify(args);
+            }
+            resolve();
+        });
+    };
+    
      
     if (!fs.existsSync(logsDirectory)) {
         fs.mkdirSync(logsDirectory);

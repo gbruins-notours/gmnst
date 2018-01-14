@@ -184,6 +184,7 @@ exports.register = (server, options, next) => {
                         })
                         .catch((err) => {
                             global.logger.error(err);
+                            global.bugsnag(err);
                             reply(Boom.badRequest(err));
                         });
                 }
@@ -244,6 +245,7 @@ exports.register = (server, options, next) => {
                         })
                         .catch((err) => {
                             global.logger.error(err);
+                            global.bugsnag(err);
                             reply(Boom.badRequest(err));
                         });
                 }

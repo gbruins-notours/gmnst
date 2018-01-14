@@ -71,7 +71,9 @@ internals.after = function (server, next) {
     internals.savePayment = (cart_id, transactionJson) => {
         return new Promise((resolve, reject) => {
             if(!isObject(transactionJson) || !isObject(transactionJson.transaction)) {
-                global.logger.error('An error occurred while processing the transaction: transactionJson.transaction is not an object')
+                let msg = 'An error occurred while processing the transaction: transactionJson.transaction is not an object';
+                global.logger.error(msg);
+                global.bugsnag(msg);
                 return reject('An error occurred while processing the transaction.');
             }
 
@@ -87,6 +89,7 @@ internals.after = function (server, next) {
                 })
                 .catch((err) => {
                     global.logger.error(err);
+                    global.bugsnag(err);
                     reject(err);
                 });
         });
@@ -177,6 +180,7 @@ internals.after = function (server, next) {
             })
             .catch((err) => {
                 global.logger.error(err);
+                global.bugsnag(err);
                 reply(Boom.badRequest(err));
             });
     };
@@ -190,6 +194,7 @@ internals.after = function (server, next) {
             })
             .catch((err) => {
                 global.logger.error(err);
+                global.bugsnag(err);
                 reply(Boom.notFound(err));
             });
     };

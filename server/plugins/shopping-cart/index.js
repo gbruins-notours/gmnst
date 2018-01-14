@@ -152,6 +152,7 @@ internals.after = function (server, next) {
                 .then(resolve)
                 .catch((err) => {
                     global.logger.error(err);
+                    global.bugsnag(err);
                     reject(err);
                 });
         });
@@ -383,10 +384,12 @@ internals.after = function (server, next) {
                 server.plugins.Payments
                     .savePayment(cartJson.id, transactionObj)
                     .catch((err) => {
+                        let msg = `ERROR SAVING PAYMENT INFO: ${err}`;
                         // Catching the error here and not letting it fall through 
                         // to the catch block below because we do not want this 
                         // failure returning in the API response.  It will be logged only.
-                        global.logger.error(`ERROR SAVING PAYMENT INFO: ${err}`)
+                        global.logger.error(msg)
+                        global.bugsnag(msg);
                     });
 
 
@@ -406,6 +409,7 @@ internals.after = function (server, next) {
                 )
                 .catch((err) => {
                     global.logger.error(err);
+                    global.bugsnag(err);
                 });
 
 

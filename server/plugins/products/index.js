@@ -121,6 +121,7 @@ internals.after = function (server, next) {
             })
             .catch((err) => {
                 global.logger.error(err);
+                global.bugsnag(err);
                 reply(Boom.badRequest(err));
             });
     };
@@ -134,6 +135,7 @@ internals.after = function (server, next) {
             })
             .catch((err) => {
                 global.logger.error(err);
+                global.bugsnag(err);
                 reply(Boom.badRequest(err));
             });
     };
@@ -147,6 +149,7 @@ internals.after = function (server, next) {
             })
             .catch((err) => {
                 global.logger.error(err);
+                global.bugsnag(err);
                 reply(Boom.badRequest(err));
             });
     };
@@ -170,6 +173,7 @@ internals.after = function (server, next) {
             })
             .catch((err) => {
                 global.logger.error(err);
+                global.bugsnag(err);
                 reply(Boom.notFound(err));
             });
     };
