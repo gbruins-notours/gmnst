@@ -19,6 +19,7 @@ const Returns = () => System.import('@/pages/Returns')
 const Error404 = () => System.import('@/pages/Error404')
 
 // Admin pages
+const Login = () => System.import('@/pages/admin/Login.vue')
 const AdminHome = () => System.import('@/pages/admin/AdminHome.vue')
 const AdminProducts = () => System.import('@/pages/admin/AdminProducts.vue')
 const AdminReports = () => System.import('@/pages/admin/AdminReports.vue')
@@ -102,6 +103,11 @@ export function createRouter () {
                 name: 'adminHome',
                 path: '/acts',
                 component: AdminHome
+            },
+            {
+                name: 'login',
+                path: '/acts/login',
+                component: Login
             },
             {
                 name: 'adminProducts',
