@@ -19,10 +19,12 @@ const Returns = () => System.import('@/pages/Returns')
 const Error404 = () => System.import('@/pages/Error404')
 
 // Admin pages
-const Login = () => System.import('@/pages/admin/Login.vue')
-const AdminHome = () => System.import('@/pages/admin/AdminHome.vue')
-const AdminProducts = () => System.import('@/pages/admin/AdminProducts.vue')
-const AdminReports = () => System.import('@/pages/admin/AdminReports.vue')
+const Login = () => System.import('@/pages/admin/Login')
+const AdminHome = () => System.import('@/pages/admin/AdminHome')
+const AdminProducts = () => System.import('@/pages/admin/AdminProducts')
+const AdminReports = () => System.import('@/pages/admin/AdminReports')
+
+import { requireAuth } from '@/util/auth';
 
 
 // import Home from '@/pages/Home'
@@ -100,24 +102,34 @@ export function createRouter () {
 
             // Admin Routes
             {
-                name: 'adminHome',
-                path: '/acts',
-                component: AdminHome
-            },
-            {
                 name: 'login',
                 path: '/acts/login',
                 component: Login
             },
             {
+                name: 'adminHome',
+                path: '/acts',
+                component: AdminHome,
+                beforeEnter: requireAuth
+            },
+            {
                 name: 'adminProducts',
                 path: '/acts/products',
-                component: AdminProducts
+                component: AdminProducts,
+                beforeEnter: requireAuth
             },
             {
                 name: 'adminReports',
                 path: '/acts/reports',
-                component: AdminReports
+                component: AdminReports,
+                beforeEnter: (to, from, next) => {
+                    if(requireAuth()) {
+                        next();
+                    }
+                    else {
+                        next(false);
+                    }
+                }
             }
         ]
     })

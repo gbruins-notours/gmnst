@@ -69,8 +69,9 @@ export default {
     <empty-layout>
         <div class="login-container">
             <div class="login-form">
-                <div class="tac mbm">
-                    <img src="/static/images/logo_header.png" alt="gmnst" />
+                <div class="tac mbs">
+                    <!-- <img src="/static/images/logo_header.png" alt="gmnst" /> -->
+                    <img src="/static/images/g.svg" alt="gmnst" class="g" />
                 </div>
 
                 <!-- Username -->
@@ -97,7 +98,7 @@ export default {
                     </div>
                 </div>
 
-                <div>
+                <div class="mtl">
                     <el-button 
                         type="primary" 
                         style="width:100%;" 
@@ -115,17 +116,23 @@ export default {
 .layoutContainer {
     align-items: center;
     justify-content: center;
+    background-color: #363e5d;
 }
 
 .login-container {
     display: flex;
     align-items: center;
     justify-content: center;
+    color: #fff;
 }
 
 .login-form {
     flex: none;
     width: 350px;
+}
+
+.g {
+    width: 75px;
 }
 
 </style>

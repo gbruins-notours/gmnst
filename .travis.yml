@@ -35,6 +35,10 @@ install:
   - nanobox evar add local ADMIN_EMAIL=$ADMIN_EMAIL
   - nanobox evar add ADMIN_EMAIL=$ADMIN_EMAIL
 
+  # ADMIN_PASSWORD
+  - nanobox evar add local ADMIN_PASSWORD=$ADMIN_PASSWORD
+  - nanobox evar add ADMIN_PASSWORD=$ADMIN_PASSWORD
+
   # BRAINTREE_ENVIRONMENT
   - nanobox evar add local BRAINTREE_ENVIRONMENT=$BRAINTREE_ENVIRONMENT
   - nanobox evar add BRAINTREE_ENVIRONMENT=$BRAINTREE_ENVIRONMENT
