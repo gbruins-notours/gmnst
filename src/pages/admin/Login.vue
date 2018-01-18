@@ -100,7 +100,7 @@ export default {
 
                 <div class="mtl">
                     <el-button 
-                        type="primary" 
+                        type="warning" 
                         style="width:100%;" 
                         :loading="loading" 
                         :disabled="this.$v.$invalid"

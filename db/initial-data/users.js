@@ -1,4 +1,5 @@
 const Promise = require('bluebird');
+const faker = require('faker');
 const CoreService = require('../../server/plugins/core/core.service');
 const ApiClientsService = require('../../server/plugins/apiClients/apiClients.service');
 const UserService = require('../../server/plugins/users/users.service');
@@ -20,8 +21,9 @@ exports.seed = (knex) => {
             promises.push(
                 knex(CoreService.DB_TABLES.users)
                     .insert({
-                        client_id: process.env.ADMIN_EMAIL,
-                        client_secret: hashedPassword,
+                        id: faker.random.uuid(),
+                        user_email: process.env.ADMIN_EMAIL,
+                        user_password: hashedPassword,
                         role: UserService.ROLE_ADMIN,
                         is_active: true,
                         created_at: d,
