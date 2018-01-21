@@ -5,6 +5,7 @@ import actions from './actions'
 import mutations from './mutations'
 import getters from './getters'
 import ShoppingCartService from '../pages/cart/shopping_cart_service.js'
+import auth from './modules/auth'
 
 let shoppingCartService = new ShoppingCartService();
 
@@ -51,6 +52,9 @@ export function createStore () {
         getters,
         mutations,
         actions,
-        plugins: [createPersistedState()]
+        plugins: [createPersistedState()],
+        modules: {
+            auth
+        }
     })
 }

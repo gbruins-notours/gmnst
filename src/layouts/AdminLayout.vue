@@ -1,10 +1,11 @@
 <script>
 import Vue from 'vue'
-import { Menu, MenuItem } from 'element-ui'
+import { Menu, MenuItem, Button } from 'element-ui'
 import HeaderSidebarLayout from '@/layouts/HeaderSidebarLayout'
 
 Vue.use(Menu);
 Vue.use(MenuItem);
+Vue.use(Button);
 
 export default {
     components: {
@@ -14,6 +15,11 @@ export default {
     methods: {
         goHome: function() {
             this.$router.push({ name: 'adminProducts' });
+        },
+
+        logout: function() {
+            this.$store.dispatch('LOGOUT');
+            this.$router.push({ name: 'home' });
         }
     }
 }
@@ -44,7 +50,23 @@ export default {
         </template>
 
         <template slot="header">
-            <img class="Header-image cursorPointer" @click="goHome" src="/static/images/logo_header.png" alt="gmnst" />
+            <header role="banner" class="Header">
+                <div class="Header-container">
+                    <div class="Header-brand">
+                        <img class="Header-image cursorPointer" @click="goHome" src="/static/images/logo_header.png" alt="gmnst" />
+                    </div>
+
+                    <nav class="Navigation">
+                        <ul class="Navigation-list">
+                            <li>
+                                <el-button type="warning"
+                                    @click="logout"
+                                    class="colorBlack">{{ $t('LOGOUT') }}</el-button>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </header>
         </template>
 
         <template slot="main">
@@ -64,10 +86,149 @@ export default {
                 margin-right: 10px;
             }
         }
+    }
+
+
+
+    @import "../assets/css/components/_variables.scss";
+    @import "../assets/css/components/_mixins.scss";
+
+    .Header {
+        background-color: #fff;
+        position: relative;
+    }
+
+    .Header-container {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+        flex-direction: row;
+    }
+
+    .Header-brand {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        flex-grow: 1;
+        align-items: center;
+        color: #02182B;
+        margin-left: 20px;
+    }
+
+    .Header-image {
+        display: inline-block;
+        width: 135px;
+        vertical-align: middle;
+    }
+
+    .Header-image {
+        @include grow()
+    }
+    .Header-image:hover {
+        @include growHover()
+    }
+
+    .Navigation {
+        background-color: whitesmoke;
+        color: #010101;
+        width: 100%;
+    }
+
+    .Navigation-list {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-pack: distribute;
+        justify-content: space-around;
+        -ms-flex-item-align: center;
+        align-self: center;
+        margin: 0 20px 0 0;
+        margin: 0;
+
+
+        li {
+            list-style: none;
+            padding: 0;
+            text-transform: uppercase;
+            color: #7a7a7a;
+            font-size: 14px;
+            text-decoration: none;
+            cursor: pointer;
+            padding: 0 10px;
+            // height: 50px;
+            // line-height: 50px;
+            height: 73px; //?
+            line-height: 78px; //?
+
+            &:hover,
+            &:focus {
+                color: #363636;
+            }
+
+            &.active {
+                border-bottom: 3px solid #41b883;
+                color: #000;
+            }
+        }
+    }
+
+
+    @media #{$medium-and-up}  {
+        .Header-container {
+            -ms-flex-wrap: nowrap;
+            flex-wrap: nowrap;
+        }
+        .Header-brand {
+            max-width: 170px;
+        }
+
+        .Navigation {
+            background-color: white;
+            padding: 0;
+            -webkit-box-ordinal-group: 3;
+            -ms-flex-order: 2;
+            order: 2;
+            width: auto;
+            -webkit-box-flex: 2;
+            -ms-flex-positive: 2;
+            flex-grow: 2;
+            -webkit-box-align: center;
+            -ms-flex-align: center;
+            align-items: center;
+            -ms-flex-item-align: center;
+            align-self: center;
+            -webkit-box-pack: end;
+            -ms-flex-pack: end;
+            justify-content: flex-end;
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+        }
+        .Navigation-list {
+            -webkit-box-pack: end;
+            -ms-flex-pack: end;
+            justify-content: flex-end;
+        }
+    }
+
+    @media #{$medium-and-down}  {
+        .Navigation-list li {
+            height: 50px;
+            line-height: 50px;
+        }
 
         .Header-image {
-            width: 135px;
-            vertical-align: middle;
+            width: 140px;
+        }
+
+        // overriding a weird element UI setting:
+        .el-button+.el-button {
+            margin-left: 5px;
+            margin-right: 5px;
         }
     }
 </style>

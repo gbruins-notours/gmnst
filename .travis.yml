@@ -39,6 +39,18 @@ install:
   - nanobox evar add local ADMIN_PASSWORD=$ADMIN_PASSWORD
   - nanobox evar add ADMIN_PASSWORD=$ADMIN_PASSWORD
 
+  # AUTH0_CLIENT_ID
+  - nanobox evar add local AUTH0_CLIENT_ID=$AUTH0_CLIENT_ID
+  - nanobox evar add AUTH0_CLIENT_ID=$AUTH0_CLIENT_ID
+  
+  # AUTH0_CLIENT_SECRET
+  - nanobox evar add local AUTH0_CLIENT_SECRET=$AUTH0_CLIENT_SECRET
+  - nanobox evar add AUTH0_CLIENT_SECRET=$AUTH0_CLIENT_SECRET
+  
+  # AUTH0_DOMAIN
+  - nanobox evar add local AUTH0_DOMAIN=$AUTH0_DOMAIN
+  - nanobox evar add AUTH0_DOMAIN=$AUTH0_DOMAIN
+
   # BRAINTREE_ENVIRONMENT
   - nanobox evar add local BRAINTREE_ENVIRONMENT=$BRAINTREE_ENVIRONMENT
   - nanobox evar add BRAINTREE_ENVIRONMENT=$BRAINTREE_ENVIRONMENT

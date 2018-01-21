@@ -70,6 +70,7 @@ const translations = {
     'LAST NAME': 'LAST NAME',
     'Last name': 'Last name',
     'Loading...': 'Loading...',
+    'LOGOUT': 'LOGOUT',
 
     'Make sure your address is correct': 'Make sure your address is correct',
 

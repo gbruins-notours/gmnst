@@ -7,8 +7,7 @@ const DB_TABLES = {
     product_artists: 'product_artists',
     product_sizes: 'product_sizes',
     product_pics: 'product_pics',
-    products: 'products',
-    users: 'users'
+    products: 'products'
 };
 
 module.exports.DB_TABLES = DB_TABLES;

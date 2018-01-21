@@ -26,7 +26,12 @@ export default class UtilityService {
     }
 
     getSiteUrl(full) {
-        return full ? 'https://www.gmnst.com' : 'www.gmnst.com';
+        if(process.env.NODE_ENV === 'development') {
+            return full ? 'http://localhost:3000' : 'localhost:3000';
+        }
+        else {
+            return full ? 'https://www.gmnst.com' : 'www.gmnst.com';
+        }
     }
 
     getTwitterUser() {

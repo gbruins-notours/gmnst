@@ -23,21 +23,8 @@ const Login = () => System.import('@/pages/admin/Login')
 const AdminHome = () => System.import('@/pages/admin/AdminHome')
 const AdminProducts = () => System.import('@/pages/admin/AdminProducts')
 const AdminReports = () => System.import('@/pages/admin/AdminReports')
+const AuthZeroCallback = () => System.import('@/pages/admin/AuthZeroCallback')
 
-import { requireAuth } from '@/util/auth';
-
-
-// import Home from '@/pages/Home'
-// import ProductList from '@/pages/product/ProductList'
-// import ProductDetail from '@/pages/product/ProductDetail'
-// import Cart from '@/pages/cart/Cart'
-// import Checkout from '@/pages/checkout/Checkout'
-// import Order from '@/pages/orders/Order'
-// import OrderDetails from '@/pages/orders/OrderDetails'
-// import PrivacyNotice from '@/pages/PrivacyNotice'
-// import ConditionsOfUse from '@/pages/ConditionsOfUse'
-// import Returns from '@/pages/Returns'
-// import Error404 from '@/pages/Error404'
 
 export function createRouter () {
     return new Router({
@@ -109,27 +96,29 @@ export function createRouter () {
             {
                 name: 'adminHome',
                 path: '/acts',
-                component: AdminHome,
-                beforeEnter: requireAuth
+                component: AdminHome
+                // beforeEnter: userIsLoggedIn
             },
             {
                 name: 'adminProducts',
                 path: '/acts/products',
-                component: AdminProducts,
-                beforeEnter: requireAuth
+                component: AdminProducts
+                // beforeEnter: userIsLoggedIn
             },
             {
                 name: 'adminReports',
                 path: '/acts/reports',
-                component: AdminReports,
-                beforeEnter: (to, from, next) => {
-                    if(requireAuth()) {
-                        next();
-                    }
-                    else {
-                        next(false);
-                    }
-                }
+                component: AdminReports
+                // beforeEnter: userIsLoggedIn
+            },
+            {
+                name: 'Callback',
+                path: '/callback',
+                component: AuthZeroCallback
+            },
+            {
+                path: '*',
+                redirect: '/'
             }
         ]
     })

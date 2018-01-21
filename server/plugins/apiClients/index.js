@@ -3,7 +3,6 @@ const jwt = require('jsonwebtoken');
 const Joi = require('joi');
 const Boom = require('boom');
 const Promise = require('bluebird');
-const isObject = require('lodash.isobject');
 const HelperService = require('../../helpers.service');
 const uuidV4 = require('uuid/v4');
 const ApiClientsService = require('./apiClients.service');
