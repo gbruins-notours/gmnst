@@ -6,6 +6,7 @@ import mutations from './mutations'
 import getters from './getters'
 import ShoppingCartService from '../pages/cart/shopping_cart_service.js'
 import auth from './modules/auth'
+import cart from './modules/cart'
 
 let shoppingCartService = new ShoppingCartService();
 
@@ -37,24 +38,16 @@ export function createStore () {
                         PRODUCT_SUBTYPE_HAT: 'hats',
                         PRODUCT_SUBTYPE_TOP: 'tops'
                     }
-                },
-                shippingRatesCache: {
-                    updated: null,
-                    cache: null
                 }
-            },
-
-            // There seems to be an issue with reactivity in the UI
-            // if state properties do not exist by default.  Defining these properties
-            // that need to have immediate UI reactivity solves the issue
-            cart: shoppingCartService.getCartDefaults()
+            }
         },
         getters,
         mutations,
         actions,
         plugins: [createPersistedState()],
         modules: {
-            auth
+            auth,
+            cart
         }
     })
 }
