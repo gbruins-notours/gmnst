@@ -26,9 +26,9 @@ const state = {
 const mutations = {
     LOGIN (state, authResult) {
         if (authResult && authResult.accessToken && authResult.idToken) {
+            state.expires_at = authResult.expiresIn * 1000 + new Date().getTime();
             state.access_token = authResult.accessToken;
             state.id_token = authResult.idToken;
-            state.expires_at = authResult.expiresIn * 1000 + new Date().getTime();
         }
     },
 
@@ -61,9 +61,10 @@ const actions = {
                 }
 
                 if (authResult && authResult.accessToken && authResult.idToken) {
-                    commit('LOGIN', authResult)
-                    return resolve();
+                    commit('LOGIN', authResult);
                 } 
+
+                resolve();
             });
         });
     }
@@ -73,7 +74,7 @@ const getters = {
     /**
      * Checks whether the current time is past the access token's expiry time
      */
-    isAuthenticated: state => {
+    isAuthenticated: (state) => {
         return new Date().getTime() < state.expires_at
     }
 }

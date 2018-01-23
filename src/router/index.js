@@ -26,8 +26,29 @@ const AdminReports = () => System.import('@/pages/admin/AdminReports')
 const AuthZeroCallback = () => System.import('@/pages/admin/AuthZeroCallback')
 
 
+function requireAuth(to, from, next) {
+    if(window.localStorage.vuex) {
+        let json = JSON.parse(window.localStorage.vuex);
+
+        // this seems more reliable than 'store.getters.isAuthenticated'
+        // NOTE:  there seems to be a race condition when attempting to use the
+        // 'isAuthenticated' getter from the auth store ('store.getters.isAuthenticated').  
+        // Using the localStorage value seems to always work.
+        let isLoggedIn = new Date().getTime() < json.auth.expires_at;
+        if (isLoggedIn) {
+            next();
+            return;
+        }
+    }
+
+    next({
+        path: '/'
+    });
+}
+
+
 export function createRouter () {
-    return new Router({
+    const router = new Router({
         mode: 'history',
         scrollBehavior: () => ({ y: 0 }),
         routes: [
@@ -96,20 +117,20 @@ export function createRouter () {
             {
                 name: 'adminHome',
                 path: '/acts',
-                component: AdminHome
-                // beforeEnter: userIsLoggedIn
+                component: AdminHome,
+                beforeEnter: requireAuth
             },
             {
                 name: 'adminProducts',
                 path: '/acts/products',
-                component: AdminProducts
-                // beforeEnter: userIsLoggedIn
+                component: AdminProducts,
+                beforeEnter: requireAuth
             },
             {
                 name: 'adminReports',
                 path: '/acts/reports',
-                component: AdminReports
-                // beforeEnter: userIsLoggedIn
+                component: AdminReports,
+                beforeEnter: requireAuth
             },
             {
                 name: 'Callback',
@@ -121,5 +142,7 @@ export function createRouter () {
                 redirect: '/'
             }
         ]
-    })
+    });
+
+    return router;
 }

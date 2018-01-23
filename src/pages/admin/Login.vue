@@ -1,5 +1,4 @@
 <script>
-import { mapActions } from 'vuex';
 import EmptyLayout from '@/layouts/EmptyLayout'
 
 
@@ -8,14 +7,8 @@ export default {
         EmptyLayout
     },
 
-    methods: {
-        ...mapActions([
-            'LOGIN'
-        ])
-    },
-
     created() {
-        this.LOGIN()
+        this.$store.dispatch('LOGIN')
     }
 }
 </script>
