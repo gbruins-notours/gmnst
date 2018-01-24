@@ -1,6 +1,6 @@
 <script>
     import { mapGetters } from 'vuex'
-    import ShoppingCartService from '../../pages/cart/shopping_cart_service.js'
+    import ShoppingCartService from '@/pages/cart/shopping_cart_service.js'
 
     let shoppingCartService = new ShoppingCartService();
 
@@ -17,24 +17,24 @@
         // Need to use this.$store.state instead
         // Need to use https://stackoverflow.com/questions/45307974/vue-2-vuex-using-state-variables-in-computed-property#45308643
         computed: {
-            ...mapGetters([
-                'cart'
-            ]),
+            ...mapGetters({
+                shoppingCart: 'cart/cart'
+            }),
 
             formattedName() {
-                return shoppingCartService.getFormattedShippingName(this.cart.shipping_firstName, this.cart.shipping_lastName);
+                return shoppingCartService.getFormattedShippingName(this.shoppingCart.shipping_firstName, this.shoppingCart.shipping_lastName);
             },
 
             formattedCityStateZip: function() {
                 return shoppingCartService.getFormattedCityStateZip(
-                    this.cart.shipping_city, 
-                    this.cart.shipping_state,
-                    this.cart.shipping_postalCode
+                    this.shoppingCart.shipping_city, 
+                    this.shoppingCart.shipping_state,
+                    this.shoppingCart.shipping_postalCode
                 );
             },
 
             companyDisplay: function() {
-                return shoppingCartService.getFormattedCompanyName(this.cart.shipping_company);
+                return shoppingCartService.getFormattedCompanyName(this.shoppingCart.shipping_company);
             }
         }
     }
@@ -44,11 +44,11 @@
 <template>
     <div>
         <div>{{ formattedName }}</div>
-        <div v-if="cart.shipping_company">{{ companyDisplay }}</div>
-        <div>{{ cart.shipping_streetAddress }}</div>
-        <div v-if="cart.shipping_extendedAddress">{{ cart.shipping_extendedAddress }}</div>
+        <div v-if="shoppingCart.shipping_company">{{ companyDisplay }}</div>
+        <div>{{ shoppingCart.shipping_streetAddress }}</div>
+        <div v-if="shoppingCart.shipping_extendedAddress">{{ shoppingCart.shipping_extendedAddress }}</div>
         <div>{{ formattedCityStateZip }}</div>
-        <div>{{ cart.shipping_countryCodeAlpha2 }}</div>
-        <div class="pts" v-if="showEmail">{{ cart.shipping_email }}</div>
+        <div>{{ shoppingCart.shipping_countryCodeAlpha2 }}</div>
+        <div class="pts" v-if="showEmail">{{ shoppingCart.shipping_email }}</div>
     </div>
 </template>

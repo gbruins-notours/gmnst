@@ -21,10 +21,10 @@
         },
 
         computed: {
-            ...mapGetters([
-                'numCartItems',
-                'inCheckoutFlow'
-            ]),
+            ...mapGetters({
+                numCartItems: 'cart/numItems',
+                inCheckoutFlow: 'inCheckoutFlow'
+            }),
 
             productInfo: function() {
                 return this.$store.state.app.productInfo || {};

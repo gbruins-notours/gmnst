@@ -47,11 +47,11 @@
         },
 
         computed: {
-            ...mapGetters([
-                'cart',
-                'cartBillingAttributes',
-                'braintreeClientToken'
-            ]),
+            ...mapGetters({
+                shoppingCart: 'cart/cart',
+                billingAttributes: 'cart/billingAttributes',
+                braintreeClientToken: 'braintreeClientToken'
+            }),
 
             paymentMethodButtonEnabled: function() {
                 if(this.paymentMethod === 'PAYPAL' ||
@@ -78,11 +78,10 @@
 
             billingSameAsShipping: {
                 get: function() {
-                    return this.cart.billingSameAsShipping;
+                    return this.shoppingCart.billingSameAsShipping;
                 },
                 set: function(newVal) {
-                    // this.$store.dispatch('CART_BILLING_SAME_AS_SHIPPING', newVal);
-                    this.$store.dispatch('CART_ATTRIBUTE_SET', {
+                    this.$store.dispatch('cart/ATTRIBUTE_SET', {
                         attribute: 'billingSameAsShipping',
                         value: newVal
                     });
@@ -126,7 +125,7 @@
         methods: {
             setBillingData: function() {
                 return new Promise((resolve, reject) => {
-                    if(this.cart.billingSameAsShipping) {
+                    if(this.shoppingCart.billingSameAsShipping) {
                         let shippingKeys = [
                             'firstName',
                             'lastName',
@@ -139,13 +138,13 @@
                             'countryCodeAlpha2'
                         ];
 
-                        let cart = cloneDeep(this.cart);
+                        let cart = cloneDeep(this.shoppingCart);
 
                         shippingKeys.forEach((item) => {
                             cart[`billing_${item}`] = cart[`shipping_${item}`]
                         });
 
-                        this.$store.dispatch('CART_SET', cart).then(resolve);
+                        this.$store.dispatch('cart/CART_SET', cart).then(resolve);
                     }
                     else {
                         resolve();
@@ -171,10 +170,10 @@
             doCheckout: function(nonce) {
                 return shoppingCartService.checkout({
                     nonce: nonce,
-                    ...this.cartBillingAttributes
+                    ...this.billingAttributes
                 })
                 .then((result) => {
-                    this.$store.dispatch('CHECKOUT_CLEANUP');
+                    this.$store.dispatch('cart/CHECKOUT_CLEANUP');
 
                     this.braintree.hostedFieldsInstance.teardown((teardownErr) => {
                         if (teardownErr) {
@@ -406,7 +405,7 @@
         },
 
         created() {
-            if(this.cart.num_items) {
+            if(this.shoppingCart.num_items) {
                 this.getClientToken().then((token) => {
                     let client = require('braintree-web/client');
                     client
@@ -534,7 +533,7 @@
 
         <div class="ptl tac">
             <div class="inlineBlock">
-                <cart-totals-table :cart="cart"
+                <cart-totals-table :cart="shoppingCart"
                                     :show-shipping-cost="true"
                                     :show-sales-tax="true"></cart-totals-table>
             </div>

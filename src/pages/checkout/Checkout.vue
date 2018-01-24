@@ -21,9 +21,9 @@
         },
 
         computed: {
-            ...mapGetters([
-                'cart',
-            ])
+            ...mapGetters({
+                shoppingCart: 'cart/cart',
+            })
         },
 
         data: function() {
@@ -93,14 +93,14 @@
 
 <template>
     <default-layout>
-        <section v-if="cart.num_items" class="container-wizard">
+        <section v-if="shoppingCart.num_items" class="container-wizard">
             <div class="container-skinny">
                 <checkout-wizard-bar :step="currentStep" @change="checkoutStepChanged"></checkout-wizard-bar>
             </div>
         </section>
 
         <section class="container-skinny phm">
-            <div v-if="!cart.num_items" class="fs16 pal tac">
+            <div v-if="!shoppingCart.num_items" class="fs16 pal tac">
                 {{ $t('Your shopping cart does not contain any items.') }}
 
                 <div class="mtl">

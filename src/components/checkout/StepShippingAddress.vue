@@ -26,10 +26,10 @@
         },
 
         computed: {
-            ...mapGetters([
-                'cart',
-                'cartShippingAttributes'
-            ]),
+            ...mapGetters({
+                shoppingCart: 'cart/cart',
+                shippingAttributes: 'cart/shippingAttributes'
+            }),
         },
 
         data: function() {
@@ -41,7 +41,7 @@
 
         methods: {
             updateShippingStateFromValidation: function(obj) {
-                let c = this.cart;
+                let c = this.shoppingCart;
 
                 c.shipping_company = obj.company_name
                 c.shipping_streetAddress = obj.address_line1
@@ -52,13 +52,13 @@
             },
 
             shippingFormDone: function() {
-                delete this.cartShippingAttributes.shipping_total;
-                delete this.cartShippingAttributes.shipping_rate;
+                delete this.shippingAttributes.shipping_total;
+                delete this.shippingAttributes.shipping_rate;
 
                 // This step needs to clear the shipping rate cache because
                 // we are assuming the shipping address has changed and thus
                 // new rates should be retrieved
-                this.$store.dispatch('CART_CLEAR_SHIPPING_RATES_CACHE');
+                this.$store.dispatch('cart/CLEAR_SHIPPING_RATES_CACHE');
 
                 // Setting the shipping address will also calculate the
                 // sales tax for the cart because sales tax calculation requires
@@ -66,7 +66,7 @@
                 // the API can return the shipping/tax/grand total amounts for the 'review'
                 // checkout step
                 return shoppingCartService
-                    .setShippingAddress(this.cartShippingAttributes)
+                    .setShippingAddress(this.shippingAttributes)
                     .then((result) => {
                         // As a convenience to the user keeping the Country and State
                         // values the same as the shipping values, as they are likely the same
@@ -78,7 +78,7 @@
                             }
                         }
 
-                        return this.$store.dispatch('CART_SET', result);
+                        return this.$store.dispatch('cart/CART_SET', result);
                     })
                     .then(() => {
                         this.$emit('done', 'shipping-address-step')
@@ -95,7 +95,7 @@
 
             submitShippingForm: function() {
                 let self = this;
-                let c = this.cart;
+                let c = this.shoppingCart;
 
                 this.shippingFormIsLoading = true;
 

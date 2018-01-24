@@ -113,7 +113,7 @@ export default {
                     }
                 })
                 .then((cartData) => {
-                    this.$store.dispatch('CART_SET', cartData);
+                    this.$store.dispatch('cart/CART_SET', cartData);
                     this.isLoading = false;
                     this.$router.push(`/cart/${this.product.id}`);
                 });

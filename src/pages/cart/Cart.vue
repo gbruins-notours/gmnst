@@ -21,9 +21,9 @@
         },
 
         computed: {
-            ...mapGetters([
-                'cart'
-            ])
+            ...mapGetters({
+                shoppingCart:'cart/cart'
+            })
         },
 
         data: function() {
@@ -40,8 +40,8 @@
 
         created() {
             if(this.$route.params.id) {
-                if(isObject(this.cart) && Array.isArray(this.cart.cart_items)) {
-                    this.cart.cart_items.forEach((item) => {
+                if(isObject(this.shoppingCart) && Array.isArray(this.shoppingCart.cart_items)) {
+                    this.shoppingCart.cart_items.forEach((item) => {
                         if(item.product_id === this.$route.params.id) {
                             this.added_cart_item = item.id;
                         }
@@ -67,7 +67,7 @@
         <page-header :title="$t('Shopping Cart')"></page-header>
 
         <div class="container">
-            <div class="tac ptl" v-if="this.cart.cart_items && this.cart.cart_items.length > 2">
+            <div class="tac ptl" v-if="this.shoppingCart.cart_items && this.shoppingCart.cart_items.length > 2">
                 <el-button type="warning"
                            class="colorBlack"
                            size="large"
@@ -79,12 +79,12 @@
 
                 <div class="mtm clearfix">
                     <div class="floatRight">
-                        <cart-totals-table :cart="cart"></cart-totals-table>
+                        <cart-totals-table :cart="shoppingCart"></cart-totals-table>
                     </div>
                 </div>
             </div>
 
-            <div class="tac mtl" v-if="this.cart.num_items">
+            <div class="tac mtl" v-if="this.shoppingCart.num_items">
                 <el-button type="warning"
                            class="colorBlack"
                            size="large"

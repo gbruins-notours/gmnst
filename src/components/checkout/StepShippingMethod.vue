@@ -31,10 +31,10 @@
         },
 
         computed: {
-            ...mapGetters([
-                'cart',
-                'getShippingRateCache'
-            ])
+            ...mapGetters({
+                shoppingCart: 'cart/cart',
+                shippingRateCache: 'cart/shippingRateCache'
+            })
         },
 
         methods: {
@@ -61,7 +61,7 @@
                     shoppingCartService
                         .setShippingRate(r)
                         .then((shoppingCart) => {
-                            this.$store.dispatch('CART_SET', shoppingCart).then(() => {
+                            this.$store.dispatch('cart/CART_SET', shoppingCart).then(() => {
                                 this.$emit('done', 'shipping-method-step') ;
                                 this.isLoading = false;
                             });
@@ -80,30 +80,30 @@
 
             getShippingRates: function() {
                 return new Promise((resolve, reject) => {
-                    if(this.getShippingRateCache.cache) {
-                        resolve(this.getShippingRateCache.cache)
+                    if(this.shippingRateCache.cache) {
+                        resolve(this.shippingRateCache.cache)
                     }
                     else {
                         shoppingCartService.getShippingRates({
                             validate_address: 'no_validation',
                             ship_to: {
-                                address_line1: this.cart.shipping_streetAddress,
-                                city_locality: this.cart.shipping_city,
-                                state_province: this.cart.shipping_state,
-                                postal_code: this.cart.shipping_postalCode,
-                                country_code: this.cart.shipping_countryCodeAlpha2
+                                address_line1: this.shoppingCart.shipping_streetAddress,
+                                city_locality: this.shoppingCart.shipping_city,
+                                state_province: this.shoppingCart.shipping_state,
+                                postal_code: this.shoppingCart.shipping_postalCode,
+                                country_code: this.shoppingCart.shipping_countryCodeAlpha2
                             },
                             packages: [
                                 {
                                     weight: {
-                                        value: this.cart.product_weight_total,
+                                        value: this.shoppingCart.product_weight_total,
                                         unit: 'ounce'
                                     }
                                 }
                             ]
                         })
                         .then((result) => {
-                            this.$store.dispatch('CART_SET_SHIPPING_RATES_CACHE', result);
+                            this.$store.dispatch('cart/SET_SHIPPING_RATES_CACHE', result);
                             resolve(result);
                         })
                         .catch((result) => {
@@ -141,10 +141,10 @@
                         }
                     });
 
-                    if(isObject(this.cart) 
-                        && isObject(this.cart.shipping_rate) 
-                        && allRateIds.indexOf(this.cart.shipping_rate.rate_id) > -1) {
-                        this.selectedRate = this.cart.shipping_rate.rate_id;
+                    if(isObject(this.shoppingCart) 
+                        && isObject(this.shoppingCart.shipping_rate) 
+                        && allRateIds.indexOf(this.shoppingCart.shipping_rate.rate_id) > -1) {
+                        this.selectedRate = this.shoppingCart.shipping_rate.rate_id;
                     }
                     else {
                         this.selectedRate = lowestId;

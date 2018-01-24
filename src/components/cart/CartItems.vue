@@ -46,10 +46,10 @@
         },
 
         computed: {
-            ...mapGetters([
-                'cart',
-                'app'
-            ])
+            ...mapGetters({
+                shoppingCart: 'cart/cart',
+                app: 'app'
+            })
         },
 
         methods: {
@@ -62,7 +62,7 @@
                         qty
                     })
                     .then((cartData) => {
-                        this.$store.dispatch('CART_SET', cartData);
+                        this.$store.dispatch('cart/CART_SET', cartData);
                         item.qty = qty;
                         loadingInstance.close();
                     });
@@ -76,7 +76,7 @@
                         id
                     })
                     .then((cartData) => {
-                        this.$store.dispatch('CART_SET', cartData);
+                        this.$store.dispatch('cart/CART_SET', cartData);
                         loadingInstance.close();
                     });
             },
@@ -111,11 +111,11 @@
 
 <template>
     <div>
-        <div v-if="!cart.num_items" class="fs16 tac pal">
+        <div v-if="!shoppingCart.num_items" class="fs16 tac pal">
             {{ $t('Your shopping cart does not contain any items.') }}
         </div>
         <div v-else class="ptl">
-            <article v-for="item in cart.cart_items" 
+            <article v-for="item in shoppingCart.cart_items" 
                     :key="item.id" 
                     class="cartItem"
                     :class="{'highlight': highlightItem === item.id, 'fadeout': added_cart_item === item.id}" 

@@ -29,20 +29,20 @@ const mutations = {
             state.cart[key] = val;   
         });
     },
-
-    CART_ATTRIBUTE_SET: (state, config) => {
+    
+    ATTRIBUTE_SET: (state, config) => {
         state.cart[config.attribute] = config.value || null;
     },
-
-    CART_SET_SHIPPING_RATES_CACHE: (state, data) => {
+    
+    SET_SHIPPING_RATES_CACHE: (state, data) => {
         state.shippingRatesCache.updated = new Date().getTime();
         state.shippingRatesCache.cache = data;
     },
-
-    CART_CLEAR_SHIPPING_RATES_CACHE: (state, data) => {
+    
+    CLEAR_SHIPPING_RATES_CACHE: (state, data) => {
         clearShippingRatesCache(state);
     },
-
+    
     CHECKOUT_CLEANUP: (state, data) => {
         state.cart = shoppingCartService.getCartDefaults();
         clearShippingRatesCache(state);
@@ -53,31 +53,27 @@ const actions = {
     CART_SET: ({ commit }, data) => {
         commit('CART_SET', data)
     },
-
-    CART_ATTRIBUTE_SET: ({ commit }, config) => {
+    
+    ATTRIBUTE_SET: ({ commit }, config) => {
         let conf = Array.isArray(config) ? config : [config];
 
         conf.forEach((obj) => {
             if(isObject(obj) && 
                 obj.hasOwnProperty('attribute') && 
                 obj.hasOwnProperty('value')) {
-                commit('CART_ATTRIBUTE_SET', obj)
+                commit('ATTRIBUTE_SET', obj)
             }
         });
     },
-
-    CART_BILLING_SAME_AS_SHIPPING: ({ commit }, sameAsShipping) => {
-        commit('CART_BILLING_SAME_AS_SHIPPING', sameAsShipping)
+    
+    SET_SHIPPING_RATES_CACHE: ({ commit }, data) => {
+        commit('SET_SHIPPING_RATES_CACHE', data)
     },
-
-    CART_SET_SHIPPING_RATES_CACHE: ({ commit }, data) => {
-        commit('CART_SET_SHIPPING_RATES_CACHE', data)
+    
+    CLEAR_SHIPPING_RATES_CACHE: ({ commit }, data) => {
+        commit('CLEAR_SHIPPING_RATES_CACHE', data)
     },
-
-    CART_CLEAR_SHIPPING_RATES_CACHE: ({ commit }, data) => {
-        commit('CART_CLEAR_SHIPPING_RATES_CACHE', data)
-    },
-
+    
     CHECKOUT_CLEANUP: ({ commit }) => {
         commit('CHECKOUT_CLEANUP')
     }
@@ -87,12 +83,12 @@ const getters = {
     cart: (state) => {
         return state.cart;
     },
-
-    numCartItems: (state) => {
+    
+    numItems: (state) => {
         return state.cart.num_items || 0;
     },
-
-    cartShippingAttributes: (state) => {
+    
+    shippingAttributes: (state) => {
         let attrs = {};
 
         Object.keys(state.cart).forEach((key) => {
@@ -103,8 +99,8 @@ const getters = {
 
         return attrs;
     },
-
-    cartBillingAttributes: (state) => {
+    
+    billingAttributes: (state) => {
         let attrs = {};
 
         Object.keys(state.cart).forEach((key) => {
@@ -115,13 +111,14 @@ const getters = {
         
         return attrs;
     },
-
-    getShippingRateCache: (state) => {
+    
+    shippingRateCache: (state) => {
         return state.shippingRatesCache;
     }
 }
   
 export default {
+    namespaced: true,
     state,
     mutations,
     getters,

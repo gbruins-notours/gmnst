@@ -67,7 +67,7 @@ export default {
                 shoppingCartService
                     .getCart()
                     .then((cart) => {
-                        this.$store.dispatch('CART_SET', cart);
+                        this.$store.dispatch('cart/CART_SET', cart);
                     })
                     .catch((error) => {
                         console.log('GET JWT Error', error);

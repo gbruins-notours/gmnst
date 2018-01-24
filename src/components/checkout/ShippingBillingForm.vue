@@ -17,20 +17,20 @@
     function getSetMaker(attr) {
         return {
             get: function() {
-                let val = this.cart[`${this.type}_${attr}`];
+                let val = this.shoppingCart[`${this.type}_${attr}`];
 
                 // the getter gets called whenever a state value changes
                 this.form[attr] = val;
                 this.greenChecks[attr] = !this.$v.form[attr].$invalid;
 
                 if(attr === 'countryCodeAlpha2') {
-                    this.stateSelectEnabled = (isObject(this.cart) && val);
+                    this.stateSelectEnabled = (isObject(this.shoppingCart) && val);
                 }
 
                 return val;
             },
             set: function(newVal) {
-                this.$store.dispatch('CART_ATTRIBUTE_SET', {
+                this.$store.dispatch('cart/ATTRIBUTE_SET', {
                     attribute: `${this.type}_${attr}`,
                     value: newVal
                 });
@@ -92,9 +92,9 @@
         },
 
         computed: {
-            ...mapGetters([
-                'cart'
-            ]),
+            ...mapGetters({
+                shoppingCart: 'cart/cart'
+            }),
 
             email: getSetMaker.call(this, 'email'),
             countryCodeAlpha2: getSetMaker.call(this, 'countryCodeAlpha2'),
@@ -156,7 +156,7 @@
             Object.keys(this.form).forEach((key) => {
                 // Pre-populate the form values with the respective state values
                 if(blacklist.indexOf(key) === -1) {
-                    this.form[key] = this.cart[`${this.type}_${key}`];
+                    this.form[key] = this.shoppingCart[`${this.type}_${key}`];
 
                     if(!this.$v.form[key].$invalid) {
                         this.greenChecks[key] = true;
@@ -164,7 +164,7 @@
                 }
             });
 
-            this.stateSelectEnabled = (isObject(this.cart) && this.cart[`${this.type}_countryCodeAlpha2`])
+            this.stateSelectEnabled = (isObject(this.shoppingCart) && this.shoppingCart[`${this.type}_countryCodeAlpha2`])
         },
 
         watch: {
