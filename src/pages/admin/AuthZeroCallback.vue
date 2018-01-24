@@ -16,7 +16,7 @@ export default {
             fullscreen: true 
         });
 
-        this.$store.dispatch('HANDLE_AUTHENTICATION')
+        this.$store.dispatch('auth/HANDLE_AUTHENTICATION')
             .then(() => {
                 this.$router.push({ name: 'adminProducts' });
             })

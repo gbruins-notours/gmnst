@@ -18,7 +18,7 @@ export default {
         },
 
         logout: function() {
-            this.$store.dispatch('LOGOUT');
+            this.$store.dispatch('auth/LOGOUT');
             this.$router.push({ name: 'home' });
         }
     }
@@ -39,12 +39,12 @@ export default {
 
                 <el-menu-item :route="{ name: 'adminProducts' }" index="1">
                     <i class="fa fa-cubes"></i>
-                    <span>Products</span>
+                    <span>{{ $t('Products') }}</span>
                 </el-menu-item>
 
                 <el-menu-item :route="{ name: 'adminReports' }" index="2">
                     <i class="fa fa-bar-chart"></i>
-                    <span>Reports2</span>
+                    <span>{{ $t('Reports') }}</span>
                 </el-menu-item>
             </el-menu>
         </template>

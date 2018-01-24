@@ -8,7 +8,7 @@ export default {
     },
 
     created() {
-        this.$store.dispatch('LOGIN')
+        this.$store.dispatch('auth/LOGIN')
     }
 }
 </script>

@@ -75,6 +75,7 @@ const translations = {
     'Make sure your address is correct': 'Make sure your address is correct',
 
     'No matching values': 'No matching values',
+    'No results': 'No results',
 
     'Oops we could not find the order you are looking for.': 'Oops we could not find the order you are looking for.',
     'optional': 'optional',
@@ -114,10 +115,12 @@ const translations = {
     'PRODUCT_SUBTYPE_TOP': 'Top | Tops',
     'PRODUCT_TYPE_APPAREL': 'Apparel',
     'Product not found': 'Product not found',
+    'Products': 'Products',
 
     'Quantity': 'Quantity',
 
     'RECEIPT': 'RECEIPT',
+    'Reports': 'Reports',
     'Required': 'Required',
     'Return to cart': 'Return to cart',
     'Returns / Exchanges': 'Returns / Exchanges',
