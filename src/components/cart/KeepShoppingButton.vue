@@ -9,7 +9,8 @@
     export default {
         computed: {
             ...mapGetters({
-                productInfo: 'app/productInfo'
+                productSubTypes: 'product/subTypes',
+                productSeoUri: 'product/seoUri',
             })
         }
     }
@@ -26,9 +27,9 @@
                <div>{{ $t('Shop for') }}:</div>
                <div class="tac pts keepShoppingLinks">
                    <router-link
-                       v-for="(val, key) in productInfo.subTypes"
+                       v-for="(val, key) in productSubTypes"
                        :key="key"
-                       :to="`/type/${productInfo.seoUri[key]}`"
+                       :to="`/type/${productSeoUri[key]}`"
                        tag="a">{{ $tc(key, 2) }}</router-link>
                </div>
            </div>

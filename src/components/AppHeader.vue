@@ -23,7 +23,8 @@
         computed: {
             ...mapGetters({
                 numCartItems: 'cart/numItems',
-                productInfo: 'app/productInfo',
+                productSubTypes: 'product/subTypes',
+                productSeoUri: 'product/seoUri',
                 inCheckoutFlow: 'app/inCheckoutFlow'
             })
         },
@@ -88,9 +89,9 @@
                     <nav class="Navigation">
                         <ul class="Navigation-list">
                             <router-link
-                                v-for="(val, key) in productInfo.subTypes"
+                                v-for="(val, key) in productSubTypes"
                                 :key="key"
-                                :to="`/type/${productInfo.seoUri[key]}`"
+                                :to="`/type/${productSeoUri[key]}`"
                                 tag="li"
                                 active-class="active">{{ $tc(key, 2) }}</router-link>
                         </ul>

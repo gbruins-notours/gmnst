@@ -13,17 +13,7 @@ const state = {
         hidden: false
     },
     braintreeClientToken: null,
-    jwtKey: null,
-    productInfo: {
-        subTypes: {
-            PRODUCT_SUBTYPE_HAT: 1,
-            PRODUCT_SUBTYPE_TOP: 2
-        },
-        seoUri: {
-            PRODUCT_SUBTYPE_HAT: 'hats',
-            PRODUCT_SUBTYPE_TOP: 'tops'
-        }
-    }
+    jwtKey: null
 }
   
 const mutations = {
@@ -90,10 +80,6 @@ const getters = {
 
     braintreeClientToken: (state) => {
         return state.braintreeClientToken;
-    },
-
-    productInfo: (state) => {
-        return state.productInfo;
     }
 }
   

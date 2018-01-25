@@ -4,6 +4,7 @@ import createPersistedState from 'vuex-persistedstate'
 import app from './modules/app'
 import auth from './modules/auth'
 import cart from './modules/cart'
+import product from './modules/product'
 
 Vue.use(Vuex)
 
@@ -13,7 +14,8 @@ export function createStore () {
         modules: {
             app,
             auth,
-            cart
+            cart,
+            product
         }
     })
 }

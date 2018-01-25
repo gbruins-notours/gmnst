@@ -23,7 +23,8 @@ export default {
 
     computed: {
         ...mapGetters({
-            productInfo: 'app/productInfo'
+            productSubTypes: 'product/subTypes',
+            productSeoUri: 'product/seoUri',
         }),
 
         productTypeName() {
@@ -36,10 +37,10 @@ export default {
             let id = 0;
             let subtype = null;
 
-            Object.keys(this.productInfo.seoUri).forEach((key) => {
-                if (this.productInfo.seoUri[key] === type 
-                        && this.productInfo.subTypes.hasOwnProperty(key)) {
-                    id = this.productInfo.subTypes[key];
+            Object.keys(this.productSeoUri).forEach((key) => {
+                if (this.productSeoUri[key] === type 
+                        && this.productSubTypes.hasOwnProperty(key)) {
+                    id = this.productSubTypes[key];
                     subtype = key;
                 }
             });
