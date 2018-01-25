@@ -50,7 +50,7 @@ export default {
         </template>
 
         <template slot="header">
-            <header role="banner" class="Header">
+            <div role="banner" class="Header">
                 <div class="Header-container">
                     <div class="Header-brand">
                         <img class="Header-image cursorPointer" @click="goHome" src="/static/images/logo_header.png" alt="gmnst" />
@@ -66,7 +66,7 @@ export default {
                         </ul>
                     </nav>
                 </div>
-            </header>
+            </div>
         </template>
 
         <template slot="main">
@@ -159,10 +159,8 @@ export default {
             text-decoration: none;
             cursor: pointer;
             padding: 0 10px;
-            // height: 50px;
-            // line-height: 50px;
-            height: 73px; //?
-            line-height: 78px; //?
+            height: 60px; 
+            line-height: 60px; 
 
             &:hover,
             &:focus {
@@ -212,23 +210,6 @@ export default {
             -webkit-box-pack: end;
             -ms-flex-pack: end;
             justify-content: flex-end;
-        }
-    }
-
-    @media #{$medium-and-down}  {
-        .Navigation-list li {
-            height: 50px;
-            line-height: 50px;
-        }
-
-        .Header-image {
-            width: 140px;
-        }
-
-        // overriding a weird element UI setting:
-        .el-button+.el-button {
-            margin-left: 5px;
-            margin-right: 5px;
         }
     }
 </style>
