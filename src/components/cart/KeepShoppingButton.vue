@@ -1,5 +1,6 @@
 <script>
     import Vue from 'vue'
+    import { mapGetters } from 'vuex'
     import { Popover, Button } from 'element-ui'
 
     Vue.use(Popover);
@@ -7,9 +8,9 @@
 
     export default {
         computed: {
-            productInfo: function() {
-                return this.$store.state.app.productInfo || {};
-            }
+            ...mapGetters({
+                productInfo: 'app/productInfo'
+            })
         }
     }
 </script>

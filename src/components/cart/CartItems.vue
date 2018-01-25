@@ -47,8 +47,7 @@
 
         computed: {
             ...mapGetters({
-                shoppingCart: 'cart/cart',
-                app: 'app'
+                shoppingCart: 'cart/cart'
             })
         },
 
@@ -86,17 +85,6 @@
                     name: 'product_detail',
                     params: { itemId: seo_uri }
                 });
-            },
-
-            goToCheckout() {
-                this.$router.push({ name: 'checkout' });
-            },
-
-            goToProductList() {
-                  //TODO: get the type of the 'added_cart_item' product and
-                  // send the user back to the list page for that type,
-                  // else to home page (?)
-                  this.$router.push('/type/' + app.seoUri[key]);
             }
         },
 

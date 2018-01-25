@@ -1,6 +1,6 @@
 <script>
 import Vue from 'vue'
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters } from 'vuex'
 import isObject from 'lodash.isobject'
 // import DefaultLayout from '@/layouts/default'
 import ShoppingCartService from './pages/cart/shopping_cart_service.js'
@@ -32,15 +32,9 @@ export default {
     // },
 
     computed: {
-        ...mapGetters([
-            'app'
-        ])
-    },
-
-    methods: {
-        ...mapActions([
-            'TOGGLE_DEVICE'
-        ])
+        ...mapGetters({
+            jwtKey: 'app/jwtKey'
+        })
     },
 
     created () {
@@ -51,8 +45,10 @@ export default {
         const handler = () => {
             if (!document.hidden) {
                 let rect = body.getBoundingClientRect()
-                let isMobile = rect.width - RATIO < WIDTH
-                this.TOGGLE_DEVICE(isMobile ? 'mobile' : 'other')
+                let isMobile = rect.width - RATIO < WIDTH;
+                let deviceType = isMobile ? 'mobile' : 'other';
+
+                this.$store.dispatch('app/TOGGLE_DEVICE', deviceType);
             }
         }
 
@@ -60,9 +56,9 @@ export default {
         window.addEventListener('DOMContentLoaded', handler)
         window.addEventListener('resize', handler)
 
-        if (!this.app.jwtKey) {
+        if (!this.jwtKey) {
             utilityService.getJwtToken().then((jsonWebToken) => {
-                this.$store.dispatch('JWT_KEY', jsonWebToken);
+                this.$store.dispatch('app/JWT_KEY', jsonWebToken);
 
                 shoppingCartService
                     .getCart()

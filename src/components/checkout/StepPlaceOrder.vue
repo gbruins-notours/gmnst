@@ -50,7 +50,7 @@
             ...mapGetters({
                 shoppingCart: 'cart/cart',
                 billingAttributes: 'cart/billingAttributes',
-                braintreeClientToken: 'braintreeClientToken'
+                braintreeClientToken: 'app/braintreeClientToken'
             }),
 
             paymentMethodButtonEnabled: function() {
@@ -391,14 +391,14 @@
 
             getClientToken: function() {
                 return new Promise((resolve, reject) => {
-                    if(!this.$store.state.app.braintreeClientToken) {
+                    if(!this.braintreeClientToken) {
                         shoppingCartService.getBraintreeClientToken().then((token) => {
-                            this.$store.dispatch('BRAINTREE_CLIENT_TOKEN', token);
+                            this.$store.dispatch('app/BRAINTREE_CLIENT_TOKEN', token);
                             resolve(token);
                         });
                     }
                     else {
-                        resolve(this.$store.state.app.braintreeClientToken);
+                        resolve(this.braintreeClientToken);
                     }
                 });
             }

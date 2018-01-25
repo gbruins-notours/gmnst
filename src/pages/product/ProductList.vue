@@ -1,4 +1,5 @@
 <script>
+import { mapGetters } from 'vuex'
 import DefaultLayout from '@/layouts/DefaultLayout'
 import ProductCard from '@/components/product/ProductCard'
 import ProductService from '@/pages/product/product_service.js'
@@ -16,11 +17,15 @@ export default {
     data() {
         return {
             products: {},
-            productSubType: 'fff'
+            productSubType: null
         }
     },
 
     computed: {
+        ...mapGetters({
+            productInfo: 'app/productInfo'
+        }),
+
         productTypeName() {
             return this.$tc(this.productSubType, 2);
         }
@@ -28,13 +33,13 @@ export default {
 
     methods: {
         getIdByProductType(type) {
-            let info = this.$store.state.app.productInfo;
             let id = 0;
             let subtype = null;
 
-            Object.keys(info.seoUri).forEach((key) => {
-                if (info.seoUri[key] === type && info.subTypes.hasOwnProperty(key)) {
-                    id = info.subTypes[key];
+            Object.keys(this.productInfo.seoUri).forEach((key) => {
+                if (this.productInfo.seoUri[key] === type 
+                        && this.productInfo.subTypes.hasOwnProperty(key)) {
+                    id = this.productInfo.subTypes[key];
                     subtype = key;
                 }
             });

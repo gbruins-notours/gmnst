@@ -23,12 +23,9 @@
         computed: {
             ...mapGetters({
                 numCartItems: 'cart/numItems',
-                inCheckoutFlow: 'inCheckoutFlow'
-            }),
-
-            productInfo: function() {
-                return this.$store.state.app.productInfo || {};
-            }
+                productInfo: 'app/productInfo',
+                inCheckoutFlow: 'app/inCheckoutFlow'
+            })
         },
 
         methods: {
@@ -51,7 +48,7 @@
 
             dispatchCheckoutFlow: function(route) {
                 let isCheckoutPage = (isObject(route) && route.name && route.name.indexOf('checkout') === 0);
-                this.$store.dispatch('IN_CHECKOUT_FLOW', isCheckoutPage);
+                this.$store.dispatch('app/IN_CHECKOUT_FLOW', isCheckoutPage);
             }
         },
 

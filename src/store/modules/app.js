@@ -1,41 +1,39 @@
 'use strict';
 
 const state = {
-    app: {
-        device: {
-            isMobile: false,
-            isTablet: false
+    device: {
+        isMobile: false,
+        isTablet: false
+    },
+    header: {
+        inCheckoutFlow: false
+    },
+    sidebar: {
+        opened: false,
+        hidden: false
+    },
+    braintreeClientToken: null,
+    jwtKey: null,
+    productInfo: {
+        subTypes: {
+            PRODUCT_SUBTYPE_HAT: 1,
+            PRODUCT_SUBTYPE_TOP: 2
         },
-        header: {
-            inCheckoutFlow: false
-        },
-        sidebar: {
-            opened: false,
-            hidden: false
-        },
-        braintreeClientToken: null,
-        jwtKey: null,
-        productInfo: {
-            subTypes: {
-                PRODUCT_SUBTYPE_HAT: 1,
-                PRODUCT_SUBTYPE_TOP: 2
-            },
-            seoUri: {
-                PRODUCT_SUBTYPE_HAT: 'hats',
-                PRODUCT_SUBTYPE_TOP: 'tops'
-            }
+        seoUri: {
+            PRODUCT_SUBTYPE_HAT: 'hats',
+            PRODUCT_SUBTYPE_TOP: 'tops'
         }
     }
 }
   
 const mutations = {
     TOGGLE_SIDEBAR: (state, opened) => {
-        state.app.sidebar.opened = opened
+        state.sidebar.opened = opened
     },
 
     TOGGLE_DEVICE: (state, device) => {
-        state.app.device.isMobile = device === 'mobile';
-        state.app.device.isTablet = device === 'tablet';
+        state.device.isMobile = device === 'mobile';
+        state.device.isTablet = device === 'tablet';
     },
 
     // APP_INFO: (state, data) => {
@@ -43,15 +41,15 @@ const mutations = {
     // },
 
     JWT_KEY: (state, key) => {
-        state.app.jwtKey = key
+        state.jwtKey = key
     },
 
     IN_CHECKOUT_FLOW: (state, inCheckoutFlow) => {
-        state.app.header.inCheckoutFlow = inCheckoutFlow
+        state.header.inCheckoutFlow = inCheckoutFlow
     },
 
     BRAINTREE_CLIENT_TOKEN: (state, token) => {
-        state.app.braintreeClientToken = token
+        state.braintreeClientToken = token
     }
 }
   
@@ -78,24 +76,29 @@ const actions = {
 }
   
 const getters = {
-    app: (state) => {
-        return state.app;
+    jwtKey: (state) => {
+        return state.jwtKey;
     },
 
     inCheckoutFlow: (state) => {
-        return state.app.header.inCheckoutFlow;
+        return state.header.inCheckoutFlow;
     },
 
     sidebar: (state) => {
-        return state.app.sidebar;
+        return state.sidebar;
     },
 
     braintreeClientToken: (state) => {
-        return state.app.braintreeClientToken;
+        return state.braintreeClientToken;
+    },
+
+    productInfo: (state) => {
+        return state.productInfo;
     }
 }
   
 export default {
+    namespaced: true,
     state,
     mutations,
     getters,

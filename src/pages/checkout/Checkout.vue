@@ -76,7 +76,7 @@
         },
 
         mounted: function() {
-            this.$store.dispatch('IN_CHECKOUT_FLOW', true);
+            this.$store.dispatch('app/IN_CHECKOUT_FLOW', true);
         },
 
         metaInfo() {
