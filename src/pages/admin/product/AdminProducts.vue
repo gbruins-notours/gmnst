@@ -1,12 +1,18 @@
 <script>
+import Vue from 'vue'
 import { mapGetters } from 'vuex';
+import { Dialog, Button } from 'element-ui'
 import forEach from 'lodash.foreach'
+import TreeView from 'vue-json-tree-view'
 import AdminLayout from '@/layouts/AdminLayout'
 import ProductService from '@/pages/product/product_service.js'
 import TableHeaderLink from '@/components/TableHeaderLink'
 
 let productService = new ProductService();
 
+Vue.use(Dialog)
+Vue.use(Button)
+Vue.use(TreeView)
 
 export default{
     components: {
@@ -17,6 +23,8 @@ export default{
     data() {
         return {
             products: [],
+            quickViewProduct: null,
+            modalIsActive: false,
             sortData: {
                 orderBy: 'updated_at',
                 orderDir: 'DESC'
@@ -64,6 +72,18 @@ export default{
         sort(sortData) {
             this.sortData = sortData;
             this.fetchProducts();
+        },
+
+        goToDetails(id) {
+            this.$router.push({ 
+                name: 'adminProductDetails',
+                params: { id } 
+            });
+        },
+
+        openQuickView(product) {
+            this.quickViewProduct = product;
+            this.modalIsActive = true;
         }
     },
 
@@ -120,7 +140,13 @@ export default{
                         <td>{{ getProductTypeName(product.sub_type) }}</td>
 
                         <!-- product title -->
-                        <td>{{ product.title }}</td>
+                        <td>
+                            <a @click="goToDetails(product.id)">{{ product.title }}</a>
+
+                            <div class="mtm">
+                                <el-button type="text" @click="openQuickView(product)">QUICK VIEW</el-button>
+                            </div>
+                        </td>
 
                         <!-- desc short -->
                         <td class="hide_medium_down">{{ product.description_short }}</td>
@@ -132,13 +158,20 @@ export default{
             </table>
             <div v-show="!products.length">{{ $t('No results') }}</div>
 
+            <el-dialog :title="quickViewProduct ? quickViewProduct.title : null"
+                       :visible.sync="modalIsActive"
+                       :modal-append-to-body="false"
+                       width="95%">
+                <tree-view :data="quickViewProduct" :options="{maxDepth: 3}"></tree-view>
+            </el-dialog>
+
         </div>
     </admin-layout>
 </template>
 
 
 <style lang="scss">
-    @import "../../assets/css/components/_table.scss";
+    @import "../../../assets/css/components/_table.scss";
 
     .prodPic {
         width: 70px;

@@ -1,9 +1,10 @@
 <script>
 import Vue from 'vue'
-import { Menu, MenuItem, Button } from 'element-ui'
+import { Menu, MenuItem, Submenu, Button } from 'element-ui'
 import HeaderSidebarLayout from '@/layouts/HeaderSidebarLayout'
 
 Vue.use(Menu);
+Vue.use(Submenu);
 Vue.use(MenuItem);
 Vue.use(Button);
 
@@ -37,10 +38,15 @@ export default {
                 text-color="#fff"
                 active-text-color="#ffd04b">
 
-                <el-menu-item :route="{ name: 'adminProducts' }" index="1">
-                    <i class="fa fa-cubes"></i>
-                    <span>{{ $t('Products') }}</span>
-                </el-menu-item>
+                <el-submenu index="1">
+                    <template slot="title">
+                        <i class="fa fa-cubes"></i>
+                        <span>{{ $t('Products') }}</span>
+                    </template>
+
+                    <el-menu-item :route="{ name: 'adminProducts' }" index="1-1">List</el-menu-item>
+                    <el-menu-item :route="{ name: 'adminProductSizes' }" index="1-2">Sizes</el-menu-item>
+                </el-submenu>
 
                 <el-menu-item :route="{ name: 'adminReports' }" index="2">
                     <i class="fa fa-bar-chart"></i>

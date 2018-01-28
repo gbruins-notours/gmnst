@@ -52,9 +52,13 @@ export default class ProductService {
             });
     }
 
+    getProductPicPath() {
+        return '/static/images/product/'
+    }
+
     featuredProductPic(product) {
         if (product.featured_pic) {
-            return '/static/images/product/' + product.featured_pic;
+            return this.getProductPicPath() + product.featured_pic;
         }
         return;
     }
@@ -92,15 +96,17 @@ export default class ProductService {
         }
 
         return new Promise((resolve, reject) => {
+            let path = this.getProductPicPath();
+
             // featured pic is always first
             if(product.featured_pic) {
-                add(1, `/static/images/product/${product.featured_pic}`)
+                add(1, path + product.featured_pic)
             }
 
             if (Array.isArray(product.pics)) {
                 product.pics.forEach((obj) => {
                     if (obj.is_visible && obj.file_name) {
-                        add(obj.sort_order, `/static/images/product/${obj.file_name}`)
+                        add(obj.sort_order, path + obj.file_name)
                     }
                 });
             }

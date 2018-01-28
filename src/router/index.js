@@ -21,7 +21,10 @@ const Error404 = () => System.import('@/pages/Error404')
 // Admin pages
 const Login = () => System.import('@/pages/admin/Login')
 const AdminHome = () => System.import('@/pages/admin/AdminHome')
-const AdminProducts = () => System.import('@/pages/admin/AdminProducts')
+const AdminProducts = () => System.import('@/pages/admin/product/AdminProducts')
+const AdminProductDetails = () => System.import('@/pages/admin/product/AdminProductDetails')
+const AdminProductEdit = () => System.import('@/pages/admin/product/AdminProductEdit')
+const AdminProductSizes = () => System.import('@/pages/admin/product/AdminProductSizes')
 const AdminReports = () => System.import('@/pages/admin/AdminReports')
 const AuthZeroCallback = () => System.import('@/pages/admin/AuthZeroCallback')
 
@@ -124,6 +127,24 @@ export function createRouter () {
                 name: 'adminProducts',
                 path: '/acts/products',
                 component: AdminProducts,
+                beforeEnter: requireAuth
+            },
+            {
+                name: 'adminProductDetails',
+                path: '/acts/product/details/:id',
+                component: AdminProductDetails,
+                beforeEnter: requireAuth
+            },
+            {
+                name: 'adminProductEdit',
+                path: '/acts/product/edit/:id',
+                component: AdminProductEdit,
+                beforeEnter: requireAuth
+            },
+            {
+                name: 'adminProductSizes',
+                path: '/acts/product/sizes',
+                component: AdminProductSizes,
                 beforeEnter: requireAuth
             },
             {
