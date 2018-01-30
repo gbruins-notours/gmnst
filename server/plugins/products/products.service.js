@@ -4,10 +4,10 @@
  */
 function getGenderTypes() {
     return {
-        GENDER_TYPE_MENS:   0x01,  // 00000001
-        GENDER_TYPE_WOMENS: 0x02 , // 00000010
-        GENDER_TYPE_BOYS:   0x04 , // 00000100
-        GENDER_TYPE_GIRLS:  0x08   // 00001000
+        GENDER_TYPE_MENS:   0x01, // 00000001
+        GENDER_TYPE_WOMENS: 0x02, // 00000010
+        GENDER_TYPE_BOYS:   0x04, // 00000100
+        GENDER_TYPE_GIRLS:  0x08  // 00001000
     };
 }
 

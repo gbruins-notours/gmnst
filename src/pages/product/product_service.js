@@ -52,8 +52,12 @@ export default class ProductService {
             });
     }
 
-    getProductPicPath() {
-        return '/static/images/product/'
+    getProductPicPath(fileName) {
+        let base = '/static/images/product/';
+        if(fileName) {
+            return base + fileName;
+        }
+        return base;
     }
 
     featuredProductPic(product) {
