@@ -18,7 +18,7 @@ export default {
 
         this.$store.dispatch('auth/HANDLE_AUTHENTICATION')
             .then(() => {
-                this.$router.push({ name: 'adminProducts' });
+                this.$router.push({ name: 'adminProductList' });
             })
             .catch((err) => {
                 this.$router.push({ name: 'home' });

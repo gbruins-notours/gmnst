@@ -24,25 +24,28 @@ internals.after = function (server, next) {
         // relativeTo: __dirname // process.cwd() // prefer this over __dirname when compiling to dist/cjs and using rollup
     });
 
-    internals.schema = Joi.object().keys({
-        title: Joi.string().max(100).required(),
+    internals.schema = {
+        title: Joi.string().max(100),
         description_short: Joi.string().max(500),
         description_long: Joi.string().max(750),
         sku: Joi.string().max(50),
         seo_uri: Joi.string().max(50),
         cost: Joi.number().precision(2).positive().max(99999999.99),
+        weight_oz: Joi.number().precision(2).positive().max(99999999.99),
         base_price: Joi.number().precision(2).positive().max(99999999.99),
         sale_price: Joi.number().precision(2).positive().max(99999999.99),
         is_on_sale: Joi.boolean(),
         is_available: Joi.boolean(),
+        tax_code: Joi.number(),
         featured_pic: Joi.string().max(100),
         video_url: Joi.string().max(500),
+        gender: Joi.number().integer().positive(),
+        type: Joi.number().integer().positive(),
+        sub_type: Joi.number().integer().positive(),
         inventory_count: Joi.number().positive(),
         hide_if_out_of_stock: Joi.boolean(),
-        artist: Joi.number().integer().positive(),
-        type: Joi.number().integer().positive(),
-        category: Joi.number().integer().positive()
-    });
+        product_artist_id: Joi.string().uuid()
+    };
 
 
     internals.withRelated = [
@@ -179,6 +182,25 @@ internals.after = function (server, next) {
     };
 
 
+    internals.productUpdate = (request, reply) => {
+        server.plugins.BookshelfOrm.bookshelf.model('Product')
+            .update(request.payload, { id: request.payload.id })
+            .then((Product) => {
+                if(!Product) {
+                    reply(Boom.badRequest('Unable to find product.'));
+                    return;
+                }
+
+                reply.apiSuccess(Product.toJSON());
+            })
+            .catch((err) => {
+                global.logger.error(err);
+                global.bugsnag(err);
+                reply(Boom.badRequest(err));
+            });
+    };
+
+
     server.route([
         {
             method: 'GET',
@@ -234,13 +256,28 @@ internals.after = function (server, next) {
                 description: 'Gets a list of products',
                 handler: internals.productsRoute
             }
+        },
+        {
+            method: 'POST',
+            path: `${routePrefix}/product/update`,
+            config: {
+                description: 'Updates a product',
+                validate: {
+                    payload: Object.assign(
+                        {}, 
+                        { id: Joi.string().uuid().required() }, 
+                        internals.schema
+                    )
+                },
+                handler: internals.productUpdate
+            }
         }
     ]);
 
 
     // LOADING BOOKSHELF MODELS:
     let bookshelf = server.plugins.BookshelfOrm.bookshelf;
-    let baseModel = bookshelf.Model.extend({});
+    let baseModel = require('bookshelf-modelbase')(bookshelf);
 
     bookshelf['model'](
         'Product',

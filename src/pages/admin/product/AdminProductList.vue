@@ -3,21 +3,21 @@ import Vue from 'vue'
 import { mapGetters } from 'vuex';
 import { Dialog, Button } from 'element-ui'
 import forEach from 'lodash.foreach'
-import TreeView from 'vue-json-tree-view'
 import AdminLayout from '@/layouts/AdminLayout'
 import ProductService from '@/pages/product/product_service.js'
 import TableHeaderLink from '@/components/TableHeaderLink'
+import ProductDetailsJsonView from '@/components/product/ProductDetailsJsonView'
 
 let productService = new ProductService();
 
 Vue.use(Dialog)
 Vue.use(Button)
-Vue.use(TreeView)
 
 export default{
     components: {
         AdminLayout,
-        TableHeaderLink
+        TableHeaderLink,
+        ProductDetailsJsonView
     },
 
     data() {
@@ -81,6 +81,13 @@ export default{
             });
         },
 
+        goToEdit(id) {
+            this.$router.push({ 
+                name: 'adminProductEdit',
+                params: { id } 
+            });
+        },
+
         openQuickView(product) {
             this.quickViewProduct = product;
             this.modalIsActive = true;
@@ -127,7 +134,7 @@ export default{
                 <tbody>
                     <tr v-for="product in products" :key="product.id">
                         <!-- featured image -->
-                        <td><img :src="getProductPic(product) " alt="Image" class="prodPic"></td>
+                        <td><img :src="getProductPic(product) " alt="Image" class="prodPicSmall"></td>
 
                         <!-- is available -->
                         <td>
@@ -141,10 +148,14 @@ export default{
 
                         <!-- product title -->
                         <td>
-                            <a @click="goToDetails(product.id)">{{ product.title }}</a>
+                            <div>{{ product.title }}</div>
 
-                            <div class="mtm">
+                            <div>
                                 <el-button type="text" @click="openQuickView(product)">QUICK VIEW</el-button>
+                            </div>
+
+                            <div>
+                                <el-button type="text" @click="goToEdit(product.id)">EDIT</el-button>
                             </div>
                         </td>
 
@@ -162,7 +173,7 @@ export default{
                        :visible.sync="modalIsActive"
                        :modal-append-to-body="false"
                        width="95%">
-                <tree-view :data="quickViewProduct" :options="{maxDepth: 3}"></tree-view>
+                <product-details-json-view :product="quickViewProduct"></product-details-json-view>
             </el-dialog>
 
         </div>
@@ -173,7 +184,7 @@ export default{
 <style lang="scss">
     @import "../../../assets/css/components/_table.scss";
 
-    .prodPic {
+    .prodPicSmall {
         width: 70px;
     }
 </style>

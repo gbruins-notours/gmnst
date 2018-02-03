@@ -6,6 +6,20 @@ import Promise from 'bluebird';
 import { getHttp } from '../../util/http-common';
 
 
+function stripRelations(productJson) {
+    delete productJson.artist;
+    delete productJson.sizes;
+    delete productJson.pics;
+
+    // also strip uneditable values:
+    delete productJson.created_at;
+    delete productJson.updated_at;
+    delete productJson.display_price;
+    
+    return productJson;
+}
+
+
 export default class ProductService {
     // constructor() {
     // }
@@ -65,6 +79,14 @@ export default class ProductService {
             return this.getProductPicPath() + product.featured_pic;
         }
         return;
+    }
+
+    update(product) {
+        return getHttp()
+            .post(`/api/v1/product/update`, stripRelations(product))
+            .then((response) => {
+                return response.data.data;
+            });
     }
 
     buildPictures(product) {

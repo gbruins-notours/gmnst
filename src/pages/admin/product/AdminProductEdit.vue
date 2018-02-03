@@ -47,8 +47,6 @@ export default{
             productPics: [],
             productPicPath: productService.getProductPicPath(),
             modalIsActive: false,
-            sizeModalIsActive: false,
-            sizeForModal: {},
             videoId: null,
             videoPlayer: null,
             picModalIsActive: false,
@@ -67,11 +65,9 @@ export default{
             return productService.featuredProductPic(prod);
         },
 
-        goToEdit() {
-            //TODO
+        goToProductList(id) {
             this.$router.push({ 
-                name: 'adminProductEdit',
-                params: { id } 
+                name: 'adminProductList'
             });
         },
 
@@ -96,15 +92,37 @@ export default{
             this.videoPlayer = player;
         },
 
-        openSizeQuickView(size) {
-            this.sizeForModal = size;
-            this.sizeModalIsActive = true;
-        },
-
         openPicQuickView(pic) {
-            console.log(pic)
             this.picForModal = pic;
             this.picModalIsActive = true;
+        },
+
+        editProduct(product) {
+            productService
+                .update(product)
+                .then((product) => {
+                    if(!product) {
+                        throw new Error(this.$t('Product not found'));
+                    }
+
+                    this.$notify({
+                        type: 'success',
+                        title: 'Product updated successfully',
+                        message: product.title,
+                        duration: 3000
+                    });
+
+                    this.goToProductList();
+                })
+                .catch((e) => {
+                    showNotification(
+                        this.$notify({
+                            type: 'error',
+                            title: e.message,
+                            duration: 0
+                        })
+                    )
+                });
         }
     },
 
@@ -147,7 +165,7 @@ export default{
                     })
                 )
             });
-    },
+    }
 }
 </script>
 
@@ -231,6 +249,40 @@ export default{
                         </form-row>
 
                     </div>
+                </div>
+            </div>
+
+            <div class="g-spec">
+                <div class="g-spec-label">
+                    Sizes <span v-if="product.sizes">({{ product.sizes.length }})</span>
+                </div>
+                <div class="g-spec-content">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Size</th>
+                                <th>Sort order</th>
+                                <th>Is visible</th>
+                                <th>Cost</th>
+                                <th>Base price</th>
+                                <th>Sale price</th>
+                                <th>Is on sale</th>
+                                <th>Inventory count</th>
+                            </tr>
+                        </thead>  
+                        <tbody>
+                            <tr v-for="size in product.sizes">
+                                <td>{{ $t(size.size) }}</td>
+                                <td class="tac">{{ size.sort }}</td>
+                                <td class="tac">{{ size.is_visible }}</td>
+                                <td class="tac">{{ size.cost }}</td>
+                                <td class="tac">{{ size.base_price }}</td>
+                                <td class="tac">{{ size.sale_price }}</td>
+                                <td class="tac">{{ size.is_on_sale }}</td>
+                                <td class="tac">{{ size.inventory_count }}</td>
+                            </tr>
+                        </tbody>      
+                    </table>
                 </div>
             </div>
 
@@ -345,18 +397,15 @@ export default{
             </div>
 
             <div class="g-spec">
-                <div class="g-spec-label">
-                    Sizes <span v-if="product.sizes">({{ product.sizes.length }})</span>
-                </div>
+                <div class="g-spec-label"></div>
                 <div class="g-spec-content">
-                    <div v-for="size in product.sizes">
-                        <el-button type="text" @click="openSizeQuickView(size)">{{ $t(size.size) }}</el-button>
-                    </div>
+                    <el-button 
+                        type="primary"
+                        @click="editProduct(product)">SUBMIT</el-button>
                 </div>
             </div>
-
-            {{ product }}
         </div>
+
 
         <el-dialog title="Product video"
                    :visible.sync="modalIsActive"
@@ -366,13 +415,6 @@ export default{
                 :video-id="videoId" 
                 :player-vars="{ autoplay: 1 }"
                 @playing="videoPlaying"></youtube>
-        </el-dialog>
-
-        <!-- product size dialog -->
-        <el-dialog :title="$t(sizeForModal.size)"
-                   :visible.sync="sizeModalIsActive"
-                   :modal-append-to-body="false">
-            <product-size-details :size="sizeForModal"></product-size-details>
         </el-dialog>
 
         <!-- product pic dialog -->

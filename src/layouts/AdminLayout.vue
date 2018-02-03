@@ -15,7 +15,7 @@ export default {
 
     methods: {
         goHome: function() {
-            this.$router.push({ name: 'adminProducts' });
+            this.$router.push({ name: 'adminProductList' });
         },
 
         logout: function() {
@@ -44,7 +44,7 @@ export default {
                         <span>{{ $t('Products') }}</span>
                     </template>
 
-                    <el-menu-item :route="{ name: 'adminProducts' }" index="1-1">List</el-menu-item>
+                    <el-menu-item :route="{ name: 'adminProductList' }" index="1-1">List</el-menu-item>
                     <el-menu-item :route="{ name: 'adminProductSizes' }" index="1-2">Sizes</el-menu-item>
                 </el-submenu>
 
