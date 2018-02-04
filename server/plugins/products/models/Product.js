@@ -1,3 +1,4 @@
+const Joi = require('joi');
 const CoreService = require('../../core/core.service');
 
 
@@ -28,6 +29,32 @@ module.exports = function (baseModel, bookshelf) {
             cart_items: function() {
                 // product_id is the foreign key in ShoppingCartItem
                 return this.hasMany('ShoppingCartItem', 'product_id');
+            },
+
+            // this is a feature added by bookshelf-modelbase
+            validate: {
+                title: Joi.string().max(100),
+                description_short: Joi.string().max(500),
+                description_long: Joi.string().max(750),
+                sku: Joi.string().max(50),
+                seo_uri: Joi.string().max(50),
+                cost: Joi.number().precision(2).positive().max(99999999.99),
+                weight_oz: Joi.number().precision(2).positive().max(99999999.99),
+                base_price: Joi.number().precision(2).positive().max(99999999.99),
+                sale_price: Joi.number().precision(2).positive().max(99999999.99),
+                is_on_sale: Joi.boolean(),
+                is_available: Joi.boolean(),
+                tax_code: Joi.number(),
+                featured_pic: Joi.string().max(100),
+                video_url: Joi.string().max(500),
+                gender: Joi.number().integer().positive(),
+                type: Joi.number().integer().positive(),
+                sub_type: Joi.number().integer().positive(),
+                inventory_count: Joi.number().positive(),
+                hide_if_out_of_stock: Joi.boolean(),
+                product_artist_id: Joi.string().uuid(),
+                created_at: Joi.date().optional(),
+                updated_at: Joi.date().optional()
             },
 
             virtuals: {

@@ -113,22 +113,27 @@ export default{
                             <table-header-link
                                     attribute="is_available" 
                                     :sort-data="sortData"
-                                    @change="(obj) => { sort(obj) }">Available</table-header-link>
+                                    @change="sort">Available</table-header-link>
                         </th>
                         <th>
                             <table-header-link
                                     attribute="sub_type" 
                                     :sort-data="sortData"
-                                    @change="(obj) => { sort(obj) }">Type</table-header-link>
+                                    @change="sort">Type</table-header-link>
                         </th>
                         <th>
                             <table-header-link
                                     attribute="title" 
                                     :sort-data="sortData"
-                                    @change="(obj) => { sort(obj) }">Title</table-header-link>
+                                    @change="sort">Title</table-header-link>
                         </th>
-                        <th class="hide_medium_down">Description Short</th>
                         <th>Display Price</th>
+                        <th class="hide_medium_down">
+                            <table-header-link
+                                    attribute="updated_at" 
+                                    :sort-data="sortData"
+                                    @change="sort">Updated</table-header-link>
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -159,11 +164,11 @@ export default{
                             </div>
                         </td>
 
-                        <!-- desc short -->
-                        <td class="hide_medium_down">{{ product.description_short }}</td>
-
                         <!-- display price -->
                         <td>{{ product.display_price }}</td>
+
+                        <!-- display price -->
+                        <td class="hide_medium_down">{{ product.updated_at | format8601 }}</td>
                     </tr>
                 </tbody>
             </table>

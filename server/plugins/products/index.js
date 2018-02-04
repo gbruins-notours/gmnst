@@ -183,6 +183,8 @@ internals.after = function (server, next) {
 
 
     internals.productUpdate = (request, reply) => {
+        request.payload.updated_at = request.payload.updated_at || new Date();
+
         server.plugins.BookshelfOrm.bookshelf.model('Product')
             .update(request.payload, { id: request.payload.id })
             .then((Product) => {
@@ -262,13 +264,6 @@ internals.after = function (server, next) {
             path: `${routePrefix}/product/update`,
             config: {
                 description: 'Updates a product',
-                validate: {
-                    payload: Object.assign(
-                        {}, 
-                        { id: Joi.string().uuid().required() }, 
-                        internals.schema
-                    )
-                },
                 handler: internals.productUpdate
             }
         }

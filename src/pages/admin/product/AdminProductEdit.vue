@@ -7,6 +7,7 @@ import VueYouTubeEmbed from 'vue-youtube-embed'
 import AdminLayout from '@/layouts/AdminLayout'
 import FormRow from '@/components/FormRow'
 import ProductSizeDetails from '@/components/product/ProductSizeDetails'
+import BitwiseMultiSelect from '@/components/BitwiseMultiSelect'
 import ProductService from '@/pages/product/product_service.js'
 
 let productService = new ProductService();
@@ -37,7 +38,8 @@ export default{
     components: {
         AdminLayout,
         FormRow,
-        ProductSizeDetails
+        ProductSizeDetails,
+        BitwiseMultiSelect
     },
 
     data() {
@@ -382,14 +384,17 @@ export default{
 
                         <!-- gender -->
                         <form-row label="Gender type:">
-                            <el-select v-model="product.gender">
+                            TODO: the values are bitwise, so this plain select doesnt work
+                            {{ productInfo.genders }}
+                            <bitwise-multi-select :options="productInfo.genders"></bitwise-multi-select>
+                            <!-- <el-select v-model="product.gender">
                                 <el-option
                                     v-for="(val, key) in productInfo.genders"
                                     :key="key"
                                     :label="$t(key)"
                                     :value="val">
                                 </el-option>
-                            </el-select>
+                            </el-select> -->
                         </form-row>
 
                     </div>

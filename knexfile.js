@@ -8,7 +8,13 @@ let common = {
     client: 'postgres',
     pool: {
         min: 2,
-        max: 10
+        max: 10,
+        afterCreate: function (conn, done) {
+            // in this example we use pg driver's connection API
+            conn.query('SET timezone="UTC";', function (err) {
+                done(err, conn);
+            });
+        }
     },
     migrations: {
         directory: './db/migrations',
