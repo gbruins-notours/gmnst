@@ -4,6 +4,7 @@ import { mapGetters } from 'vuex'
 import { Notification, Dialog, Button, Input, InputNumber, Checkbox, Select, Option } from 'element-ui'
 import TreeView from 'vue-json-tree-view'
 import VueYouTubeEmbed from 'vue-youtube-embed'
+import forEach from 'lodash.foreach'
 import AdminLayout from '@/layouts/AdminLayout'
 import FormRow from '@/components/FormRow'
 import ProductSizeDetails from '@/components/product/ProductSizeDetails'
@@ -59,7 +60,16 @@ export default{
     computed: {
         ...mapGetters({
             productSubTypes: 'product/subTypes'
-        })
+        }),
+
+        genderSelectOptions() {
+            let opts = {};
+            let self = this;
+            forEach(this.productInfo.genders, function(val, key) {
+                opts[self.$t(key)] = val;
+            });
+            return opts;
+        }
     },
 
     methods: {
@@ -68,7 +78,7 @@ export default{
         },
 
         goToProductList(id) {
-            this.$router.push({ 
+            this.$router.push({
                 name: 'adminProductList'
             });
         },
@@ -271,7 +281,7 @@ export default{
                                 <th>Is on sale</th>
                                 <th>Inventory count</th>
                             </tr>
-                        </thead>  
+                        </thead>
                         <tbody>
                             <tr v-for="size in product.sizes">
                                 <td>{{ $t(size.size) }}</td>
@@ -283,7 +293,7 @@ export default{
                                 <td class="tac">{{ size.is_on_sale }}</td>
                                 <td class="tac">{{ size.inventory_count }}</td>
                             </tr>
-                        </tbody>      
+                        </tbody>
                     </table>
                 </div>
             </div>
@@ -299,8 +309,8 @@ export default{
                         <!-- video_url -->
                         <form-row label="Video URL:">
                             <el-input v-model="product.video_url">
-                                <el-button 
-                                    slot="append" 
+                                <el-button
+                                    slot="append"
                                     v-if="product.video_url"
                                     @click="playVideo(product.video_url)"><i class="fa fa-play"></i></el-button>
                             </el-input>
@@ -317,7 +327,7 @@ export default{
                                         <th>Visible</th>
                                         <th>Featured?</th>
                                     </tr>
-                                </thead>  
+                                </thead>
                                 <tbody>
                                     <tr v-for="pic in product.pics">
                                         <td>
@@ -328,7 +338,7 @@ export default{
                                         <td>{{ pic.is_visible }}</td>
                                         <td><span class="colorGreen" v-if="product.featured_pic === pic.file_name">yes</span></td>
                                     </tr>
-                                </tbody>      
+                                </tbody>
                             </table>
                         </form-row>
                 </div>
@@ -384,17 +394,10 @@ export default{
 
                         <!-- gender -->
                         <form-row label="Gender type:">
-                            TODO: the values are bitwise, so this plain select doesnt work
-                            {{ productInfo.genders }}
-                            <bitwise-multi-select :options="productInfo.genders"></bitwise-multi-select>
-                            <!-- <el-select v-model="product.gender">
-                                <el-option
-                                    v-for="(val, key) in productInfo.genders"
-                                    :key="key"
-                                    :label="$t(key)"
-                                    :value="val">
-                                </el-option>
-                            </el-select> -->
+                            <bitwise-multi-select
+                                :options="genderSelectOptions"
+                                :init="product.gender"
+                                @changed="val => product.gender = val"></bitwise-multi-select>
                         </form-row>
 
                     </div>
@@ -404,7 +407,7 @@ export default{
             <div class="g-spec">
                 <div class="g-spec-label"></div>
                 <div class="g-spec-content">
-                    <el-button 
+                    <el-button
                         type="primary"
                         @click="editProduct(product)">SUBMIT</el-button>
                 </div>
@@ -416,8 +419,8 @@ export default{
                    :visible.sync="modalIsActive"
                    :modal-append-to-body="false"
                    @close="modalClosed">
-            <youtube 
-                :video-id="videoId" 
+            <youtube
+                :video-id="videoId"
                 :player-vars="{ autoplay: 1 }"
                 @playing="videoPlaying"></youtube>
         </el-dialog>
