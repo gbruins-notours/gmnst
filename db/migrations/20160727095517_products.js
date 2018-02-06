@@ -15,8 +15,8 @@ module.exports.up = (knex) => {
             t.decimal('weight_oz').nullable();
             t.decimal('base_price').nullable();
             t.decimal('sale_price').nullable();
-            t.boolean('is_on_sale').nullable();
-            t.boolean('is_available').nullable();
+            t.boolean('is_on_sale').defaultTo(false);
+            t.boolean('is_available').defaultTo(false);
             t.string('tax_code').nullable();
             t.string('featured_pic').nullable();
             t.string('video_url').nullable();
@@ -24,7 +24,7 @@ module.exports.up = (knex) => {
             t.integer('type').nullable();
             t.integer('sub_type').nullable();
             t.integer('inventory_count').nullable();
-            t.boolean('hide_if_out_of_stock').nullable();
+            t.boolean('hide_if_out_of_stock').defaultTo(true);
             t.timestamp('created_at', true).notNullable().defaultTo(knex.fn.now());
             t.timestamp('updated_at', true).nullable();
 

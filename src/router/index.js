@@ -23,7 +23,7 @@ const Login = () => System.import('@/pages/admin/Login')
 const AdminHome = () => System.import('@/pages/admin/AdminHome')
 const AdminProductList = () => System.import('@/pages/admin/product/AdminProductList')
 const AdminProductDetails = () => System.import('@/pages/admin/product/AdminProductDetails')
-const AdminProductEdit = () => System.import('@/pages/admin/product/AdminProductEdit')
+const AdminProductUpsert = () => System.import('@/pages/admin/product/AdminProductUpsert')
 const AdminProductSizes = () => System.import('@/pages/admin/product/AdminProductSizes')
 const AdminReports = () => System.import('@/pages/admin/AdminReports')
 const AuthZeroCallback = () => System.import('@/pages/admin/AuthZeroCallback')
@@ -136,9 +136,9 @@ export function createRouter () {
                 beforeEnter: requireAuth
             },
             {
-                name: 'adminProductEdit',
+                name: 'adminProductUpsert',
                 path: '/acts/product/edit/:id',
-                component: AdminProductEdit,
+                component: AdminProductUpsert,
                 beforeEnter: requireAuth
             },
             {

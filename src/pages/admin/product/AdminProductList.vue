@@ -55,7 +55,6 @@ export default{
                 })
                 .then((products) => {
                     this.products = products;
-                    // console.log("products", this.products)
                 });
         },
 
@@ -83,7 +82,7 @@ export default{
 
         goToEdit(id) {
             this.$router.push({ 
-                name: 'adminProductEdit',
+                name: 'adminProductUpsert',
                 params: { id } 
             });
         },

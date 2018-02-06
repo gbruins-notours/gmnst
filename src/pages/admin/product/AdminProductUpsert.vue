@@ -8,6 +8,7 @@ import forEach from 'lodash.foreach'
 import AdminLayout from '@/layouts/AdminLayout'
 import FormRow from '@/components/FormRow'
 import ProductSizeDetails from '@/components/product/ProductSizeDetails'
+import ProductSizeUpsert from '@/components/product/ProductSizeUpsert'
 import BitwiseMultiSelect from '@/components/BitwiseMultiSelect'
 import ProductService from '@/pages/product/product_service.js'
 
@@ -40,6 +41,7 @@ export default{
         AdminLayout,
         FormRow,
         ProductSizeDetails,
+        ProductSizeUpsert,
         BitwiseMultiSelect
     },
 
@@ -54,6 +56,11 @@ export default{
             videoPlayer: null,
             picModalIsActive: false,
             picForModal: {},
+            sizeModal: {
+                isActive: false,
+                sizeId: null,
+                sizeName: null
+            }
         }
     },
 
@@ -135,6 +142,24 @@ export default{
                         })
                     )
                 });
+        },
+
+        productSizeUpdated(size) {
+            this.sizeModal.isActive = false;
+
+            // replace the updated size object in the product
+            // so the UI shows the latest values
+            for(let i=0; i<this.product.sizes.length; i++) {
+                if(this.product.sizes[i].id === size.id) {
+                    this.product.sizes[i] = size;
+                }
+            }
+        },
+
+        openSizeEditModal(size) {
+            this.sizeModal.sizeName = size.size;
+            this.sizeModal.sizeId = size.id;
+            this.sizeModal.isActive = true;
         }
     },
 
@@ -166,7 +191,6 @@ export default{
                 }
 
                 this.productInfo = productInfo;
-                console.log("PROD INFO", productInfo)
             })
             .catch((e) => {
                 showNotification(
@@ -273,25 +297,31 @@ export default{
                         <thead>
                             <tr>
                                 <th>Size</th>
-                                <th>Sort order</th>
-                                <th>Is visible</th>
-                                <th>Cost</th>
-                                <th>Base price</th>
-                                <th>Sale price</th>
-                                <th>Is on sale</th>
-                                <th>Inventory count</th>
+                                <th class="tar">Sort order</th>
+                                <th class="tar">Is visible</th>
+                                <th class="tar">Cost</th>
+                                <th class="tar">Base price</th>
+                                <th class="tar">Sale price</th>
+                                <th class="tar">Is on sale</th>
+                                <th class="tar">Inventory count</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr v-for="size in product.sizes">
-                                <td>{{ $t(size.size) }}</td>
-                                <td class="tac">{{ size.sort }}</td>
-                                <td class="tac">{{ size.is_visible }}</td>
-                                <td class="tac">{{ size.cost }}</td>
-                                <td class="tac">{{ size.base_price }}</td>
-                                <td class="tac">{{ size.sale_price }}</td>
-                                <td class="tac">{{ size.is_on_sale }}</td>
-                                <td class="tac">{{ size.inventory_count }}</td>
+                                <td>
+                                    <a @click="openSizeEditModal(size)">{{ $t(size.size) }}</a>
+                                </td>
+                                <td class="tar">{{ size.sort }}</td>
+                                <td class="tar">
+                                    <i v-if="size.is_visible" class="fa fa-check-square colorGreen"></i>
+                                </td>
+                                <td class="tar">{{ size.cost }}</td>
+                                <td class="tar">{{ size.base_price }}</td>
+                                <td class="tar">{{ size.sale_price }}</td>
+                                <td class="tar">
+                                    <i v-if="size.is_on_sale" class="fa fa-check-square colorGreen"></i>
+                                </td>
+                                <td class="tar">{{ size.inventory_count }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -301,46 +331,46 @@ export default{
             <div class="g-spec">
                 <div class="g-spec-label">Media</div>
                 <div class="g-spec-content">
-                        <!-- featured_pic -->
-                        <form-row label="Featured Picture:">
-                            <el-input v-model="product.featured_pic"></el-input>
-                        </form-row>
+                    <!-- featured_pic -->
+                    <form-row label="Featured Picture:">
+                        <el-input v-model="product.featured_pic"></el-input>
+                    </form-row>
 
-                        <!-- video_url -->
-                        <form-row label="Video URL:">
-                            <el-input v-model="product.video_url">
-                                <el-button
-                                    slot="append"
-                                    v-if="product.video_url"
-                                    @click="playVideo(product.video_url)"><i class="fa fa-play"></i></el-button>
-                            </el-input>
-                        </form-row>
+                    <!-- video_url -->
+                    <form-row label="Video URL:">
+                        <el-input v-model="product.video_url">
+                            <el-button
+                                slot="append"
+                                v-if="product.video_url"
+                                @click="playVideo(product.video_url)"><i class="fa fa-play"></i></el-button>
+                        </el-input>
+                    </form-row>
 
-                        <!-- pictures -->
-                        <form-row label="Pictures:">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Pic</th>
-                                        <th>File name</th>
-                                        <th>Sort order</th>
-                                        <th>Visible</th>
-                                        <th>Featured?</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr v-for="pic in product.pics">
-                                        <td>
-                                            <a @click="openPicQuickView(pic)"><img :src="productPicPath + pic.file_name" class="width50"></a>
-                                        </td>
-                                        <td>{{ pic.file_name }}</td>
-                                        <td class="tac">{{ pic.sort_order }}</td>
-                                        <td>{{ pic.is_visible }}</td>
-                                        <td><span class="colorGreen" v-if="product.featured_pic === pic.file_name">yes</span></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </form-row>
+                    <!-- pictures -->
+                    <form-row label="Pictures:">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Pic</th>
+                                    <th>File name</th>
+                                    <th>Sort order</th>
+                                    <th>Visible</th>
+                                    <th>Featured?</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="pic in product.pics">
+                                    <td>
+                                        <a @click="openPicQuickView(pic)"><img :src="productPicPath + pic.file_name" class="width50"></a>
+                                    </td>
+                                    <td>{{ pic.file_name }}</td>
+                                    <td class="tac">{{ pic.sort_order }}</td>
+                                    <td>{{ pic.is_visible }}</td>
+                                    <td><span class="colorGreen" v-if="product.featured_pic === pic.file_name">yes</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </form-row>
                 </div>
             </div>
 
@@ -426,13 +456,23 @@ export default{
         </el-dialog>
 
         <!-- product pic dialog -->
-        <el-dialog :title="$t(picForModal.file_name)"
+        <el-dialog :title="picForModal.file_name"
                    :visible.sync="picModalIsActive"
                    :modal-append-to-body="false"
                    width="95%">
             <div class="tac">
                 <img :src="productPicPath + picForModal.file_name" />
             </div>
+        </el-dialog>
+
+        <!-- product size edit dialog -->
+        <el-dialog :title="'EDIT: ' + $t(sizeModal.sizeName)"
+                   :visible.sync="sizeModal.isActive"
+                   :modal-append-to-body="false">
+            <product-size-upsert 
+                :product-id="product.id" 
+                :size-id="sizeModal.sizeId"
+                @updated="productSizeUpdated"></product-size-upsert>
         </el-dialog>
 
     </admin-layout>

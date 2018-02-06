@@ -203,6 +203,27 @@ internals.after = function (server, next) {
     };
 
 
+    internals.productSizeUpdate = (request, reply) => {
+        request.payload.updated_at = request.payload.updated_at || new Date();
+
+        server.plugins.BookshelfOrm.bookshelf.model('ProductSize')
+            .update(request.payload, { id: request.payload.id })
+            .then((ProductSize) => {
+                if(!ProductSize) {
+                    reply(Boom.badRequest('Unable to find product size.'));
+                    return;
+                }
+
+                reply.apiSuccess(ProductSize.toJSON());
+            })
+            .catch((err) => {
+                global.logger.error(err);
+                global.bugsnag(err);
+                reply(Boom.badRequest(err));
+            });
+    };
+
+
     server.route([
         {
             method: 'GET',
@@ -265,6 +286,14 @@ internals.after = function (server, next) {
             config: {
                 description: 'Updates a product',
                 handler: internals.productUpdate
+            }
+        },
+        {
+            method: 'POST',
+            path: `${routePrefix}/product/size/update`,
+            config: {
+                description: 'Updates a product size',
+                handler: internals.productSizeUpdate
             }
         }
     ]);

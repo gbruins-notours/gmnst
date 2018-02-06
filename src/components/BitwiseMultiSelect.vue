@@ -40,7 +40,6 @@ export default {
                 total += val;
             })
 
-            console.log("CHANGED", total)
             this.$emit('changed', total)
         }
     },

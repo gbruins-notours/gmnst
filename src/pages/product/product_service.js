@@ -89,6 +89,14 @@ export default class ProductService {
             });
     }
 
+    updateProductSize(size) {
+        return getHttp()
+            .post(`/api/v1/product/size/update`, size)
+            .then((response) => {
+                return response.data.data;
+            });
+    }
+
     buildPictures(product) {
         let sortObj = {};
         let added = [];
