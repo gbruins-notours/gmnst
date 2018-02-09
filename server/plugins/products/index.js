@@ -224,6 +224,27 @@ internals.after = function (server, next) {
     };
 
 
+    internals.productSizeDelete = (request, reply) => {
+        request.payload.updated_at = request.payload.updated_at || new Date();
+
+        server.plugins.BookshelfOrm.bookshelf.model('ProductSize')
+            .destroy({ id: request.payload.id })
+            .then((ProductSize) => {
+                if(!ProductSize) {
+                    reply(Boom.badRequest('Unable to find product size.'));
+                    return;
+                }
+
+                reply.apiSuccess(ProductSize.toJSON());
+            })
+            .catch((err) => {
+                global.logger.error(err);
+                global.bugsnag(err);
+                reply(Boom.badRequest(err));
+            });
+    };
+
+
     server.route([
         {
             method: 'GET',
@@ -288,12 +309,27 @@ internals.after = function (server, next) {
                 handler: internals.productUpdate
             }
         },
+
+        // Product size
         {
             method: 'POST',
             path: `${routePrefix}/product/size/update`,
             config: {
                 description: 'Updates a product size',
                 handler: internals.productSizeUpdate
+            }
+        },
+        {
+            method: 'POST',
+            path: `${routePrefix}/product/size/delete`,
+            config: {
+                description: 'Deletes a product size',
+                validate: {
+                    payload: {
+                        id: Joi.string().uuid()
+                    }
+                },
+                handler: internals.productSizeDelete
             }
         }
     ]);

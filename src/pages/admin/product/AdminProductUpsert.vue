@@ -1,7 +1,7 @@
 <script>
 import Vue from 'vue'
 import { mapGetters } from 'vuex'
-import { Notification, Dialog, Button, Input, InputNumber, Checkbox, Select, Option } from 'element-ui'
+import { Notification, MessageBox, Dialog, Button, Input, InputNumber, Checkbox, Select, Option } from 'element-ui'
 import TreeView from 'vue-json-tree-view'
 import VueYouTubeEmbed from 'vue-youtube-embed'
 import forEach from 'lodash.foreach'
@@ -15,6 +15,8 @@ import ProductService from '@/pages/product/product_service.js'
 let productService = new ProductService();
 
 Vue.prototype.$notify = Notification;
+Vue.prototype.$confirm = MessageBox.confirm;
+
 Vue.use(Button);
 Vue.use(Dialog);
 Vue.use(Input);
@@ -160,6 +162,56 @@ export default{
             this.sizeModal.sizeName = size.size;
             this.sizeModal.sizeId = size.id;
             this.sizeModal.isActive = true;
+        },
+
+        deleteSize(size) {
+            let sizeName = this.$t(size.size);
+
+            this.$confirm(`Remove size "${ sizeName }" from the product?`, 'Please confirm', {
+                confirmButtonText: 'OK',
+                cancelButtonText: 'Cancel',
+                type: 'warning'
+            })
+            .then(() => {
+                productService
+                    .deleteProductSize(size.id)
+                    .then((product) => {
+                        if(!product) {
+                            throw new Error(this.$t('Product size not found'));
+                        }
+
+                        this.$notify({
+                            type: 'success',
+                            title: 'Product size deleted successfully',
+                            message: sizeName,
+                            duration: 3000
+                        });
+
+                        // remove the size from the UI.  This prevents a full model refresh:
+                        for(let i=0; i<this.product.sizes.length; i++) {
+                            if(this.product.sizes[i].id === size.id) {
+                                this.product.sizes.splice(i, 1);
+                                console.log("DELETED!", size.id, this.product.sizes)
+                            }
+                        }
+                    })
+                    .catch((e) => {
+                        showNotification(
+                            this.$notify({
+                                type: 'error',
+                                title: e.message,
+                                duration: 0
+                            })
+                        )
+                    });
+            })
+            .catch(() => {
+                console.log("DELETE SIZE CANCELLED")
+                // this.$message({
+                //     type: 'info',
+                //     message: 'Delete canceled'
+                // });          
+            });
         }
     },
 
@@ -299,11 +351,12 @@ export default{
                                 <th>Size</th>
                                 <th class="tar">Sort order</th>
                                 <th class="tar">Is visible</th>
-                                <th class="tar">Cost</th>
-                                <th class="tar">Base price</th>
-                                <th class="tar">Sale price</th>
-                                <th class="tar">Is on sale</th>
-                                <th class="tar">Inventory count</th>
+                                <th class="tar hide_medium_down">Cost</th>
+                                <th class="tar hide_medium_down">Base price</th>
+                                <th class="tar hide_medium_down">Sale price</th>
+                                <th class="tar hide_medium_down">Is on sale</th>
+                                <th class="tar hide_medium_down">Inventory count</th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -315,13 +368,16 @@ export default{
                                 <td class="tar">
                                     <i v-if="size.is_visible" class="fa fa-check-square colorGreen"></i>
                                 </td>
-                                <td class="tar">{{ size.cost }}</td>
-                                <td class="tar">{{ size.base_price }}</td>
-                                <td class="tar">{{ size.sale_price }}</td>
-                                <td class="tar">
+                                <td class="tar hide_medium_down">{{ size.cost }}</td>
+                                <td class="tar hide_medium_down">{{ size.base_price }}</td>
+                                <td class="tar hide_medium_down">{{ size.sale_price }}</td>
+                                <td class="tar hide_medium_down">
                                     <i v-if="size.is_on_sale" class="fa fa-check-square colorGreen"></i>
                                 </td>
-                                <td class="tar">{{ size.inventory_count }}</td>
+                                <td class="tar hide_medium_down">{{ size.inventory_count }}</td>
+                                <td class="tac">
+                                    <i class="fa fa-trash fs20 colorRed mlm cursorPointer" @click="deleteSize(size)"></i>
+                                </td>
                             </tr>
                         </tbody>
                     </table>

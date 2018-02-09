@@ -97,6 +97,14 @@ export default class ProductService {
             });
     }
 
+    deleteProductSize(sizeId) {
+        return getHttp()
+            .post(`/api/v1/product/size/delete`, { id: sizeId })
+            .then((response) => {
+                return response.data.data;
+            });
+    }
+
     buildPictures(product) {
         let sortObj = {};
         let added = [];
