@@ -13,6 +13,7 @@
   "scripts": {
     "start": "node server/start.js",
     "start:dev": "NODE_ENV=development node --require dotenv/config server/start.js",
+    "start:nanodev": "NODE_ENV=development ISNANO=true node --require dotenv/config server/start.js",
     "start:local": "NODE_ENV=development IS_LOCAL=true node --require dotenv/config server/start.js",
     "build": "node build/build.js",
     "test:e2e": "node test/client/e2e/runner.js",
