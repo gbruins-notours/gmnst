@@ -26,25 +26,27 @@ internals.after = function (server, next) {
 
     internals.schema = {
         title: Joi.string().max(100),
-        description_short: Joi.string().max(500),
-        description_long: Joi.string().max(750),
-        sku: Joi.string().max(50),
-        seo_uri: Joi.string().max(50),
-        cost: Joi.number().precision(2).positive().max(99999999.99),
-        weight_oz: Joi.number().precision(2).positive().max(99999999.99),
-        base_price: Joi.number().precision(2).positive().max(99999999.99),
-        sale_price: Joi.number().precision(2).positive().max(99999999.99),
+        description_short: Joi.string().max(500).allow(null),
+        description_long: Joi.string().max(750).allow(null),
+        sku: Joi.string().max(50).allow(null),
+        seo_uri: Joi.string().max(50).allow(null),
+        cost: Joi.number().precision(2).min(0).max(99999999.99),
+        weight_oz: Joi.number().precision(2).min(0).max(99999999.99),
+        base_price: Joi.number().precision(2).min(0).max(99999999.99),
+        sale_price: Joi.number().precision(2).min(0).max(99999999.99),
         is_on_sale: Joi.boolean(),
         is_available: Joi.boolean(),
-        tax_code: Joi.number(),
-        featured_pic: Joi.string().max(100),
-        video_url: Joi.string().max(500),
+        tax_code: Joi.number().allow(null),
+        featured_pic: Joi.string().max(100).allow(null),
+        video_url: Joi.string().max(500).allow(null),
         gender: Joi.number().integer().positive(),
         type: Joi.number().integer().positive(),
         sub_type: Joi.number().integer().positive(),
-        inventory_count: Joi.number().positive(),
+        inventory_count: Joi.number().min(0),
         hide_if_out_of_stock: Joi.boolean(),
-        product_artist_id: Joi.string().uuid()
+        product_artist_id: Joi.string().uuid().allow(null),
+        created_at: Joi.date().optional(),
+        updated_at: Joi.date().optional()
     };
 
 
@@ -193,6 +195,25 @@ internals.after = function (server, next) {
     };
 
 
+    internals.productCreate = (request, reply) => {
+        server.plugins.BookshelfOrm.bookshelf.model('Product')
+            .create(request.payload)
+            .then((Product) => {
+                if(!Product) {
+                    reply(Boom.badRequest('Unable to create product.'));
+                    return;
+                }
+
+                reply.apiSuccess(Product.toJSON());
+            })
+            .catch((err) => {
+                global.logger.error(err);
+                global.bugsnag(err);
+                reply(Boom.badRequest(err));
+            });
+    };
+
+
     internals.productUpdate = (request, reply) => {
         request.payload.updated_at = request.payload.updated_at || new Date();
 
@@ -336,9 +357,28 @@ internals.after = function (server, next) {
         },
         {
             method: 'POST',
+            path: `${routePrefix}/product/create`,
+            config: {
+                description: 'Updates a product',
+                validate: {
+                    payload: Joi.object({
+                        ...internals.schema
+                    })
+                },
+                handler: internals.productCreate
+            }
+        },
+        {
+            method: 'POST',
             path: `${routePrefix}/product/update`,
             config: {
                 description: 'Updates a product',
+                validate: {
+                    payload: Joi.object({
+                        id: Joi.string().uuid().required(),
+                        ...internals.schema
+                    })
+                },
                 handler: internals.productUpdate
             }
         },

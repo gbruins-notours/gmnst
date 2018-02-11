@@ -141,18 +141,23 @@ export default{
             this.picModalIsActive = true;
         },
 
-        editProduct(product) {
+        upsertProduct(product) {
             productService
-                .update(product)
-                .then((product) => {
-                    if(!product) {
-                        throw new Error(this.$t('Product not found'));
+                .upsert(product)
+                .then((p) => {
+                    if(!p) {
+                        throw new Error(this.$t('Error updating product'));
+                    }
+
+                    let title = 'Product added successfully';
+                    if(product.id) {
+                        title = 'Product updated successfully';
                     }
 
                     this.$notify({
                         type: 'success',
-                        title: 'Product updated successfully',
-                        message: product.title,
+                        title,
+                        message: p.title,
                         duration: 3000
                     });
 
@@ -243,9 +248,11 @@ export default{
     },
 
     created() {
-        this.getProduct().then((product) => {
-            this.product = product;
-        });
+        if(this.$route.params.id) {
+            this.getProduct().then((product) => {
+                this.product = product;
+            });
+        }
 
         productService
             .getProductInfo()
@@ -362,7 +369,8 @@ export default{
                                    @click="openSizeEditModal()">ADD SIZE</el-button>
                     </div>
 
-                    <table class="table">
+                    <div v-if="!product.sizes" class="colorGrayLighter">none</div>
+                    <table v-else class="table">
                         <thead>
                             <tr>
                                 <th>Size</th>
@@ -421,7 +429,8 @@ export default{
 
                     <!-- pictures -->
                     <form-row label="Pictures:">
-                        <table class="table">
+                        <div v-if="!product.pics" class="colorGrayLighter">none</div>
+                        <table v-else class="table widthAll">
                             <thead>
                                 <tr>
                                     <th>Pic</th>
@@ -473,7 +482,7 @@ export default{
 
                         <!-- type -->
                         <form-row label="Product type:">
-                            <el-select v-model="product.type">
+                            <el-select v-model="product.type" placeholder="Choose">
                                 <el-option
                                     v-for="(val, key) in productInfo.types"
                                     :key="key"
@@ -485,7 +494,7 @@ export default{
 
                         <!-- sub_type -->
                         <form-row label="Product sub-type:">
-                            <el-select v-model="product.sub_type">
+                            <el-select v-model="product.sub_type" placeholder="Choose">
                                 <el-option
                                     v-for="(val, key) in productInfo.subTypes"
                                     :key="key"
@@ -512,7 +521,9 @@ export default{
                 <div class="g-spec-content">
                     <el-button
                         type="primary"
-                        @click="editProduct(product)">SUBMIT</el-button>
+                        @click="upsertProduct(product)">SUBMIT</el-button>
+
+                    <el-button @click="goToProductList">CANCEL</el-button>
                 </div>
             </div>
         </div>

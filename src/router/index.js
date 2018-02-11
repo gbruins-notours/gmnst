@@ -136,6 +136,12 @@ export function createRouter () {
                 beforeEnter: requireAuth
             },
             {
+                name: 'adminProductAdd',
+                path: '/acts/product/add',
+                component: AdminProductUpsert,
+                beforeEnter: requireAuth
+            },
+            {
                 name: 'adminProductUpsert',
                 path: '/acts/product/edit/:id',
                 component: AdminProductUpsert,

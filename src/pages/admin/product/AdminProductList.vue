@@ -80,6 +80,12 @@ export default{
             });
         },
 
+        goToAdd() {
+            this.$router.push({ 
+                name: 'adminProductAdd'
+            });
+        },
+
         goToEdit(id) {
             this.$router.push({ 
                 name: 'adminProductUpsert',
@@ -103,6 +109,10 @@ export default{
 <template>
     <admin-layout>
         <div v-cloak>
+
+            <div class="tar mbl">
+                <el-button type="primary" @click="goToAdd">ADD PRODUCT</el-button>
+            </div>
        
             <table v-show="products.length" class="table">
                 <thead>
@@ -138,7 +148,12 @@ export default{
                 <tbody>
                     <tr v-for="product in products" :key="product.id">
                         <!-- featured image -->
-                        <td><img :src="getProductPic(product) " alt="Image" class="prodPicSmall"></td>
+                        <td>
+                            <img v-if="product.pics.length"
+                                :src="getProductPic(product)" 
+                                alt="Image" 
+                                class="prodPicSmall" />
+                        </td>
 
                         <!-- is available -->
                         <td>

@@ -90,12 +90,21 @@ export default class ProductService {
         return;
     }
 
-    update(product) {
-        return getHttp()
-            .post(`/api/v1/product/update`, stripRelations(product))
-            .then((response) => {
-                return response.data.data;
-            });
+    upsert(product) {
+        let promise = null;
+        let http = getHttp();
+        let p = stripRelations(product);
+
+        if(product.id) {
+            promise = http.post(`/api/v1/product/update`, p)
+        }
+        else {
+            promise = http.post(`/api/v1/product/create`, p)
+        }
+
+        return promise.then((response) => {
+            return response.data.data;
+        });
     }
 
     buildPictures(product) {

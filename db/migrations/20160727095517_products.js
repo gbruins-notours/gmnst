@@ -11,10 +11,10 @@ module.exports.up = (knex) => {
             t.text('description_long').nullable();
             t.string('sku').nullable();
             t.string('seo_uri').nullable();
-            t.decimal('cost').nullable();
-            t.decimal('weight_oz').nullable();
-            t.decimal('base_price').nullable();
-            t.decimal('sale_price').nullable();
+            t.decimal('cost').defaultTo(0);
+            t.decimal('weight_oz').defaultTo(0);
+            t.decimal('base_price').defaultTo(0);
+            t.decimal('sale_price').defaultTo(0);
             t.boolean('is_on_sale').defaultTo(false);
             t.boolean('is_available').defaultTo(false);
             t.string('tax_code').nullable();
@@ -23,7 +23,7 @@ module.exports.up = (knex) => {
             t.integer('gender').nullable();
             t.integer('type').nullable();
             t.integer('sub_type').nullable();
-            t.integer('inventory_count').nullable();
+            t.integer('inventory_count').defaultTo(0);
             t.boolean('hide_if_out_of_stock').defaultTo(true);
             t.timestamp('created_at', true).notNullable().defaultTo(knex.fn.now());
             t.timestamp('updated_at', true).nullable();

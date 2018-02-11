@@ -45,7 +45,7 @@ export default {
                     </template>
 
                     <el-menu-item :route="{ name: 'adminProductList' }" index="1-1">List</el-menu-item>
-                    <el-menu-item :route="{ name: 'adminProductSizes' }" index="1-2">Sizes</el-menu-item>
+                    <!-- <el-menu-item :route="{ name: 'adminProductSizes' }" index="1-2">Sizes</el-menu-item> -->
                 </el-submenu>
 
                 <el-menu-item :route="{ name: 'adminReports' }" index="2">
@@ -65,7 +65,7 @@ export default {
                     <nav class="Navigation">
                         <ul class="Navigation-list">
                             <li>
-                                <el-button type="warning"
+                                <el-button type="text"
                                     @click="logout"
                                     class="colorBlack">{{ $t('LOGOUT') }}</el-button>
                             </li>
