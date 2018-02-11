@@ -4,7 +4,7 @@ import { mapGetters } from 'vuex';
 import { Dialog, Button } from 'element-ui'
 import forEach from 'lodash.foreach'
 import AdminLayout from '@/layouts/AdminLayout'
-import ProductService from '@/pages/product/product_service.js'
+import ProductService from '@/pages/product/ProductService.js'
 import TableHeaderLink from '@/components/TableHeaderLink'
 import ProductDetailsJsonView from '@/components/product/ProductDetailsJsonView'
 

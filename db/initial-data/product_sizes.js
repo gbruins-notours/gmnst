@@ -33,7 +33,7 @@ exports.seed = (knex) => {
                                         size: size,
                                         inventory_count: faker.random.number(25),
                                         is_visible: true,
-                                        sort: index,
+                                        sort: ProductService.getSizeTypeSortOrder(size),
                                         product_id: global.productSeedUuids[prodId-1]
                                     })
                             );

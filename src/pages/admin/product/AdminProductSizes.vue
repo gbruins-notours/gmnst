@@ -4,7 +4,7 @@ import { mapGetters } from 'vuex'
 import { Notification, Button } from 'element-ui'
 import TreeView from 'vue-json-tree-view'
 import AdminLayout from '@/layouts/AdminLayout'
-import ProductService from '@/pages/product/product_service.js'
+import ProductService from '@/pages/product/ProductService.js'
 
 
 let productService = new ProductService();
@@ -34,8 +34,6 @@ export default{
 
         }
     },
-
-
 
     methods: {
 

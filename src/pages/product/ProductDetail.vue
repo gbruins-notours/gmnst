@@ -10,11 +10,13 @@ import SocialSharing from 'vue-social-sharing'
 import DefaultLayout from '@/layouts/DefaultLayout'
 import ProductPrice from '@/components/product/ProductPrice'
 import NumberButtons from '@/components/NumberButtons'
-import ProductService from '@/pages/product/product_service.js'
-import ShoppingCartService from '@/pages/cart/shopping_cart_service.js'
+import ProductService from '@/pages/product/ProductService.js'
+import ProductSizeService from '@/pages/product/ProductSizeService.js'
+import ShoppingCartService from '@/pages/cart/ShoppingCartService.js'
 import UtilityService from '@/utility_service.js'
 
 let productService = new ProductService();
+let productSizeService = new ProductSizeService();
 let shoppingCartService = new ShoppingCartService();
 let utilityService = new UtilityService();
 let pageUrl = utilityService.getSiteUrl(true);
@@ -135,7 +137,7 @@ export default {
 
                 this.product = product;
 
-                productService.buildSizeOptions(product).then((result) => {
+                productSizeService.buildSizeOptions(product).then((result) => {
                     this.sizeOptions = result.sizeOpts;
                 });
 

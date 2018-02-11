@@ -6,8 +6,8 @@
     import { Select, Option, InputNumber, Loading, Button } from 'element-ui'
     import ProductPrice from '@/components/product/ProductPrice'
     import NumberButtons from '@/components/NumberButtons'
-    import ShoppingCartService from '@/pages/cart/shopping_cart_service.js'
-    import ProductService from '@/pages/product/product_service.js'
+    import ShoppingCartService from '@/pages/cart/ShoppingCartService.js'
+    import ProductService from '@/pages/product/ProductService.js'
 
     let shoppingCartService = new ShoppingCartService();
     let productService = new ProductService();

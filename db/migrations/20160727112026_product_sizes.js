@@ -11,8 +11,8 @@ module.exports.up = (knex) => {
             t.decimal('base_price').nullable();
             t.decimal('sale_price').nullable();
             t.boolean('is_on_sale').defaultTo(false);
-            t.integer('inventory_count').notNull();
-            t.integer('sort').notNull();
+            t.integer('inventory_count').defaultTo(0);
+            t.integer('sort').defaultTo(0);
             t.boolean('is_visible').defaultTo(false);
             t.timestamp('created_at', true).notNullable().defaultTo(knex.fn.now());
             t.timestamp('updated_at', true).nullable();

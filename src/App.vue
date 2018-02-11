@@ -3,7 +3,7 @@ import Vue from 'vue'
 import { mapGetters } from 'vuex'
 import isObject from 'lodash.isobject'
 // import DefaultLayout from '@/layouts/default'
-import ShoppingCartService from './pages/cart/shopping_cart_service.js'
+import ShoppingCartService from '@/pages/cart/ShoppingCartService.js'
 import UtilityService from './utility_service.js'
 
 let shoppingCartService = new ShoppingCartService();

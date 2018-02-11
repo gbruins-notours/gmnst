@@ -48,21 +48,28 @@ internals.after = function (server, next) {
     };
 
 
-    internals.withRelated = [
-        'artist',
-        {
-            sizes: (query) => {
-                query.where('is_visible', '=', true);
-                query.orderBy('sort', 'ASC');
-            },
+    internals.getWithRelated = (opts) => {
+        let options = opts || {};
 
-            pics: (query) => {
-                query.where('is_visible', '=', true);
-                query.orderBy('sort_order', 'ASC');
+        return [
+            'artist',
+            {
+                sizes: (query) => {
+                    if(!options.viewAllRelated) {
+                        query.where('is_visible', '=', true);
+                    }
+                    query.orderBy('sort', 'ASC');
+                },
+    
+                pics: (query) => {
+                    if(!options.viewAllRelated) {
+                        query.where('is_visible', '=', true);
+                    }
+                    query.orderBy('sort_order', 'ASC');
+                }
             }
-        }
-    ];
-
+        ]
+    }
 
     /**
      * Fetches data from a given product model
@@ -94,7 +101,7 @@ internals.after = function (server, next) {
         }
 
         let fetchOpts = {
-            withRelated: internals.withRelated
+            withRelated: internals.getWithRelated()
         };
 
         return internals.modelFetch('Product', forgeOpts, fetchOpts)
@@ -132,7 +139,11 @@ internals.after = function (server, next) {
 
     internals.productRoute = (request, reply) => {
         internals
-            .getProductByAttribute('id', request.query.id)
+            .modelFetch(
+                'Product', 
+                { id: request.query.id }, 
+                { withRelated: internals.getWithRelated(request.query) }
+            )
             .then((products) => {
                 reply.apiSuccess(products);
             })
@@ -170,7 +181,7 @@ internals.after = function (server, next) {
 
     internals.productsRoute = (request, reply) => {
         HelperService
-            .fetchPage(request, server.plugins.BookshelfOrm.bookshelf.model('Product'), internals.withRelated)
+            .fetchPage(request, server.plugins.BookshelfOrm.bookshelf.model('Product'), internals.getWithRelated())
             .then((products) => {
                 reply.apiSuccess(products, products.pagination);
             })
@@ -194,6 +205,27 @@ internals.after = function (server, next) {
                 }
 
                 reply.apiSuccess(Product.toJSON());
+            })
+            .catch((err) => {
+                global.logger.error(err);
+                global.bugsnag(err);
+                reply(Boom.badRequest(err));
+            });
+    };
+
+
+    internals.productSizeCreate = (request, reply) => {
+        request.payload.sort = request.payload.sort || ProductService.getSizeTypeSortOrder(request.payload.size)
+
+        server.plugins.BookshelfOrm.bookshelf.model('ProductSize')
+            .create(request.payload)
+            .then((ProductSize) => {
+                if(!ProductSize) {
+                    reply(Boom.badRequest('Unable to createa a new product size.'));
+                    return;
+                }
+
+                reply.apiSuccess(ProductSize.toJSON());
             })
             .catch((err) => {
                 global.logger.error(err);
@@ -253,7 +285,8 @@ internals.after = function (server, next) {
                 description: 'Finds a product by ID',
                 validate: {
                     query: {
-                        id: Joi.string().uuid()
+                        id: Joi.string().uuid(),
+                        viewAllRelated: Joi.boolean().optional()
                     }
                 },
                 handler: internals.productRoute
@@ -311,6 +344,14 @@ internals.after = function (server, next) {
         },
 
         // Product size
+        {
+            method: 'POST',
+            path: `${routePrefix}/product/size/create`,
+            config: {
+                description: 'Adds a new size to the product',
+                handler: internals.productSizeCreate
+            }
+        },
         {
             method: 'POST',
             path: `${routePrefix}/product/size/update`,

@@ -1,6 +1,6 @@
 <script>
     import { mapGetters } from 'vuex'
-    import ShoppingCartService from '@/pages/cart/shopping_cart_service.js'
+    import ShoppingCartService from '@/pages/cart/ShoppingCartService.js'
 
     let shoppingCartService = new ShoppingCartService();
 

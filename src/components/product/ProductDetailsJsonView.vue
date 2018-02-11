@@ -1,7 +1,7 @@
 <script>
 import Vue from 'vue'
 import TreeView from 'vue-json-tree-view'
-import ProductService from '@/pages/product/product_service.js'
+import ProductService from '@/pages/product/ProductService.js'
 
 let productService = new ProductService();
 

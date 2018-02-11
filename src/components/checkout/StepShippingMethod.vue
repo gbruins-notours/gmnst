@@ -7,7 +7,7 @@
     import cloneDeep from 'lodash.clonedeep'
     import Promise from 'bluebird';
     import PageHeader from '@/components/PageHeader'
-    import ShoppingCartService from '@/pages/cart/shopping_cart_service.js'
+    import ShoppingCartService from '@/pages/cart/ShoppingCartService.js'
 
     Vue.use(Button)
     Vue.use(Radio)

@@ -1,4 +1,4 @@
-import ShoppingCartService from '../cart/shopping_cart_service.js'
+import ShoppingCartService from '../cart/ShoppingCartService.js'
 let shoppingCartService = new ShoppingCartService();
 
 export default {

@@ -31,6 +31,13 @@ function getSizeTypes() {
 }
 
 
+function getSizeTypeSortOrder(size) {
+    let types = getSizeTypes();
+    let index = types.indexOf(size);
+    return index > -1 ? index : types.length;
+}
+
+
 function getProductTypes() {
     return {
         PRODUCT_TYPE_APPAREL: 0x01 // 00000001
@@ -48,5 +55,6 @@ function getProductSubTypes() {
 
 module.exports.getGenderTypes = getGenderTypes;
 module.exports.getSizeTypes = getSizeTypes;
+module.exports.getSizeTypeSortOrder = getSizeTypeSortOrder;
 module.exports.getProductTypes = getProductTypes;
 module.exports.getProductSubTypes = getProductSubTypes;

@@ -4,7 +4,7 @@ import { Loading } from 'element-ui'
 import DefaultLayout from '@/layouts/DefaultLayout'
 import PaymentTypeDisplay from '@/components/PaymentTypeDisplay'
 import orderMixin from './order_mixin'
-import OrderService from './order_service.js'
+import OrderService from './OrderService.js'
 
 let orderService = new OrderService();
 

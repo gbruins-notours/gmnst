@@ -1,9 +1,10 @@
 'use strict';
 
 import queryString from 'query-string'
-import _forEach from 'lodash.foreach';
-import Promise from 'bluebird';
-import { getHttp } from '../../util/http-common';
+import _forEach from 'lodash.foreach'
+import isObject from 'lodash.isobject'
+import Promise from 'bluebird'
+import { getHttp } from '../../util/http-common'
 
 
 function stripRelations(productJson) {
@@ -44,12 +45,20 @@ export default class ProductService {
             });
     }
 
-    getProductById(id) {
+    getProductById(id, options) {
+        let params = {};
+
+        if(isObject(options)) {
+            params = {
+                ...options
+            };
+        }
+
+        params.id = id;
+
         return getHttp()
             .get('/api/v1/product', {
-                params: {
-                    id
-                }
+                params
             })
             .then((response) => {
                 return response.data.data;
@@ -84,22 +93,6 @@ export default class ProductService {
     update(product) {
         return getHttp()
             .post(`/api/v1/product/update`, stripRelations(product))
-            .then((response) => {
-                return response.data.data;
-            });
-    }
-
-    updateProductSize(size) {
-        return getHttp()
-            .post(`/api/v1/product/size/update`, size)
-            .then((response) => {
-                return response.data.data;
-            });
-    }
-
-    deleteProductSize(sizeId) {
-        return getHttp()
-            .post(`/api/v1/product/size/delete`, { id: sizeId })
             .then((response) => {
                 return response.data.data;
             });
@@ -154,30 +147,6 @@ export default class ProductService {
             }
 
             resolve(getSortedArray(sortObj));
-        });
-    }
-
-    buildSizeOptions(product) {
-        return new Promise((resolve, reject) => {
-            let sizeOpts = [];
-            let maxInventoryCount = 0;
-
-            if (Array.isArray(product.sizes)) {
-                product.sizes.forEach((obj) => {
-                    if (obj.is_visible && obj.inventory_count) {
-                        sizeOpts.push(obj.size);
-
-                        if (obj.inventory_count > maxInventoryCount) {
-                            maxInventoryCount = obj.inventory_count;
-                        }
-                    }
-                });
-            }
-
-            resolve({
-                sizeOpts,
-                maxInventoryCount
-            });
         });
     }
 }

@@ -6,7 +6,7 @@
     import { Notification, Loading, Button } from 'element-ui'
     import ShippingBillingForm from '@/components/checkout/ShippingBillingForm'
     import ShippingBillingHelp from '@/components/checkout/ShippingBillingHelp'
-    import ShoppingCartService from '@/pages/cart/shopping_cart_service.js'
+    import ShoppingCartService from '@/pages/cart/ShoppingCartService.js'
     import BottomPopover from '@/components/BottomPopover'
     import PageHeader from '@/components/PageHeader'
 

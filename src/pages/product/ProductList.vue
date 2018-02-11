@@ -2,7 +2,7 @@
 import { mapGetters } from 'vuex'
 import DefaultLayout from '@/layouts/DefaultLayout'
 import ProductCard from '@/components/product/ProductCard'
-import ProductService from '@/pages/product/product_service.js'
+import ProductService from '@/pages/product/ProductService.js'
 
 let productService = new ProductService();
 

@@ -10,9 +10,11 @@ import FormRow from '@/components/FormRow'
 import ProductSizeDetails from '@/components/product/ProductSizeDetails'
 import ProductSizeUpsert from '@/components/product/ProductSizeUpsert'
 import BitwiseMultiSelect from '@/components/BitwiseMultiSelect'
-import ProductService from '@/pages/product/product_service.js'
+import ProductService from '@/pages/product/ProductService.js'
+import ProductSizeService from '@/pages/product/ProductSizeService.js'
 
 let productService = new ProductService();
+let productSizeService = new ProductSizeService();
 
 Vue.prototype.$notify = Notification;
 Vue.prototype.$confirm = MessageBox.confirm;
@@ -82,6 +84,27 @@ export default{
     },
 
     methods: {
+        getProduct() {
+            return productService
+                .getProductById(this.$route.params.id, { viewAllRelated: true })
+                .then((product) => {
+                    if(!product) {
+                        throw new Error(this.$t('Product not found'));
+                    }
+
+                    return product;
+                })
+                .catch((e) => {
+                    showNotification(
+                        this.$notify({
+                            type: 'error',
+                            title: e.message,
+                            duration: 0
+                        })
+                    )
+                });
+        },
+
         getProductPic(prod) {
             return productService.featuredProductPic(prod);
         },
@@ -148,19 +171,25 @@ export default{
 
         productSizeUpdated(size) {
             this.sizeModal.isActive = false;
+            // this.sizeModal.sizeId = null;
 
-            // replace the updated size object in the product
-            // so the UI shows the latest values
-            for(let i=0; i<this.product.sizes.length; i++) {
-                if(this.product.sizes[i].id === size.id) {
-                    this.product.sizes[i] = size;
-                }
-            }
+            this.getProduct().then((product) => {
+                this.product.sizes = product.sizes;
+
+                showNotification(
+                    this.$notify({
+                        type: 'success',
+                        title: 'Size updated:',
+                        message: this.$t(size.size),
+                        duration: 4000
+                    })
+                )
+            });
         },
 
         openSizeEditModal(size) {
-            this.sizeModal.sizeName = size.size;
-            this.sizeModal.sizeId = size.id;
+            this.sizeModal.sizeName = size ? size.size : null;
+            this.sizeModal.sizeId = size ? size.id : null;
             this.sizeModal.isActive = true;
         },
 
@@ -173,27 +202,25 @@ export default{
                 type: 'warning'
             })
             .then(() => {
-                productService
-                    .deleteProductSize(size.id)
+                productSizeService
+                    .delete(size.id)
                     .then((product) => {
                         if(!product) {
                             throw new Error(this.$t('Product size not found'));
                         }
 
-                        this.$notify({
-                            type: 'success',
-                            title: 'Product size deleted successfully',
-                            message: sizeName,
-                            duration: 3000
-                        });
+                        this.getProduct().then((product) => {
+                            this.product.sizes = product.sizes;
 
-                        // remove the size from the UI.  This prevents a full model refresh:
-                        for(let i=0; i<this.product.sizes.length; i++) {
-                            if(this.product.sizes[i].id === size.id) {
-                                this.product.sizes.splice(i, 1);
-                                console.log("DELETED!", size.id, this.product.sizes)
-                            }
-                        }
+                            showNotification(
+                                this.$notify({
+                                    type: 'success',
+                                    title: 'Size deleted:',
+                                    message: sizeName,
+                                    duration: 3000
+                                })
+                            );
+                        });
                     })
                     .catch((e) => {
                         showNotification(
@@ -216,24 +243,9 @@ export default{
     },
 
     created() {
-        productService
-            .getProductById(this.$route.params.id)
-            .then((product) => {
-                if(!product) {
-                    throw new Error(this.$t('Product not found'));
-                }
-
-                this.product = product;
-            })
-            .catch((e) => {
-                showNotification(
-                    this.$notify({
-                        type: 'error',
-                        title: e.message,
-                        duration: 0
-                    })
-                )
-            });
+        this.getProduct().then((product) => {
+            this.product = product;
+        });
 
         productService
             .getProductInfo()
@@ -345,6 +357,11 @@ export default{
                     Sizes <span v-if="product.sizes">({{ product.sizes.length }})</span>
                 </div>
                 <div class="g-spec-content">
+                    <div class="tar mbm">
+                        <el-button type="primary"
+                                   @click="openSizeEditModal()">ADD SIZE</el-button>
+                    </div>
+
                     <table class="table">
                         <thead>
                             <tr>
@@ -360,7 +377,7 @@ export default{
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="size in product.sizes">
+                            <tr v-for="size in product.sizes" :key="size.id">
                                 <td>
                                     <a @click="openSizeEditModal(size)">{{ $t(size.size) }}</a>
                                 </td>
@@ -415,7 +432,7 @@ export default{
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="pic in product.pics">
+                                <tr v-for="pic in product.pics" :key="pic.id">
                                     <td>
                                         <a @click="openPicQuickView(pic)"><img :src="productPicPath + pic.file_name" class="width50"></a>
                                     </td>
@@ -522,7 +539,7 @@ export default{
         </el-dialog>
 
         <!-- product size edit dialog -->
-        <el-dialog :title="'EDIT: ' + $t(sizeModal.sizeName)"
+        <el-dialog :title="sizeModal.sizeName ? 'EDIT: ' + $t(sizeModal.sizeName) : 'ADD SIZE'"
                    :visible.sync="sizeModal.isActive"
                    :modal-append-to-body="false">
             <product-size-upsert 

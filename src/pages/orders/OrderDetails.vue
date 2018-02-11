@@ -7,9 +7,9 @@ import PaymentTypeDisplay from '@/components/PaymentTypeDisplay'
 import ProductPrice from '@/components/product/ProductPrice'
 import CartTotalsTable from '@/components/cart/CartTotalsTable'
 import orderMixin from './order_mixin'
-import OrderService from './order_service.js'
-import ProductService from '../product/product_service.js'
-import ShoppingCartService from '../cart/shopping_cart_service.js'
+import OrderService from './OrderService.js'
+import ProductService from '@/pages/product/ProductService.js'
+import ShoppingCartService from '@/pages/cart/ShoppingCartService.js'
 
 let orderService = new OrderService();
 let productService = new ProductService();

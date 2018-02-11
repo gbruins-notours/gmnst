@@ -15,7 +15,7 @@
     import BottomPopover from '@/components/BottomPopover'
     import CreditCardIcon from '@/components/CreditCardIcon'
     import api from '@/util/api'
-    import ShoppingCartService from '@/pages/cart/shopping_cart_service.js'
+    import ShoppingCartService from '@/pages/cart/ShoppingCartService.js'
     import PageHeader from '@/components/PageHeader'
     import SiteName from '@/components/SiteName'
 
