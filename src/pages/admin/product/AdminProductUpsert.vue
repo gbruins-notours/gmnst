@@ -73,6 +73,24 @@ export default{
             productSubTypes: 'product/subTypes'
         }),
 
+        typeSelectOptions() {
+            let opts = {};
+            let self = this;
+            forEach(this.productInfo.types, function(val, key) {
+                opts[self.$t(key)] = val;
+            });
+            return opts;
+        },
+
+        subTypeSelectOptions() {
+            let opts = {};
+            let self = this;
+            forEach(this.productInfo.subTypes, function(val, key) {
+                opts[self.$tc(key, 2)] = val;
+            });
+            return opts;
+        },
+
         genderSelectOptions() {
             let opts = {};
             let self = this;
@@ -482,26 +500,18 @@ export default{
 
                         <!-- type -->
                         <form-row label="Product type:">
-                            <el-select v-model="product.type" placeholder="Choose">
-                                <el-option
-                                    v-for="(val, key) in productInfo.types"
-                                    :key="key"
-                                    :label="$t(key)"
-                                    :value="val">
-                                </el-option>
-                            </el-select>
+                            <bitwise-multi-select
+                                :options="typeSelectOptions"
+                                :init="product.type"
+                                @changed="val => product.type = val"></bitwise-multi-select>
                         </form-row>
 
                         <!-- sub_type -->
                         <form-row label="Product sub-type:">
-                            <el-select v-model="product.sub_type" placeholder="Choose">
-                                <el-option
-                                    v-for="(val, key) in productInfo.subTypes"
-                                    :key="key"
-                                    :label="$tc(key, 2)"
-                                    :value="val">
-                                </el-option>
-                            </el-select>
+                            <bitwise-multi-select
+                                :options="subTypeSelectOptions"
+                                :init="product.sub_type"
+                                @changed="val => product.sub_type = val"></bitwise-multi-select>
                         </form-row>
 
                         <!-- gender -->
