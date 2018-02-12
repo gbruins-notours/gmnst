@@ -387,7 +387,7 @@ export default{
                                    @click="openSizeEditModal()">ADD SIZE</el-button>
                     </div>
 
-                    <div v-if="!product.sizes" class="colorGrayLighter">none</div>
+                    <div v-if="!product.sizes.length" class="colorGrayLighter">none</div>
                     <table v-else class="table">
                         <thead>
                             <tr>
@@ -447,7 +447,7 @@ export default{
 
                     <!-- pictures -->
                     <form-row label="Pictures:">
-                        <div v-if="!product.pics" class="colorGrayLighter">none</div>
+                        <div v-if="!product.pics.length" class="colorGrayLighter">none</div>
                         <table v-else class="table widthAll">
                             <thead>
                                 <tr>
