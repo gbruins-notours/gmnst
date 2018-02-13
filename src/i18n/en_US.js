@@ -122,6 +122,7 @@ const translations = {
     'RECEIPT': 'RECEIPT',
     'Reports': 'Reports',
     'Required': 'Required',
+    'results': 'result | results',
     'Return to cart': 'Return to cart',
     'Returns / Exchanges': 'Returns / Exchanges',
     'returns_help': 'For help with Exchanging or Returning an item, please contact us at',

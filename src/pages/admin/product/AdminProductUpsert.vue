@@ -7,14 +7,11 @@ import VueYouTubeEmbed from 'vue-youtube-embed'
 import forEach from 'lodash.foreach'
 import AdminLayout from '@/layouts/AdminLayout'
 import FormRow from '@/components/FormRow'
-import ProductSizeDetails from '@/components/product/ProductSizeDetails'
-import ProductSizeUpsert from '@/components/product/ProductSizeUpsert'
+import ProductSizeAdmin from '@/components/product/admin/ProductSizeAdmin'
 import BitwiseMultiSelect from '@/components/BitwiseMultiSelect'
 import ProductService from '@/pages/product/ProductService.js'
-import ProductSizeService from '@/pages/product/ProductSizeService.js'
 
 let productService = new ProductService();
-let productSizeService = new ProductSizeService();
 
 Vue.prototype.$notify = Notification;
 Vue.prototype.$confirm = MessageBox.confirm;
@@ -44,8 +41,7 @@ export default{
     components: {
         AdminLayout,
         FormRow,
-        ProductSizeDetails,
-        ProductSizeUpsert,
+        ProductSizeAdmin,
         BitwiseMultiSelect
     },
 
@@ -55,15 +51,17 @@ export default{
             productInfo: {},
             productPics: [],
             productPicPath: productService.getProductPicPath(),
-            modalIsActive: false,
-            videoId: null,
-            videoPlayer: null,
-            picModalIsActive: false,
-            picForModal: {},
-            sizeModal: {
+            videoPlayerModal: {
                 isActive: false,
-                sizeId: null,
-                sizeName: null
+                videoId: null,
+                player: null,
+            },
+            pictureViewModal: {
+                pic: {},
+                isActive: false
+            },
+            pictureUpsertModal: {
+                isActive: false,
             }
         }
     },
@@ -136,27 +134,27 @@ export default{
         playVideo(url) {
             let id = this.$youtube.getIdFromURL(url);
             if(id) {
-                this.videoId = id;
-                this.modalIsActive = true;
+                this.videoPlayerModal.videoId = id;
+                this.videoPlayerModal.isActive = true;
             }
             else {
-                this.modalIsActive = false;
+                this.videoPlayerModal.isActive = false;
             }
         },
 
         modalClosed() {
-            if(this.videoPlayer) {
-                this.videoPlayer.stopVideo();
+            if(this.videoPlayerModal.player) {
+                this.videoPlayerModal.player.stopVideo();
             }
         },
 
         videoPlaying(player) {
-            this.videoPlayer = player;
+            this.videoPlayerModal.player = player;
         },
 
         openPicQuickView(pic) {
-            this.picForModal = pic;
-            this.picModalIsActive = true;
+            this.pictureViewModal.pic = pic;
+            this.pictureViewModal.isActive = true;
         },
 
         upsertProduct(product) {
@@ -190,78 +188,6 @@ export default{
                         })
                     )
                 });
-        },
-
-        productSizeUpdated(size) {
-            this.sizeModal.isActive = false;
-            // this.sizeModal.sizeId = null;
-
-            this.getProduct().then((product) => {
-                this.product.sizes = product.sizes;
-
-                showNotification(
-                    this.$notify({
-                        type: 'success',
-                        title: 'Size updated:',
-                        message: this.$t(size.size),
-                        duration: 4000
-                    })
-                )
-            });
-        },
-
-        openSizeEditModal(size) {
-            this.sizeModal.sizeName = size ? size.size : null;
-            this.sizeModal.sizeId = size ? size.id : null;
-            this.sizeModal.isActive = true;
-        },
-
-        deleteSize(size) {
-            let sizeName = this.$t(size.size);
-
-            this.$confirm(`Remove size "${ sizeName }" from the product?`, 'Please confirm', {
-                confirmButtonText: 'OK',
-                cancelButtonText: 'Cancel',
-                type: 'warning'
-            })
-            .then(() => {
-                productSizeService
-                    .delete(size.id)
-                    .then((product) => {
-                        if(!product) {
-                            throw new Error(this.$t('Product size not found'));
-                        }
-
-                        this.getProduct().then((product) => {
-                            this.product.sizes = product.sizes;
-
-                            showNotification(
-                                this.$notify({
-                                    type: 'success',
-                                    title: 'Size deleted:',
-                                    message: sizeName,
-                                    duration: 3000
-                                })
-                            );
-                        });
-                    })
-                    .catch((e) => {
-                        showNotification(
-                            this.$notify({
-                                type: 'error',
-                                title: e.message,
-                                duration: 0
-                            })
-                        )
-                    });
-            })
-            .catch(() => {
-                console.log("DELETE SIZE CANCELLED")
-                // this.$message({
-                //     type: 'info',
-                //     message: 'Delete canceled'
-                // });          
-            });
         }
     },
 
@@ -378,52 +304,9 @@ export default{
             </div>
 
             <div class="g-spec">
-                <div class="g-spec-label">
-                    Sizes <span v-if="product.sizes">({{ product.sizes.length }})</span>
-                </div>
+                <div class="g-spec-label">Sizes</div>
                 <div class="g-spec-content">
-                    <div class="tar mbm">
-                        <el-button type="primary"
-                                   @click="openSizeEditModal()">ADD SIZE</el-button>
-                    </div>
-
-                    <div v-if="!product.sizes.length" class="colorGrayLighter">none</div>
-                    <table v-else class="table">
-                        <thead>
-                            <tr>
-                                <th>Size</th>
-                                <th class="tar">Sort order</th>
-                                <th class="tar">Is visible</th>
-                                <th class="tar hide_medium_down">Cost</th>
-                                <th class="tar hide_medium_down">Base price</th>
-                                <th class="tar hide_medium_down">Sale price</th>
-                                <th class="tar hide_medium_down">Is on sale</th>
-                                <th class="tar hide_medium_down">Inventory count</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="size in product.sizes" :key="size.id">
-                                <td>
-                                    <a @click="openSizeEditModal(size)">{{ $t(size.size) }}</a>
-                                </td>
-                                <td class="tar">{{ size.sort }}</td>
-                                <td class="tar">
-                                    <i v-if="size.is_visible" class="fa fa-check-square colorGreen"></i>
-                                </td>
-                                <td class="tar hide_medium_down">{{ size.cost }}</td>
-                                <td class="tar hide_medium_down">{{ size.base_price }}</td>
-                                <td class="tar hide_medium_down">{{ size.sale_price }}</td>
-                                <td class="tar hide_medium_down">
-                                    <i v-if="size.is_on_sale" class="fa fa-check-square colorGreen"></i>
-                                </td>
-                                <td class="tar hide_medium_down">{{ size.inventory_count }}</td>
-                                <td class="tac">
-                                    <i class="fa fa-trash fs20 colorRed mlm cursorPointer" @click="deleteSize(size)"></i>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <product-size-admin v-if="product.id" :product-id="product.id"></product-size-admin>
                 </div>
             </div>
 
@@ -447,7 +330,12 @@ export default{
 
                     <!-- pictures -->
                     <form-row label="Pictures:">
-                        <div v-if="!product.pics.length" class="colorGrayLighter">none</div>
+                        <div class="tar mbm">
+                            <el-button type="primary"
+                                    @click="openPicUpsertModal()">ADD SIZE</el-button>
+                        </div>
+
+                        <div v-if="!product.pics || !product.pics.length" class="colorGrayLighter">none</div>
                         <table v-else class="table widthAll">
                             <thead>
                                 <tr>
@@ -540,33 +428,23 @@ export default{
 
 
         <el-dialog title="Product video"
-                   :visible.sync="modalIsActive"
+                   :visible.sync="videoPlayerModal.isActive"
                    :modal-append-to-body="false"
                    @close="modalClosed">
             <youtube
-                :video-id="videoId"
+                :video-id="videoPlayerModal.videoId"
                 :player-vars="{ autoplay: 1 }"
                 @playing="videoPlaying"></youtube>
         </el-dialog>
 
         <!-- product pic dialog -->
-        <el-dialog :title="picForModal.file_name"
-                   :visible.sync="picModalIsActive"
+        <el-dialog :title="pictureViewModal.pic.file_name"
+                   :visible.sync="pictureViewModal.isActive"
                    :modal-append-to-body="false"
                    width="95%">
             <div class="tac">
-                <img :src="productPicPath + picForModal.file_name" />
+                <img :src="productPicPath + pictureViewModal.pic.file_name" />
             </div>
-        </el-dialog>
-
-        <!-- product size edit dialog -->
-        <el-dialog :title="sizeModal.sizeName ? 'EDIT: ' + $t(sizeModal.sizeName) : 'ADD SIZE'"
-                   :visible.sync="sizeModal.isActive"
-                   :modal-append-to-body="false">
-            <product-size-upsert 
-                :product-id="product.id" 
-                :size-id="sizeModal.sizeId"
-                @updated="productSizeUpdated"></product-size-upsert>
         </el-dialog>
 
     </admin-layout>
