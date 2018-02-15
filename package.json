@@ -56,7 +56,7 @@
     "crumb": "6.0.3",
     "css-loader": "0.26.1",
     "dotenv": "4.0.0",
-    "element-ui": "^2.0.11",
+    "element-ui": "^2.2.0",
     "es6-promise": "4.1.0",
     "eslint": "3.14.1",
     "eslint-config-standard": "6.2.1",
