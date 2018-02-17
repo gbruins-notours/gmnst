@@ -128,6 +128,19 @@ export default{
             });
         },
 
+        goToStore(seoUri) {
+            let routeData = this.$router.resolve({
+                name: 'product_detail', 
+                params: { 
+                    id: 'product', // this doesnt really matter
+                    itemId: seoUri 
+                } 
+            });
+
+            // this opens the page in a new tab
+            window.open(routeData.href, '_blank');
+        },
+
         playVideo(url) {
             let id = this.$youtube.getIdFromURL(url);
             if(id) {
@@ -216,6 +229,12 @@ export default{
 <template>
     <admin-layout>
         <div v-cloak>
+
+            <div class="tar mbm">
+                <el-button @click="goToStore(product.seo_uri)">
+                    <i class="fa fa-window-restore"></i>&nbsp;&nbsp;VIEW PRODUCT IN STORE
+                </el-button>
+            </div>
 
             <div class="g-spec">
                 <div class="g-spec-label">General Info</div>
