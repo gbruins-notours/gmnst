@@ -153,6 +153,7 @@ export default{
                                 :src="getProductPic(product)" 
                                 alt="Image" 
                                 class="prodPicSmall" />
+                            <div class="fs12"># pictures: {{ product.pics.length }}</div>
                         </td>
 
                         <!-- is available -->
@@ -170,11 +171,13 @@ export default{
                             <div>{{ product.title }}</div>
 
                             <div>
-                                <el-button type="text" @click="openQuickView(product)">QUICK VIEW</el-button>
-                            </div>
+                                <el-button type="text" @click="openQuickView(product)" class="mrl">
+                                    <i class="fa fa-eye fs20"></i>
+                                </el-button>
 
-                            <div>
-                                <el-button type="text" @click="goToEdit(product.id)">EDIT</el-button>
+                                <el-button type="text" @click="goToEdit(product.id)">
+                                    <i class="fa fa-edit fs20"></i>
+                                </el-button>
                             </div>
                         </td>
 

@@ -8,6 +8,7 @@ import forEach from 'lodash.foreach'
 import AdminLayout from '@/layouts/AdminLayout'
 import FormRow from '@/components/FormRow'
 import ProductSizeAdmin from '@/components/product/admin/ProductSizeAdmin'
+import ProductPicturesAdmin from '@/components/product/admin/ProductPicturesAdmin'
 import BitwiseMultiSelect from '@/components/BitwiseMultiSelect'
 import ProductService from '@/pages/product/ProductService.js'
 
@@ -42,6 +43,7 @@ export default{
         AdminLayout,
         FormRow,
         ProductSizeAdmin,
+        ProductPicturesAdmin,
         BitwiseMultiSelect
     },
 
@@ -50,15 +52,10 @@ export default{
             product: {},
             productInfo: {},
             productPics: [],
-            productPicPath: productService.getProductPicPath(),
             videoPlayerModal: {
                 isActive: false,
                 videoId: null,
                 player: null,
-            },
-            pictureViewModal: {
-                pic: {},
-                isActive: false
             },
             pictureUpsertModal: {
                 isActive: false,
@@ -121,9 +118,9 @@ export default{
                 });
         },
 
-        getProductPic(prod) {
-            return productService.featuredProductPic(prod);
-        },
+        // getProductPic(prod) {
+        //     return productService.featuredProductPic(prod);
+        // },
 
         goToProductList(id) {
             this.$router.push({
@@ -150,11 +147,6 @@ export default{
 
         videoPlaying(player) {
             this.videoPlayerModal.player = player;
-        },
-
-        openPicQuickView(pic) {
-            this.pictureViewModal.pic = pic;
-            this.pictureViewModal.isActive = true;
         },
 
         upsertProduct(product) {
@@ -313,52 +305,22 @@ export default{
             <div class="g-spec">
                 <div class="g-spec-label">Media</div>
                 <div class="g-spec-content">
-                    <!-- featured_pic -->
-                    <form-row label="Featured Picture:">
-                        <el-input v-model="product.featured_pic"></el-input>
-                    </form-row>
-
                     <!-- video_url -->
-                    <form-row label="Video URL:">
+                    <div>
+                        <div class="fwb fs14">Video URL:</div>
                         <el-input v-model="product.video_url">
                             <el-button
                                 slot="append"
                                 v-if="product.video_url"
                                 @click="playVideo(product.video_url)"><i class="fa fa-play"></i></el-button>
                         </el-input>
-                    </form-row>
+                    </div>
 
                     <!-- pictures -->
-                    <form-row label="Pictures:">
-                        <div class="tar mbm">
-                            <el-button type="primary"
-                                    @click="openPicUpsertModal()">ADD SIZE</el-button>
-                        </div>
-
-                        <div v-if="!product.pics || !product.pics.length" class="colorGrayLighter">none</div>
-                        <table v-else class="table widthAll">
-                            <thead>
-                                <tr>
-                                    <th>Pic</th>
-                                    <th>File name</th>
-                                    <th>Sort order</th>
-                                    <th>Visible</th>
-                                    <th>Featured?</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="pic in product.pics" :key="pic.id">
-                                    <td>
-                                        <a @click="openPicQuickView(pic)"><img :src="productPicPath + pic.file_name" class="width50"></a>
-                                    </td>
-                                    <td>{{ pic.file_name }}</td>
-                                    <td class="tac">{{ pic.sort_order }}</td>
-                                    <td>{{ pic.is_visible }}</td>
-                                    <td><span class="colorGreen" v-if="product.featured_pic === pic.file_name">yes</span></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </form-row>
+                    <div class="mtl">
+                        <div class="fwb fs14">Pictures:</div>
+                        <product-pictures-admin v-if="product.id" :product-id="product.id"></product-pictures-admin>
+                    </div>
                 </div>
             </div>
 
@@ -437,15 +399,7 @@ export default{
                 @playing="videoPlaying"></youtube>
         </el-dialog>
 
-        <!-- product pic dialog -->
-        <el-dialog :title="pictureViewModal.pic.file_name"
-                   :visible.sync="pictureViewModal.isActive"
-                   :modal-append-to-body="false"
-                   width="95%">
-            <div class="tac">
-                <img :src="productPicPath + pictureViewModal.pic.file_name" />
-            </div>
-        </el-dialog>
+
 
     </admin-layout>
 </template>

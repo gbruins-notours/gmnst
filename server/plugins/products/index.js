@@ -1,7 +1,10 @@
 const Joi = require('joi');
 const Boom = require('boom');
 const path = require('path');
+const fs = require('fs');
 const isObject = require('lodash.isobject');
+const fileType = require('file-type');
+const Promise = require('bluebird');
 const HelperService = require('../../helpers.service');
 const ProductService = require('./products.service');
 
@@ -48,6 +51,18 @@ internals.after = function (server, next) {
         created_at: Joi.date().optional(),
         updated_at: Joi.date().optional()
     };
+
+
+    internals.productPicSchema = {
+        sort_order: Joi.number().integer().min(0),
+        is_visible: Joi.boolean(),
+        product_id: Joi.string().uuid()
+    };
+
+
+    internals.productDirectory = process.env.NODE_ENV === 'production'
+        ? path.join(__dirname, '../../../dist/static/images/product/') //TODO: is this the right path?
+        : path.join(__dirname, '../../../static/images/product/');
 
 
     internals.getWithRelated = (opts) => {
@@ -107,6 +122,57 @@ internals.after = function (server, next) {
         };
 
         return internals.modelFetch('Product', forgeOpts, fetchOpts)
+    };
+
+
+    internals.saveProductPicture = (request) => {
+        return new Promise((resolve, reject) => {
+            if(request.payload.file) {
+                let mimeTypeWhiteList = [
+                    'image/png',
+                    'image/gif',
+                    'image/jpeg',
+                    'image/pjpeg'
+                ];
+
+                let typeObj = fileType(request.payload.file._data);
+
+                if(isObject(typeObj) && mimeTypeWhiteList.indexOf(typeObj.mime) > -1) {
+                    let newFileName = `${request.payload.product_id}_${new Date().getTime()}.${typeObj.ext}`;
+                    request.payload.file.pipe(
+                        fs.createWriteStream(internals.productDirectory + newFileName)
+                    )
+                    resolve(newFileName);
+                }
+                else {
+                    // THROW ERROR... illegal file type
+                    reject('File type must be one of: ' + mimeTypeWhiteList.join(','))
+                }
+            }  
+            else {
+                resolve();
+            }
+        });
+    };
+
+
+    internals.deleteProductPicture = (ProductPic) => {
+        return new Promise((resolve, reject) => {
+            let fileName = ProductPic.get('file_name');
+
+            if(fileName) {
+                fs.unlink(internals.productDirectory + fileName, (err) => {
+                    if(err) {
+                        return reject(err);
+                    }
+
+                    return resolve(ProductPic);
+                });
+            }  
+            else {
+                return resolve(ProductPic);
+            }
+        });
     };
 
 
@@ -235,6 +301,9 @@ internals.after = function (server, next) {
     };
 
 
+    /***************************************
+     * Product size route handlers
+     /**************************************/
     internals.productSizeCreate = (request, reply) => {
         request.payload.sort = request.payload.sort || ProductService.getSizeTypeSortOrder(request.payload.size)
 
@@ -289,6 +358,95 @@ internals.after = function (server, next) {
                 }
 
                 reply.apiSuccess(ProductSize.toJSON());
+            })
+            .catch((err) => {
+                global.logger.error(err);
+                global.bugsnag(err);
+                reply(Boom.badRequest(err));
+            });
+    };
+
+
+    /***************************************
+     * Product picture route handlers
+     /**************************************/
+    internals.productPicCreate = (request, reply) => {
+        internals
+            .saveProductPicture(request)
+            .then((newFileName) => {
+                delete request.payload.file;
+                request.payload.file_name = newFileName || null;
+                return server.plugins.BookshelfOrm.bookshelf.model('ProductPic').create(request.payload)
+            })
+            .then((ProductPic) => {
+                if(!ProductPic) {
+                    reply(Boom.badRequest('Unable to create a a new product picture.'));
+                    return;
+                }
+
+                reply.apiSuccess(ProductPic.toJSON());
+            })
+            .catch((err) => {
+                global.logger.error(err);
+                global.bugsnag(err);
+                reply(Boom.badRequest(err));
+            });
+    };
+
+
+    internals.productPicUpdate = (request, reply) => {
+        request.payload.updated_at = request.payload.updated_at || new Date();
+
+        // server.plugins.BookshelfOrm.bookshelf.model('ProductPic')
+        //     .update(request.payload, { id: request.payload.id })
+        //     .then((ProductSize) => {
+        //         if(!ProductSize) {
+        //             reply(Boom.badRequest('Unable to find product size.'));
+        //             return;
+        //         }
+
+        //         reply.apiSuccess(ProductSize.toJSON());
+        //     })
+        //     .catch((err) => {
+        //         global.logger.error(err);
+        //         global.bugsnag(err);
+        //         reply(Boom.badRequest(err));
+        //     });
+    };
+
+
+    internals.productPicDelete = (request, reply) => {
+        request.payload.updated_at = request.payload.updated_at || new Date();
+
+        const model = server.plugins.BookshelfOrm.bookshelf.model('ProductPic');
+
+        model
+            .findById(request.payload.id)
+            .then((ProductPic) => {
+                if(!ProductPic) {
+                    reply(Boom.badRequest('Unable to find product picture.'));
+                    return;
+                }
+
+                // get the file name and delete the file
+                return internals.deleteProductPicture(ProductPic).catch((err) => {
+                    // Catching the error here logs the error but does
+                    // not prevent the flow from continuing.
+                    global.logger.error(err);
+                    global.bugsnag(err); // Hmm, is this bugsnag worthy?
+                });
+            })
+            .then((ProductPic) => {
+                //TODO: Get the product.  If this is the featured pic, assign a new one on the product
+                
+                return model.destroy({ id: request.payload.id })
+            })
+            .then((ProductPic) => {
+                if(!ProductPic) {
+                    reply(Boom.badRequest('Unable to find product picture.'));
+                    return;
+                }
+                reply.apiSuccess(ProductPic.toJSON());
             })
             .catch((err) => {
                 global.logger.error(err);
@@ -411,6 +569,55 @@ internals.after = function (server, next) {
                     }
                 },
                 handler: internals.productSizeDelete
+            }
+        },
+
+        // Product pictures
+        {
+            method: 'POST',
+            path: `${routePrefix}/product/pic/create`,
+            config: {
+                description: 'Adds a new picture to the product',
+                payload: {
+                    output: 'stream',
+                    parse: true,
+                    allow: 'multipart/form-data',
+                    maxBytes: 7 * 1000 * 1000  // 7MB
+                },
+                validate: {
+                    payload: {
+                        file: Joi.object(),
+                        ...internals.productPicSchema
+                    }
+                },
+                handler: internals.productPicCreate
+            }
+        },
+        {
+            method: 'POST',
+            path: `${routePrefix}/product/pic/update`,
+            config: {
+                description: 'Updates a product picture',
+                validate: {
+                    payload: {
+                        file: Joi.object(),
+                        ...internals.productPicSchema
+                    }
+                },
+                handler: internals.productPicUpdate
+            }
+        },
+        {
+            method: 'POST',
+            path: `${routePrefix}/product/pic/delete`,
+            config: {
+                description: 'Deletes a product picture',
+                validate: {
+                    payload: {
+                        id: Joi.string().uuid()
+                    }
+                },
+                handler: internals.productPicDelete
             }
         }
     ]);
