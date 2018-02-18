@@ -50,7 +50,6 @@ export default{
 
     data() {
         return {
-            // productPicPath: productService.getProductPicPath(),
             product: {},
             picModal: {
                 isActive: false,
@@ -77,12 +76,6 @@ export default{
     },
 
     methods: {
-
-        openPicEditModal(pic) {
-            this.picModal.form = pic || {};
-            this.picModal.isActive = true;
-        },
-
         onFileChange(e) {
             var files = e.target.files || e.dataTransfer.files;
             if (!files.length) {
@@ -90,7 +83,6 @@ export default{
             }
             this.picModal.form.file = files[0];
             this.createTempImage(this.picModal.form.file);
-            console.log("FILE UPLOAD", this.picModal.form.file)
         },
 
         createTempImage(file) {
@@ -152,51 +144,54 @@ export default{
             });
         },
 
-        savePic(id) {
+        savePic(pictureId) {
             let promise = null;
             let formData = new FormData();
+            let whitelist = [
+                'id',
+                'sort_order',
+                'is_visible',
+                'file',
+                'product_id'
+            ];
 
-            if(id) {
-                //TODO
-                // promise = productPictureService.update(pic);
-            }
-            else {
-                this.picModal.form.product_id = this.product.id;
-
-                forEach(this.picModal.form, (val, key) => {
+            forEach(this.picModal.form, (val, key) => {
+                if(whitelist.indexOf(key) > -1) {
                     formData.append(key, val);
-                });
+                }
+            });
 
-                // console.log("formData", formData.get('file'));
-                // console.log("formData is_visible", formData.get('is_visible'));
-
-                promise = productPictureService.create(formData);
+            if(!formData.get('product_id')) {
+                formData.append('product_id', this.product.id);
             }
 
-            promise.then((picJson) => {
-                this.picModal.isActive = false;
-                this.setProduct();
+            productPictureService
+                .upsert(formData)
+                .then((picJson) => {
+                    this.picModal.isActive = false;
+                    this.setProduct();
+                    this.deleteTempImage();
 
-                this.$emit('updated');
+                    this.$emit('updated');
 
-                showNotification(
-                    this.$notify({
-                        type: 'success',
-                        title: 'Picture saved:',
-                        message: this.$t(picJson.file_name),
-                        duration: 3000
-                    })
-                )
-            })
-            .catch((e) => {
-                showNotification(
-                    this.$notify({
-                        type: 'error',
-                        title: e.message,
-                        duration: 0
-                    })
-                )
-            });
+                    showNotification(
+                        this.$notify({
+                            type: 'success',
+                            title: 'Picture saved:',
+                            message: this.$t(picJson.file_name),
+                            duration: 3000
+                        })
+                    )
+                })
+                .catch((e) => {
+                    showNotification(
+                        this.$notify({
+                            type: 'error',
+                            title: e.message,
+                            duration: 0
+                        })
+                    )
+                });
         },
 
         setProduct() {
@@ -220,22 +215,19 @@ export default{
                 });
         },
 
+        openPicEditModal(pic) {
+            this.picModal.form = pic || {};
+            this.picModal.isActive = true;
+        },
+
         openPicQuickView(pic) {
             this.picViewModal.pic = pic;
             this.picViewModal.isActive = true;
         },
 
         getPicPath(fileName) {
-            console.log("PATH", productPicPath + fileName)
             if(fileName) {
-                // return images('./' + fileName)
                 return productPicPath + fileName;
-                // let images = require.context(productPicPath, false, /\.png$/)
-                // return images('./' + fileName)
-
-                // console.log("PATH", productPicPath + fileName)
-                // const url = require('@' + productPicPath + fileName)
-                // return url;
             }
         }
     },
@@ -284,6 +276,7 @@ export default{
                             <i v-if="product.featured_pic === pic.file_name" class="fa fa-check-square colorGreen"></i>
                         </td>
                         <td class="tac">
+                            <i class="fa fa-edit fs20 cursorPointer" @click="openPicEditModal(pic)"></i>
                             <i class="fa fa-trash fs20 colorRed mlm cursorPointer" @click="deletePic(pic)"></i>
                         </td>
                     </tr>
@@ -307,12 +300,15 @@ export default{
                    :visible.sync="picModal.isActive"
                    :modal-append-to-body="false">
 
+            <!-- Product title -->
             <form-row label="Product:">{{ product.title }}</form-row>
 
+            <!-- Is visible -->
             <form-row label="Is visible:">
                 <el-checkbox v-model="picModal.form.is_visible"></el-checkbox>
             </form-row>
 
+            <!-- Sort order -->
             <form-row label="Sort order:">
                 <el-input-number 
                     v-model="picModal.form.sort_order" 
@@ -321,7 +317,13 @@ export default{
                 <p role="alert" v-show="$v.picModal.form.sort_order.$invalid">{{ $t('Required') }}</p>
             </form-row>
 
-            <form-row label="Upload picture:">
+            <!-- Current picture -->
+            <form-row label="Current picture:" v-if="picModal.form.file_name">
+                <img :src="getPicPath(picModal.form.file_name)" width="200" />
+            </form-row>
+
+            <!-- Upload picture -->
+            <form-row :label="picModal.form.file_name ? 'Replacement picture:' : 'Upload picture:'">
                 <div v-if="!picModal.tempImage">
                     <input type="file" ref="file" @change="onFileChange" />
                 </div>
@@ -333,11 +335,9 @@ export default{
                         </span>
                     </div>
                 </div>
-                <div v-else>
-                    <!-- TODO: current product pic goes here -->
-                </div>
             </form-row>
 
+            <!-- buttons -->
             <form-row label="">
                 <div class="ptl">
                     <el-button 

@@ -54,6 +54,7 @@ internals.after = function (server, next) {
 
 
     internals.productPicSchema = {
+        id: Joi.string().uuid(),
         sort_order: Joi.number().integer().min(0),
         is_visible: Joi.boolean(),
         product_id: Joi.string().uuid()
@@ -122,57 +123,6 @@ internals.after = function (server, next) {
         };
 
         return internals.modelFetch('Product', forgeOpts, fetchOpts)
-    };
-
-
-    internals.saveProductPicture = (request) => {
-        return new Promise((resolve, reject) => {
-            if(request.payload.file) {
-                let mimeTypeWhiteList = [
-                    'image/png',
-                    'image/gif',
-                    'image/jpeg',
-                    'image/pjpeg'
-                ];
-
-                let typeObj = fileType(request.payload.file._data);
-
-                if(isObject(typeObj) && mimeTypeWhiteList.indexOf(typeObj.mime) > -1) {
-                    let newFileName = `${request.payload.product_id}_${new Date().getTime()}.${typeObj.ext}`;
-                    request.payload.file.pipe(
-                        fs.createWriteStream(internals.productDirectory + newFileName)
-                    )
-                    resolve(newFileName);
-                }
-                else {
-                    // THROW ERROR... illegal file type
-                    reject('File type must be one of: ' + mimeTypeWhiteList.join(','))
-                }
-            }  
-            else {
-                resolve();
-            }
-        });
-    };
-
-
-    internals.deleteProductPicture = (ProductPic) => {
-        return new Promise((resolve, reject) => {
-            let fileName = ProductPic.get('file_name');
-
-            if(fileName) {
-                fs.unlink(internals.productDirectory + fileName, (err) => {
-                    if(err) {
-                        return reject(err);
-                    }
-
-                    return resolve(ProductPic);
-                });
-            }  
-            else {
-                return resolve(ProductPic);
-            }
-        });
     };
 
 
@@ -370,13 +320,28 @@ internals.after = function (server, next) {
     /***************************************
      * Product picture route handlers
      /**************************************/
-    internals.productPicCreate = (request, reply) => {
-        internals
-            .saveProductPicture(request)
+    internals.productPicUpsert = (request, reply) => {
+        let model = server.plugins.BookshelfOrm.bookshelf.model('ProductPic');
+
+        model
+            .deleteFileIfBeingReplaced(request)
+            .catch((err) => {
+                // just dropping the exception beacuse issues deleting the file
+                // shouldn't stop this process from continuing
+            })
+            .then((productPic) => {
+                return model.saveFile(request);
+            })
             .then((newFileName) => {
                 delete request.payload.file;
                 request.payload.file_name = newFileName || null;
-                return server.plugins.BookshelfOrm.bookshelf.model('ProductPic').create(request.payload)
+
+                if(request.payload.id) {
+                    return model.update(request.payload, { id: request.payload.id })
+                }
+                else {
+                    return model.create(request.payload)
+                }
             })
             .then((ProductPic) => {
                 if(!ProductPic) {
@@ -384,7 +349,14 @@ internals.after = function (server, next) {
                     return;
                 }
 
-                reply.apiSuccess(ProductPic.toJSON());
+                let json = ProductPic.toJSON();
+
+                global.logger.info(
+                    request.payload.id ? 'PRODUCT PIC - DB UPDATED' : 'PRODUCT PIC - DB CREATED',
+                    json.id
+                );
+
+                reply.apiSuccess(json);
             })
             .catch((err) => {
                 global.logger.error(err);
@@ -394,59 +366,26 @@ internals.after = function (server, next) {
     };
 
 
-    internals.productPicUpdate = (request, reply) => {
-        request.payload.updated_at = request.payload.updated_at || new Date();
-
-        // server.plugins.BookshelfOrm.bookshelf.model('ProductPic')
-        //     .update(request.payload, { id: request.payload.id })
-        //     .then((ProductSize) => {
-        //         if(!ProductSize) {
-        //             reply(Boom.badRequest('Unable to find product size.'));
-        //             return;
-        //         }
-
-        //         reply.apiSuccess(ProductSize.toJSON());
-        //     })
-        //     .catch((err) => {
-        //         global.logger.error(err);
-        //         global.bugsnag(err);
-        //         reply(Boom.badRequest(err));
-        //     });
-    };
-
-
     internals.productPicDelete = (request, reply) => {
         request.payload.updated_at = request.payload.updated_at || new Date();
 
         const model = server.plugins.BookshelfOrm.bookshelf.model('ProductPic');
 
         model
-            .findById(request.payload.id)
-            .then((ProductPic) => {
-                if(!ProductPic) {
-                    reply(Boom.badRequest('Unable to find product picture.'));
-                    return;
-                }
-
-                // get the file name and delete the file
-                return internals.deleteProductPicture(ProductPic).catch((err) => {
-                    // Catching the error here logs the error but does
-                    // not prevent the flow from continuing.
-                    global.logger.error(err);
-                    global.bugsnag(err); // Hmm, is this bugsnag worthy?
-                });
+            .deleteFile(request.payload.id)
+            .catch((err) => {
+                // just dropping the exception beacuse issues deleting the file
+                // shouldn't stop this process from continuing
             })
             .then((ProductPic) => {
                 //TODO: Get the product.  If this is the featured pic, assign a new one on the product
-                
+
+                // Delete from DB:
                 return model.destroy({ id: request.payload.id })
             })
             .then((ProductPic) => {
-                if(!ProductPic) {
-                    reply(Boom.badRequest('Unable to find product picture.'));
-                    return;
-                }
-                reply.apiSuccess(ProductPic.toJSON());
+                global.logger.info('PRODUCT PIC - DB DELETED', request.payload.id);
+                reply.apiSuccess();
             })
             .catch((err) => {
                 global.logger.error(err);
@@ -575,7 +514,7 @@ internals.after = function (server, next) {
         // Product pictures
         {
             method: 'POST',
-            path: `${routePrefix}/product/pic/create`,
+            path: `${routePrefix}/product/pic/upsert`,
             config: {
                 description: 'Adds a new picture to the product',
                 payload: {
@@ -590,21 +529,7 @@ internals.after = function (server, next) {
                         ...internals.productPicSchema
                     }
                 },
-                handler: internals.productPicCreate
-            }
-        },
-        {
-            method: 'POST',
-            path: `${routePrefix}/product/pic/update`,
-            config: {
-                description: 'Updates a product picture',
-                validate: {
-                    payload: {
-                        file: Joi.object(),
-                        ...internals.productPicSchema
-                    }
-                },
-                handler: internals.productPicUpdate
+                handler: internals.productPicUpsert
             }
         },
         {

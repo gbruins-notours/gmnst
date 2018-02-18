@@ -3,7 +3,7 @@ import Vue from 'vue'
 import { Notification, Button } from 'element-ui'
 import AdminLayout from '@/layouts/AdminLayout'
 import ProductService from '@/pages/product/ProductService.js'
-import ProductDetailsJsonView from '@/components/product/ProductDetailsJsonView'
+import ProductDetailsJsonView from '@/components/product/admin/ProductDetailsJsonView'
 
 
 let productService = new ProductService();

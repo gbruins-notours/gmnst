@@ -6,7 +6,7 @@ import forEach from 'lodash.foreach'
 import AdminLayout from '@/layouts/AdminLayout'
 import ProductService from '@/pages/product/ProductService.js'
 import TableHeaderLink from '@/components/TableHeaderLink'
-import ProductDetailsJsonView from '@/components/product/ProductDetailsJsonView'
+import ProductDetailsJsonView from '@/components/product/admin/ProductDetailsJsonView'
 
 let productService = new ProductService();
 

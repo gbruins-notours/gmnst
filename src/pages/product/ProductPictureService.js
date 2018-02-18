@@ -6,21 +6,13 @@ export default class ProductPictureService {
     // constructor() {
     // }
 
-    create(formData) {
+    upsert(formData) {
         return getHttp()
             .post(
-                `/api/v1/product/pic/create`, 
+                '/api/v1/product/pic/upsert',
                 formData,
                 { headers: { 'Content-Type': 'multipart/form-data' } }
             )
-            .then((response) => {
-                return response.data.data;
-            });
-    }
-
-    update(pic) {
-        return getHttp()
-            .post(`/api/v1/product/pic/update`, pic)
             .then((response) => {
                 return response.data.data;
             });

@@ -23,14 +23,20 @@ exports.register = (server, options, next) => {
         });
     };
     
-     
-    if(process.env.NODE_ENV === 'production') {
-        logsDirectory = path.join(__dirname, '../../../dist', 'logs');
+    switch(process.env.NODE_ENV) {
+        case 'production':
+            logsDirectory = path.join(__dirname, '../../../dist', 'logs');
+            break;
 
-        if (!fs.existsSync(logsDirectory)) {
-            fs.mkdirSync(logsDirectory);
-        }
+        case 'development':
+            logsDirectory = path.join(__dirname, '../../../', 'logs-dev');
+            break;
     }
+
+    if (logsDirectory && !fs.existsSync(logsDirectory)) {
+        fs.mkdirSync(logsDirectory);
+    }
+
 
     // Winston setup: 
     winston.setLevels({
@@ -67,31 +73,36 @@ exports.register = (server, options, next) => {
 
     // only printing to log files if there is one (production)
     if(logsDirectory) {
+        let fileConfig = {
+            name: 'error-file',
+            level: 'error',
+            prettyPrint: true,
+            silent: false,
+            colorize: false,
+            filename: path.join(logsDirectory, '/error.log'),
+            timestamp: () => moment(new Date()).format('YYYY-MM-DD hh:mm:ss'),
+            json: false,
+            maxFiles: 10,
+            datePattern: '.yyyy-MM-dd'
+        };
+
         transports.push(
-            new (RotateFile)({
-                level: 'error',
-                prettyPrint: true,
-                silent: false,
-                colorize: false,
-                filename: path.join(logsDirectory, '/error.log'),
-                timestamp: () => moment(new Date()).format('YYYY-MM-DD hh:mm:ss'),
-                json: false,
-                maxFiles: 10,
-                datePattern: '.yyyy-MM-dd'
-            })
+            new (RotateFile)(fileConfig),
+            new (RotateFile)(
+                Object.assign(
+                    {}, 
+                    fileConfig, 
+                    { 
+                        name: 'info-file',
+                        level: 'info',
+                        filename: path.join(logsDirectory, '/info.log')
+                    }
+                )
+            )
         );
 
         exceptionHandlers.push(
-            new (RotateFile)({
-                prettyPrint: true,
-                silent: false,
-                colorize: false,
-                filename: path.join(logsDirectory, '/error.log'),
-                timestamp: () => moment(new Date()).format('YYYY-MM-DD hh:mm:ss'),
-                json: false,
-                maxFiles: 10,
-                datePattern: '.yyyy-MM-dd'
-            })
+            new (RotateFile)(fileConfig)
         )
     }
 
