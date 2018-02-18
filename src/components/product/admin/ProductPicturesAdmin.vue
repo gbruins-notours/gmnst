@@ -111,9 +111,9 @@ export default{
             .then(() => {
                 productPictureService
                     .delete(pic.id)
-                    .then((size) => {
-                        if(!size) {
-                            throw new Error(this.$t('Product size not found'));
+                    .then((pictureJson) => {
+                        if(!pictureJson) {
+                            throw new Error(this.$t('Product picture not found'));
                         }
 
                         this.setProduct();
@@ -178,7 +178,7 @@ export default{
                         this.$notify({
                             type: 'success',
                             title: 'Picture saved:',
-                            message: this.$t(picJson.file_name),
+                            message: picJson.file_name,
                             duration: 3000
                         })
                     )
@@ -193,6 +193,37 @@ export default{
                     )
                 });
         },
+        
+        setAsFeatured(pic) {
+            productService
+                .upsert({
+                    id: this.productId,
+                    featured_product_pic_id: pic.id
+                })
+                .then((picJson) => {
+                    this.setProduct();
+
+                    this.$emit('updated');
+
+                    showNotification(
+                        this.$notify({
+                            type: 'success',
+                            title: 'Featured picture set',
+                            message: pic.file_name,
+                            duration: 3000
+                        })
+                    )
+                })
+                .catch((e) => {
+                    showNotification(
+                        this.$notify({
+                            type: 'error',
+                            title: e.message,
+                            duration: 0
+                        })
+                    )
+                });
+        },        
 
         setProduct() {
             return productService
@@ -273,7 +304,8 @@ export default{
                             <i v-if="pic.is_visible" class="fa fa-check-square colorGreen"></i>
                         </td>
                         <td>
-                            <i v-if="product.featured_pic === pic.file_name" class="fa fa-check-square colorGreen"></i>
+                            <i v-if="product.featured_product_pic_id === pic.id" class="fa fa-check-square colorGreen"></i>
+                            <i v-else @click="setAsFeatured(pic)" class="fa fa-square-o colorGrayLighter cursorPointer"></i>
                         </td>
                         <td class="tac">
                             <i class="fa fa-edit fs20 cursorPointer" @click="openPicEditModal(pic)"></i>

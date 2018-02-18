@@ -24,6 +24,7 @@ exports.seed = (knex) => {
                 // picture 1
                 uuid = faker.random.uuid();
                 global.productPicSeedUuids.push(uuid);
+                
                 promises.push(
                     knex(CoreService.DB_TABLES.product_pics)
                         .insert({

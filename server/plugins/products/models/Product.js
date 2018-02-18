@@ -1,6 +1,4 @@
-const Joi = require('joi');
 const CoreService = require('../../core/core.service');
-
 
 module.exports = function (baseModel, bookshelf) {
     return baseModel.extend(

@@ -84,9 +84,35 @@ export default class ProductService {
     }
 
     featuredProductPic(product) {
-        if (product.featured_pic) {
-            return this.getProductPicPath() + product.featured_pic;
+        let pic = null;
+
+        if(Array.isArray(product.pics)) {
+            let len = product.pics.length;
+
+            if(product.featured_product_pic_id) {
+                for(let i=0; i<len; i++) {
+                    if(product.pics[i].is_visible && product.pics[i].id === product.featured_product_pic_id) {
+                        pic = product.pics[i].file_name;
+                        break;
+                    }
+                }
+            }
+
+            // If there isn't a featured pic set then just pick the first 'visible' one
+            if(!pic) {
+                for(let i=0; i<len; i++) {
+                    if(product.pics[i].is_visible) {
+                        pic = product.pics[i].file_name;
+                        break;
+                    }
+                }
+            }
+
+            if(pic) {
+                return this.getProductPicPath() + pic;
+            }
         }
+
         return;
     }
 
@@ -142,12 +168,16 @@ export default class ProductService {
         return new Promise((resolve, reject) => {
             let path = this.getProductPicPath();
 
-            // featured pic is always first
-            if(product.featured_pic) {
-                add(1, path + product.featured_pic)
-            }
-
             if (Array.isArray(product.pics)) {
+                // featured pic is always first
+                if(product.featured_product_pic_id) {
+                    product.pics.forEach((obj) => {
+                        if (obj.is_visible && obj.file_name && obj.id === product.featured_product_pic_id) {
+                            add(1, path + obj.file_name)
+                        }
+                    });
+                }
+
                 product.pics.forEach((obj) => {
                     if (obj.is_visible && obj.file_name) {
                         add(obj.sort_order, path + obj.file_name)

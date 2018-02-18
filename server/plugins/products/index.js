@@ -40,7 +40,7 @@ internals.after = function (server, next) {
         is_on_sale: Joi.boolean(),
         is_available: Joi.boolean(),
         tax_code: Joi.number().allow(null),
-        featured_pic: Joi.string().max(100).allow(null),
+        featured_product_pic_id: Joi.string().uuid().allow(null),
         video_url: Joi.string().max(500).allow(null),
         gender: Joi.number().integer().positive(),
         type: Joi.number().integer().positive(),

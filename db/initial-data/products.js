@@ -73,7 +73,6 @@ exports.seed = (knex) => {
                             is_on_sale: faker.random.boolean(),
                             is_available: faker.random.boolean(),
                             tax_code: 20010,
-                            featured_pic: 'sample-300-x-400.png',
                             video_url: 'https://www.youtube.com/watch?v=JUaY0AOLopU',
                             gender: getRandomGenderOption(),
                             type: productTypes.PRODUCT_TYPE_APPAREL,
