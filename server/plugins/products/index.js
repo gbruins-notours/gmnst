@@ -328,14 +328,18 @@ internals.after = function (server, next) {
             .catch((err) => {
                 // just dropping the exception beacuse issues deleting the file
                 // shouldn't stop this process from continuing
+                console.log(err)
             })
             .then((productPic) => {
                 return model.saveFile(request);
             })
             .then((newFileName) => {
                 delete request.payload.file;
-                request.payload.file_name = newFileName || null;
 
+                if(newFileName) {
+                    request.payload.file_name = newFileName;
+                }
+               
                 if(request.payload.id) {
                     return model.update(request.payload, { id: request.payload.id })
                 }
@@ -385,7 +389,9 @@ internals.after = function (server, next) {
             })
             .then((ProductPic) => {
                 global.logger.info('PRODUCT PIC - DB DELETED', request.payload.id);
-                reply.apiSuccess();
+                reply.apiSuccess({
+                    id: request.payload.id
+                });
             })
             .catch((err) => {
                 global.logger.error(err);

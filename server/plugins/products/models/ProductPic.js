@@ -28,6 +28,11 @@ module.exports = function (baseModel, bookshelf) {
 
         // Custom methods:
         {
+            /**
+             * Saves a new picture file
+             * The new file name will be returned in the response if the file save was successful
+             * otherwise the success response will be empty
+             */
             saveFile: function(request) {
                 return new Promise((resolve, reject) => {
                     if(request.payload.file) {
@@ -90,6 +95,11 @@ module.exports = function (baseModel, bookshelf) {
                 });
             },
 
+            /**
+             * Deletes the product file if a new file is being sent in the request payload.
+             * A successful file delete will then return the ProductPic in the response, 
+             * otherwise the response will be empty.
+             */
             deleteFileIfBeingReplaced: function(request) {
                 let self = this;
 
