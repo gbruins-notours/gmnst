@@ -1,10 +1,7 @@
 const Joi = require('joi');
 const Boom = require('boom');
 const path = require('path');
-const fs = require('fs');
 const isObject = require('lodash.isobject');
-const fileType = require('file-type');
-const Promise = require('bluebird');
 const HelperService = require('../../helpers.service');
 const ProductService = require('./products.service');
 
@@ -40,7 +37,6 @@ internals.after = function (server, next) {
         is_on_sale: Joi.boolean(),
         is_available: Joi.boolean(),
         tax_code: Joi.number().allow(null),
-        featured_product_pic_id: Joi.string().uuid().allow(null),
         video_url: Joi.string().max(500).allow(null),
         gender: Joi.number().integer().positive(),
         type: Joi.number().integer().positive(),
@@ -139,11 +135,12 @@ internals.after = function (server, next) {
             .then((product) => {
                 let p = isObject(product) ? product.toJSON() : {};
                 let urlImages = 'https://www.gmnst.com/static/images/';
+                let featuredPic = ProductService.featuredProductPic(p);
 
                 return reply.view('views/socialshare', {
                     title: p.title || 'Welcome to Gmnst.com',
                     description: p.description_short || '',
-                    image: p.featured_pic ? `${urlImages}product/${p.featured_pic}` : `${urlImages}logo_header.png`,
+                    image: featuredPic ? `${urlImages}product/${featuredPic}` : `${urlImages}logo_header.png`,
                     url: `https://www.gmnst.com/${request.query.uri}`
                 });
             })

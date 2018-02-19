@@ -53,8 +53,29 @@ function getProductSubTypes() {
 }
 
 
+function featuredProductPic(productJson) {
+    let pic = null;
+
+    if(Array.isArray(productJson.pics)) {
+        let len = productJson.pics.length;
+
+        // The related sizes for a product are ordered by sort order (ASC)
+        // so the first 'is_visible' pic will be the featured pic
+        for(let i=0; i<len; i++) {
+            if(productJson.pics[i].is_visible && productJson.pics[i].file_name) {
+                pic = productJson.pics[i].file_name;
+                break;
+            }
+        }
+    }
+
+    return pic;
+}
+
+
 module.exports.getGenderTypes = getGenderTypes;
 module.exports.getSizeTypes = getSizeTypes;
 module.exports.getSizeTypeSortOrder = getSizeTypeSortOrder;
 module.exports.getProductTypes = getProductTypes;
 module.exports.getProductSubTypes = getProductSubTypes;
+module.exports.featuredProductPic = featuredProductPic;
