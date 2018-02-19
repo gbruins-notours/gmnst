@@ -18,7 +18,6 @@ module.exports.up = (knex) => {
             t.boolean('is_on_sale').defaultTo(false);
             t.boolean('is_available').defaultTo(false);
             t.string('tax_code').nullable();
-            t.uuid('featured_product_pic_id').nullable();
             t.string('video_url').nullable();
             t.integer('gender').nullable();
             t.integer('type').nullable();

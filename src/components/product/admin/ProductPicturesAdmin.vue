@@ -193,37 +193,7 @@ export default{
                     )
                 });
         },
-        
-        setAsFeatured(pic) {
-            productService
-                .upsert({
-                    id: this.productId,
-                    featured_product_pic_id: pic.id
-                })
-                .then((picJson) => {
-                    this.setProduct();
-
-                    this.$emit('updated');
-
-                    showNotification(
-                        this.$notify({
-                            type: 'success',
-                            title: 'Featured picture set',
-                            message: pic.file_name,
-                            duration: 3000
-                        })
-                    )
-                })
-                .catch((e) => {
-                    showNotification(
-                        this.$notify({
-                            type: 'error',
-                            title: e.message,
-                            duration: 0
-                        })
-                    )
-                });
-        },        
+              
 
         setProduct() {
             return productService
@@ -287,7 +257,6 @@ export default{
                         <th>File name</th>
                         <th>Sort order</th>
                         <th>Visible</th>
-                        <th>Featured?</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -302,10 +271,6 @@ export default{
                         <td class="tac">{{ pic.sort_order }}</td>
                         <td>
                             <i v-if="pic.is_visible" class="fa fa-check-square colorGreen"></i>
-                        </td>
-                        <td>
-                            <i v-if="product.featured_product_pic_id === pic.id" class="fa fa-check-square colorGreen"></i>
-                            <i v-else @click="setAsFeatured(pic)" class="fa fa-square-o colorGrayLighter cursorPointer"></i>
                         </td>
                         <td class="tac">
                             <i class="fa fa-edit fs20 cursorPointer" @click="openPicEditModal(pic)"></i>

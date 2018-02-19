@@ -118,10 +118,6 @@ export default{
                 });
         },
 
-        // getProductPic(prod) {
-        //     return productService.featuredProductPic(prod);
-        // },
-
         goToProductList(id) {
             this.$router.push({
                 name: 'adminProductList'

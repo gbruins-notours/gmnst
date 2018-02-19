@@ -89,22 +89,12 @@ export default class ProductService {
         if(Array.isArray(product.pics)) {
             let len = product.pics.length;
 
-            if(product.featured_product_pic_id) {
-                for(let i=0; i<len; i++) {
-                    if(product.pics[i].is_visible && product.pics[i].id === product.featured_product_pic_id) {
-                        pic = product.pics[i].file_name;
-                        break;
-                    }
-                }
-            }
-
-            // If there isn't a featured pic set then just pick the first 'visible' one
-            if(!pic) {
-                for(let i=0; i<len; i++) {
-                    if(product.pics[i].is_visible) {
-                        pic = product.pics[i].file_name;
-                        break;
-                    }
+            // The related sizes for a product are ordered by sort order (ASC)
+            // so the first 'is_visible' pic will be the featured pic
+            for(let i=0; i<len; i++) {
+                if(product.pics[i].is_visible) {
+                    pic = product.pics[i].file_name;
+                    break;
                 }
             }
 
@@ -169,15 +159,6 @@ export default class ProductService {
             let path = this.getProductPicPath();
 
             if (Array.isArray(product.pics)) {
-                // featured pic is always first
-                if(product.featured_product_pic_id) {
-                    product.pics.forEach((obj) => {
-                        if (obj.is_visible && obj.file_name && obj.id === product.featured_product_pic_id) {
-                            add(1, path + obj.file_name)
-                        }
-                    });
-                }
-
                 product.pics.forEach((obj) => {
                     if (obj.is_visible && obj.file_name) {
                         add(obj.sort_order, path + obj.file_name)
