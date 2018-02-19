@@ -58,14 +58,19 @@ export default{
                 });
         },
 
-        getProductTypeName(id) {
-            let name = null;
-            Object.keys(this.productSubTypes).forEach((key) => {
-                if(this.productSubTypes[key] === id) {
-                    name = this.$tc(key, 2);
+        subTypeLabel(subType) {
+            let values = [];
+            let self = this;
+
+            forEach(this.productSubTypes, function(val, key) {
+                if(subType & val) {
+                    values.push(
+                        self.$tc(key, 2)
+                    );
                 }
             });
-            return name;
+
+            return values.join(', ');
         },
 
         sort(sortData) {
@@ -164,7 +169,7 @@ export default{
                         </td>
 
                         <!-- product sub-type -->
-                        <td>{{ getProductTypeName(product.sub_type) }}</td>
+                        <td>{{ subTypeLabel(product.sub_type) }}</td>
 
                         <!-- product title -->
                         <td>
