@@ -8,6 +8,9 @@ module.exports.up = (knex) => {
             t.uuid('id');
             t.string('file_name').nullable();
             t.integer('sort_order');
+            t.integer('width');
+            t.integer('height');
+            t.integer('proportion');
             t.boolean('is_visible').defaultTo(false);
             t.timestamp('created_at', true).notNullable().defaultTo(knex.fn.now());
             t.timestamp('updated_at', true).nullable();

@@ -21,7 +21,7 @@
 
 <template>
     <el-card :body-style="{ padding: '0px' }" class="heightAll">
-        <img :src="productPic" alt="Image" class="image">
+        <img :src="productPic" alt="Image" class="image widthAll">
         <div class="cardContent">
             <div class="fwb mbs">{{ product.title }}</div>
             <div>{{ product.description_short }}</div>

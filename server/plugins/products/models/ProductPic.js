@@ -2,8 +2,10 @@ const CoreService = require('../../core/core.service');
 const Promise = require('bluebird');
 const fs = require('fs');
 const path = require('path');
+const sharp = require('sharp');
 const isObject = require('lodash.isobject');
-const fileType = require('file-type');
+const productService = require('../products.service');
+const helperService = require('../../../helpers.service');
 
 const productDirectory = process.env.NODE_ENV === 'production'
     ? path.join(__dirname, '../../../../dist/static/images/product/') //TODO: is this the right path?
@@ -33,30 +35,35 @@ module.exports = function (baseModel, bookshelf) {
              * The new file name will be returned in the response if the file save was successful
              * otherwise the success response will be empty
              */
-            saveFile: function(request) {
+            saveFile: function(request, options) {
                 return new Promise((resolve, reject) => {
                     if(request.payload.file) {
-                        let mimeTypeWhiteList = [
-                            'image/png',
-                            'image/gif',
-                            'image/jpeg',
-                            'image/pjpeg'
-                        ];
+                        let opts = isObject(options) ? options : {};
+                        let typeObj = productService.fileIsImage(request.payload.file._data)
         
-                        let typeObj = fileType(request.payload.file._data);
-        
-                        if(isObject(typeObj) && mimeTypeWhiteList.indexOf(typeObj.mime) > -1) {
-                            let newFileName = `${request.payload.product_id}_${new Date().getTime()}.${typeObj.ext}`;
-                            request.payload.file.pipe(
-                                fs.createWriteStream(productDirectory + newFileName)
-                            )
+                        if(typeObj) {
+                            if(!opts.file_name) {
+                                opts.file_name = `${request.payload.product_id}_${new Date().getTime()}`
+                            }
 
-                            global.logger.info('PRODUCT PIC - FILE SAVED', newFileName);
-                            resolve(newFileName);
+                            // clean and add the file extension:
+                            opts.file_name = `${helperService.stripTags(helperService.stripQuotes(opts.file_name))}.${typeObj.ext}`;
+
+                            let transformer = sharp()
+                                .resize(opts.width || 600)
+                                .on('info', function(info) {
+                                    info.file_name = opts.file_name;
+                                    global.logger.info('PRODUCT PIC - FILE SAVED', info);
+                                    resolve(info);
+                                });
+
+                            request.payload.file.pipe(transformer).pipe(
+                                fs.createWriteStream(productDirectory + opts.file_name)
+                            );
                         }
                         else {
-                            global.logger.info('SAVING PRODUCT FAILED BECAUSE WRONG MIME TYPE', typeObj.mime);
-                            reject('File type must be one of: ' + mimeTypeWhiteList.join(','))
+                            global.logger.info('SAVING PRODUCT FAILED BECAUSE WRONG MIME TYPE');
+                            reject('File type must be one of: ' + productService.imageMimeTypeWhiteList.join(','))
                         }
                     }  
                     else {

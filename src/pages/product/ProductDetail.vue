@@ -31,6 +31,7 @@ Vue.use(VueImg, {
   altAsTitle: true,
   sourceButton: false, // Display 'download' button near 'close' that opens source image in new tab
   openOn: 'click', // Event listener to open gallery will be applied to <img> element
+  thumbnails: false
 });
 
 Vue.prototype.$notify = Notification;
@@ -185,16 +186,18 @@ export default {
                 <div class="columns">
                     <div class="column is-6">
                         <div class="image is-2by2 phm">
-                        <carousel :autoplay="true"
-                                    :autoplayHoverPause="true"
-                                    :navigationEnabled="true"
-                                    :perPage="1"
-                                    :loop="true"
-                                    paginationColor="#cacac8"
-                                    paginationActiveColor="#ed198a">
-                            <slide v-for="(pic, key) in productPics" :key="key">
-                                <img :src="pic" :alt="product.title" v-img:prod>
-                            </slide>
+                            <carousel :autoplay="true"
+                                        :autoplayHoverPause="true"
+                                        :navigationEnabled="productPics.length"
+                                        :perPage="1"
+                                        :loop="true"
+                                        paginationColor="#cacac8"
+                                        paginationActiveColor="#ed198a">
+                                <slide v-for="(pic, key) in productPics" :key="key">
+                                    <img :src="pic" 
+                                        :alt="product.title" 
+                                        v-img="{group:'prod', src:pic}" />
+                                </slide>
                             </carousel>
                         </div>
                     </div>

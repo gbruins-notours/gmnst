@@ -1,7 +1,9 @@
 const Joi = require('joi');
 const Boom = require('boom');
 const path = require('path');
+const Promise = require('bluebird');
 const isObject = require('lodash.isobject');
+const cloneDeep = require('lodash.clonedeep');
 const HelperService = require('../../helpers.service');
 const ProductService = require('./products.service');
 
@@ -317,10 +319,12 @@ internals.after = function (server, next) {
     /***************************************
      * Product picture route handlers
      /**************************************/
-    internals.productPicUpsert = (request, reply) => {
+    
+    internals.upsertProductPic = function(req, options) {
         let model = server.plugins.BookshelfOrm.bookshelf.model('ProductPic');
+        let request = cloneDeep(req);
 
-        model
+        return model
             .deleteFileIfBeingReplaced(request)
             .catch((err) => {
                 // just dropping the exception beacuse issues deleting the file
@@ -328,13 +332,16 @@ internals.after = function (server, next) {
                 console.log(err)
             })
             .then((productPic) => {
-                return model.saveFile(request);
+                return model.saveFile(request, options);
             })
-            .then((newFileName) => {
+            .then((saveFileResponse) => {
+                // not needed when updatng the model:
                 delete request.payload.file;
 
-                if(newFileName) {
-                    request.payload.file_name = newFileName;
+                if(isObject(saveFileResponse)) {
+                    request.payload.file_name = saveFileResponse.file_name;
+                    request.payload.width = saveFileResponse.width || null;
+                    request.payload.height = saveFileResponse.height || null;
                 }
                
                 if(request.payload.id) {
@@ -343,19 +350,40 @@ internals.after = function (server, next) {
                 else {
                     return model.create(request.payload)
                 }
-            })
-            .then((ProductPic) => {
-                if(!ProductPic) {
+            });
+    }
+
+    internals.productPicUpsert = (request, reply) => {
+        let fileNameBase = `${request.payload.product_id}_${new Date().getTime()}`;
+
+        Promise
+            .all([
+                internals.upsertProductPic(request, {
+                    width: 600,
+                    file_name: fileNameBase
+                }),
+                internals.upsertProductPic(request, {
+                    width: 1000,
+                    file_name: `${fileNameBase}_large`
+                })
+            ])
+            .then((productPicModelArray) => {
+                if(!productPicModelArray || !productPicModelArray.length) {
                     reply(Boom.badRequest('Unable to create a a new product picture.'));
                     return;
                 }
 
-                let json = ProductPic.toJSON();
+                let json = [];
 
-                global.logger.info(
-                    request.payload.id ? 'PRODUCT PIC - DB UPDATED' : 'PRODUCT PIC - DB CREATED',
-                    json.id
-                );
+                productPicModelArray.forEach((ProductPic) => {
+                    let obj = ProductPic.toJSON();
+                    json.push(obj);
+
+                    global.logger.info(
+                        request.payload.id ? 'PRODUCT PIC - DB UPDATED' : 'PRODUCT PIC - DB CREATED',
+                        obj.id
+                    );
+                })
 
                 reply.apiSuccess(json);
             })

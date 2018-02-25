@@ -145,8 +145,27 @@ function twoPointDecimal(value) {
 }
 
 
+function stripTags(text) {
+    if(text) {
+        return text.replace(/(<([^>]+)>)/ig, '');
+    }
+
+    return text;
+}
+
+function stripQuotes(text) {
+    if(text) {
+        return text.replace(/["']/g, '');
+    }
+
+    return text;
+}
+
+
 module.exports.queryHelper = queryHelper;
 module.exports.fetchPage = fetchPage;
 module.exports.isDev = isDev;
 module.exports.makeArray = makeArray;
 module.exports.twoPointDecimal = twoPointDecimal;
+module.exports.stripTags = stripTags;
+module.exports.stripQuotes = stripQuotes;

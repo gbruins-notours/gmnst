@@ -1,3 +1,14 @@
+const fileType = require('file-type');
+const isObject = require('lodash.isobject');
+
+
+const imageMimeTypeWhiteList = [
+    'image/png',
+    'image/gif',
+    'image/jpeg',
+    'image/pjpeg'
+];
+
 /**
  * Returns the integer representation for each binary gender type
  * @returns {}
@@ -73,9 +84,27 @@ function featuredProductPic(productJson) {
 }
 
 
+/**
+ * Determines if the given file data is an appropriate mime type
+ * 
+ * @param {*} fileData  Most likely from request.payload.file._data
+ */
+function fileIsImage(fileData) {
+    let typeObj = fileType(fileData);
+
+    if(isObject(typeObj) && imageMimeTypeWhiteList.indexOf(typeObj.mime) > -1) {
+        return typeObj;
+    }
+
+    return false;
+}
+
+
 module.exports.getGenderTypes = getGenderTypes;
 module.exports.getSizeTypes = getSizeTypes;
 module.exports.getSizeTypeSortOrder = getSizeTypeSortOrder;
 module.exports.getProductTypes = getProductTypes;
 module.exports.getProductSubTypes = getProductSubTypes;
 module.exports.featuredProductPic = featuredProductPic;
+module.exports.fileIsImage = fileIsImage;
+module.exports.imageMimeTypeWhiteList = imageMimeTypeWhiteList;
