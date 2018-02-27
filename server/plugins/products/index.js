@@ -3,12 +3,13 @@ const Boom = require('boom');
 const path = require('path');
 const Promise = require('bluebird');
 const isObject = require('lodash.isobject');
-const cloneDeep = require('lodash.clonedeep');
 const HelperService = require('../../helpers.service');
 const ProductService = require('./products.service');
+const ProductPicService = require('./ProductPicService');
 
 let internals = {};
 let routePrefix = '/api/v1';
+let productPicService = new ProductPicService();
 
 internals.after = function (server, next) {
 
@@ -124,10 +125,10 @@ internals.after = function (server, next) {
     };
 
 
+
     /************************************
      * ROUTE HANDLERS
      ************************************/
-
     internals.productShare = (request, reply) => {
         let uriParts = request.query.uri.split('/');
         let seoUri = uriParts[uriParts.length - 1];
@@ -319,50 +320,16 @@ internals.after = function (server, next) {
     /***************************************
      * Product picture route handlers
      /**************************************/
-    
-    internals.upsertProductPic = function(req, options) {
-        let model = server.plugins.BookshelfOrm.bookshelf.model('ProductPic');
-        let request = cloneDeep(req);
-
-        return model
-            .deleteFileIfBeingReplaced(request)
-            .catch((err) => {
-                // just dropping the exception beacuse issues deleting the file
-                // shouldn't stop this process from continuing
-                console.log(err)
-            })
-            .then((productPic) => {
-                return model.saveFile(request, options);
-            })
-            .then((saveFileResponse) => {
-                // not needed when updatng the model:
-                delete request.payload.file;
-
-                if(isObject(saveFileResponse)) {
-                    request.payload.file_name = saveFileResponse.file_name;
-                    request.payload.width = saveFileResponse.width || null;
-                    request.payload.height = saveFileResponse.height || null;
-                }
-               
-                if(request.payload.id) {
-                    return model.update(request.payload, { id: request.payload.id })
-                }
-                else {
-                    return model.create(request.payload)
-                }
-            });
-    }
-
     internals.productPicUpsert = (request, reply) => {
         let fileNameBase = `${request.payload.product_id}_${new Date().getTime()}`;
 
         Promise
             .all([
-                internals.upsertProductPic(request, {
+                productPicService.upsertProductPic(request, {
                     width: 600,
                     file_name: fileNameBase
                 }),
-                internals.upsertProductPic(request, {
+                productPicService.upsertProductPic(request, {
                     width: 1000,
                     file_name: `${fileNameBase}_large`
                 })
@@ -400,7 +367,7 @@ internals.after = function (server, next) {
 
         const model = server.plugins.BookshelfOrm.bookshelf.model('ProductPic');
 
-        model
+        productPicService
             .deleteFile(request.payload.id)
             .catch((err) => {
                 // just dropping the exception beacuse issues deleting the file
@@ -583,23 +550,27 @@ internals.after = function (server, next) {
     let bookshelf = server.plugins.BookshelfOrm.bookshelf;
     let baseModel = require('bookshelf-modelbase')(bookshelf);
 
-    bookshelf['model'](
+    bookshelf.model(
         'Product',
         require('./models/Product')(baseModel, bookshelf, server)
     );
 
-    bookshelf['model'](
+    bookshelf.model(
         'ProductArtist',
         require('./models/ProductArtist')(baseModel, bookshelf, server)
     );
 
-
-    bookshelf['model'](
+    let ProductPic = bookshelf.model(
         'ProductPic',
         require('./models/ProductPic')(baseModel, bookshelf, server)
     );
 
-    bookshelf['model'](
+    bookshelf.model(
+        'ProductPicVariant',
+        require('./models/ProductPicVariant')(ProductPic, bookshelf, server)
+    );
+
+    bookshelf.model(
         'ProductSize',
         require('./models/ProductSize')(baseModel, bookshelf, server)
     );

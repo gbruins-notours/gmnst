@@ -7,6 +7,7 @@ const DB_TABLES = {
     product_artists: 'product_artists',
     product_sizes: 'product_sizes',
     product_pics: 'product_pics',
+    product_pic_variants: 'product_pic_variants',
     products: 'products'
 };
 

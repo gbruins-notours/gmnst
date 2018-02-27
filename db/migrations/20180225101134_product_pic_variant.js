@@ -1,36 +1,31 @@
 const CoreService = require('../../server/plugins/core/core.service');
 
-
-module.exports.up = (knex) => {
+exports.up = function(knex, Promise) {
     return knex.schema.createTable(
-        CoreService.DB_TABLES.product_pics,
+        CoreService.DB_TABLES.product_pic_variants,
         (t) => {
             t.uuid('id').primary();
             t.string('file_name').nullable();
-            t.integer('sort_order');
             t.integer('width');
             t.integer('height');
-            t.boolean('is_visible').defaultTo(false);
             t.timestamp('created_at', true).notNullable().defaultTo(knex.fn.now());
             t.timestamp('updated_at', true).nullable();
 
             // Foreign Keys:
-            t.uuid('product_id')
+            t.uuid('product_pic_id')
                 .notNullable()
                 .references('id')
-                .inTable(CoreService.DB_TABLES.products)
+                .inTable(CoreService.DB_TABLES.product_pics)
                 .onDelete('CASCADE');
 
             t.index([
                 'id',
-                'product_id'
+                'product_pic_id'
             ]);
         }
     );
 };
 
-
-
-module.exports.down = (knex) => {
-    return knex.schema.dropTableIfExists(CoreService.DB_TABLES.product_pics);
+exports.down = function(knex, Promise) {
+    return knex.schema.dropTableIfExists(CoreService.DB_TABLES.product_pic_variants);
 };
