@@ -8,7 +8,8 @@ exports.register = (server, options, next) =>  {
     const compiler = webpack(options.config);
     const devMiddleware = require('webpack-dev-middleware')(compiler, options['webpack-dev-middleware'] || {});
     const hotMiddleware = require('webpack-hot-middleware')(compiler, options['webpack-hot-middleware'] || {
-        log: () => {}
+        // log: () => {},
+        noInfo: true
     });
 
     server.ext('onRequest', (request, reply) => {

@@ -1,17 +1,18 @@
 const Joi = require('joi');
 const Boom = require('boom');
 const path = require('path');
-const Promise = require('bluebird');
 const isObject = require('lodash.isobject');
 const HelperService = require('../../helpers.service');
-const ProductService = require('./products.service');
-const ProductPicService = require('./ProductPicService');
+const productService = require('./services/productService');
+const ProductPicService = require('./services/ProductPicService');
 
 let internals = {};
 let routePrefix = '/api/v1';
-let productPicService = new ProductPicService();
+
 
 internals.after = function (server, next) {
+
+    let productPicService = new ProductPicService(server);
 
     // Yes this was aleady set in the Core plugin, but apparently
     // it must be set in every plugin that needs a view engine:
@@ -58,11 +59,6 @@ internals.after = function (server, next) {
         is_visible: Joi.boolean(),
         product_id: Joi.string().uuid()
     };
-
-
-    internals.productDirectory = process.env.NODE_ENV === 'production'
-        ? path.join(__dirname, '../../../dist/static/images/product/') //TODO: is this the right path?
-        : path.join(__dirname, '../../../static/images/product/');
 
 
     internals.getWithRelated = (opts) => {
@@ -138,7 +134,7 @@ internals.after = function (server, next) {
             .then((product) => {
                 let p = isObject(product) ? product.toJSON() : {};
                 let urlImages = 'https://www.gmnst.com/static/images/';
-                let featuredPic = ProductService.featuredProductPic(p);
+                let featuredPic = productService.featuredProductPic(p);
 
                 return reply.view('views/socialshare', {
                     title: p.title || 'Welcome to Gmnst.com',
@@ -189,10 +185,10 @@ internals.after = function (server, next) {
 
     internals.productInfo = (request, reply) => {
         reply.apiSuccess({
-            types: ProductService.getProductTypes(),
-            subTypes: ProductService.getProductSubTypes(),
-            sizes: ProductService.getSizeTypes(),
-            genders: ProductService.getGenderTypes()
+            types: productService.getProductTypes(),
+            subTypes: productService.getProductSubTypes(),
+            sizes: productService.getSizeTypes(),
+            genders: productService.getGenderTypes()
         });
     };
 
@@ -255,7 +251,7 @@ internals.after = function (server, next) {
      * Product size route handlers
      /**************************************/
     internals.productSizeCreate = (request, reply) => {
-        request.payload.sort = request.payload.sort || ProductService.getSizeTypeSortOrder(request.payload.size)
+        request.payload.sort = request.payload.sort || productService.getSizeTypeSortOrder(request.payload.size)
 
         server.plugins.BookshelfOrm.bookshelf.model('ProductSize')
             .create(request.payload)
@@ -321,38 +317,22 @@ internals.after = function (server, next) {
      * Product picture route handlers
      /**************************************/
     internals.productPicUpsert = (request, reply) => {
-        let fileNameBase = `${request.payload.product_id}_${new Date().getTime()}`;
-
-        Promise
-            .all([
-                productPicService.upsertProductPic(request, {
-                    width: 600,
-                    file_name: fileNameBase
-                }),
-                productPicService.upsertProductPic(request, {
-                    width: 1000,
-                    file_name: `${fileNameBase}_large`
-                })
-            ])
-            .then((productPicModelArray) => {
-                if(!productPicModelArray || !productPicModelArray.length) {
+        productPicService
+            .upsertProductPic(request)
+            .then((productPicId) => {
+                if(!productPicId) {
                     reply(Boom.badRequest('Unable to create a a new product picture.'));
                     return;
                 }
 
-                let json = [];
+                global.logger.info(
+                    request.payload.id ? 'PRODUCT PIC - DB UPDATED' : 'PRODUCT PIC - DB CREATED',
+                    productPicId
+                );
 
-                productPicModelArray.forEach((ProductPic) => {
-                    let obj = ProductPic.toJSON();
-                    json.push(obj);
-
-                    global.logger.info(
-                        request.payload.id ? 'PRODUCT PIC - DB UPDATED' : 'PRODUCT PIC - DB CREATED',
-                        obj.id
-                    );
-                })
-
-                reply.apiSuccess(json);
+                reply.apiSuccess({
+                    product_pic_id: productPicId
+                });
             })
             .catch((err) => {
                 global.logger.error(err);
@@ -368,7 +348,7 @@ internals.after = function (server, next) {
         const model = server.plugins.BookshelfOrm.bookshelf.model('ProductPic');
 
         productPicService
-            .deleteFile(request.payload.id)
+            .unlinkFileAndVariants(request.payload.id)
             .catch((err) => {
                 // just dropping the exception beacuse issues deleting the file
                 // shouldn't stop this process from continuing
@@ -380,7 +360,8 @@ internals.after = function (server, next) {
                 return model.destroy({ id: request.payload.id })
             })
             .then((ProductPic) => {
-                global.logger.info('PRODUCT PIC - DB DELETED', request.payload.id);
+                global.logger.info('DELETE FILE PRODUCT PIC SHOULD HAVE VARIANTS', ProductPic.toJSON())
+                global.logger.info('PRODUCT PIC - DB DELETED2', request.payload.id);
                 reply.apiSuccess({
                     id: request.payload.id
                 });
@@ -560,14 +541,24 @@ internals.after = function (server, next) {
         require('./models/ProductArtist')(baseModel, bookshelf, server)
     );
 
-    let ProductPic = bookshelf.model(
+    // let ProductPic = bookshelf.model(
+    //     'ProductPic',
+    //     require('./models/ProductPic')(baseModel, bookshelf, server)
+    // );
+
+    // bookshelf.model(
+    //     'ProductPicVariant',
+    //     require('./models/ProductPicVariant')(ProductPic, bookshelf, server)
+    // );
+
+    bookshelf.model(
         'ProductPic',
         require('./models/ProductPic')(baseModel, bookshelf, server)
     );
 
     bookshelf.model(
         'ProductPicVariant',
-        require('./models/ProductPicVariant')(ProductPic, bookshelf, server)
+        require('./models/ProductPicVariant')(baseModel, bookshelf, server)
     );
 
     bookshelf.model(

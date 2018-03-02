@@ -8,6 +8,7 @@ exports.up = function(knex, Promise) {
             t.string('file_name').nullable();
             t.integer('width');
             t.integer('height');
+            t.boolean('is_visible').defaultTo(true);
             t.timestamp('created_at', true).notNullable().defaultTo(knex.fn.now());
             t.timestamp('updated_at', true).nullable();
 
