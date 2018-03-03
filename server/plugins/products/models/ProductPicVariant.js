@@ -9,7 +9,7 @@ module.exports = function (baseModel, bookshelf) {
 
             hasTimestamps: true,
 
-            // One-to-One relation with ProductPic
+            // http://bookshelfjs.org/#Model-instance-belongsTo
             // product_pic_id is the foreign key in this model
             product_pic: function() {
                 return this.belongsTo('ProductPic', 'product_pic_id');

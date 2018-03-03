@@ -1,6 +1,4 @@
-
-const isObject = require('lodash.isobject');
-
+'use strict';
 
 /**
  * Returns the integer representation for each binary gender type

@@ -1,11 +1,11 @@
 const Promise = require('bluebird');
 const faker = require('faker');
 const CoreService = require('../../server/plugins/core/core.service');
-const ProductService = require('../../server/plugins/products/products.service');
+const productService = require('../../server/plugins/products/services/productService.js');
 
 
 exports.seed = (knex) => {
-    let sizeTypes = ProductService.getSizeTypes();
+    let sizeTypes = productService.getSizeTypes();
 
     return knex(CoreService.DB_TABLES.product_sizes)
         .del()
@@ -33,7 +33,7 @@ exports.seed = (knex) => {
                                         size: size,
                                         inventory_count: faker.random.number(25),
                                         is_visible: true,
-                                        sort: ProductService.getSizeTypeSortOrder(size),
+                                        sort: productService.getSizeTypeSortOrder(size),
                                         product_id: global.productSeedUuids[prodId-1]
                                     })
                             );
