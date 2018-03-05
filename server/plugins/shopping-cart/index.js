@@ -3,7 +3,6 @@
 const Joi = require('joi');
 const Boom = require('boom');
 const Promise = require('bluebird');
-const HelperService = require('../../helpers.service');
 const cloneDeep = require('lodash.clonedeep');
 
 let internals = {};

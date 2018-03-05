@@ -170,8 +170,16 @@ internals.after = function (server, next) {
 
 
     internals.productSeo = (request, reply) => {
-        internals
-            .getProductByAttribute('seo_uri', request.query.id)
+        let withRelated = internals.getWithRelated();
+        withRelated.push('pics.pic_variants');
+
+        server.plugins.BookshelfOrm.bookshelf.model('Product')
+            .forge({
+                'seo_uri': request.query.id
+            })
+            .fetch({
+                withRelated
+            })
             .then((products) => {
                 reply.apiSuccess(products);
             })

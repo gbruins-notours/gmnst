@@ -20,6 +20,7 @@ let productSizeService = new ProductSizeService();
 let shoppingCartService = new ShoppingCartService();
 let utilityService = new UtilityService();
 let pageUrl = utilityService.getSiteUrl(true);
+let basePicUrl = productService.getProductPicPath();
 
 Vue.use(Select);
 Vue.use(Option);
@@ -125,6 +126,17 @@ export default {
 
         goToCart: function() {
             this.$router.push(`/cart/${this.product.id}`);
+        },
+
+        getLargePic: function(index) {
+            if (Array.isArray(this.product.pics) && this.product.pics[index]) {
+                if(Array.isArray(this.product.pics[index].pic_variants) && this.product.pics[index].pic_variants.length) {
+                    return basePicUrl + this.product.pics[index].pic_variants[0].file_name;
+                }
+                return basePicUrl + this.product.pics[index].file_name;
+            }
+
+            return null;
         }
     },
 
@@ -136,15 +148,21 @@ export default {
                     throw new Error(this.$t('Product not found'));
                 }
 
+                let pics = [];
+
                 this.product = product;
 
                 productSizeService.buildSizeOptions(product).then((result) => {
                     this.sizeOptions = result.sizeOpts;
                 });
 
-                productService.buildPictures(product).then((pics) => {
+                if (Array.isArray(this.product.pics)) {
+                    this.product.pics.forEach((obj) => {
+                        pics.push(basePicUrl + obj.file_name)
+                    });
+
                     this.productPics = pics;
-                });
+                }
             })
             .catch((e) => {
                 showNotification(
@@ -188,7 +206,7 @@ export default {
                         <div class="image is-2by2 phm">
                             <carousel :autoplay="true"
                                         :autoplayHoverPause="true"
-                                        :navigationEnabled="productPics.length"
+                                        :navigationEnabled="!!productPics.length"
                                         :perPage="1"
                                         :loop="true"
                                         paginationColor="#cacac8"
@@ -196,7 +214,7 @@ export default {
                                 <slide v-for="(pic, key) in productPics" :key="key">
                                     <img :src="pic" 
                                         :alt="product.title" 
-                                        v-img="{group:'prod', src:pic}" />
+                                        v-img="{group:'prod', src:getLargePic(key)}" />
                                 </slide>
                             </carousel>
                         </div>
