@@ -249,10 +249,14 @@ module.exports = class ProductPicService {
 
                     delete payload.file; // not needed when updatng the model
 
-                    // Additional data needed for the ProductPic model
-                    payload.file_name = resizeResponse.file_name;
-                    payload.width = resizeResponse.width || null;
-                    payload.height = resizeResponse.height || null;
+                    // resizeResponse will be empty if the HTTP request did not include a file
+                    // (which it may not if the user in only updating other attributes)
+                    if(isObject(resizeResponse)) {
+                        // Additional data needed for the ProductPic model
+                        payload.file_name = resizeResponse.file_name;
+                        payload.width = resizeResponse.width || null;
+                        payload.height = resizeResponse.height || null;
+                    }
 
                     if(payload.id) {
                         return model.update(payload, { id: payload.id });
@@ -277,9 +281,12 @@ module.exports = class ProductPicService {
                     delete payload.sort_order;
                     delete payload.id;
     
-                    payload.file_name = resizeResponse.file_name;
-                    payload.width = resizeResponse.width || null;
-                    payload.height = resizeResponse.height || null;
+                    if(isObject(resizeResponse)) {
+                        payload.file_name = resizeResponse.file_name;
+                        payload.width = resizeResponse.width || null;
+                        payload.height = resizeResponse.height || null;
+                    }
+                    
                     payload.product_pic_id = productPic.get('id');
 
                     global.logger.info('PRODUCT PIC VARIANT - CREATING', payload);
