@@ -118,20 +118,22 @@ module.exports = function (baseModel, bookshelf, server) {
                 .orderBy('created_at', 'DESC')
                 .fetch({
                     withRelated: [
-                        'cart_items.product', // https://stackoverflow.com/questions/35679855/always-fetch-from-related-models-in-bookshelf-js#35841710
-                        {
-                            'cart_items.product.pics': (query) => {
-                                query.where('is_visible', '=', true);
-                                query.orderBy('sort_order', 'ASC');
-                                query.limit(1); 
-                            }
-                        },
                         {
                             cart_items: (query) => {
                                 // Sorting by updated_at (instead of created_at) will keep the most recently
                                 // updated cart item at the top of the list, which I think is the most
                                 // expected user experience
                                 query.orderBy('updated_at', 'DESC');
+                            }
+                        },
+                        {
+                            'cart_items.product.pics': (query) => {    // https://stackoverflow.com/questions/35679855/always-fetch-from-related-models-in-bookshelf-js#35841710
+                                query.where('is_visible', '=', true);
+                                query.orderBy('sort_order', 'ASC');
+
+                                // Somehow this is resulting in no pics being returned sometimes.
+                                // Commenting out for now
+                                // query.limit(1);
                             }
                         }
                     ]
