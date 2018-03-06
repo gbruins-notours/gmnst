@@ -1,12 +1,35 @@
 const winston = require('winston');
 const RotateFile = require('winston-daily-rotate-file');
-const moment = require('moment');
 const Promise = require('bluebird');
 const fs = require('fs');
 const path = require('path');
 const bugsnag = require('bugsnag')
 
 let logsDirectory = null;
+
+
+function getFormattedDate() {
+    let date = new Date();
+    let mo = date.getMonth() + 1;
+    mo = mo < 10 ? '0' + mo : mo;
+    
+    let day = date.getDate();
+    day = day < 10 ? '0' + day : day;
+        
+    let ymd = [
+        date.getFullYear(),
+        mo,
+        day
+    ];
+        
+    let hms = [
+        date.getHours(),
+        date.getMinutes(),
+        date.getSeconds(),
+    ];
+        
+    return (ymd.join("-") + " " + hms.join(':'));
+}
 
 exports.register = (server, options, next) => {
 
@@ -60,7 +83,7 @@ exports.register = (server, options, next) => {
             prettyPrint: true,
             colorize: true,
             silent: false,
-            timestamp: () => moment(new Date()).format('YYYY-MM-DD hh:mm:ss')
+            timestamp: getFormattedDate
         })
     ];
 
@@ -80,7 +103,7 @@ exports.register = (server, options, next) => {
             silent: false,
             colorize: false,
             filename: path.join(logsDirectory, '/error.log'),
-            timestamp: () => moment(new Date()).format('YYYY-MM-DD hh:mm:ss'),
+            timestamp: getFormattedDate,
             json: false,
             maxFiles: 10,
             datePattern: '.yyyy-MM-dd'
