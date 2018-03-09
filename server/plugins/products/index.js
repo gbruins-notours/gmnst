@@ -3,16 +3,20 @@ const Boom = require('boom');
 const path = require('path');
 const isObject = require('lodash.isobject');
 const HelperService = require('../../helpers.service');
-const productService = require('./services/productService');
+const ProductService = require('./services/ProductService');
 const ProductPicService = require('./services/ProductPicService');
+const ProductSizeService = require('./services/ProductSizeService');
+
+
+let productService;
+let productPicService;
+let productSizeService;
 
 let internals = {};
 let routePrefix = '/api/v1';
 
 
 internals.after = function (server, next) {
-
-    let productPicService = new ProductPicService(server);
 
     // Yes this was aleady set in the Core plugin, but apparently
     // it must be set in every plugin that needs a view engine:
@@ -61,67 +65,6 @@ internals.after = function (server, next) {
     };
 
 
-    internals.getWithRelated = (opts) => {
-        let options = opts || {};
-
-        return [
-            'artist',
-            {
-                sizes: (query) => {
-                    if(!options.viewAllRelated) {
-                        query.where('is_visible', '=', true);
-                    }
-                    query.orderBy('sort', 'ASC');
-                },
-    
-                pics: (query) => {
-                    if(!options.viewAllRelated) {
-                        query.where('is_visible', '=', true);
-                    }
-                    query.orderBy('sort_order', 'ASC');
-                }
-            }
-        ]
-    }
-
-    /**
-     * Fetches data from a given product model
-     *
-     * @param attrName
-     * @param attrValue
-     * @returns {Promise}
-     */
-    internals.modelFetch = (modelName, forgeOptions, fetchOptions) => {
-        return server.plugins.BookshelfOrm.bookshelf.model(modelName)
-            .forge(forgeOptions)
-            .fetch(fetchOptions);
-    };
-
-
-    /**
-     * Gets a product by a given attribute
-     *
-     * @param attrName
-     * @param attrValue
-     * @returns {Promise}
-     */
-    internals.getProductByAttribute = (attrName, attrValue) => {
-        let forgeOpts = null;
-
-        if(attrName) {
-            forgeOpts = {};
-            forgeOpts[attrName] = attrValue;
-        }
-
-        let fetchOpts = {
-            withRelated: internals.getWithRelated()
-        };
-
-        return internals.modelFetch('Product', forgeOpts, fetchOpts)
-    };
-
-
-
     /************************************
      * ROUTE HANDLERS
      ************************************/
@@ -129,7 +72,7 @@ internals.after = function (server, next) {
         let uriParts = request.query.uri.split('/');
         let seoUri = uriParts[uriParts.length - 1];
 
-        internals
+        productService
             .getProductByAttribute('seo_uri', seoUri)
             .then((product) => {
                 let p = isObject(product) ? product.toJSON() : {};
@@ -152,12 +95,12 @@ internals.after = function (server, next) {
 
 
     internals.productRoute = (request, reply) => {
-        internals
-            .modelFetch(
-                'Product', 
-                { id: request.query.id }, 
-                { withRelated: internals.getWithRelated(request.query) }
-            )
+        return productService
+            .getModel()
+            .forge({ id: request.query.id })
+            .fetch({
+                withRelated: productService.getWithRelated(request.query)
+            })
             .then((products) => {
                 reply.apiSuccess(products);
             })
@@ -170,10 +113,11 @@ internals.after = function (server, next) {
 
 
     internals.productSeo = (request, reply) => {
-        let withRelated = internals.getWithRelated();
+        let withRelated = productService.getWithRelated();
         withRelated.push('pics.pic_variants');
 
-        server.plugins.BookshelfOrm.bookshelf.model('Product')
+        productService
+            .getModel()
             .forge({
                 'seo_uri': request.query.id
             })
@@ -203,7 +147,11 @@ internals.after = function (server, next) {
 
     internals.productsRoute = (request, reply) => {
         HelperService
-            .fetchPage(request, server.plugins.BookshelfOrm.bookshelf.model('Product'), internals.getWithRelated())
+            .fetchPage(
+                request, 
+                productService.getModel(), 
+                productService.getWithRelated()
+            )
             .then((products) => {
                 reply.apiSuccess(products, products.pagination);
             })
@@ -216,7 +164,8 @@ internals.after = function (server, next) {
 
 
     internals.productCreate = (request, reply) => {
-        server.plugins.BookshelfOrm.bookshelf.model('Product')
+        productService
+            .getModel()
             .create(request.payload)
             .then((Product) => {
                 if(!Product) {
@@ -237,7 +186,8 @@ internals.after = function (server, next) {
     internals.productUpdate = (request, reply) => {
         request.payload.updated_at = request.payload.updated_at || new Date();
 
-        server.plugins.BookshelfOrm.bookshelf.model('Product')
+        productService
+            .getModel()
             .update(request.payload, { id: request.payload.id })
             .then((Product) => {
                 if(!Product) {
@@ -261,7 +211,8 @@ internals.after = function (server, next) {
     internals.productSizeCreate = (request, reply) => {
         request.payload.sort = request.payload.sort || productService.getSizeTypeSortOrder(request.payload.size)
 
-        server.plugins.BookshelfOrm.bookshelf.model('ProductSize')
+        productSizeService
+            .getModel()
             .create(request.payload)
             .then((ProductSize) => {
                 if(!ProductSize) {
@@ -282,7 +233,8 @@ internals.after = function (server, next) {
     internals.productSizeUpdate = (request, reply) => {
         request.payload.updated_at = request.payload.updated_at || new Date();
 
-        server.plugins.BookshelfOrm.bookshelf.model('ProductSize')
+        productSizeService
+            .getModel()
             .update(request.payload, { id: request.payload.id })
             .then((ProductSize) => {
                 if(!ProductSize) {
@@ -303,7 +255,8 @@ internals.after = function (server, next) {
     internals.productSizeDelete = (request, reply) => {
         request.payload.updated_at = request.payload.updated_at || new Date();
 
-        server.plugins.BookshelfOrm.bookshelf.model('ProductSize')
+        productSizeService
+            .getModel()
             .destroy({ id: request.payload.id })
             .then((ProductSize) => {
                 if(!ProductSize) {
@@ -353,8 +306,6 @@ internals.after = function (server, next) {
     internals.productPicDelete = (request, reply) => {
         request.payload.updated_at = request.payload.updated_at || new Date();
 
-        const model = server.plugins.BookshelfOrm.bookshelf.model('ProductPic');
-
         productPicService
             .unlinkFileAndVariants(request.payload.id)
             .catch((err) => {
@@ -365,7 +316,7 @@ internals.after = function (server, next) {
                 //TODO: Get the product.  If this is the featured pic, assign a new one on the product
 
                 // Delete from DB:
-                return model.destroy({ id: request.payload.id })
+                return productPicService.getModel().destroy({ id: request.payload.id })
             })
             .then((ProductPic) => {
                 global.logger.info('DELETE FILE PRODUCT PIC SHOULD HAVE VARIANTS', ProductPic.toJSON())
@@ -549,16 +500,6 @@ internals.after = function (server, next) {
         require('./models/ProductArtist')(baseModel, bookshelf, server)
     );
 
-    // let ProductPic = bookshelf.model(
-    //     'ProductPic',
-    //     require('./models/ProductPic')(baseModel, bookshelf, server)
-    // );
-
-    // bookshelf.model(
-    //     'ProductPicVariant',
-    //     require('./models/ProductPicVariant')(ProductPic, bookshelf, server)
-    // );
-
     bookshelf.model(
         'ProductPic',
         require('./models/ProductPic')(baseModel, bookshelf, server)
@@ -574,15 +515,16 @@ internals.after = function (server, next) {
         require('./models/ProductSize')(baseModel, bookshelf, server)
     );
 
-
-    server.expose('getProductByAttribute', internals.getProductByAttribute);
-
     return next();
 };
 
 
 
 exports.register = (server, options, next) => {
+    productService = new ProductService(server);
+    productPicService = new ProductPicService(server);
+    productSizeService = new ProductSizeService(server);
+
     server.dependency(['BookshelfOrm', 'Core'], internals.after);
     return next();
 };

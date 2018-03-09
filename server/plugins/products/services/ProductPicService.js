@@ -8,6 +8,7 @@ const cloneDeep = require('lodash.clonedeep');
 const fileType = require('file-type');
 const sharp = require('sharp');
 const helperService = require('../../../helpers.service');
+const ProductPicVariantService = require('./ProductPicVariantService');
 
 const productDirectory = process.env.NODE_ENV === 'production'
     ? path.join(__dirname, '../../../../dist/static/images/product/') //TODO: is this the right path?
@@ -99,16 +100,12 @@ module.exports = class ProductPicService {
 
     constructor(server) {
         this.server = server;
+        this.productPicVariantService = new ProductPicVariantService(server);
     }
 
 
-    getProductPicModel() {
+    getModel() {
         return this.server.plugins.BookshelfOrm.bookshelf.model('ProductPic')
-    }
-
-
-    getProductPicVariantModel() {
-        return this.server.plugins.BookshelfOrm.bookshelf.model('ProductPicVariant')
     }
 
 
@@ -131,7 +128,7 @@ module.exports = class ProductPicService {
                     .catch((err) => {
                         return reject(err);
                     })
-            }
+            }   
             else {
                 resolve()
             }
@@ -152,7 +149,7 @@ module.exports = class ProductPicService {
         return new Promise((resolve, reject) => {
             // Query the DB to get the file name of the pic
             // and all of the pics variants
-            self.getProductPicModel()
+            self.getModel()
                 .findById(id, {
                     withRelated: ['pic_variants']
                 })
@@ -199,25 +196,6 @@ module.exports = class ProductPicService {
     }
 
 
-    deleteProductPicVariants(ProductPic) {
-        let self = this;
-
-        if(ProductPic) {
-            let json = ProductPic.toJSON();
-
-            if(Array.isArray(json.pic_variants)) {
-                json.pic_variants.forEach((obj) => {
-                    global.logger.info('DELETING PRODUCT PIC VARIANT FROM DB', obj.id);
-
-                    self.getProductPicVariantModel().destroy({
-                        id: obj.id
-                    })
-                });
-            }
-        }
-    }
-
-
     /*
      * Upserts and resizes a standard product pic as well as its larger variant
      * @param {*} req 
@@ -237,14 +215,14 @@ module.exports = class ProductPicService {
                 })
                 .then((ProductPic) => {
                     // Always delete the variants and re-create
-                    self.deleteProductPicVariants(ProductPic);
+                    self.productPicVariantService.deleteVariants(ProductPic)
                     return resizeAndWrite(request, 600)
                 })
                 .then((resizeResponse) => {
                     global.logger.info('PRODUCT PIC - FILE RESIZED (600)', resizeResponse);
 
                     // update or create the ProductPic
-                    let model = self.getProductPicModel();
+                    let model = self.getModel();
                     let payload = cloneDeep(request.payload);
 
                     delete payload.file; // not needed when updatng the model
@@ -291,7 +269,7 @@ module.exports = class ProductPicService {
 
                     global.logger.info('PRODUCT PIC VARIANT - CREATING', payload);
 
-                    return self.getProductPicVariantModel().create(payload);
+                    return self.productPicVariantService.getModel().create(payload);
                 })
                 .then((ProductPicVariant) => {
                     global.logger.info('PRODUCT PIC VARIANT- CREATED', ProductPicVariant.get('product_pic_id'));

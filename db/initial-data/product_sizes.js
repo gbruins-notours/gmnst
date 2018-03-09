@@ -1,8 +1,9 @@
 const Promise = require('bluebird');
 const faker = require('faker');
 const CoreService = require('../../server/plugins/core/core.service');
-const productService = require('../../server/plugins/products/services/productService.js');
+const ProductService = require('../../server/plugins/products/services/ProductService.js');
 
+const productService = new ProductService();
 
 exports.seed = (knex) => {
     let sizeTypes = productService.getSizeTypes();

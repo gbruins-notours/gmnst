@@ -29,18 +29,6 @@ describe('Testing Products plugin', () => {
     });
 
 
-    it('should have exposed methods', (done) => {
-        testHelpers
-            .startServerAndGetHeaders(serverSetup.manifest, serverSetup.composeOptions)
-            .then(({err, server}) => {
-                expect(err).not.to.exist();
-                expect(server.plugins.Products.hasOwnProperty('getProductByAttribute')).to.be.true();
-
-                testHelpers.destroyKnexAndStopServer(server, done);
-            });
-    });
-
-
     it('should have models', (done) => {
         testHelpers
             .startServerAndGetHeaders(serverSetup.manifest, serverSetup.composeOptions)

@@ -1,84 +1,137 @@
 'use strict';
 
-/**
- * Returns the integer representation for each binary gender type
- * @returns {}
- */
-function getGenderTypes() {
-    return {
-        GENDER_TYPE_MENS: 0x01, // 00000001
-        GENDER_TYPE_WOMENS: 0x02, // 00000010
-        GENDER_TYPE_BOYS: 0x04, // 00000100
-        GENDER_TYPE_GIRLS: 0x08  // 00001000
-    };
-}
 
+module.exports = class ProductService {
 
-function getSizeTypes() {
-    return [
-        'SIZE_YOUTH_XS',
-        'SIZE_YOUTH_S',
-        'SIZE_YOUTH_M',
-        'SIZE_YOUTH_L',
-        'SIZE_YOUTH_XL',
-        'SIZE_ADULT_XS',
-        'SIZE_ADULT_S',
-        'SIZE_ADULT_M',
-        'SIZE_ADULT_L',
-        'SIZE_ADULT_XL',
-        'SIZE_ADULT_2XL',
-        'SIZE_ADULT_3XL',
-        'SIZE_ADULT_4XL'
-    ];
-}
-
-
-function getSizeTypeSortOrder(size) {
-    let types = getSizeTypes();
-    let index = types.indexOf(size);
-    return index > -1 ? index : types.length;
-}
-
-
-function getProductTypes() {
-    return {
-        PRODUCT_TYPE_APPAREL: 0x01 // 00000001
-    };
-}
-
-
-function getProductSubTypes() {
-    return {
-        PRODUCT_SUBTYPE_HAT: 0x01, // 00000001
-        PRODUCT_SUBTYPE_TOP: 0x02  // 00000010
-    };
-}
-
-
-function featuredProductPic(productJson) {
-    let pic = null;
-
-    if(Array.isArray(productJson.pics)) {
-        let len = productJson.pics.length;
-
-        // The related sizes for a product are ordered by sort order (ASC)
-        // so the first 'is_visible' pic will be the featured pic
-        for(let i=0; i<len; i++) {
-            if(productJson.pics[i].is_visible && productJson.pics[i].file_name) {
-                pic = productJson.pics[i].file_name;
-                break;
-            }
-        }
+    constructor(server) {
+        this.server = server;
     }
 
-    return pic;
+    getModel() {
+        return this.server.plugins.BookshelfOrm.bookshelf.model('Product');
+    }
+
+
+    getProductTypes() {
+        return {
+            PRODUCT_TYPE_APPAREL: 0x01 // 00000001
+        };
+    }
+
+
+    getProductSubTypes() {
+        return {
+            PRODUCT_SUBTYPE_HAT: 0x01, // 00000001
+            PRODUCT_SUBTYPE_TOP: 0x02  // 00000010
+        };
+    }
+
+
+    /**
+     * Returns the integer representation for each binary gender type
+     * @returns {}
+     */
+    getGenderTypes() {
+        return {
+            GENDER_TYPE_MENS: 0x01, // 00000001
+            GENDER_TYPE_WOMENS: 0x02, // 00000010
+            GENDER_TYPE_BOYS: 0x04, // 00000100
+            GENDER_TYPE_GIRLS: 0x08  // 00001000
+        };
+    }
+
+
+    getSizeTypes() {
+        return [
+            'SIZE_YOUTH_XS',
+            'SIZE_YOUTH_S',
+            'SIZE_YOUTH_M',
+            'SIZE_YOUTH_L',
+            'SIZE_YOUTH_XL',
+            'SIZE_ADULT_XS',
+            'SIZE_ADULT_S',
+            'SIZE_ADULT_M',
+            'SIZE_ADULT_L',
+            'SIZE_ADULT_XL',
+            'SIZE_ADULT_2XL',
+            'SIZE_ADULT_3XL',
+            'SIZE_ADULT_4XL'
+        ];
+    }
+
+
+    getSizeTypeSortOrder(size) {
+        let types = this.getSizeTypes();
+        let index = types.indexOf(size);
+        return index > -1 ? index : types.length;
+    }
+
+
+    featuredProductPic(productJson) {
+        let pic = null;
+    
+        if(Array.isArray(productJson.pics)) {
+            let len = productJson.pics.length;
+    
+            // The related sizes for a product are ordered by sort order (ASC)
+            // so the first 'is_visible' pic will be the featured pic
+            for(let i=0; i<len; i++) {
+                if(productJson.pics[i].is_visible && productJson.pics[i].file_name) {
+                    pic = productJson.pics[i].file_name;
+                    break;
+                }
+            }
+        }
+    
+        return pic;
+    }
+
+
+    getWithRelated(opts) {
+        let options = opts || {};
+
+        return [
+            'artist',
+            {
+                sizes: (query) => {
+                    if(!options.viewAllRelated) {
+                        query.where('is_visible', '=', true);
+                    }
+                    query.orderBy('sort', 'ASC');
+                },
+    
+                pics: (query) => {
+                    if(!options.viewAllRelated) {
+                        query.where('is_visible', '=', true);
+                    }
+                    query.orderBy('sort_order', 'ASC');
+                }
+            }
+        ]
+    }
+
+
+    /**
+     * Gets a product by a given attribute
+     *
+     * @param attrName
+     * @param attrValue
+     * @returns {Promise}
+     */
+    getProductByAttribute(attrName, attrValue) {
+        let self = this;
+        let forgeOpts = null;
+
+        if(attrName) {
+            forgeOpts = {};
+            forgeOpts[attrName] = attrValue;
+        }
+
+        return self
+            .getModel()
+            .forge(forgeOpts)
+            .fetch({
+                withRelated: self.getWithRelated()
+            });
+    };
 }
-
-
-
-module.exports.getGenderTypes = getGenderTypes;
-module.exports.getSizeTypes = getSizeTypes;
-module.exports.getSizeTypeSortOrder = getSizeTypeSortOrder;
-module.exports.getProductTypes = getProductTypes;
-module.exports.getProductSubTypes = getProductSubTypes;
-module.exports.featuredProductPic = featuredProductPic;

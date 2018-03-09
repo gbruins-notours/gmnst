@@ -1,6 +1,5 @@
 'use strict';
 
-const jwt = require('jsonwebtoken');
 const accounting = require('accounting');
 const isObject = require('lodash.isobject');
 const CoreService = require('../../core/core.service');
@@ -90,79 +89,6 @@ module.exports = function (baseModel, bookshelf, server) {
             cart_items: function() {
                 return this.hasMany('ShoppingCartItem', 'cart_id');
             }
-        },
-
-        // Custom methods:
-        {
-            getCartToken: function(request) {
-                if(request.auth.token) {
-                    let decoded = jwt.verify(request.auth.token, process.env.JWT_SERVER_SECRET);
-                    return decoded.ct;
-                }
-                return null;
-            },
-
-
-            /**
-             * Finds the cart using the cart token from JWT
-             *
-             * @param request
-             * @returns {Promise}
-             */
-            getCart: function(request) {
-                return this.query((qb) => {
-                    qb.where('token', '=', this.getCartToken(request));
-                    qb.whereNull('closed_at');
-                    qb.whereNull('status');
-                })
-                .orderBy('created_at', 'DESC')
-                .fetch({
-                    withRelated: [
-                        {
-                            cart_items: (query) => {
-                                // Sorting by updated_at (instead of created_at) will keep the most recently
-                                // updated cart item at the top of the list, which I think is the most
-                                // expected user experience
-                                query.orderBy('updated_at', 'DESC');
-                            }
-                        },
-                        {
-                            'cart_items.product.pics': (query) => {    // https://stackoverflow.com/questions/35679855/always-fetch-from-related-models-in-bookshelf-js#35841710
-                                query.where('is_visible', '=', true);
-                                query.orderBy('sort_order', 'ASC');
-
-                                // Somehow this is resulting in no pics being returned sometimes.
-                                // Commenting out for now
-                                // query.limit(1);
-                            }
-                        }
-                    ]
-                })
-            },
-
-
-            /**
-             * Finds the cart using the cart token from JWT,
-             * or creates one if it doesn't exist
-             *
-             * @param request
-             * @returns {Promise}
-             */
-            findOrCreateCart: function(request) {
-                let self = this;
-
-                // If the shipping rate is a flat cost then adding it to the model now
-                // so it will be readily available at checkout.  If we ever decide to 
-                // provide multiple shipping options in the future then this value can 
-                // be overridden by whatever option the user chooses at checkout.
-                return self.getCart(request)
-                    .then((ShoppingCart) => {
-                        return ShoppingCart || self.create({
-                            token: self.getCartToken(request)
-                        });
-                    })
-            }
-
         }
     );
 };

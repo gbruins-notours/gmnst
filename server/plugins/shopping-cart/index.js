@@ -2,183 +2,27 @@
 
 const Joi = require('joi');
 const Boom = require('boom');
-const Promise = require('bluebird');
 const cloneDeep = require('lodash.clonedeep');
+const ShoppingCartService = require('./services/ShoppingCartService');
+const ShoppingCartItemService = require('./services/ShoppingCartItemService');
+const PaymentService = require('../payments/services/PaymentService');
+
+let shoppingCartService;
+let shoppingCartItemService;
+let paymentService;
 
 let internals = {};
 
 
-internals.shippingAttributes = {
-    shipping_firstName: Joi.string().trim().max(255).required(),
-    shipping_lastName: Joi.string().trim().max(255).required(),
-    shipping_company: Joi.string().trim().max(255).empty(null),
-    shipping_streetAddress: Joi.string().trim().max(255).required(),
-    shipping_extendedAddress: Joi.string().trim().max(255).empty(null),
-    shipping_city: Joi.string().trim().max(255).required(),
-    shipping_state: Joi.string().trim().max(255).required(),
-    shipping_postalCode: Joi.string().trim().max(10).required(),
-    shipping_countryCodeAlpha2: Joi.string().trim().max(2).required(),  // alpha2 is required by PayPal:  https://developers.braintreepayments.com/reference/request/transaction/sale/node#billing.country_code_alpha2
-    shipping_email: Joi.string().email().max(50).label('Shipping: Email').required()
-}
-
-internals.billingAttributes = {
-    billing_firstName: Joi.string().trim().max(255),
-    billing_lastName: Joi.string().trim().max(255),
-    billing_company: Joi.string().trim().max(255).empty(null),
-    billing_streetAddress: Joi.string().trim().max(255),
-    billing_extendedAddress: Joi.string().trim().max(255).empty(null),
-    billing_city: Joi.string().trim().max(255),
-    billing_state: Joi.string().trim().max(255),
-    billing_postalCode: Joi.string().trim().max(10),
-    billing_countryCodeAlpha2: Joi.string().trim().max(2),
-    billing_phone: Joi.string().trim().max(30).empty(null)
-}
-
-
-/**
- * Joi definitions for the ShoppingCart model
- *
- * NOTE:
- * The 'max' values are based on what is accepted by Braintree:
- * https://developers.braintreepayments.com/reference/request/transaction/sale/node
- */
-internals.schema = Joi.object().keys({
-    token: Joi.string().trim().max(100).required(),
-    billing: Joi.object().keys(internals.billingAttributes),
-    shipping: Joi.object().keys(internals.shippingAttributes),
-    shipping_rate: Joi.object().unknown()
-});
-
-
-
 internals.after = function (server, next) {
-
-    internals.ShoppingCartModel = server.plugins.BookshelfOrm.bookshelf.model('ShoppingCart');
-
-
-    // internals.withRelated = [
-    //     {
-    //         cart_items: (query) => {
-    //             query.orderBy('created_at', 'DESC');
-    //         }
-    //     }
-    // ];
-
-    internals.shoppingCart = {};
-
-
-    internals.shoppingCart.findOrCreate = (request) => {
-        return server.plugins.BookshelfOrm.bookshelf.model('ShoppingCart').findOrCreateCart(request);
-    };
-
-    internals.shoppingCart.get = (request) => {
-        return new Promise((resolve, reject) => {
-            server.plugins.BookshelfOrm.bookshelf.model('ShoppingCart').getCart(request)
-                .then((ShoppingCart) => {
-                    if (!ShoppingCart) {
-                        return reject('Unable to find a shopping cart for the given token.');
-                    }
-
-                    resolve(ShoppingCart);
-                });
-        });
-    };
-
-
-    internals.shoppingCartItem = {};
-
-    /**
-     * Adds a product to the shopping cart using the HTTP request data
-     *
-     * @returns {Promise}
-     */
-    internals.shoppingCartItem.add = (request) => {
-        return new Promise((resolve, reject) => {
-            Promise
-                .all([
-                    server.plugins.Products.getProductByAttribute('id', request.payload.id),
-                    internals.shoppingCart.findOrCreate(request)
-                ])
-                .then((results) => {
-                    let Product = results[0];
-                    let ShoppingCart = results[1];
-
-                    let qty = request.payload.options.qty || 1;
-                    let shoppingCartId = ShoppingCart.get('id');
-                    let productId = Product.get('id');
-
-                    // Shopping Cart doesn't have any items yet.
-                    // Create a new cart item
-                    if(Object.keys(ShoppingCart.relations).length === 0) {
-                        return createCartItem();
-                    }
-                    // Determine if we simply need to update the qty of an existing item
-                    // or add a new one
-                    else {
-                        return server.plugins.BookshelfOrm.bookshelf.model('ShoppingCartItem')
-                            .findByVariant(shoppingCartId, productId, 'size', request.payload.options.size)
-                            .then((ShoppingCartItem) => {
-                                // No matching variants.
-                                // Create a new cart item
-                                if(!ShoppingCartItem) {
-                                    return createCartItem();
-                                }
-                                else {
-                                    // Item with matching variants is already in the cart.
-                                    // Just need to update the qty
-                                    return ShoppingCartItem.save(
-                                        { qty: parseInt(ShoppingCartItem.get('qty') + qty, 10) },
-                                        { method: 'update', patch: true }
-                                    );
-                                }
-                            });
-                    }
-
-                    // NOTE: knex.js requires use of JSON.stringify() for json values
-                    // http://knexjs.org/#Schema-json
-                    function createCartItem() {
-                        return server.plugins.BookshelfOrm.bookshelf.model('ShoppingCartItem')
-                            .create({
-                                qty: qty,
-                                variants: JSON.stringify({
-                                    size: request.payload.options.size
-                                }),
-                                cart_id: shoppingCartId,
-                                product_id: productId
-                            });
-                    }
-                })
-                .then(resolve)
-                .catch((err) => {
-                    global.logger.error(err);
-                    global.bugsnag(err);
-                    reject(err);
-                });
-        });
-    };
-
-
-    internals.shoppingCartItem.get = (id) => {
-        return new Promise((resolve, reject) => {
-            server.plugins.BookshelfOrm.bookshelf.model('ShoppingCartItem')
-                .findById(id)
-                .then((ShoppingCartItem) => {
-                    if(!ShoppingCartItem) {
-                        return reject('Unable to find a shopping cart item.');
-                    }
-
-                    resolve(ShoppingCartItem);
-                });
-        });
-    };
-
 
     /************************************
      * ROUTE HANDLERS
      ************************************/
 
     internals.cartTokenGet = (request, reply) => {
-        server.plugins['Payments'].getClientToken()
+        paymentService
+            .getClientToken()
             .then((token) => {
                 reply.apiSuccess(token);
             })
@@ -189,7 +33,7 @@ internals.after = function (server, next) {
 
 
     internals.cartGet = (request, reply) => {
-        internals.shoppingCart.findOrCreate(request)
+        shoppingCartService.findOrCreateCart(request)
             .then((ShoppingCart) => {
                 reply.apiSuccess(ShoppingCart.toJSON());
             })
@@ -200,7 +44,7 @@ internals.after = function (server, next) {
 
 
     internals.cartAddresses = (request, reply) => {
-        internals.shoppingCart.findOrCreate(request)
+        shoppingCartService.findOrCreateCart(request)
             .then((ShoppingCart) => {
                 reply.apiSuccess(ShoppingCart.toJSON());
             })
@@ -211,9 +55,10 @@ internals.after = function (server, next) {
 
 
     internals.cartItemAdd = (request, reply) => {
-        internals.shoppingCartItem.add(request)
+        shoppingCartItemService
+            .addItem(request)
             .then(() => {
-                return server.plugins.BookshelfOrm.bookshelf.model('ShoppingCart').getCart(request);
+                return shoppingCartService.getCart(request);
             })
             .then((ShoppingCart) => {
                 reply.apiSuccess(ShoppingCart.toJSON());
@@ -225,9 +70,12 @@ internals.after = function (server, next) {
 
 
     internals.cartItemRemove = (request, reply) => {
-        internals.shoppingCart.get(request)
+        shoppingCartService
+            .getCart(request)
             .then((ShoppingCart) => {
-                return internals.shoppingCartItem.get(request.payload.id)
+                return shoppingCartItemService
+                    .getModel()
+                    .findById(request.payload.id)
                     .then((ShoppingCartItem) => {
                         if(!ShoppingCartItem) {
                             return;
@@ -237,7 +85,7 @@ internals.after = function (server, next) {
                     });
             })
             .then(() => {
-                return internals.shoppingCart.get(request);
+                return shoppingCartService.getCart(request);
             })
             .then((ShoppingCart) => {
                 reply.apiSuccess(ShoppingCart.toJSON());
@@ -249,26 +97,26 @@ internals.after = function (server, next) {
 
 
     internals.cartItemQty = (request, reply) => {
-        internals.shoppingCart.get(request)
+        shoppingCartService
+            .getCart(request)
             .then((ShoppingCart) => {
-                return server.plugins.BookshelfOrm.bookshelf.model('ShoppingCartItem')
-                    .findById(request.payload.id)
-                    .then((ShoppingCartItem) => {
-                        if(!ShoppingCartItem) {
-                            throw new Error(`Unable to find a shopping cart item.`);
-                        }
+                return shoppingCartItemService.getModel().findById(request.payload.id);
+            })
+            .then((ShoppingCartItem) => {
+                if(!ShoppingCartItem) {
+                    throw new Error(`Unable to find a shopping cart item.`);
+                }
 
-                        return ShoppingCartItem.save(
-                            { qty: parseInt((request.payload.qty || 1), 10) },
-                            { method: 'update', patch: true }
-                        );
-                    })
-                    .then(() => {
-                        return internals.shoppingCart.get(request)
-                    })
-                    .then((ShoppingCart) => {
-                        reply.apiSuccess(ShoppingCart.toJSON());
-                    });
+                return ShoppingCartItem.save(
+                    { qty: parseInt((request.payload.qty || 1), 10) },
+                    { method: 'update', patch: true }
+                );
+            })
+            .then(() => {
+                return shoppingCartService.getCart(request)
+            })
+            .then((ShoppingCart) => {
+                reply.apiSuccess(ShoppingCart.toJSON());
             })
             .catch((err) => {
                 reply(Boom.badData(err));
@@ -277,11 +125,13 @@ internals.after = function (server, next) {
 
 
     internals.cartShippingSetAddress = (request, reply) => {
-        internals.shoppingCart.get(request)
+        shoppingCartService
+            .getCart(request)
             .then((ShoppingCart) => {
                 let salesTaxParams = cloneDeep(request.payload);
                 salesTaxParams.sub_total = ShoppingCart.sub_total
 
+                // TODO: create SalesTaxService and call method from there
                 return server.plugins['SalesTax'].getSalesTaxAmount(salesTaxParams).then((salesTax) => {
                     // Save the shipping params and the sales tax value in the model
                     let updateParams = request.payload;
@@ -303,7 +153,8 @@ internals.after = function (server, next) {
 
 
     internals.cartShippingRate = (request, reply) => {
-        internals.shoppingCart.get(request)
+        shoppingCartService
+            .getCart(request)
             .then((ShoppingCart) => {
                 return ShoppingCart.save(
                     request.payload,
@@ -323,12 +174,13 @@ internals.after = function (server, next) {
         let cartJson;
         let cart;
 
-        internals.shoppingCart.get(request)
+        shoppingCartService
+            .getCart(request)
             .then((ShoppingCart) => {
                 cart = ShoppingCart;
                 cartJson = ShoppingCart.toJSON();
 
-                return server.plugins.Payments.runPayment({
+                return paymentService.runPayment({
                     paymentMethodNonce: request.payload.nonce,
                     amount: ShoppingCart.get('grand_total'),
                     customer: {
@@ -380,7 +232,7 @@ internals.after = function (server, next) {
                 // or not (transactionObj.success === false)
                 // Any failures that happen while saving the payment info do not affect the
                 // braintree transaction and thus should fail silently.
-                server.plugins.Payments
+                paymentService
                     .savePayment(cartJson.id, transactionObj)
                     .catch((err) => {
                         let msg = `ERROR SAVING PAYMENT INFO: ${err}`;
@@ -513,7 +365,7 @@ internals.after = function (server, next) {
             config: {
                 description: 'Sets the shipping address for the cart and calculates the sales tax',
                 validate: {
-                    payload: Joi.reach(internals.schema, 'shipping')
+                    payload: Joi.reach(shoppingCartService.getShoppingCartModelSchema(), 'shipping')
                 },
                 handler: internals.cartShippingSetAddress
             }
@@ -524,7 +376,7 @@ internals.after = function (server, next) {
             config: {
                 description: 'Sets the selected shipping rate for the cart',
                 validate: {
-                    payload: Joi.reach(internals.schema, 'shipping_rate')
+                    payload: Joi.reach(shoppingCartService.getShoppingCartModelSchema(), 'shipping_rate')
                 },
                 handler: internals.cartShippingRate
             }
@@ -540,7 +392,7 @@ internals.after = function (server, next) {
                     payload: Object.assign(
                         {}, 
                         { nonce: Joi.string().trim().required() }, 
-                        internals.billingAttributes
+                        shoppingCartService.getBillingAttributesSchema()
                     )
                 },
                 handler: internals.cartCheckout
@@ -559,14 +411,10 @@ internals.after = function (server, next) {
     ]);
 
 
-    server.expose('schema', internals.schema);
-    server.expose('findOrCreate', internals.shoppingCart.findOrCreate);
-
     // LOADING BOOKSHELF MODEL:
     let bookshelf = server.plugins.BookshelfOrm.bookshelf;
     // let baseModel = bookshelf.Model.extend({});
     let baseModel = require('bookshelf-modelbase')(bookshelf);
-
     let ShoppingCart = require('./models/ShoppingCart')(baseModel, bookshelf, server);
     let ShoppingCartItem = require('./models/ShoppingCartItem')(baseModel, bookshelf, server);
 
@@ -581,6 +429,10 @@ internals.after = function (server, next) {
 
 
 exports.register = (server, options, next) => {
+    shoppingCartService = new ShoppingCartService(server);
+    shoppingCartItemService = new ShoppingCartItemService(server);
+    paymentService = new PaymentService(server);
+
     // Events must be registered before they can be emitted:
     // https://hapijs.com/api#serveremitcriteria-data-callback
     server.event('payment-success');

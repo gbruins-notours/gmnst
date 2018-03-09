@@ -16,28 +16,6 @@ module.exports = function (baseModel, bookshelf) {
             shoppingCart: function() {
                 return this.belongsTo('ShoppingCart', 'cart_id');
             }
-        },
-
-        // Custom methods:
-        {
-            /**
-             * Gets a payment by a given attribute
-             *
-             * @param attrName
-             * @param attrValue
-             * @returns {Promise}
-             */
-            getPaymentByAttribute: function(attrName, attrValue) {
-                return this.query((qb) => {
-                    qb.where(attrName, '=', attrValue);  // TODO: Is there a SQL injection risk here?
-                })
-                .fetch({
-                    withRelated: [
-                        'shoppingCart.cart_items.product' // https://stackoverflow.com/questions/35679855/always-fetch-from-related-models-in-bookshelf-js#35841710
-                    ]
-                })
-            }
-
         }
     );
 };
