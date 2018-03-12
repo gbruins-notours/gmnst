@@ -9,7 +9,7 @@ module.exports = class ProductSizeService {
 
 
     getModel() {
-        return this.server.plugins.BookshelfOrm.bookshelf.model('ProductSize');
+        return this.server.app.bookshelf.model('ProductSize');
     }
 }
 

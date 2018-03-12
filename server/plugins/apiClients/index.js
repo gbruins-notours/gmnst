@@ -52,7 +52,7 @@ internals.after = function (server, next) {
      * @returns {Promise}
      */
     internals.getApiUser = (clientId) => {
-        let ApiUsers = server.plugins.BookshelfOrm.bookshelf.model('ApiUsers');
+        let ApiUsers = server.app.bookshelf.model('ApiUsers');
 
         return ApiUsers.forge({
             client_id: clientId
@@ -231,12 +231,11 @@ internals.after = function (server, next) {
 
 
     // LOADING BOOKSHELF MODEL:
-    let bookshelf = server.plugins.BookshelfOrm.bookshelf;
-    let baseModel = bookshelf.Model.extend({});
+    let baseModel = require('bookshelf-modelbase')(server.app.bookshelf);
 
-    bookshelf['model'](
+    server.app.bookshelf.model(
         'ApiUsers',
-        require('./models/ApiClients')(baseModel, bookshelf, server)
+        require('./models/ApiClients')(baseModel, server.app.bookshelf, server)
     );
 
     return next();

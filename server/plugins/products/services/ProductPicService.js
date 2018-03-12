@@ -105,7 +105,7 @@ module.exports = class ProductPicService {
 
 
     getModel() {
-        return this.server.plugins.BookshelfOrm.bookshelf.model('ProductPic')
+        return this.server.app.bookshelf.model('ProductPic')
     }
 
 

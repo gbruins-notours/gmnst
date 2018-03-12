@@ -34,10 +34,10 @@ describe('Testing Products plugin', () => {
             .startServerAndGetHeaders(serverSetup.manifest, serverSetup.composeOptions)
             .then(({err, server}) => {
                 expect(err).not.to.exist();
-                expect(server.plugins.BookshelfOrm.bookshelf.model('Product')).to.be.a.function();
-                expect(server.plugins.BookshelfOrm.bookshelf.model('ProductArtist')).to.be.a.function();
-                expect(server.plugins.BookshelfOrm.bookshelf.model('ProductPic')).to.be.a.function();
-                expect(server.plugins.BookshelfOrm.bookshelf.model('ProductSize')).to.be.a.function();
+                expect(server.app.bookshelf.model('Product')).to.be.a.function();
+                expect(server.app.bookshelf.model('ProductArtist')).to.be.a.function();
+                expect(server.app.bookshelf.model('ProductPic')).to.be.a.function();
+                expect(server.app.bookshelf.model('ProductSize')).to.be.a.function();
 
                 testHelpers.destroyKnexAndStopServer(server, done);
             });

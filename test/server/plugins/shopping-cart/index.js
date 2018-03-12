@@ -76,25 +76,12 @@ describe('Testing ShoppingCart plugin', () => {
     });
 
 
-    it('should have exposed methods', (done) => {
-        testHelpers
-            .startServerAndGetHeaders(serverSetup.manifest, serverSetup.composeOptions)
-            .then(({err, server}) => {
-                expect(err).not.to.exist();
-                expect(server.plugins.ShoppingCart.hasOwnProperty('schema')).to.be.true();
-                expect(server.plugins.ShoppingCart.hasOwnProperty('findOrCreate')).to.be.true();
-
-                testHelpers.destroyKnexAndStopServer(server, done);
-            });
-    });
-
-
     it('should have a ShoppingCart model', (done) => {
         testHelpers
             .startServerAndGetHeaders(serverSetup.manifest, serverSetup.composeOptions)
             .then(({err, server}) => {
                 expect(err).not.to.exist();
-                expect(server.plugins.BookshelfOrm.bookshelf.model('ShoppingCart')).to.be.a.function();
+                expect(server.app.bookshelf.model('ShoppingCart')).to.be.a.function();
 
                 testHelpers.destroyKnexAndStopServer(server, done);
             });

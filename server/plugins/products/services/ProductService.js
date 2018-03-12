@@ -8,7 +8,7 @@ module.exports = class ProductService {
     }
 
     getModel() {
-        return this.server.plugins.BookshelfOrm.bookshelf.model('Product');
+        return this.server.app.bookshelf.model('Product');
     }
 
 

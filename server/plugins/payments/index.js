@@ -110,11 +110,13 @@ internals.after = function (server, next) {
 
 
     // LOADING BOOKSHELF MODEL:
-    let bookshelf = server.plugins.BookshelfOrm.bookshelf;
     // let baseModel = bookshelf.Model.extend({});
-    let baseModel = require('bookshelf-modelbase')(bookshelf);
+    let baseModel = require('bookshelf-modelbase')(server.app.bookshelf);
 
-    bookshelf.model('Payment', require('./models/Payment')(baseModel, bookshelf, server));
+    server.app.bookshelf.model(
+        'Payment', 
+        require('./models/Payment')(baseModel, server.app.bookshelf, server)
+    );
 
     return next();
 };

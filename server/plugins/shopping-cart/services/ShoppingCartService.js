@@ -12,7 +12,7 @@ module.exports = class ShoppingCartService {
 
 
     getModel() {
-        return this.server.plugins.BookshelfOrm.bookshelf.model('ShoppingCart');
+        return this.server.app.bookshelf.model('ShoppingCart');
     }
 
 

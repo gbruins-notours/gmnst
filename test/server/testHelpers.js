@@ -7,8 +7,8 @@ const queryString = require('query-string');
 
 
 function destroyKnexAndStopServer(server, done) {
-    if(server.plugins.hasOwnProperty('BookshelfOrm')) {
-        server.plugins.BookshelfOrm.knexObject.destroy(() => {
+    if(server.app.hasOwnProperty('knex')) {
+        server.app.knex.destroy(() => {
             server.stop(done);
         });
     }

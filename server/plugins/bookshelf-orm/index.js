@@ -48,15 +48,13 @@ exports.register = (server, options, next) => {
     });
 
     if (settings.namespace) {
-        server.expose(settings.namespace, bookshelf);
+        server.app[settings.namespace] = bookshelf;
     }
     else {
-        // server.expose(bookshelf);
-        server.expose('bookshelf', bookshelf);
+        server.app.bookshelf = bookshelf;
     }
 
-    //test
-    server.expose('knexObject', knex);
+    server.app.knex = knex
 
     return next();
 };

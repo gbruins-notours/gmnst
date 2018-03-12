@@ -87,25 +87,12 @@ describe('Testing Payments plugin', () => {
     });
 
 
-    it('should have exposed methods', (done) => {
-        testHelpers
-            .startServerAndGetHeaders(serverSetup.manifest, serverSetup.composeOptions)
-            .then(({err, server}) => {
-                expect(err).not.to.exist();
-                expect(server.plugins.Payments.hasOwnProperty('getClientToken')).to.be.true();
-                expect(server.plugins.Payments.hasOwnProperty('runPayment')).to.be.true();
-
-                testHelpers.destroyKnexAndStopServer(server, done);
-            });
-    });
-
-
     it('should have a Payment model', (done) => {
         testHelpers
             .startServerAndGetHeaders(serverSetup.manifest, serverSetup.composeOptions)
             .then(({err, server, headers}) => {
                 expect(err).not.to.exist();
-                expect(server.plugins.BookshelfOrm.bookshelf.model('Payment')).to.be.a.function();
+                expect(server.app.bookshelf.model('Payment')).to.be.a.function();
 
                 testHelpers.destroyKnexAndStopServer(server, done);
             });

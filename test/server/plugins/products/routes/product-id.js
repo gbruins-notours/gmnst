@@ -20,7 +20,7 @@ describe('Testing route: GET /product/{id}', () => {
             .then(({err, server, headers}) => {
                 expect(err).not.to.exist();
 
-                const Product = server.plugins.BookshelfOrm.bookshelf.model('Product');
+                const Product = server.app.bookshelf.model('Product');
                 const attributes = {
                     title: 'title',
                     description_short: 'description_short',

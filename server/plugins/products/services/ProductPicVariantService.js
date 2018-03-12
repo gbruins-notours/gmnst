@@ -12,7 +12,7 @@ module.exports = class ProductPicVariantService {
 
 
     getModel() {
-        return this.server.plugins.BookshelfOrm.bookshelf.model('ProductPicVariant');
+        return this.server.app.bookshelf.model('ProductPicVariant');
     }
 
 

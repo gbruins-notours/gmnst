@@ -15,7 +15,7 @@ module.exports = class ShoppingCartItemService {
 
 
     getModel() {
-        return this.server.plugins.BookshelfOrm.bookshelf.model('ShoppingCartItem');
+        return this.server.app.bookshelf.model('ShoppingCartItem');
     }
 
 

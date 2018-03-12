@@ -13,7 +13,7 @@ module.exports = class PaymentService {
 
 
     getModel() {
-        return this.server.plugins.BookshelfOrm.bookshelf.model('Payment');
+        return this.server.app.bookshelf.model('Payment');
     }
 
 

@@ -40,7 +40,7 @@ describe('Testing BookshelfOrm plugin', () => {
             .startServerAndGetHeaders(serverSetup.manifest, serverSetup.composeOptions)
             .then(({err, server, headers}) => {
                 expect(err).not.to.exist();
-                expect(server.plugins.BookshelfOrm.hasOwnProperty('bookshelf')).to.be.true();
+                expect(server.app.hasOwnProperty('bookshelf')).to.be.true();
 
                 testHelpers.destroyKnexAndStopServer(server, done);
             });

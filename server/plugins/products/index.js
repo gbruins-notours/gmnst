@@ -487,32 +487,31 @@ internals.after = function (server, next) {
 
 
     // LOADING BOOKSHELF MODELS:
-    let bookshelf = server.plugins.BookshelfOrm.bookshelf;
-    let baseModel = require('bookshelf-modelbase')(bookshelf);
+    let baseModel = require('bookshelf-modelbase')(server.app.bookshelf);
 
-    bookshelf.model(
+    server.app.bookshelf.model(
         'Product',
-        require('./models/Product')(baseModel, bookshelf, server)
+        require('./models/Product')(baseModel, server.app.bookshelf, server)
     );
 
-    bookshelf.model(
+    server.app.bookshelf.model(
         'ProductArtist',
-        require('./models/ProductArtist')(baseModel, bookshelf, server)
+        require('./models/ProductArtist')(baseModel, server.app.bookshelf, server)
     );
 
-    bookshelf.model(
+    server.app.bookshelf.model(
         'ProductPic',
-        require('./models/ProductPic')(baseModel, bookshelf, server)
+        require('./models/ProductPic')(baseModel, server.app.bookshelf, server)
     );
 
-    bookshelf.model(
+    server.app.bookshelf.model(
         'ProductPicVariant',
-        require('./models/ProductPicVariant')(baseModel, bookshelf, server)
+        require('./models/ProductPicVariant')(baseModel, server.app.bookshelf, server)
     );
 
-    bookshelf.model(
+    server.app.bookshelf.model(
         'ProductSize',
-        require('./models/ProductSize')(baseModel, bookshelf, server)
+        require('./models/ProductSize')(baseModel, server.app.bookshelf, server)
     );
 
     return next();

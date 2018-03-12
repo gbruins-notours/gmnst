@@ -412,16 +412,17 @@ internals.after = function (server, next) {
 
 
     // LOADING BOOKSHELF MODEL:
-    let bookshelf = server.plugins.BookshelfOrm.bookshelf;
-    // let baseModel = bookshelf.Model.extend({});
-    let baseModel = require('bookshelf-modelbase')(bookshelf);
-    let ShoppingCart = require('./models/ShoppingCart')(baseModel, bookshelf, server);
-    let ShoppingCartItem = require('./models/ShoppingCartItem')(baseModel, bookshelf, server);
+    let baseModel = require('bookshelf-modelbase')(server.app.bookshelf);
 
-    bookshelf.model('ShoppingCart', ShoppingCart);
-    bookshelf.model('ShoppingCartItem', ShoppingCartItem);
-    bookshelf.collection('ShoppingCarts', require('./models/ShoppingCarts')(bookshelf, ShoppingCart));
-    bookshelf.collection('ShoppingCartItems', require('./models/ShoppingCartItems')(bookshelf, ShoppingCartItem));
+    server.app.bookshelf.model(
+        'ShoppingCart', 
+        require('./models/ShoppingCart')(baseModel, server.app.bookshelf, server)
+    );
+
+    server.app.bookshelf.model(
+        'ShoppingCartItem', 
+        require('./models/ShoppingCartItem')(baseModel, server.app.bookshelf, server)
+    );
 
     return next();
 };
