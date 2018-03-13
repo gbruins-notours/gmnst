@@ -1,12 +1,13 @@
 const Promise = require('bluebird');
 const CoreService = require('../../server/plugins/core/core.service');
-const ApiClientsService = require('../../server/plugins/apiClients/apiClients.service');
+const ApiClientService = require('../../server/plugins/apiClients/services/ApiClientService');
 
+const apiClientService = new ApiClientService();
 
 exports.seed = (knex) => {
     let hashedPassword;
 
-    return ApiClientsService
+    return apiClientService
         .cryptPassword(process.env.JWT_CLIENT_SECRET)
         .then((pwd) => {
             hashedPassword = pwd;
