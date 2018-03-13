@@ -1,18 +1,12 @@
 'use strict';
 
 const Promise = require('bluebird');
+const BaseService = require('../../core/services/BaseService');
 
-
-
-module.exports = class ProductPicVariantService {
+module.exports = class ProductPicVariantService extends BaseService {
 
     constructor(server) {
-        this.server = server;
-    }
-
-
-    getModel() {
-        return this.server.app.bookshelf.model('ProductPicVariant');
+        super(server, 'ProductPicVariant')
     }
 
 

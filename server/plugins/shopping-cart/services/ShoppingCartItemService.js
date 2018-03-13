@@ -3,19 +3,14 @@
 const Promise = require('bluebird');
 const ShoppingCartService = require('./ShoppingCartService');
 const ProductService = require('../../products/services/ProductService');
+const BaseService = require('../../core/services/BaseService');
 
-
-module.exports = class ShoppingCartItemService {
+module.exports = class ShoppingCartItemService extends BaseService {
 
     constructor(server) {
-        this.server = server;
+        super(server, 'ShoppingCartItem')
         this.shoppingCartService = new ShoppingCartService(server);
-        this.productService = new ProductService(server)
-    }
-
-
-    getModel() {
-        return this.server.app.bookshelf.model('ShoppingCartItem');
+        this.productService = new ProductService(server);
     }
 
 

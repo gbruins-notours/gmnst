@@ -9,6 +9,8 @@ const fileType = require('file-type');
 const sharp = require('sharp');
 const helperService = require('../../../helpers.service');
 const ProductPicVariantService = require('./ProductPicVariantService');
+const BaseService = require('../../core/services/BaseService');
+
 
 const productDirectory = process.env.NODE_ENV === 'production'
     ? path.join(__dirname, '../../../../dist/static/images/product/') //TODO: is this the right path?
@@ -96,16 +98,11 @@ function resizeAndWrite(req, width) {
 
 
 
-module.exports = class ProductPicService {
+module.exports = class ProductPicService extends BaseService {
 
     constructor(server) {
-        this.server = server;
+        super(server, 'ProductPic')
         this.productPicVariantService = new ProductPicVariantService(server);
-    }
-
-
-    getModel() {
-        return this.server.app.bookshelf.model('ProductPic')
     }
 
 

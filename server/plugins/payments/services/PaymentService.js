@@ -3,17 +3,13 @@
 const Joi = require('joi');
 const Promise = require('bluebird');
 const isObject = require('lodash.isobject');
+const BaseService = require('../../core/services/BaseService');
 
 
-module.exports = class PaymentService {
+module.exports = class PaymentService extends BaseService {
 
     constructor(server) {
-        this.server = server;
-    }
-
-
-    getModel() {
-        return this.server.app.bookshelf.model('Payment');
+        super(server, 'Payment')
     }
 
 

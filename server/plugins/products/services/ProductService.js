@@ -1,14 +1,11 @@
 'use strict';
 
+const BaseService = require('../../core/services/BaseService');
 
-module.exports = class ProductService {
+module.exports = class ProductService extends BaseService {
 
     constructor(server) {
-        this.server = server;
-    }
-
-    getModel() {
-        return this.server.app.bookshelf.model('Product');
+        super(server, 'Product')
     }
 
 

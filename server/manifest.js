@@ -1,5 +1,7 @@
 'use strict';
+
 const Config = require('./config');
+
 let internals = {};
 
 internals.manifest = {
@@ -125,26 +127,10 @@ internals.manifest = {
         },
         {
             plugin: {
-                register: './plugins/sales-tax'
-            },
-            options: {
-                select: ['api'],
-                routes: {
-                    prefix: '/api/v1'
-                }
-            }
-        },
-        {
-            plugin: {
                 register: './plugins/core'
             },
             options: {
                 select: ['api']
-            }
-        },
-        {
-            plugin: {
-                register: './plugins/email'
             }
         }
     ]

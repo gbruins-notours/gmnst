@@ -2,11 +2,11 @@
 
 const BaseService = require('../../core/services/BaseService');
 
-module.exports = class ProductSizeService extends BaseService {
+
+module.exports = class CustomerService extends BaseService {
 
     constructor(server) {
-        super(server, 'ProductSize')
+        super(server, 'Customer')
     }
-    
-}
 
+}

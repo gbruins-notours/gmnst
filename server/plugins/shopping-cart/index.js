@@ -3,18 +3,22 @@
 const Joi = require('joi');
 const Boom = require('boom');
 const cloneDeep = require('lodash.clonedeep');
+const PaymentService = require('../payments/services/PaymentService');
 const ShoppingCartService = require('./services/ShoppingCartService');
 const ShoppingCartItemService = require('./services/ShoppingCartItemService');
-const PaymentService = require('../payments/services/PaymentService');
-
-let shoppingCartService;
-let shoppingCartItemService;
-let paymentService;
+const ShoppingCartEmailService = require('./services/ShoppingCartEmailService');
+const SalesTaxService = require('./services/SalesTaxService');
 
 let internals = {};
 
 
 internals.after = function (server, next) {
+
+    let shoppingCartService = new ShoppingCartService(server);
+    let shoppingCartItemService = new ShoppingCartItemService(server);
+    let paymentService = new PaymentService(server);
+    let shoppingCartEmailService = new ShoppingCartEmailService();
+    let salesTaxService = new SalesTaxService();
 
     /************************************
      * ROUTE HANDLERS
@@ -131,17 +135,18 @@ internals.after = function (server, next) {
                 let salesTaxParams = cloneDeep(request.payload);
                 salesTaxParams.sub_total = ShoppingCart.sub_total
 
-                // TODO: create SalesTaxService and call method from there
-                return server.plugins['SalesTax'].getSalesTaxAmount(salesTaxParams).then((salesTax) => {
-                    // Save the shipping params and the sales tax value in the model
-                    let updateParams = request.payload;
-                    updateParams.sales_tax = salesTax;
+                return salesTaxService
+                    .getSalesTaxAmount(salesTaxParams)
+                    .then((salesTax) => {
+                        // Save the shipping params and the sales tax value in the model
+                        let updateParams = request.payload;
+                        updateParams.sales_tax = salesTax;
 
-                    return ShoppingCart.save(
-                        updateParams,
-                        { method: 'update', patch: true }
-                    );
-                });
+                        return ShoppingCart.save(
+                            updateParams,
+                            { method: 'update', patch: true }
+                        );
+                    });
             })
             .then((ShoppingCart) => {
                 reply.apiSuccess(ShoppingCart.toJSON());
@@ -218,10 +223,14 @@ internals.after = function (server, next) {
             .then((transactionObj) => {
                 console.log('BRAINTREE TRANSACTION RESULT', transactionObj)
 
-                request.server.emit('payment-success', {
-                    shoppingCart: cart,
-                    transactionId: transactionObj.transaction.id
-                });
+                shoppingCartEmailService
+                    .sendPurchaseEmails(cart, transactionObj.transaction.id)
+                    .catch((err) => {
+                        let cartId = cart.get('id');
+                        let msg = `Unable to send email confirmation to user after successful purchase: (ShoppingCart ID: ${cartId}) ${err}`;
+                        global.logger.error(msg);
+                        global.bugsnag(msg);
+                    });
 
                 // If the Braintree transaction is successful then anything that happens after this
                 // (i.e saving the payment details to DB) needs to fail silently, as the user has
@@ -430,15 +439,7 @@ internals.after = function (server, next) {
 
 
 exports.register = (server, options, next) => {
-    shoppingCartService = new ShoppingCartService(server);
-    shoppingCartItemService = new ShoppingCartItemService(server);
-    paymentService = new PaymentService(server);
-
-    // Events must be registered before they can be emitted:
-    // https://hapijs.com/api#serveremitcriteria-data-callback
-    server.event('payment-success');
-
-    server.dependency(['BookshelfOrm', 'Core', 'Products', 'Payments', 'SalesTax'], internals.after);
+    server.dependency(['BookshelfOrm', 'Core', 'Products', 'Payments'], internals.after);
     return next();
 };
 

@@ -2,17 +2,13 @@
 
 const Joi = require('joi');
 const jwt = require('jsonwebtoken');
+const BaseService = require('../../core/services/BaseService');
 
 
-module.exports = class ShoppingCartService {
+module.exports = class ShoppingCartService extends BaseService {
  
     constructor(server) {
-        this.server = server;
-    }
-
-
-    getModel() {
-        return this.server.app.bookshelf.model('ShoppingCart');
+        super(server, 'ShoppingCart')
     }
 
 

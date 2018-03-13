@@ -2,20 +2,16 @@
 
 const Promise = require('bluebird');
 const bcrypt = require('bcrypt');
+const BaseService = require('../../core/services/BaseService');
 
 
-module.exports = class ApiClientService {
+module.exports = class ApiClientService extends BaseService {
 
     constructor(server) {
-        this.server = server;
+        super(server, 'ApiClients')
     }
 
     
-    getModel() {
-        return this.server.app.bookshelf.model('ApiClients');
-    }
-
-
     /**
      * Performs additional validation on the decoded JWT token
      *

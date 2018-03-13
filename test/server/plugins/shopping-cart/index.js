@@ -4,7 +4,6 @@ const Hoek = require('hoek');
 const Products = require('../../../../server/plugins/products');
 const Payments = require('../../../../server/plugins/payments');
 const BookshelfOrm = require('../../../../server/plugins/bookshelf-orm');
-const SalesTax = require('../../../../server/plugins/sales-tax');
 const testHelpers = require('../../testHelpers');
 const serverSetup = require('./_serverSetup');
 
@@ -55,21 +54,6 @@ describe('Testing ShoppingCart plugin', () => {
             .then(({err, server}) => {
                 expect(err).to.exist();
                 expect(err.message).to.include(`missing dependency ${Payments.register.attributes.name}`);
-
-                testHelpers.destroyKnexAndStopServer(server, done);
-            });
-    });
-
-
-    it('errors on missing SalesTax plugin', (done) => {
-        const manifest = Hoek.clone(serverSetup.manifest);
-        testHelpers.spliceRegistrationFromManifest('./plugins/sales-tax', manifest);
-
-        testHelpers
-            .startServerAndGetHeaders(manifest, serverSetup.composeOptions)
-            .then(({err, server}) => {
-                expect(err).to.exist();
-                expect(err.message).to.include(`missing dependency ${SalesTax.register.attributes.name}`);
 
                 testHelpers.destroyKnexAndStopServer(server, done);
             });
