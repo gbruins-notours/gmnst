@@ -33,7 +33,7 @@ describe('Testing Customer plugin', () => {
             .startServerAndGetHeaders(serverSetup.manifest, serverSetup.composeOptions)
             .then(({err, server, headers}) => {
                 expect(err).not.to.exist();
-                expect(server.plugins.BookshelfOrm.bookshelf.model('Customer')).to.be.a.function();
+                expect(server.app.bookshelf.model('Customer')).to.be.a.function();
 
                 testHelpers.destroyKnexAndStopServer(server, done);
             });
