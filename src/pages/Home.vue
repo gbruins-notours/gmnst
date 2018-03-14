@@ -1,82 +1,146 @@
 <script>
 import DefaultLayout from '@/layouts/DefaultLayout'
+import ProductService from '@/pages/product/ProductService.js'
+
+let productService  = new ProductService();
 
 export default {
     components: {
         DefaultLayout
     },
 
-    data: function() {
-        return {
-            video: {
-                playButtonText: this.$t('Play'),
-                muteButtonText: this.$t('Mute'),
-            }
-        }
-    },
-
     methods: {
-        togglePlayVideo: function(e) {
-            e.preventDefault();
-            let $vid = this.$refs['video-element']
-
-            if ($vid.paused) {
-                $vid.play();
-                this.video.playButtonText = this.$t('Pause');
-            }
-            else {
-                $vid.pause();
-                this.video.playButtonText = this.$t('Play');
-            }
-        },
-
-        toggleMuteVideo: function(e) {
-            e.preventDefault();
-            let $vid = this.$refs['video-element']
-
-            $vid.muted = $vid.muted ? false : true;
-            this.video.muteButtonText = $vid.muted ? this.$t('Mute') : this.$t('Unmute');
+        imageStyle(img) {
+            return `background-image:url(${ productService.getProductPicPath(img) })`;
         }
     }
-
 }
 </script>
 
 
 <template>
     <default-layout>
-        <!-- <section class="hero film">
-                <div class="player">
-                    <div class="player-wrapper">
-                        <iframe id="youtube-player" data-video="Z-dN0AJQa-E" frameborder="0" allowfullscreen="1" title="YouTube video player" width="640" height="360" src="https://www.youtube.com/embed/Z-dN0AJQa-E?showinfo=0&amp;autoplay=0&amp;iv_load_policy=3&amp;fs=1&amp;playsinline=0&amp;rel=0&amp;enablejsapi=1&amp;origin=https%3A%2F%2Fpetrolicious.com&amp;widgetid=1"></iframe>
-                    </div>
+        <section class="panel">
+            <article>
+                <h1>some text goes here</h1>
+                <div>
+                    <div class="btn">CALL TO ACTION</div>
                 </div>
-        </section> -->
+            </article>
+            <div class="bg" :style="imageStyle('sample_calbeamin.jpg')" />
+        </section>
 
-        <!-- <section class="hero is-primary is-medium">
-    <div class="hero-body">
-        <div class="container has-text-centered2">
-            <iframe width="560" height="315" src="https://www.youtube.com/embed/ElWN4B4Wvxw?autoplay=0" frameborder="0" allowfullscreen></iframe>
-        </div>
-    </div>
-    </section> -->
-
-        <!-- <section class="hero is-small film">
-            <div class="hero-body" style="padding:0">
-                <div class="container">
-                    <div class="video-container">
-                        <iframe id="youtube-player" data-video="Z-dN0AJQa-E" frameborder="0" allowfullscreen="1" title="YouTube video player" width="640" height="360" src="https://www.youtube.com/embed/Z-dN0AJQa-E?showinfo=0&amp;autoplay=0&amp;iv_load_policy=3&amp;fs=1&amp;playsinline=0&amp;rel=0&amp;enablejsapi=1&amp;origin=https%3A%2F%2Fpetrolicious.com&amp;widgetid=1"></iframe>
-                    </div>
+        <section class="panel">
+            <article>
+                <h1>some text goes here</h1>
+                <div>
+                    <div class="btn">CALL TO ACTION</div>
                 </div>
-            </div>
-        </section> -->
-
-        <section class="bgBlack">
-            <div class="player">
-                <div class="wrapper">
-                    <iframe frameborder="0" allowfullscreen="1" title="YouTube video player" width="640" height="360" src="https://www.youtube.com/embed/ElWN4B4Wvxw?showinfo=0&amp;autoplay=0&amp;iv_load_policy=3&amp;fs=1&amp;playsinline=0"></iframe>
-                </div>
-            </div>
+            </article>
+            <div class="bg" :style="imageStyle('sample-300-x-400.png')" />
         </section>
     </default-layout>
 </template>
+
+<style lang="scss">
+    @import "../assets/css/components/_mixins.scss";
+
+    .panel {
+        height: 500px;
+        background-color: #000;
+        overflow: hidden;
+        position: relative;
+        background-repeat: no-repeat;
+        background-position: center center;
+        background-size: cover;
+
+        article {
+            position: relative;
+            top: 40%;
+            width: 100%;
+            text-align: center;
+            z-index: 5;
+            color: #fff;
+            font-size: 40px;
+        }
+
+        .btn {
+            background-color: rgba(255,255,255,.70);
+            color: #000;
+            cursor: pointer;
+            padding: 10px 35px;
+            font-size: 16px;
+            font-weight: 500;
+            display: inline-block;
+            text-transform: uppercase;
+            @include grow();
+
+            &:hover {
+                background-color: rgba(255,255,255,.80);
+                @include growHover();
+            }
+        }
+
+        .bg {
+            background-position: center center;
+            background-size: cover;
+            height: 110%;
+            left: 0;
+            position: absolute;
+            top: 0;
+            width: 100%;
+        }
+    }
+    .promo-strip {
+        height: 400px;
+        // box-sizing: border-box;
+        // margin: 0;
+        // padding: 0;
+        // position: relative;
+        // text-align: center;
+        // overflow: hidden;
+    }
+
+    .promo-strip-desc {
+        background-color: #373e5d;
+        color: #fff;
+    }
+
+    .promo-item {
+        height: 400px;
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        position: relative;
+        text-align: center;
+        overflow: hidden;
+
+        img {
+            margin: 0;
+            width: 10%;
+            height: auto;
+            transition: 1s;
+            border: 1px solid red;
+        }
+    }
+
+    .promo-item-desc {
+        background-color: #373e5d;
+        color: #fff;
+    }
+
+    .promo-item-image {
+        overflow: hidden;
+        // width: 100%;
+        height: auto;
+        max-height: 500px;
+        top: 0;
+
+        img {
+            margin: 0;
+            width: 100%;
+            height: auto;
+            transition: 1s;
+        }
+    }
+</style>
