@@ -12,10 +12,4 @@ if(process.env.NODE_ENV === 'production') {
         path.join(__dirname, '../dist/static/images/product/'), 
         permission
     );
-
-    // for writing new log files:
-    fs.chmodSync(
-        path.join(__dirname, '../dist/logs'), 
-        permission
-    );
 }
