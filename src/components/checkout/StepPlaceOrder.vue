@@ -473,7 +473,7 @@
                 <div class="displayTableRow" v-show="paymentMethod === 'CREDIT_CARD'">
                     <label class="checkout_form_label fwb">{{ $t('EXPIRES') }}:</label>
                     <div class="checkout_form_value">
-                        <div class="inlineBlock relative">
+                        <div class="displayTable relative">
                             <!-- month -->
                             <div id="expiration-month" class="el-input__inner hostedField70 displayTableCell"></div>
 
