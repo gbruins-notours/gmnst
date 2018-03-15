@@ -9,7 +9,7 @@ if(process.env.NODE_ENV === 'production') {
     // adding write permissions to the product folder so 
     // product images can be uploaded/saved from the admin page.
     fs.chmodSync(
-        path.join(__dirname, '../dist/static/images/product/'), 
+        path.join(__dirname, '../dist/static/images', 'product'), 
         permission
     );
 }
