@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import createPersistedState from 'vuex-persistedstate'
 import app from './modules/app'
+import ui from './modules/ui'
 import auth from './modules/auth'
 import cart from './modules/cart'
 import product from './modules/product'
@@ -13,6 +14,7 @@ export function createStore () {
         plugins: [createPersistedState()],
         modules: {
             app,
+            ui,
             auth,
             cart,
             product

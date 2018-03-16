@@ -1,31 +1,14 @@
 'use strict';
 
 const state = {
-    device: {
-        isMobile: false,
-        isTablet: false
-    },
     header: {
         inCheckoutFlow: false
-    },
-    sidebar: {
-        opened: false,
-        hidden: false
     },
     braintreeClientToken: null,
     jwtKey: null
 }
   
 const mutations = {
-    TOGGLE_SIDEBAR: (state, opened) => {
-        state.sidebar.opened = opened
-    },
-
-    TOGGLE_DEVICE: (state, device) => {
-        state.device.isMobile = device === 'mobile';
-        state.device.isTablet = device === 'tablet';
-    },
-
     // APP_INFO: (state, data) => {
     //     state.appInfo = decorateAppInfo(data);
     // },
@@ -48,14 +31,6 @@ const actions = {
         commit('IN_CHECKOUT_FLOW', inCheckoutFlow);
     },
 
-    TOGGLE_SIDEBAR: ({ commit }, opened) => {
-        commit('TOGGLE_SIDEBAR', opened);
-    },
-
-    TOGGLE_DEVICE: ({ commit }, device) => {
-        commit('TOGGLE_DEVICE', device)
-    },
-
     JWT_KEY: ({ commit }, key) => {
         commit('JWT_KEY', key)
     },
@@ -72,10 +47,6 @@ const getters = {
 
     inCheckoutFlow: (state) => {
         return state.header.inCheckoutFlow;
-    },
-
-    sidebar: (state) => {
-        return state.sidebar;
     },
 
     braintreeClientToken: (state) => {

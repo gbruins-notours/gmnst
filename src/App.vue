@@ -38,24 +38,6 @@ export default {
     },
 
     created () {
-        const { body } = document
-        const WIDTH = 768
-        const RATIO = 3
-
-        const handler = () => {
-            if (!document.hidden) {
-                let rect = body.getBoundingClientRect()
-                let isMobile = rect.width - RATIO < WIDTH;
-                let deviceType = isMobile ? 'mobile' : 'other';
-
-                this.$store.dispatch('app/TOGGLE_DEVICE', deviceType);
-            }
-        }
-
-        document.addEventListener('visibilitychange', handler)
-        window.addEventListener('DOMContentLoaded', handler)
-        window.addEventListener('resize', handler)
-
         if (!this.jwtKey) {
             utilityService.getJwtToken().then((jsonWebToken) => {
                 this.$store.dispatch('app/JWT_KEY', jsonWebToken);

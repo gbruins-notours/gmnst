@@ -224,187 +224,184 @@ export default{
 
 <template>
     <admin-layout>
-        <div v-cloak>
+        <div class="tar mbm">
+            <el-button @click="goToStore(product.seo_uri)">
+                <i class="fa fa-window-restore"></i>&nbsp;&nbsp;VIEW PRODUCT IN STORE
+            </el-button>
+        </div>
 
-            <div class="tar mbm">
-                <el-button @click="goToStore(product.seo_uri)">
-                    <i class="fa fa-window-restore"></i>&nbsp;&nbsp;VIEW PRODUCT IN STORE
-                </el-button>
-            </div>
+        <div class="g-spec">
+            <div class="g-spec-label">General Info</div>
+            <div class="g-spec-content">
+                <div class="formContainer">
 
-            <div class="g-spec">
-                <div class="g-spec-label">General Info</div>
-                <div class="g-spec-content">
-                    <div class="formContainer">
+                    <!-- is_available -->
+                    <form-row label="Available:">
+                        <el-checkbox v-model="product.is_available"></el-checkbox>
+                    </form-row>
 
-                        <!-- is_available -->
-                        <form-row label="Available:">
-                            <el-checkbox v-model="product.is_available"></el-checkbox>
-                        </form-row>
+                    <!-- title -->
+                    <form-row label="Title:">
+                        <el-input v-model="product.title"></el-input>
+                    </form-row>
 
-                        <!-- title -->
-                        <form-row label="Title:">
-                            <el-input v-model="product.title"></el-input>
-                        </form-row>
+                    <!-- description_short -->
+                    <form-row label="Short Description:">
+                        <el-input type="textarea" :rows="2" v-model="product.description_short"></el-input>
+                    </form-row>
 
-                        <!-- description_short -->
-                        <form-row label="Short Description:">
-                            <el-input type="textarea" :rows="2" v-model="product.description_short"></el-input>
-                        </form-row>
+                    <!-- description_long -->
+                    <form-row label="Long Description:">
+                        <el-input type="textarea" :rows="3" v-model="product.description_long"></el-input>
+                    </form-row>
 
-                        <!-- description_long -->
-                        <form-row label="Long Description:">
-                            <el-input type="textarea" :rows="3" v-model="product.description_long"></el-input>
-                        </form-row>
+                    <!-- seo_uri -->
+                    <form-row label="SEO URI:">
+                        <el-input v-model="product.seo_uri"></el-input>
+                    </form-row>
 
-                        <!-- seo_uri -->
-                        <form-row label="SEO URI:">
-                            <el-input v-model="product.seo_uri"></el-input>
-                        </form-row>
+                    <!-- weight_oz -->
+                    <form-row label="Weight (oz):">
+                        <el-input-number v-model="product.weight_oz" controls-position="right" :step=".01"></el-input-number>
+                    </form-row>
 
-                        <!-- weight_oz -->
-                        <form-row label="Weight (oz):">
-                            <el-input-number v-model="product.weight_oz" controls-position="right" :step=".01"></el-input-number>
-                        </form-row>
+                    <!-- tax_code -->
+                    <form-row label="Tax code:">
+                        <el-input-number v-model="product.tax_code" controls-position="right" :step="1"></el-input-number>
+                    </form-row>
 
-                        <!-- tax_code -->
-                        <form-row label="Tax code:">
-                            <el-input-number v-model="product.tax_code" controls-position="right" :step="1"></el-input-number>
-                        </form-row>
+                    <!-- sku -->
+                    <form-row label="SKU:">
+                        <el-input v-model="product.sku"></el-input>
+                    </form-row>
 
-                        <!-- sku -->
-                        <form-row label="SKU:">
-                            <el-input v-model="product.sku"></el-input>
-                        </form-row>
-
-                    </div>
-                </div>
-            </div>
-
-            <div class="g-spec">
-                <div class="g-spec-label">Pricing</div>
-                <div class="g-spec-content">
-                    <div class="formContainer">
-
-                        <!-- cost -->
-                        <form-row label="Cost:">
-                            <el-input-number v-model="product.cost" controls-position="right" :step=".01"></el-input-number>
-                        </form-row>
-
-                        <!-- base_price -->
-                        <form-row label="Base price:">
-                            <el-input-number v-model="product.base_price" controls-position="right" :step=".01"></el-input-number>
-                        </form-row>
-
-                        <!-- sale_price -->
-                        <form-row label="Sale price:">
-                            <el-input-number v-model="product.sale_price" controls-position="right" :step=".01"></el-input-number>
-                        </form-row>
-
-                        <!-- sale_price -->
-                        <form-row label="On sale:">
-                            <el-checkbox v-model="product.is_on_sale"></el-checkbox>
-                        </form-row>
-
-                    </div>
-                </div>
-            </div>
-
-            <div class="g-spec">
-                <div class="g-spec-label">Sizes</div>
-                <div class="g-spec-content">
-                    <product-size-admin v-if="product.id" :product-id="product.id"></product-size-admin>
-                </div>
-            </div>
-
-            <div class="g-spec">
-                <div class="g-spec-label">Media</div>
-                <div class="g-spec-content">
-                    <!-- video_url -->
-                    <div>
-                        <div class="fwb fs14">Video URL:</div>
-                        <el-input v-model="product.video_url">
-                            <el-button
-                                slot="append"
-                                v-if="product.video_url"
-                                @click="playVideo(product.video_url)"><i class="fa fa-play"></i></el-button>
-                        </el-input>
-                    </div>
-
-                    <!-- pictures -->
-                    <div class="mtl">
-                        <div class="fwb fs14">Pictures:</div>
-                        <product-pictures-admin v-if="product.id" :product-id="product.id"></product-pictures-admin>
-                    </div>
-                </div>
-            </div>
-
-            <div class="g-spec">
-                <div class="g-spec-label">Inventory</div>
-                <div class="g-spec-content">
-                    <div class="formContainer">
-
-                        <!-- inventory_count -->
-                        <form-row label="Inventory count:">
-                            <el-input-number v-model="product.inventory_count" controls-position="right" :step="1"></el-input-number>
-                        </form-row>
-
-                        <!-- hide_if_out_of_stock -->
-                        <form-row label="Hide if out of stock:">
-                            <el-checkbox v-model="product.hide_if_out_of_stock"></el-checkbox>
-                        </form-row>
-
-                    </div>
-                </div>
-            </div>
-
-            <div class="g-spec">
-                <div class="g-spec-label">Categories</div>
-                <div class="g-spec-content">
-                    <div class="formContainer">
-
-                        <!-- type -->
-                        <form-row label="Product type:">
-                            <bitwise-multi-select
-                                :options="typeSelectOptions"
-                                :init="product.type"
-                                @changed="val => product.type = val"></bitwise-multi-select>
-                        </form-row>
-
-                        <!-- sub_type -->
-                        <form-row label="Product sub-type:">
-                            <bitwise-multi-select
-                                :options="subTypeSelectOptions"
-                                :init="product.sub_type"
-                                @changed="val => product.sub_type = val"></bitwise-multi-select>
-                        </form-row>
-
-                        <!-- gender -->
-                        <form-row label="Gender type:">
-                            <bitwise-multi-select
-                                :options="genderSelectOptions"
-                                :init="product.gender"
-                                @changed="val => product.gender = val"></bitwise-multi-select>
-                        </form-row>
-
-                    </div>
-                </div>
-            </div>
-
-            <div class="g-spec">
-                <div class="g-spec-label"></div>
-                <div class="g-spec-content">
-                    <el-button
-                        type="primary"
-                        @click="upsertProduct(product)">SUBMIT</el-button>
-
-                    <el-button @click="goToProductList">CANCEL</el-button>
                 </div>
             </div>
         </div>
 
+        <div class="g-spec">
+            <div class="g-spec-label">Pricing</div>
+            <div class="g-spec-content">
+                <div class="formContainer">
 
-        <el-dialog title="Product video"
+                    <!-- cost -->
+                    <form-row label="Cost:">
+                        <el-input-number v-model="product.cost" controls-position="right" :step=".01"></el-input-number>
+                    </form-row>
+
+                    <!-- base_price -->
+                    <form-row label="Base price:">
+                        <el-input-number v-model="product.base_price" controls-position="right" :step=".01"></el-input-number>
+                    </form-row>
+
+                    <!-- sale_price -->
+                    <form-row label="Sale price:">
+                        <el-input-number v-model="product.sale_price" controls-position="right" :step=".01"></el-input-number>
+                    </form-row>
+
+                    <!-- sale_price -->
+                    <form-row label="On sale:">
+                        <el-checkbox v-model="product.is_on_sale"></el-checkbox>
+                    </form-row>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="g-spec">
+            <div class="g-spec-label">Sizes</div>
+            <div class="g-spec-content">
+                <product-size-admin v-if="product.id" :product-id="product.id"></product-size-admin>
+            </div>
+        </div>
+
+        <div class="g-spec">
+            <div class="g-spec-label">Media</div>
+            <div class="g-spec-content">
+                <!-- video_url -->
+                <div>
+                    <div class="fwb fs14">Video URL:</div>
+                    <el-input v-model="product.video_url">
+                        <el-button
+                            slot="append"
+                            v-if="product.video_url"
+                            @click="playVideo(product.video_url)"><i class="fa fa-play"></i></el-button>
+                    </el-input>
+                </div>
+
+                <!-- pictures -->
+                <div class="mtl">
+                    <div class="fwb fs14">Pictures:</div>
+                    <product-pictures-admin v-if="product.id" :product-id="product.id"></product-pictures-admin>
+                </div>
+            </div>
+        </div>
+
+        <div class="g-spec">
+            <div class="g-spec-label">Inventory</div>
+            <div class="g-spec-content">
+                <div class="formContainer">
+
+                    <!-- inventory_count -->
+                    <form-row label="Inventory count:">
+                        <el-input-number v-model="product.inventory_count" controls-position="right" :step="1"></el-input-number>
+                    </form-row>
+
+                    <!-- hide_if_out_of_stock -->
+                    <form-row label="Hide if out of stock:">
+                        <el-checkbox v-model="product.hide_if_out_of_stock"></el-checkbox>
+                    </form-row>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="g-spec">
+            <div class="g-spec-label">Categories</div>
+            <div class="g-spec-content">
+                <div class="formContainer">
+
+                    <!-- type -->
+                    <form-row label="Product type:">
+                        <bitwise-multi-select
+                            :options="typeSelectOptions"
+                            :init="product.type"
+                            @changed="val => product.type = val"></bitwise-multi-select>
+                    </form-row>
+
+                    <!-- sub_type -->
+                    <form-row label="Product sub-type:">
+                        <bitwise-multi-select
+                            :options="subTypeSelectOptions"
+                            :init="product.sub_type"
+                            @changed="val => product.sub_type = val"></bitwise-multi-select>
+                    </form-row>
+
+                    <!-- gender -->
+                    <form-row label="Gender type:">
+                        <bitwise-multi-select
+                            :options="genderSelectOptions"
+                            :init="product.gender"
+                            @changed="val => product.gender = val"></bitwise-multi-select>
+                    </form-row>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="g-spec">
+            <div class="g-spec-label"></div>
+            <div class="g-spec-content">
+                <el-button
+                    type="primary"
+                    @click="upsertProduct(product)">SUBMIT</el-button>
+
+                <el-button @click="goToProductList">CANCEL</el-button>
+            </div>
+        </div>
+
+
+        <!-- <el-dialog title="Product video"
                    :visible.sync="videoPlayerModal.isActive"
                    :modal-append-to-body="false"
                    @close="modalClosed">
@@ -412,9 +409,7 @@ export default{
                 :video-id="videoPlayerModal.videoId"
                 :player-vars="{ autoplay: 1 }"
                 @playing="videoPlaying"></youtube>
-        </el-dialog>
-
-
+        </el-dialog> -->
 
     </admin-layout>
 </template>
