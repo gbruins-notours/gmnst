@@ -58,7 +58,6 @@ exports.register = (server, options, next) => {
 
     if (logsDirectory && !fs.existsSync(logsDirectory)) {
         fs.mkdirSync(logsDirectory);
-        fs.chmodSync(logsDirectory, '755'); // this is needed on nanobox prod server
     }
 
 

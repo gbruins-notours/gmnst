@@ -28,7 +28,13 @@ data.db:
 web.main:
   start:
     nginx: nginx -c /app/nanobox_config/nginx.conf
-    node: npm start
+    node: npm 
+    
+# https://docs.nanobox.io/app-config/writable-dirs/
+web.site:
+  writable_dirs:
+    - /app/dist/static/images/product
+    - /app/dist/logs
 
 # add a worker component and give it a "start" command
 # worker.main:
