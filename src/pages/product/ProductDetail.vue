@@ -20,7 +20,6 @@ let productSizeService = new ProductSizeService();
 let shoppingCartService = new ShoppingCartService();
 let utilityService = new UtilityService();
 let pageUrl = utilityService.getSiteUrl(true);
-let basePicUrl = productService.getProductPicPath();
 
 Vue.use(Select);
 Vue.use(Option);
@@ -131,9 +130,9 @@ export default {
         getLargePic: function(index) {
             if (Array.isArray(this.product.pics) && this.product.pics[index]) {
                 if(Array.isArray(this.product.pics[index].pic_variants) && this.product.pics[index].pic_variants.length) {
-                    return basePicUrl + this.product.pics[index].pic_variants[0].file_name;
+                    return this.product.pics[index].pic_variants[0].url;
                 }
-                return basePicUrl + this.product.pics[index].file_name;
+                return this.product.pics[index].url;
             }
 
             return null;
@@ -158,7 +157,7 @@ export default {
 
                 if (Array.isArray(this.product.pics)) {
                     this.product.pics.forEach((obj) => {
-                        pics.push(basePicUrl + obj.file_name)
+                        pics.push(obj.url)
                     });
 
                     this.productPics = pics;

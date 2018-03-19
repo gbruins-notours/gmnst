@@ -1,8 +1,5 @@
 <script>
 import DefaultLayout from '@/layouts/DefaultLayout'
-import ProductService from '@/pages/product/ProductService.js'
-
-let productService  = new ProductService();
 
 export default {
     components: {
@@ -11,7 +8,7 @@ export default {
 
     methods: {
         imageStyle(img) {
-            return `background-image:url(${ productService.getProductPicPath(img) })`;
+            return `background-image:url(${img})`;
         }
     }
 }

@@ -5,7 +5,7 @@ exports.up = function(knex, Promise) {
         CoreService.DB_TABLES.product_pic_variants,
         (t) => {
             t.uuid('id').primary();
-            t.string('file_name').nullable();
+            t.string('url').nullable();
             t.integer('width');
             t.integer('height');
             t.boolean('is_visible').defaultTo(true);

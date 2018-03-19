@@ -6,7 +6,7 @@ module.exports.up = (knex) => {
         CoreService.DB_TABLES.product_pics,
         (t) => {
             t.uuid('id').primary();
-            t.string('file_name').nullable();
+            t.string('url').nullable();
             t.integer('sort_order');
             t.integer('width');
             t.integer('height');

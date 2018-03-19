@@ -75,14 +75,6 @@ export default class ProductService {
             });
     }
 
-    getProductPicPath(fileName) {
-        let base = '/static/images/product/';
-        if(fileName) {
-            return base + fileName;
-        }
-        return base;
-    }
-
     featuredProductPic(product) {
         let pic = null;
 
@@ -93,13 +85,13 @@ export default class ProductService {
             // so the first 'is_visible' pic will be the featured pic
             for(let i=0; i<len; i++) {
                 if(product.pics[i].is_visible) {
-                    pic = product.pics[i].file_name;
+                    pic = product.pics[i].url;
                     break;
                 }
             }
 
             if(pic) {
-                return this.getProductPicPath() + pic;
+                return pic;
             }
         }
 
@@ -156,12 +148,10 @@ export default class ProductService {
         }
 
         return new Promise((resolve, reject) => {
-            let path = this.getProductPicPath();
-
             if (Array.isArray(product.pics)) {
                 product.pics.forEach((obj) => {
-                    if (obj.is_visible && obj.file_name) {
-                        add(obj.sort_order, path + obj.file_name)
+                    if (obj.is_visible && obj.url) {
+                        add(obj.sort_order, obj.url)
                     }
                 });
             }
