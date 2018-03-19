@@ -25,7 +25,6 @@ Vue.use(Option);
 Vue.use(Validations)
 
 let currentNotification = null;
-let productPicPath = productService.getProductPicPath();
 
 
 function showNotification(Notification) {
@@ -101,7 +100,7 @@ export default{
         },
 
         deletePic(pic) {
-            let picName = this.$t(pic.file_name);
+            let picName = this.$t(pic.url);
 
             this.$confirm(`Remove this picture from the product? "${ picName }"`, 'Please confirm', {
                 confirmButtonText: 'OK',
@@ -124,7 +123,7 @@ export default{
                             this.$notify({
                                 type: 'success',
                                 title: 'Picture deleted:',
-                                message: pic.file_name,
+                                message: pic.url,
                                 duration: 3000
                             })
                         );
@@ -178,7 +177,7 @@ export default{
                         this.$notify({
                             type: 'success',
                             title: 'Picture saved:',
-                            message: picJson.file_name,
+                            message: picJson.url,
                             duration: 3000
                         })
                     )
@@ -224,12 +223,6 @@ export default{
         openPicQuickView(pic) {
             this.picViewModal.pic = pic;
             this.picViewModal.isActive = true;
-        },
-
-        getPicPath(fileName) {
-            if(fileName) {
-                return productPicPath + fileName;
-            }
         }
     },
 
@@ -263,16 +256,16 @@ export default{
                 <tbody>
                     <tr v-for="pic in product.pics" :key="pic.id">
                         <td>
-                            <a @click="openPicQuickView(pic)" v-if="pic.file_name">
-                                <img :src="getPicPath(pic.file_name)" class="width50" />
+                            <a @click="openPicQuickView(pic)" v-if="pic.url">
+                                <img :src="pic.url" class="width50" />
                             </a>
                         </td>
-                        <td class="hide_medium_down">{{ pic.file_name }}</td>
+                        <td class="hide_medium_down">{{ pic.url }}</td>
                         <td class="tac">{{ pic.sort_order }}</td>
                         <td>
                             <i v-if="pic.is_visible" class="fa fa-check-square colorGreen"></i>
                         </td>
-                        <td class="tac">
+                        <td class="tac nowrap">
                             <i class="fa fa-edit fs20 cursorPointer" @click="openPicEditModal(pic)"></i>
                             <i class="fa fa-trash fs20 colorRed mlm cursorPointer" @click="deletePic(pic)"></i>
                         </td>
@@ -282,12 +275,12 @@ export default{
         </div>
 
         <!-- product pic dialog -->
-        <el-dialog :title="picViewModal.pic.file_name"
+        <el-dialog :title="picViewModal.pic.url"
                    :visible.sync="picViewModal.isActive"
                    :modal-append-to-body="false"
                    width="95%">
             <div class="tac">
-                <img :src="getPicPath(picViewModal.pic.file_name)" />
+                <img :src="picViewModal.pic.url" />
             </div>
         </el-dialog>
 
@@ -316,7 +309,7 @@ export default{
 
             <!-- Current picture -->
             <form-row label="Current picture:" v-if="picModal.form.file_name">
-                <img :src="getPicPath(picModal.form.file_name)" width="200" />
+                <img :src="picModal.form.url" width="200" />
             </form-row>
 
             <!-- Upload picture -->
@@ -336,7 +329,7 @@ export default{
 
             <!-- buttons -->
             <form-row label="">
-                <div class="ptl">
+                <div class="ptl nowrap">
                     <el-button 
                         type="primary" 
                         class="mrm" 

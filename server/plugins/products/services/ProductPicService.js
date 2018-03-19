@@ -7,6 +7,7 @@ const isObject = require('lodash.isobject');
 const cloneDeep = require('lodash.clonedeep');
 const fileType = require('file-type');
 const sharp = require('sharp');
+const AWS = require('aws-sdk');
 const helperService = require('../../../helpers.service');
 const ProductPicVariantService = require('./ProductPicVariantService');
 const BaseService = require('../../core/services/BaseService');
@@ -23,6 +24,15 @@ const imageMimeTypeWhiteList = [
     'image/pjpeg'
 ];
 
+// Configure AWS client for use with Digital Ocean Spaces
+const spacesEndpoint = new AWS.Endpoint(process.env.DIGITAL_OCEAN_SPACES_ENDPOINT);
+const s3 = new AWS.S3({
+    endpoint: spacesEndpoint,
+    accessKeyId: process.env.DIGITAL_OCEAN_SPACES_ACCESS_KEY,
+    secretAccessKey: process.env.DIGITAL_OCEAN_SPACES_SECRET
+});
+
+
 
 function fileIsImage(fileData) {
     let typeObj = fileType(fileData);
@@ -35,74 +45,148 @@ function fileIsImage(fileData) {
 }
 
 
-function deleteFile(fileName) {
-    return new Promise((resolve, reject) => {
-        if(!fileName) {
-            return reject('Can not delete file because fileName was not provided');
-        }
-
-        fs.unlink(productDirectory + fileName, (err) => {
-            if(err) {
-                return reject(err);
-            }
-
-            resolve()
-        });
-    });
-}
-
-
-/**
- * Saves a new picture file
- * The new file name will be returned in the response if the file save was successful
- * otherwise the success response will be empty
- */
-function resizeAndWrite(req, width) {
-    // Cloning is necessary because the file.pipe operation below seems
-    // to modify the request.payload.file value, causing subsequest
-    // resize attemtps on the same file to fail.
-    let request = cloneDeep(req);
-
-    return new Promise((resolve, reject) => {
-        if(request.payload.file) {
-            let typeObj = fileIsImage(request.payload.file._data)
-
-            if(typeObj) {
-                let w = parseInt(width, 10) || 600
-                let cleanId = helperService.stripTags(helperService.stripQuotes(request.payload.product_id));
-                let fileName = `${cleanId}_${new Date().getTime()}.${typeObj.ext}`;
-
-                let transformer = sharp()
-                    .resize(w)
-                    .max()
-                    .withoutEnlargement(true)
-                    .on('info', function(info) {
-                        info.file_name = fileName;
-                        return resolve(info);
-                    });
-
-                request.payload.file.pipe(transformer).pipe(
-                    fs.createWriteStream(productDirectory + fileName)
-                );
-            }
-            else {
-                global.logger.info('SAVING PRODUCT FAILED BECAUSE WRONG MIME TYPE');
-                return reject('File type must be one of: ' + imageMimeTypeWhiteList.join(','))
-            }
-        }  
-        else {
-            resolve();
-        }
-    });
-}
-
-
-
 module.exports = class ProductPicService extends BaseService {
 
     constructor(server) {
         super(server, 'ProductPic')
         this.productPicVariantService = new ProductPicVariantService(server);
+    }
+
+
+    getCloudUrl() {
+        return `https://${process.env.DIGITAL_OCEAN_SPACE_NAME}.${process.env.DIGITAL_OCEAN_SPACES_ENDPOINT}`;
+    }
+
+
+    getCloudImagePath(fileName) {
+        return `${process.env.NODE_ENV}/uploads/images/${fileName}`;
+    }
+
+
+    uploadFileToCloud(resizeData) {
+        let self = this;
+    
+        return new Promise((resolve, reject) => {
+            if(resizeData) {
+                fs.readFile(productDirectory + resizeData.file_name, function(err, data) {
+                    if(err) {
+                        return reject(err);
+                    }
+                    
+                    let { mime } = fileType(data);
+                    let fileKey = self.getCloudImagePath(resizeData.file_name);
+        
+                    let params = {
+                        Body: data,
+                        Bucket: process.env.DIGITAL_OCEAN_SPACE_NAME,
+                        Key: fileKey,
+                        ACL: 'public-read',
+                        ContentType: mime
+                        // Metadata: {
+                        //     'Content-Type': typeObj.mime
+                        // }
+                    };
+        
+                    // Upload the image to DigitalOcean.  
+                    // Returns a data object containing an 'ETag' attribute,
+                    // which I think we don't need for anything.
+                    s3.putObject(params, function(err, data) {
+                        if (err) {
+                            return reject(err);
+                        }
+                            
+                        // The entire image url will be persisted in the DB
+                        resizeData.url = `${self.getCloudUrl()}/${fileKey}`; 
+                        resolve(resizeData);
+                    });
+                });
+            }
+            else {
+                resolve();
+            }
+        });
+    }
+
+
+    deleteFile(url) {
+        let self = this;
+
+        return new Promise((resolve, reject) => {
+            if(!url) {
+                return resolve();
+            }
+
+            let arr = url.split('/');
+            let fileName = arr[arr.length - 1];
+
+            if(!fileName) {
+                return reject(`Can not delete file for url ${url}`);
+            }
+
+            let params = {
+                Bucket: process.env.DIGITAL_OCEAN_SPACE_NAME, 
+                Key: self.getCloudImagePath(fileName)
+            };
+    
+            s3.deleteObject(params, (err) => {
+                if(err) {
+                    return reject(err);
+                }
+
+                resolve()
+            });
+        });
+    }
+
+
+    /**
+     * Saves a new picture file to disk, which is only temorary.  
+     * Nanobox does not persist file contents between deploys.  Therefore product pics
+     * would be wiped out when a new version of the app is deployed to Nanobox.
+     * After the file is saved then it will be uploaded to cloud storage.  The saved file
+     * is no longer needed after that.
+     * More info here about 'writable directories' on Nanobox:
+     * https://docs.nanobox.io/app-config/writable-dirs/
+     */
+    resizeAndWrite(req, width) {
+        // Cloning is necessary because the file.pipe operation below seems
+        // to modify the request.payload.file value, causing subsequest
+        // resize attemtps on the same file to fail.
+        let request = cloneDeep(req);
+
+        return new Promise((resolve, reject) => {
+            if(request.payload.file) {
+                let typeObj = fileIsImage(request.payload.file._data)
+
+                if(typeObj) {
+                    let w = parseInt(width, 10) || 600
+                    let cleanId = helperService.stripTags(helperService.stripQuotes(request.payload.product_id));
+                    let fileName = `${cleanId}_${new Date().getTime()}.${typeObj.ext}`;
+
+                    let transformer = sharp()
+                        .resize(w)
+                        .max()
+                        .withoutEnlargement(true)
+                        .on('info', function(info) {
+                            // Adding the file name to the response object because it's persisted in the DB later
+                            info.file_name = fileName;
+                            return resolve(info);
+                        });
+
+                    request.payload.file.pipe(transformer).pipe(
+                        fs.createWriteStream(productDirectory + fileName)
+                    );
+
+                }
+                else {
+                    global.logger.info('SAVING PRODUCT FAILED BECAUSE WRONG MIME TYPE');
+                    return reject('File type must be one of: ' + imageMimeTypeWhiteList.join(','))
+                }
+            }  
+            else {
+                resolve();
+            }
+        });
     }
 
 
@@ -160,11 +244,12 @@ module.exports = class ProductPicService extends BaseService {
                     let json = ProductPic.toJSON();
                     global.logger.info('PRODUCT PIC WITH VARIANTS', json)
 
-                    if(json.file_name) {
+                    //TODO: file_name has been replaced by 'url'
+                    if(json.url) {
                         // Unlink the main product pic
-                        deleteFile(json.file_name)
+                        self.deleteFile(json.url)
                             .then(() => {
-                                global.logger.info('PRODUCT PIC - FILE DELETED', json.file_name);
+                                global.logger.info('PRODUCT PIC - FILE DELETED', json.url);
                             })
                             .catch((err) => {
                                 global.logger.error('PRODUCT PIC - ERROR DELETING FILE', err);
@@ -173,9 +258,9 @@ module.exports = class ProductPicService extends BaseService {
                         // Unlink the product pic variants
                         if(Array.isArray(json.pic_variants)) {
                             json.pic_variants.forEach((obj) => {
-                                deleteFile(obj.file_name)
+                                self.deleteFile(obj.url)
                                     .then(() => {
-                                        global.logger.info('PRODUCT PIC VARIANT - FILE DELETED', obj.file_name);
+                                        global.logger.info('PRODUCT PIC VARIANT - FILE DELETED', obj.url);
                                     })
                                     .catch((err) => {
                                         global.logger.error('PRODUCT PIC VARIANT - ERROR DELETING FILE', err);
@@ -212,8 +297,14 @@ module.exports = class ProductPicService extends BaseService {
                 })
                 .then((ProductPic) => {
                     // Always delete the variants and re-create
-                    self.productPicVariantService.deleteVariants(ProductPic)
-                    return resizeAndWrite(request, 600)
+                    if(request.payload.file) {
+                        self.productPicVariantService.deleteVariants(ProductPic)
+                    }
+                    
+                    return self.resizeAndWrite(request, 600)
+                })
+                .then((resizeResponse) => {
+                    return self.uploadFileToCloud(resizeResponse)
                 })
                 .then((resizeResponse) => {
                     global.logger.info('PRODUCT PIC - FILE RESIZED (600)', resizeResponse);
@@ -226,9 +317,9 @@ module.exports = class ProductPicService extends BaseService {
 
                     // resizeResponse will be empty if the HTTP request did not include a file
                     // (which it may not if the user in only updating other attributes)
-                    if(isObject(resizeResponse)) {
+                    if(resizeResponse) {
                         // Additional data needed for the ProductPic model
-                        payload.file_name = resizeResponse.file_name;
+                        payload.url = resizeResponse.url;
                         payload.width = resizeResponse.width || null;
                         payload.height = resizeResponse.height || null;
                     }
@@ -245,7 +336,10 @@ module.exports = class ProductPicService extends BaseService {
                     global.logger.info('PRODUCT PIC UPSERTED', productPic.get('id'));
 
                     // ProductPicVariant:
-                    return resizeAndWrite(request, 1000)
+                    return self.resizeAndWrite(request, 1000)
+                })
+                .then((resizeResponse) => {
+                    return self.uploadFileToCloud(resizeResponse)
                 })
                 .then((resizeResponse) => {
                     global.logger.info('PRODUCT PIC VARIANT - FILE RESIZED (1000)', resizeResponse);
@@ -257,7 +351,7 @@ module.exports = class ProductPicService extends BaseService {
                     delete payload.id;
     
                     if(isObject(resizeResponse)) {
-                        payload.file_name = resizeResponse.file_name;
+                        payload.url = resizeResponse.url;
                         payload.width = resizeResponse.width || null;
                         payload.height = resizeResponse.height || null;
                     }

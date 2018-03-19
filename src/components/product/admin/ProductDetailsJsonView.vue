@@ -13,12 +13,6 @@ export default {
             type: Object,
             required: true
         }
-    },
-
-    data() {
-        return {
-            productPicPath: productService.getProductPicPath()
-        }
     }
 }
 </script>
@@ -37,8 +31,8 @@ export default {
             <div class="g-spec-label">Pictures</div>
             <div class="g-spec-content">
                 <div v-for="pic in product.pics" class="inlineBlock mrl vat">
-                    <img :src="productPicPath + pic.file_name" class="prodPic">
-                    <div>{{ pic.file_name }}</div>
+                    <img :src="pic.url" class="prodPic">
+                    <div>{{ pic.url }}</div>
                 </div>
             </div>
         </div>

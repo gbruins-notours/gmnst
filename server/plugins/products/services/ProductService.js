@@ -73,8 +73,8 @@ module.exports = class ProductService extends BaseService {
             // The related sizes for a product are ordered by sort order (ASC)
             // so the first 'is_visible' pic will be the featured pic
             for(let i=0; i<len; i++) {
-                if(productJson.pics[i].is_visible && productJson.pics[i].file_name) {
-                    pic = productJson.pics[i].file_name;
+                if(productJson.pics[i].is_visible && productJson.pics[i].url) {
+                    pic = productJson.pics[i].url;
                     break;
                 }
             }
