@@ -1,7 +1,6 @@
 'use strict';
 
 const fs = require('fs');
-const path = require('path');
 const Promise = require('bluebird');
 const isObject = require('lodash.isobject');
 const cloneDeep = require('lodash.clonedeep');
@@ -11,11 +10,6 @@ const AWS = require('aws-sdk');
 const helperService = require('../../../helpers.service');
 const ProductPicVariantService = require('./ProductPicVariantService');
 const BaseService = require('../../core/services/BaseService');
-
-
-const productDirectory = process.env.NODE_ENV === 'production'
-    ? path.join(__dirname, '../../../../dist/static/images/product/') //TODO: is this the right path?
-    : path.join(__dirname, '../../../../static/images/product/');
 
 const imageMimeTypeWhiteList = [
     'image/png',
@@ -68,7 +62,7 @@ module.exports = class ProductPicService extends BaseService {
     
         return new Promise((resolve, reject) => {
             if(resizeData) {
-                fs.readFile(productDirectory + resizeData.file_name, function(err, data) {
+                fs.readFile(`/tmp/${resizeData.file_name}`, function(err, data) {
                     if(err) {
                         return reject(err);
                     }
@@ -174,7 +168,7 @@ module.exports = class ProductPicService extends BaseService {
                         });
 
                     request.payload.file.pipe(transformer).pipe(
-                        fs.createWriteStream(productDirectory + fileName)
+                        fs.createWriteStream(`/tmp/${fileName}`)
                     );
 
                 }
