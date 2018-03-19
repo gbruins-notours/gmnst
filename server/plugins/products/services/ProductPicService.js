@@ -1,6 +1,7 @@
 'use strict';
 
 const fs = require('fs');
+const path = require('path');
 const Promise = require('bluebird');
 const isObject = require('lodash.isobject');
 const cloneDeep = require('lodash.clonedeep');
@@ -17,6 +18,8 @@ const imageMimeTypeWhiteList = [
     'image/jpeg',
     'image/pjpeg'
 ];
+
+const tmpDirectory = path.join(__dirname, '../../../../tmp');
 
 // Configure AWS client for use with Digital Ocean Spaces
 const spacesEndpoint = new AWS.Endpoint(process.env.DIGITAL_OCEAN_SPACES_ENDPOINT);
@@ -62,7 +65,7 @@ module.exports = class ProductPicService extends BaseService {
     
         return new Promise((resolve, reject) => {
             if(resizeData) {
-                fs.readFile(`/tmp/${resizeData.file_name}`, function(err, data) {
+                fs.readFile(`${tmpDirectory}/${resizeData.file_name}`, function(err, data) {
                     if(err) {
                         return reject(err);
                     }
@@ -168,7 +171,7 @@ module.exports = class ProductPicService extends BaseService {
                         });
 
                     request.payload.file.pipe(transformer).pipe(
-                        fs.createWriteStream(`/tmp/${fileName}`)
+                        fs.createWriteStream(`${tmpDirectory}/${fileName}`)
                     );
 
                 }

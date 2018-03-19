@@ -2,7 +2,6 @@ node_modules/
 dist/
 test/client/unit/coverage
 test/client/e2e/reports
-static/images/product/*
 tmp/*
 *.env
 app.yaml
