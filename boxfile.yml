@@ -25,10 +25,12 @@ data.db:
   image: nanobox/postgresql:9.6
 
 # add a web component and give it a "start" command
-web.main:
+web.site:
   start:
     nginx: nginx -c /app/nanobox_config/nginx.conf
     node: npm 
+  writable_dirs:
+    - tmp
 
 # add a worker component and give it a "start" command
 # worker.main:
