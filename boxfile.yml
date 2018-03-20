@@ -30,4 +30,4 @@ web.main:
     node: npm start
 
   writable_dirs:
-    - /app/tmp
+    - tmp
