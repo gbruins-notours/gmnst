@@ -26,11 +26,11 @@ data.db:
 
 # add a web component and give it a "start" command
 web.main:
-  writable_dirs:
-    - tmp
   start:
     nginx: nginx -c /app/nanobox_config/nginx.conf
     node: npm 
+  writable_dirs:
+    - /app/tmp
 
 
 # add a worker component and give it a "start" command
