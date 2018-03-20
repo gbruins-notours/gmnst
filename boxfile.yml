@@ -24,20 +24,10 @@ deploy.config:
 data.db:
   image: nanobox/postgresql:9.6
 
-# add a web component and give it a "start" command
 web.main:
   start:
     nginx: nginx -c /app/nanobox_config/nginx.conf
-    node: npm
-    
-  #writable_dirs:
-    #- /app/tmp
+    node: npm start
 
-  # the path to a logfile you want streamed to the nanobox dashboard
-  #log_watch:
-    #rails: 'log/production.log'
-
-
-# add a worker component and give it a "start" command
-# worker.main:
-#   start: node worker.js
+  writable_dirs:
+    - /app/tmp
