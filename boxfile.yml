@@ -28,9 +28,14 @@ data.db:
 web.main:
   start:
     nginx: nginx -c /app/nanobox_config/nginx.conf
-    node: npm 
-  writable_dirs:
-    - /app/tmp
+    node: npm
+    
+  #writable_dirs:
+    #- /app/tmp
+
+  # the path to a logfile you want streamed to the nanobox dashboard
+  #log_watch:
+    #rails: 'log/production.log'
 
 
 # add a worker component and give it a "start" command
