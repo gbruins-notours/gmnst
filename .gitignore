@@ -13,9 +13,9 @@ hs_err_pid*
 .editorconfig
 
 # Logs:
+logs/*.log*
 *.log
 npm-debug.log*
-logs-dev/
 
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
