@@ -1,11 +1,8 @@
 const winston = require('winston');
 const RotateFile = require('winston-daily-rotate-file');
 const Promise = require('bluebird');
-const fs = require('fs');
 const path = require('path');
 const bugsnag = require('bugsnag')
-
-let logsDirectory = null;
 
 
 function getFormattedDate() {
@@ -25,10 +22,10 @@ function getFormattedDate() {
     let hms = [
         date.getHours(),
         date.getMinutes(),
-        date.getSeconds(),
+        date.getSeconds()
     ];
         
-    return (ymd.join("-") + " " + hms.join(':'));
+    return (ymd.join('-') + ' ' + hms.join(':'));
 }
 
 exports.register = (server, options, next) => {
@@ -46,21 +43,6 @@ exports.register = (server, options, next) => {
         });
     };
     
-    switch(process.env.NODE_ENV) {
-        case 'production':
-            logsDirectory = path.join(__dirname, '../../../dist', 'logs');
-            break;
-
-        case 'development':
-            logsDirectory = path.join(__dirname, '../../../', 'logs-dev');
-            break;
-    }
-
-    if (logsDirectory && !fs.existsSync(logsDirectory)) {
-        fs.mkdirSync(logsDirectory);
-    }
-
-
     // Winston setup: 
     winston.setLevels({
         debug: 0,
@@ -94,40 +76,39 @@ exports.register = (server, options, next) => {
         })
     ];
 
-    // only printing to log files if there is one (production)
-    if(logsDirectory) {
-        let fileConfig = {
-            name: 'error-file',
-            level: 'error',
-            prettyPrint: true,
-            silent: false,
-            colorize: false,
-            filename: path.join(logsDirectory, '/error.log'),
-            timestamp: getFormattedDate,
-            json: false,
-            maxFiles: 10,
-            datePattern: '.yyyy-MM-dd'
-        };
+    let logsDirectory = path.join(__dirname, '../../../', 'logs');
 
-        transports.push(
-            new (RotateFile)(fileConfig),
-            new (RotateFile)(
-                Object.assign(
-                    {}, 
-                    fileConfig, 
-                    { 
-                        name: 'info-file',
-                        level: 'info',
-                        filename: path.join(logsDirectory, '/info.log')
-                    }
-                )
+    let fileConfig = {
+        name: 'error-file',
+        level: 'error',
+        prettyPrint: true,
+        silent: false,
+        colorize: false,
+        filename: path.join(logsDirectory, '/error.log'),
+        timestamp: getFormattedDate,
+        json: false,
+        maxFiles: 10,
+        datePattern: '.yyyy-MM-dd'
+    };
+
+    transports.push(
+        new (RotateFile)(fileConfig),
+        new (RotateFile)(
+            Object.assign(
+                {}, 
+                fileConfig, 
+                { 
+                    name: 'info-file',
+                    level: 'info',
+                    filename: path.join(logsDirectory, '/info.log')
+                }
             )
-        );
-
-        exceptionHandlers.push(
-            new (RotateFile)(fileConfig)
         )
-    }
+    );
+
+    exceptionHandlers.push(
+        new (RotateFile)(fileConfig)
+    )
 
 
     const logger = new (winston.Logger)({

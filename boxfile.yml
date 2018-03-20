@@ -31,3 +31,4 @@ web.main:
 
   writable_dirs:
     - tmp
+    - logs
