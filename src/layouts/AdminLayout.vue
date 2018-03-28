@@ -76,9 +76,11 @@ export default {
         transition: .5s;
     }
 
-    .sidenav-opened {
-        padding-left: 200px;
-        transition: .5s;
+    @media #{$medium-and-up} {
+        .sidenav-opened {
+            padding-left: 200px;
+            transition: .5s;
+        }
     }
 
     .fa-bars {
