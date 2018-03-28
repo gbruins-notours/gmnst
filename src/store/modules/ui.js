@@ -24,9 +24,9 @@ const mutations = {
 
     WINDOW_RESIZE: (state) => {
         const { innerWidth } = window
-        const isMobile = innerWidth > 1024
-        state.isMobile = isMobile
-        state.sidebarOpened = isMobile
+        const isDesktop = innerWidth > 1024
+        state.isMobile = !isDesktop
+        state.sidebarOpened = isDesktop
     }
 }
 
@@ -43,7 +43,7 @@ const actions = {
         commit('TOGGLE_SIDEBAR')
     },
 
-    handleResize ({ commit }) {
+    windowResize ({ commit }) {
         commit('WINDOW_RESIZE')
     }
 }

@@ -113,7 +113,7 @@ export default{
 
 <template>
     <admin-layout>
-        <div v-cloak>
+        <div v-cloak class="pal">
 
             <div class="tar mbl">
                 <el-button type="primary" @click="goToAdd">ADD PRODUCT</el-button>

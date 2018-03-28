@@ -11,14 +11,7 @@ hs_err_pid*
 .DS_Store
 .idea
 .editorconfig
+cloud_sql_proxy
 
 # Logs:
-logs/*.log*
-*.log
-npm-debug.log*
-
-# Elastic Beanstalk Files
-.elasticbeanstalk/*
-!.elasticbeanstalk/*.cfg.yml
-!.elasticbeanstalk/*.global.yml
-cloud_sql_proxy
+*.log*

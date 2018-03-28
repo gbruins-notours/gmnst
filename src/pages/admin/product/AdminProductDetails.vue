@@ -68,11 +68,13 @@ export default{
 
 <template>
     <admin-layout>
-        <div class="tar mbl">
-            <el-button type="primary"
-                        @click="goToEdit">EDIT PRODUCT</el-button>
-        </div>
+        <div class="pal">
+            <div class="tar mbl">
+                <el-button type="primary"
+                            @click="goToEdit">EDIT PRODUCT</el-button>
+            </div>
 
-        <product-details-json-view :product="product"></product-details-json-view>
+            <product-details-json-view :product="product"></product-details-json-view>
+        </div>
     </admin-layout>
 </template>

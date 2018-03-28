@@ -1,29 +1,19 @@
 <script>
 import Vue from 'vue'
-import { mapState } from 'vuex'
-import { Container, Header, Aside, Main, Menu, MenuItem, Submenu, Button } from 'element-ui'
+import {  mapState } from 'vuex'
+import { Button } from 'element-ui'
+import SideNav from '@/components/AppSidenav'
 
-Vue.use(Container);
-Vue.use(Header);
-Vue.use(Aside);
-Vue.use(Main);
-Vue.use(Menu);
-Vue.use(Submenu);
-Vue.use(MenuItem);
 Vue.use(Button);
 
 export default {
+    components: {
+        SideNav
+    },
+
     methods: {
         handleResize: function() {
-            this.$store.dispatch('ui/handleResize');
-        },
-
-        toggleSidebar: function() {
-            this.$store.dispatch('ui/toggleSidebar')
-        },
-
-        goHome: function() {
-            this.$router.push({ name: 'adminProductList' });
+            this.$store.dispatch('ui/windowResize');
         },
 
         logout: function() {
@@ -49,167 +39,109 @@ export default {
 
 <template>
     <div class="layoutContainer">
-        <el-container>
-            <el-aside width="200px" class="sidebar" :class="{'sidebar-open': sidebarOpened}">
-                <el-menu
-                    :router="true"
-                    background-color="#304156"
-                    text-color="#fff"
-                    active-text-color="#ffd04b">
+        <side-nav></side-nav>
 
-                    <el-submenu index="1">
-                        <template slot="title">
-                            <i class="fa fa-cubes"></i>
-                            <span>{{ $t('Products') }}</span>
-                        </template>
+        <header role="banner" class="header" :class="{'sidenav-opened': $store.state.ui.sidebarOpened}">
+            <div class="header-container">
+                <i class="fa fa-bars colorGrayLighter fs20 cursorPointer" 
+                    aria-hidden="true"
+                    @click="$store.dispatch('ui/toggleSidebar')"></i>
 
-                        <el-menu-item :route="{ name: 'adminProductList' }" index="/products">List</el-menu-item>
-                    </el-submenu>
+                <nav class="navigation">
+                    <ul class="navigation-list">
+                        <li>
+                            <el-button type="text"
+                                @click="logout"
+                                class="colorBlack">{{ $t('LOGOUT') }}</el-button>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
 
-                    <el-menu-item :route="{ name: 'adminReports' }" index="/reports">
-                        <i class="fa fa-bar-chart"></i>
-                        <span>{{ $t('Reports') }}</span>
-                    </el-menu-item>
-                </el-menu>
-            </el-aside>
-
-            <el-container>
-                <el-header>
-                    <div role="banner" class="Header">
-                        <div class="Header-container">
-                            <i class="fa fa-bars colorGrayLighter fs20 cursorPointer" 
-                            aria-hidden="true"
-                            @click="toggleSidebar"></i>
-
-                            <div class="Header-brand">
-                                <img class="Header-image cursorPointer" @click="goHome" src="/static/images/logo_header.png" alt="gmnst" />
-                            </div>
-
-                            <nav class="Navigation">
-                                <ul class="Navigation-list">
-                                    <li>
-                                        <el-button type="text"
-                                            @click="logout"
-                                            class="colorBlack">{{ $t('LOGOUT') }}</el-button>
-                                    </li>
-                                </ul>
-                            </nav>
-                        </div>
-                    </div>
-                </el-header>
-
-                <el-main>
-                    <slot></slot>
-                </el-main>
-            </el-container>
-        </el-container>
+        <main :class="{'sidenav-opened': $store.state.ui.sidebarOpened}">
+            <slot></slot>
+        </main>
     </div>
 </template>
 
 
 <style lang="scss">
-    @import "../assets/css/components/_variables.scss";
-    @import "../assets/css/components/_mixins.scss";
+@import "../assets/css/components/_variables.scss";
+@import "../assets/css/components/_mixins.scss";
 
-    .layoutContainer {
-        .sidebar {
-            position: absolute;
-            opacity: 0;
+.layoutContainer {
 
-            &.sidebar-open {
-                position: static;
-                opacity: 1;
-                transition: opacity .5s linear;
-            }
-        }
-
-        .el-aside {
-            background-color: #304156;
-            color: #fff;
-        }
-
-        .el-header {
-            background-color: #fff;
-            color: #333;
-            line-height: 60px;
-        }
-
-        .el-menu {
-            border: 0;
-
-            .fa {
-                vertical-align: middle;
-                margin-right: 10px;
-            }
-        }
-
-        .fa-bars {
-            line-height: 60px;
-        }
-
-        .displayNone {
-            display: none;
-        }
+    header, main {
+        transition: .5s;
     }
 
-    .Header {
+    .sidenav-opened {
+        padding-left: 200px;
+        transition: .5s;
+    }
+
+    .fa-bars {
+        line-height: 60px;
+    }
+
+    .header {
         background-color: #fff;
         position: relative;
+        color: #333;
+        line-height: 60px;
     }
 
-    .Header-container {
-        display: -webkit-box;
-        display: -ms-flexbox;
-        display: flex;
-        -ms-flex-wrap: wrap;
-        flex-wrap: wrap;
+    .header-container {
+        @include flexbox();
+        @include flex-wrap(nowrap);
         flex-direction: row;
+        padding: 0 20px;
     }
 
-    .Header-brand {
-        display: -webkit-box;
-        display: -ms-flexbox;
-        display: flex;
-        -webkit-box-align: center;
-        -ms-flex-align: center;
-        flex-grow: 1;
-        align-items: center;
-        color: #02182B;
-        margin-left: 20px;
-    }
-
-    .Header-image {
+    .header-image {
         display: inline-block;
         width: 135px;
         vertical-align: middle;
     }
 
-    .Header-image {
+    .header-image {
         @include grow()
     }
-    .Header-image:hover {
+    .header-image:hover {
         @include growHover()
     }
 
-
-
-    .Navigation {
-        background-color: whitesmoke;
+    .navigation {
+        background-color: white;
+        padding: 0;
         color: #010101;
-        width: 100%;
-    }
-
-    .Navigation-list {
+        -webkit-box-ordinal-group: 3;
+        -ms-flex-order: 2;
+        order: 2;
+        width: auto;
+        -webkit-box-flex: 2;
+        -ms-flex-positive: 2;
+        flex-grow: 2;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        align-items: center;
+        -ms-flex-item-align: center;
+        align-self: center;
+        -webkit-box-pack: end;
+        -ms-flex-pack: end;
+        justify-content: flex-end;
         display: -webkit-box;
         display: -ms-flexbox;
         display: flex;
-        -ms-flex-pack: distribute;
-        justify-content: space-around;
-        -ms-flex-item-align: center;
-        align-self: center;
+    }
+
+    .navigation-list {
+        @include flexbox();
+        @include justify-content(space-around);
+        @include align-self(center);
         margin: 0 20px 0 0;
         margin: 0;
-
 
         li {
             list-style: none;
@@ -234,43 +166,5 @@ export default {
             }
         }
     }
-
-
-    @media #{$medium-and-up}  {
-        .Header-container {
-            -ms-flex-wrap: nowrap;
-            flex-wrap: nowrap;
-        }
-        .Header-brand {
-            max-width: 170px;
-        }
-
-        .Navigation {
-            background-color: white;
-            padding: 0;
-            -webkit-box-ordinal-group: 3;
-            -ms-flex-order: 2;
-            order: 2;
-            width: auto;
-            -webkit-box-flex: 2;
-            -ms-flex-positive: 2;
-            flex-grow: 2;
-            -webkit-box-align: center;
-            -ms-flex-align: center;
-            align-items: center;
-            -ms-flex-item-align: center;
-            align-self: center;
-            -webkit-box-pack: end;
-            -ms-flex-pack: end;
-            justify-content: flex-end;
-            display: -webkit-box;
-            display: -ms-flexbox;
-            display: flex;
-        }
-        .Navigation-list {
-            -webkit-box-pack: end;
-            -ms-flex-pack: end;
-            justify-content: flex-end;
-        }
-    }
+}
 </style>
